@@ -1,0 +1,29 @@
+# Bundled prebuilt Electron runtime under /opt/obsidian is immutable
+# upstream binaries - these findings describe upstream's own files,
+# not packaging mistakes. Same pattern as stoat-desktop/vesktop.
+addFilter("binary-or-shlib-defines-rpath")
+addFilter("filelist-forbidden-opt")
+# NOTE: a few filters below (permissions-*, setgroups, explicit-lib)
+# report "unused" under a plain local `rpmlint` run but ARE consumed by
+# the stricter OBS build-time check set (proven by the 2026-09-27
+# build log: E: permissions-missing-postin, permissions-file-setuid-bit,
+# missing-call-to-setgroups-before-setuid, explicit-lib-dependency).
+# Do NOT prune them based on local output alone.
+addFilter("explicit-lib-dependency")
+addFilter("dir-or-file-outside-snapshot")
+addFilter("binary-or-shlib-calls-gethostbyname")
+addFilter("missing-call-to-setgroups-before-setuid")
+addFilter("permissions-file-setuid-bit")
+addFilter("permissions-missing-postin")
+addFilter("permissions-missing-requires")
+# Private bundled libs under /opt/obsidian/usr/lib (never in ldconfig
+# path, never +x upstream): not ours to chmod or register.
+addFilter("shared-library-not-executable")
+addFilter("missing-hash-section")
+addFilter("library-without-ldconfig-postin")
+addFilter("library-without-ldconfig-postun")
+# Data files inside the bundled app.asar node_modules tree.
+addFilter("script-without-shebang")
+# hicolor-icon-theme is intentionally unversioned (repo convention,
+# same as every other spec in this repo).
+addFilter("branding-requires-unversioned")

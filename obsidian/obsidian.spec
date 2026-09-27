@@ -21,6 +21,7 @@ Source0:        Obsidian-%{version}.AppImage
 Source1:        Obsidian-%{version}-arm64.AppImage
 # The custom wrapper script launching the bundled Electron binary
 Source2:        obsidian.sh
+Source3:        obsidian-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
@@ -40,7 +41,7 @@ Requires:       libXext.so.6()(64bit)
 Requires:       libXfixes.so.3()(64bit)
 Requires:       libXrandr.so.2()(64bit)
 Requires:       libXss.so.1()(64bit)
-Requires:       libXtst6
+Requires:       libXtst.so.6()(64bit)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -59,10 +60,10 @@ Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
-Requires:       libsecret-1-0
+Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libuuid1
+Requires:       libuuid.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
@@ -126,7 +127,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
 %{_datadir}/pixmaps/%{app_id}.png
 %exclude /opt/obsidian/LICENSE.electron.txt
 %exclude /opt/obsidian/LICENSES.chromium.html
+# Unused AppImage runtime loader (we launch /opt/obsidian/obsidian
+# directly via the wrapper script); excluded so its /usr/bin/env
+# shebang does not trip env-script-interpreter.
+%exclude /opt/obsidian/AppRun
 /opt/obsidian/
+%exclude /opt/obsidian/chrome-sandbox
 %attr(4755, root, root) /opt/obsidian/chrome-sandbox
 
 %changelog
