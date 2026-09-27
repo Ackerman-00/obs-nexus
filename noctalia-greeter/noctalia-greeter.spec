@@ -69,6 +69,7 @@ the shell settings.
 %{_bindir}/noctalia-greeter
 %{_bindir}/noctalia-greeter-compositor
 %{_bindir}/noctalia-greeter-session
+%{_bindir}/noctalia-greeter-xsession
 %{_bindir}/noctalia-greeter-apply-appearance
 %{_bindir}/noctalia-greeter-print-greetd-config
 %{_datadir}/noctalia-greeter

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Sep 27 17:10:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Fix 1.6.0 build: package new upstream script
+  noctalia-greeter-xsession (X11 session support, install_data to
+  bindir in meson.build) in %files
+
+-------------------------------------------------------------------
 Sun Sep 27 16:35:39 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Update to upstream version 1.6.0
