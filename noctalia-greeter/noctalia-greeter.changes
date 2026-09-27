@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sun Sep 27 16:35:39 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Update to upstream version 1.6.0
+
+-------------------------------------------------------------------
 Thu Sep 10 17:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Add missing BuildRequires pkgconfig(libxml-2.0) (new required
