@@ -3,7 +3,7 @@
 %global __requires_exclude_from ^/opt/rootapp/.*$
 %global __provides_exclude_from ^/opt/rootapp/.*$
 Name:           rootapp
-Version:        0.9.141
+Version:        0.9.142
 Release:        0
 Summary:        Discord alternative for gaming communities and large groups
 License:        Proprietary
@@ -40,7 +40,7 @@ Requires:       mozilla-nss
 Requires:       wl-clipboard
 Requires:       xdg-utils
 Provides:       rootapp = %{version}-%{release}
-# sha256: 2cd321908d9999209009ba973c3215f2b520f5abbf9b3f55a9e6ca3d4d639390
+# sha256: bed51ba72e110c947cc697da4ede05dde0a72af92b89992cf98ce036118a6f36
 ExclusiveArch:  x86_64
 
 %description
