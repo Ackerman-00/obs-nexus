@@ -1,7 +1,7 @@
 # Raw upstream tag version (GitHub archive dir uses this, no v prefix)
-%global tagver 5.2.0
+%global tagver 5.2.1
 Name:           noctalia
-Version:        5.2.0
+Version:        5.2.1
 # Epoch 1: the 2026-09-03 sync wrongly shipped Version 5.01 (update.sh stripped
 # the dot: 5.0.1 -> 5.01). rpm vercmp sorts 5.01 NEWER than 5.0.1, so the Epoch
 # is required for the corrected version to upgrade cleanly. Never remove it.
