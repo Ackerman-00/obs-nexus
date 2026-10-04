@@ -88,8 +88,10 @@ exec %{_libdir}/%{name}/%{name} "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
-# 3. Desktop file — handle fluxer.desktop or fluxer-canary.desktop
-DESKTOP_SRC=$(ls usr/share/applications/fluxer*.desktop 2>/dev/null | head -n1)
+# 3. Desktop file — upstream renamed fluxer.desktop to the appid-style
+# app.fluxer.FluxerDesktop.desktop in 2026.1004.13532 (verified by tearing
+# apart the live RPM 2026-10-04); accept either layout, never exit blind
+DESKTOP_SRC=$(ls usr/share/applications/fluxer*.desktop usr/share/applications/app.fluxer*.desktop 2>/dev/null | head -n1)
 if [ -z "$DESKTOP_SRC" ]; then echo "No desktop file found"; exit 1; fi
 install -Dm0644 "$DESKTOP_SRC" \
     %{buildroot}%{_datadir}/applications/%{appid}.desktop
@@ -100,13 +102,16 @@ sed -i 's|^Exec=.*|Exec=%{_bindir}/%{name} %U|' \
 sed -i 's|^Icon=.*|Icon=%{appid}|' \
     %{buildroot}%{_datadir}/applications/%{appid}.desktop
 
-# 4. Icons — handle fluxer.png or fluxer-canary.png
-for iconpath in usr/share/icons/hicolor/*/apps/fluxer*.png; do
+# 4. Icons — handle fluxer.png or appid-style names; fail loudly if none
+ICON_COUNT=0
+for iconpath in usr/share/icons/hicolor/*/apps/fluxer*.png usr/share/icons/hicolor/*/apps/app.fluxer*.png; do
     [ -e "$iconpath" ] || continue
     size=$(echo "$iconpath" | cut -d/ -f5)
     install -Dm0644 "$iconpath" \
         %{buildroot}%{_datadir}/icons/hicolor/${size}/apps/%{appid}.png
+    ICON_COUNT=$((ICON_COUNT+1))
 done
+if [ "$ICON_COUNT" -eq 0 ]; then echo "No icons found"; exit 1; fi
 
 %files
 %license %{_libdir}/%{name}/LICENSE.electron.txt

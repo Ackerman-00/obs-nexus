@@ -1,5 +1,8 @@
 * Sun Oct 04 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1004.13532-0
 - Update fluxer to v2026.1004.13532
+- Fix build: upstream renamed desktop file to appid-style
+  app.fluxer.FluxerDesktop.desktop; accept both layouts and fail loudly
+  if no icon is found
 
 * Sat Oct 03 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1003.155758-0
 - Update fluxer to v2026.1003.155758
