@@ -70,7 +70,9 @@ bleeding-edge main branch.
 %doc README.md
 %{_bindir}/mango
 %{_bindir}/mmsg
+%{_bindir}/mangonag
 %{_mandir}/man1/mmsg.1%{?ext_man}
+%{_mandir}/man1/mangonag.1%{?ext_man}
 
 # Session
 %dir %{_datadir}/wayland-sessions

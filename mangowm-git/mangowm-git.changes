@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Oct 04 12:25:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Fix OBS build: ship new upstream mangonag binary + man page
+  (added upstream in d16ebb3, layer-shell nag client)
+
+-------------------------------------------------------------------
 Sun Oct 04 11:56:06 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Nightly sync with upstream main branch (Commit: d16ebb3)
