@@ -5,7 +5,7 @@
 %global __requires_exclude_from ^/opt/obsidian/.*$
 %global __provides_exclude_from ^/opt/obsidian/.*$
 Name:           obsidian
-Version:        1.13.7
+Version:        1.14.4
 Release:        0
 # Shortened to pass the 79-character RPMLINT limit
 Summary:        A powerful knowledge base for plain text Markdown files

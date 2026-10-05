@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 05 23:50:08 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Update to upstream version 1.14.4 (bundled Electron AppImage)
+
+-------------------------------------------------------------------
 Sun Sep 13 19:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Switch to bundled Electron AppImage repack (fixes issue #9: distro
