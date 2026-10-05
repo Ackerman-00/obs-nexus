@@ -82,9 +82,10 @@ bleeding-edge main branch.
 %dir %{_datadir}/xdg-desktop-portal
 %{_datadir}/xdg-desktop-portal/mango-portals.conf
 
-# Config (sysconfdir)
+# Config (sysconfdir) - config.toml split out upstream in 14e0c75 ("opt: split config file")
 %dir %{_sysconfdir}/mango
 %config(noreplace) %{_sysconfdir}/mango/config.conf
+%config(noreplace) %{_sysconfdir}/mango/config.toml
 
 # Systemd user session target (added upstream in e835ca0)
 %{_userunitdir}/mango-session.target

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 05 06:00:00 UTC 2026 - opencode-agent[bot]
+
+- Fix OBS build: ship new upstream config.toml (split out from
+  config.conf upstream in 14e0c75 "opt: split config file");
+  was "Installed (but unpackaged) file(s)" on TW + Slowroll.
+
+-------------------------------------------------------------------
 Mon Oct 05 04:33:17 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Nightly sync with upstream main branch (Commit: 14e0c75)
