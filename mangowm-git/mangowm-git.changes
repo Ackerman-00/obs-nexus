@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 05 04:33:17 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Nightly sync with upstream main branch (Commit: 14e0c75)
+
+-------------------------------------------------------------------
 Sun Oct 04 12:25:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Fix OBS build: ship new upstream mangonag binary + man page
