@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Oct 05 06:00:00 UTC 2026 - opencode-agent[bot]
+Mon Oct 05 06:00:00 UTC 2026 - opencode-agent[bot] <41898282+opencode-agent[bot]@users.noreply.github.com>
 
 - Fix OBS build: ship new upstream config.toml (split out from
   config.conf upstream in 14e0c75 "opt: split config file");
