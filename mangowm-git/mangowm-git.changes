@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Oct 05 13:52:42 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Nightly sync with upstream main branch (Commit: 99e6ba3)
+
+-------------------------------------------------------------------
 Mon Oct 05 06:00:00 UTC 2026 - opencode-agent[bot] <41898282+opencode-agent[bot]@users.noreply.github.com>
 
 - Fix OBS build: ship new upstream config.toml (split out from
