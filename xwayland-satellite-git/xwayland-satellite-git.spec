@@ -14,9 +14,12 @@ Source1:        vendor.tar.xz
 Source2:        cargo_config
 BuildRequires:  cargo-packaging
 BuildRequires:  clang
-BuildRequires:  clang-devel
+# NOTE: no clang-devel/llvm-devel: upstream has no bindgen and no C code
+# (build-deps are only anyhow + vergen-gitcl); libclang headers and the
+# LLVM C API are unused. clang-devel pulls the versioned clang23-devel
+# chain which is unresolvable on Slowroll (clang-tools skew); plain
+# clang (as in niri-git) resolves on both codestreams.
 BuildRequires:  gcc-c++
-BuildRequires:  llvm-devel
 BuildRequires:  pkgconfig
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(fontconfig)

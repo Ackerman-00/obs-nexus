@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 05 06:30:00 UTC 2026 - opencode-agent[bot] <41898282+opencode-agent[bot]@users.noreply.github.com>
+
+- Fix Slowroll unresolvable: drop unjustified clang-devel/llvm-devel
+  (upstream has no bindgen/C code; nothing needs libclang headers).
+  Resolves like niri-git with plain clang on both codestreams.
+
+-------------------------------------------------------------------
 Wed Sep 30 12:34:56 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Nightly sync with upstream main branch (Commit: b5690b5)
