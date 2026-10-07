@@ -1,5 +1,5 @@
 Name:           zen-browser
-Version:        1.23b
+Version:        1.23.1b
 Release:        0
 # zen-browser bundles its own Firefox/NSS stack under /usr/lib64/zen-browser.
 # Exclude those private libs from the solver index so they can never satisfy
