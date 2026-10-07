@@ -6,3 +6,11 @@ addFilter("rootapp.*: E: invalid-desktopfile")
 # files would alter the vendored payload. Accepted waste, tracked here.
 addFilter("rootapp.*: E: files-duplicated-waste")
 addFilter("rootapp.*: E: statically-linked-binary /opt/rootapp")
+# Vendored Chromium locale tree ships upstream zero-length *.pak.info
+# placeholders (165 files under /opt/rootapp, verified in 0.9.147
+# teardown: X-AppImage-Version=0.9.147, sha256 matches spec pin).
+# Upstream payload, not a packaging bug.
+addFilter("rootapp.*: E: zero-length /opt/rootapp")
+# Prebuilt repack installs the upstream tree verbatim under /opt,
+# same as helium-browser/opencode-desktop. Not FHS-violating by choice.
+addFilter("rootapp.*: E: filelist-forbidden-opt /opt/rootapp")

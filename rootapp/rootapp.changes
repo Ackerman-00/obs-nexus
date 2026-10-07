@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 07 13:25:00 UTC 2026 - opencode-agent[bot] <41898282+opencode-agent[bot]@users.noreply.github.com>
+
+- rpmlintrc: filter prebuilt-payload noise (zero-length Chromium
+  *.pak.info, filelist-forbidden-opt /opt) - upstream artifacts,
+  verified in 0.9.147 teardown
+
+-------------------------------------------------------------------
 Wed Oct 07 12:51:01 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Update to 0.9.147 (sha256: e92cb96e0ca5227b73946a7e181c11ce3f4ba7f2e72b864a84ba03841065ddd6)
