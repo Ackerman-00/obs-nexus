@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct 08 13:40:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Fix rpmlintrc for 0.19.x payload: drop obsolete zero-length
+  *.pak.info filter (upstream removed the stubs), rename
+  files-duplicated-waste to files-duplicate (rpmlint >= 2.6),
+  filter inherent dir-or-file-outside-snapshot for /opt/helium
+
+-------------------------------------------------------------------
 Thu Oct 08 12:57:34 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Update to upstream release 0.19.1.2

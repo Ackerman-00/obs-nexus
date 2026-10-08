@@ -1,7 +1,10 @@
-# Upstream Chromium ships zero-length *.pak.info locale stubs; harmless.
-addFilter("zero-length /opt/helium/locales/.*\.pak\.info")
 # Deliberate third-party browser repack into /opt (same as google-chrome).
 addFilter("filelist-forbidden-opt /opt/helium")
 # Duplicated files inside the upstream Chromium binary payload; removing
 # them would break the browser, so the waste is inherent to the repack.
-addFilter("files-duplicated-waste")
+# (rpmlint >= 2.6 renamed files-duplicated-waste to files-duplicate;
+# upstream 0.19.x also dropped the zero-length *.pak.info locale stubs,
+# so the old zero-length filter is gone.)
+addFilter("files-duplicate")
+# Same /opt repack: every payload file trips dir-or-file-outside-snapshot.
+addFilter("dir-or-file-outside-snapshot /opt/helium")
