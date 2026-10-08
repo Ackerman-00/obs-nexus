@@ -1,4 +1,8 @@
 #!/bin/bash
+# Always operate in this script's own directory (the workflow pushds here,
+# but a direct `bash niri-git/update.sh` from the repo root would otherwise
+# touch the wrong files).
+cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="niri-git.spec"
 CHANGES_FILE="niri-git.changes"

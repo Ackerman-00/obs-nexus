@@ -1,4 +1,8 @@
 #!/bin/bash
+# Always operate in this script's own directory (the workflow pushds here,
+# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
+# touch the wrong files).
+cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="stb.spec"
 CHANGES_FILE="stb.changes"
