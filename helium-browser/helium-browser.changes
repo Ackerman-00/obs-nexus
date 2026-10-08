@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 08 23:02:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Update to upstream release 0.19.2.1
+
+-------------------------------------------------------------------
 Thu Oct 08 13:40:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Fix rpmlintrc for 0.19.x payload: drop obsolete zero-length
