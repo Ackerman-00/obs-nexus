@@ -12,4 +12,4 @@ Build-Depends: debhelper-compat (= 13), chrpath, desktop-file-utils
 # Debtransform-Tar is the upstream release tarball itself (renamed by
 # update.sh); it is versioned per bump. Static branding (wrapper/desktop/
 # policies) rides as debian.* copies.
-Debtransform-Tar: zen-browser-1.23.1b.tar.xz
+Debtransform-Tar: zen-browser-1.23.2b.tar.xz
