@@ -12,12 +12,9 @@
 # (repo convention, cf. lazyvim-git/matugen rules) -- the payload lands
 # at the build root, so NEVER glob for concat-*/ here (it matches
 # nothing post-strip and failed the first Debian_Testing build).
-# SKIA CAVEAT (two-step plan): Slint's Skia renderer (vendored patched copy
-# in-tree) resolves its binaries via skia-safe's binary cache, keyed by
-# crate git hash. If the OBS log shows the download failing offline, read
-# the exact {tag}/{key} from its "TRYING TO DOWNLOAD" line, teach
-# update.sh to prefetch that archive into the unified tarball, and export
-# SKIA_BINARIES_URL=file://... here. Do NOT guess the key.
+# SKIA RESOLVED (2026-10-09): same prebuilt-binary mechanism as the RPM
+# spec (archive prefetched into skia-cache/ by update.sh step 4b,
+# key read from the OBS log, never guessed).
 %:
 	dh $@
 
@@ -29,6 +26,7 @@ override_dh_auto_build:
 	CARGO_NET_OFFLINE=true ORT_SKIP_DOWNLOAD=1 \
 	FFMPEG_DIR="$$PWD/../ffmpeg-dev" ORT_LIB_LOCATION="$$PWD/../onnxlib" \
 	ORT_PREFER_DYNAMIC_LINK=1 \
+	SKIA_BINARIES_URL="file://$$PWD/../skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz" \
 	RUSTFLAGS="-C link-arg=-Wl,-rpath,\$$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags" \
 	cargo build --offline --frozen --release --bin concat
 

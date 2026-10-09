@@ -67,11 +67,11 @@ the newest commit show in the package version.
 # Linux CI: BtbN FFmpeg tree via FFMPEG_DIR, Microsoft ONNX build via
 # ORT_LIB_LOCATION + dynamic preference, rpath $ORIGIN/lib with old-style
 # DT_RPATH so bundled libs resolve transitively at runtime.
-# SKIA CAVEAT: Slint's Skia renderer resolves binaries via skia-safe's
-# binary cache; if the OBS log shows that failing offline, read the exact
-# {tag}/{key} from its "TRYING TO DOWNLOAD" line, teach update.sh to
-# prefetch that archive into the unified tarball, and export
-# SKIA_BINARIES_URL=file://... here. Do NOT guess the key.
+# SKIA RESOLVED (2026-10-09): Slint's Skia renderer needs the rust-skia
+# binary cache; the exact {tag}/{key} came from the OBS log's
+# "TRYING TO DOWNLOAD" line and the archive is prefetched into
+# skia-cache/ by update.sh step 4b (SKIA_BINARIES_URL=file://... below).
+# If skia-bindings bumps, refresh the key per update.sh's procedure.
 export CARGO_NET_OFFLINE=true
 export ORT_SKIP_DOWNLOAD=1
 # NOTE (2026-10-09): %%autosetup -n concat-%%{commit} unpacks to
@@ -83,6 +83,11 @@ export ORT_SKIP_DOWNLOAD=1
 export FFMPEG_DIR="%{_builddir}/concat-%{commit}/ffmpeg-dev"
 export ORT_LIB_LOCATION="%{_builddir}/concat-%{commit}/onnxlib"
 export ORT_PREFER_DYNAMIC_LINK=1
+# Skia prebuilt binaries (rust-skia binary cache, tag/key read from the
+# OBS log's "TRYING TO DOWNLOAD" line - never guessed). The archive is
+# prefetched into skia-cache/ by update.sh; file:// is read verbatim
+# (skia-bindings utils::download supports file:// with empty hostname).
+export SKIA_BINARIES_URL="file://%{_builddir}/concat-%{commit}/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
 export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags"
 cd src && cargo build --offline --frozen --release --bin concat
 

@@ -132,6 +132,23 @@ ONNXLIB=$(ls -d "$TMPD"/onnxruntime-linux-*/lib 2>/dev/null | head -n1)
 cp -a "$ONNXLIB"/libonnxruntime.so* "$SRC/onnxlib/"
 ln -sf "libonnxruntime.so.$ORT_VERSION" "$SRC/onnxlib/libonnxruntime.so"
 
+# 4b. Skia prebuilt binaries (rust-skia binary cache). The {tag}/{key}
+# come from a build log's "TRYING TO DOWNLOAD AND INSTALL SKIA BINARIES"
+# line - never guessed (key embeds the skia commit + feature set, so it
+# changes whenever skia-bindings or its features change; a stale key 404s
+# and the offline build fails). Refresh procedure: run a build, read the
+# exact tag/key + FROM: URL from the log, update SKIA_TAG/SKIA_KEY below.
+SKIA_TAG="0.153.3"
+SKIA_KEY="b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan"
+curl -fsSL --retry 3 --connect-timeout 60 \
+    "https://github.com/rust-skia/skia-binaries/releases/download/$SKIA_TAG/skia-binaries-$SKIA_KEY.tar.gz" \
+    -o "$TMPD/skia-binaries.tar.gz" \
+    || { echo "Skia binaries download failed; spec left untouched."; exit 1; }
+mkdir -p "$SRC/skia-cache"
+cp -a "$TMPD/skia-binaries.tar.gz" "$SRC/skia-cache/skia-binaries-$SKIA_KEY.tar.gz"
+# Keep the spec/rules file:// names in sync with the key above.
+sed -i -E "s|skia-binaries-[^\"']*\.tar\.gz|skia-binaries-$SKIA_KEY.tar.gz|g" "$SPEC_FILE" debian.rules
+
 # 5. Pack the unified snapshot tarball, drop superseded ones.
 rm -f concat-unstable-*.tar.gz
 tar -czf "$TARBALL" -C "$TMPD" "concat-$HEAD_SHA"
