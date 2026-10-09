@@ -24,12 +24,9 @@ zypper install zen-browser
 ```
 
 > [!NOTE]
-> For **Slowroll**, use `openSUSE_Slowroll` in the URL instead of `openSUSE_Tumbleweed`:
->
-> ```bash
-> zypper addrepo https://download.opensuse.org/repositories/home:ackerman/openSUSE_Slowroll/home:ackerman.repo
-> zypper refresh
-> ```
+> Debian_Testing users: `.deb` builds are published on the
+> [OBS project page](https://build.opensuse.org/project/show/home:ackerman).
+> Slowroll is retired and no longer published.
 
 ### List available packages
 

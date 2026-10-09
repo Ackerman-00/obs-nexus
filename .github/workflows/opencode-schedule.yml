@@ -233,18 +233,29 @@ jobs:
               bumping spec versions and committing to main directly, then syncs changed
               packages to OBS via its API (using OBS_USER/OBS_PASS) and triggers a
               rebuild.
-            - The repo serves users on openSUSE Tumbleweed and Slowroll
-              (both rolling codestreams) - NOT Leap 16. Slowroll re-releases
-              Tumbleweed packages ~5-10 days after each Tumbleweed snapshot,
-              so it is always slightly behind. Keep packaging usable on both
-              (no Leap-only macros, use current Tumbleweed defaults) and
-              install-test on BOTH distros, every time (a TW-only pass is NOT
-              proof for Slowroll - dependency skew between the codestreams is
-              exactly how "unresolvable" happens; cf. noctalia/protonplus).
+            - The repo serves users on openSUSE Tumbleweed (RPMs) and
+              Debian_Testing (DEBs, every package carries a `<pkg>.dsc` +
+              flat `debian.*` + orig tarball recipe) - NOT Leap 16, and
+              NOT Slowroll anymore (see SLOWROLL RETIREMENT below). Keep
+              packaging usable on both (no Leap-only macros, use current
+              Tumbleweed defaults; t64-correct Depends for Testing) and
+              install-test on BOTH distros every time: RPMs in a clean
+              Tumbleweed container, DEBs in a clean debian:testing
+              container (`tools/docker-sweep.py --type debian`). A TW-only
+              pass is NOT proof for Testing.
+              SLOWROLL RETIREMENT (owner decision, 2026-10-09, BINDING):
+              the Slowroll repository was REMOVED from OBS home:ackerman
+              and is no longer maintained. NEVER re-add or enable a
+              Slowroll/OpenSUSE_Slowroll target, NEVER sync to it, NEVER
+              install-test on it, NEVER open issues about it, and CLOSE
+              any Slowroll-only failure (including issue #10) as retired
+              once the TW + Testing states are green. If OBS still shows
+              a Slowroll repo or build entries, ignore them. Past prompt
+              text or relay history mentioning Slowroll describes the
+              pre-retirement era and does not override this paragraph.
               Verified repo URLs (HTTP 200, do not guess variants):
-              Slowroll OSS = https://download.opensuse.org/slowroll/repo/oss/,
               home:ackerman TW = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/,
-              home:ackerman Slowroll = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Slowroll/.
+              Tumbleweed OSS = https://download.opensuse.org/tumbleweed/repo/oss/.
               README.md Installation section is the single source of truth for
               these URLs (including the `home:ackerman.repo` file form) - if
               they ever differ, README wins: follow README and correct this
@@ -410,7 +421,7 @@ jobs:
             NO-CHURN VERIFICATION (MANDATORY, applies to every step below). You
             must NEVER push a version or commit to OBS if it was already pushed
             before. Past runs repeatedly re-synced the same upstream commit to OBS
-            (e.g. niri-git, xwayland-satellite-git), generating churn commits and
+            (e.g. lazyvim-git, vesktop), generating churn commits and
             useless rebuilds. Before bumping or syncing ANY package:
               a. CHECK GIT LOG FIRST. For the package in question run
                  `git log --oneline -15 -- <pkg>/` and `git show <most-recent
@@ -649,28 +660,24 @@ jobs:
                      rpm -V <pkg>
                      ldd "$(which <pkg>)"
                    '
-                 Then the SAME package on Slowroll (mandatory second distro -
-                 this is the test that catches "unresolvable"): official
-                 slowroll image if discoverable
-                 (`docker manifest inspect registry.opensuse.org/opensuse/slowroll:latest`),
-                 else the TW image with repos switched to Slowroll:
-                 docker run --rm -v "$PWD:/rpms" \
-                   registry.opensuse.org/opensuse/tumbleweed:latest bash -lc '
-                     zypper --non-interactive removerepo oss || true
-                     zypper --non-interactive --gpg-auto-import-keys addrepo --refresh \
-                       https://download.opensuse.org/slowroll/repo/oss/ slowroll-oss
-                     zypper --non-interactive --gpg-auto-import-keys addrepo --refresh \
-                       https://download.opensuse.org/repositories/home:ackerman/openSUSE_Slowroll/ nexus-slowroll
-                     zypper --non-interactive --gpg-auto-import-keys refresh
-                     zypper --non-interactive install --no-recommends /rpms/<pkg>-*.x86_64.rpm
-                     rpm -V <pkg>
-                   '
-                 The Slowroll MINIMUM is `zypper install --dry-run` resolution
-                 (it directly refutes "unresolvable"); full install + smoke is
-                 required for all P0 packages and whenever the dry-run is
-                 clean. Record per-distro results in separate table columns;
-                 a Slowroll-only failure is a real failure, not a waivable
-                 codestream quirk.
+                 Then the SAME package's DEB on Debian_Testing (mandatory
+                 second distro - this is the test that catches
+                 uninstallable/unresolvable DEBs): use the repo's own
+                 tooling, which resolves each spec's upstream payload:
+                 python3 tools/docker-sweep.py --overlay . --type debian
+                 --packages "<pkg>" --report deb-<pkg>.md
+                 (runs a clean debian:testing container: apt/dpkg install
+                 of the payload + ldd missing-lib scan). Once OBS publishes
+                 built DEBs, additionally install the actual published
+                 .deb in a clean debian:testing container:
+                 docker run --rm debian:testing bash -lc '
+                   echo "deb https://download.opensuse.org/repositories/home:ackerman/Debian_Testing/ /" > /etc/apt/sources.list.d/nexus.list
+                   apt-get update -qq && apt-get install -y <pkg>
+                   dpkg -l <pkg>
+                 '
+                 A Testing-only failure is a real failure, not a waivable
+                 quirk. Record per-distro results in separate table columns
+                 (zypper TW column + deb Testing column).
                  If zypper errors with "nothing provides 'X'" - the install
                  test FAILED and the package is NOT done, no matter what OBS
                  says. If docker is unavailable, fall back to
@@ -704,10 +711,10 @@ jobs:
                   touched or re-uploaded this run; every package whose binary
                   changed since its last successful install test; then the
                    oldest still-uncovered packages until your time budget is
-                   used up. Record the Tumbleweed AND Slowroll snapshots tested
-                   in every table row and the ledger (both distros, every
-                   tested package - a row without both snapshots is an
-                   incomplete test). Update the coverage ledger in .opencode-relay.md
+                   used up. Record the Tumbleweed snapshot AND the Debian_Testing
+                   state tested in every table row and the ledger (both
+                   distros, every tested package - a row without both results
+                   is an incomplete test). Update the coverage ledger in .opencode-relay.md
                   after every test. The run is NOT complete while any package
                   whose binary changed since its last test remains untested.
                   Packages that are pure -devel/library or that cannot run
@@ -716,7 +723,7 @@ jobs:
                   recorded.
               f. MANDATORY DELIVERABLE - install-test table in your final
                  summary, one row per package tested:
-                  | package | repo/snapshot | OBS build | zypper install test (TW) | zypper install test (Slowroll) | smoke test |
+                  | package | repo/snapshot | OBS build | zypper install test (TW) | deb install test (Testing) | smoke test |
                   status |
                  where status is one of: installable / fixed / broken-(dep)
                  / blocked-(reason). Any package you changed but did not
@@ -731,8 +738,9 @@ jobs:
                  and record the result in a `deb install test (testing)`
                  table column. A .deb that fails to install or shows missing
                  libs on testing is a real failure: fix the spec dep mapping
-                 (or HOLD + issue with evidence), same bar as a TW/Slowroll
-                 failure. Non-deb packages get `n/a-(rpm-only)` in that column.
+                 (or HOLD + issue with evidence), same bar as a TW-only
+                 failure. Every package now carries a Debian recipe, so no
+                 package gets `n/a` in that column.
                  All prebuilt/binary packages (deb/rpm/AppImage/zip/tarball
                  Source0) additionally carry a Debian_Testing BUILD recipe
                  (`<pkg>.dsc` + flat `debian.*` + orig tarball, all maintained
@@ -747,12 +755,12 @@ jobs:
                  for tarballs) and diff against debian/control + the spec
                  Requires. A drifted soname set, a renamed upstream dep, or
                  a t64-transition rename that no longer resolves on
-                 Debian_Testing (or TW/Slowroll) is a bug: fix the mapping,
+                 Debian_Testing (or TW) is a bug: fix the mapping,
                  rebuild, retest. Record per recipe one line:
                  `deb-deps: <pkg> <ver> | upstream sonames: <n> |
                  unmapped: <list/none> | testing-resolves: yes/no`.
               g. DOCKER BATTLE TEST + ALL CONTENT (MANDATORY - every binary + repo itself in a clean Tumbleweed container, not just OBS "succeeded"). This is not optional:
-                 1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install on BOTH TW and Slowroll containers per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run per distro, oldest-uncovered first, plus every touched on both) + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
+                 1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install in the TW container per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run, oldest-uncovered first, plus every touched) AND test every built .deb in a debian:testing container per the DEBIAN TESTING clause above + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
                  2. ALL CONTENT: `ls -R`/`find . -type f | sort` -- every `*/*.spec`, `*/*.changes`, `*/_service`, `*/update.sh`, `.github/workflows/*.yml` (`yaml.safe_load` valid), `README.md` install (`zypper addrepo` URL must match Docker path or fix README) must be checked; any file not checked = gap.
                  3. REPO ITSELF: inside clean `opensuse/tumbleweed` container, `zypper addrepo https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo` + `zypper refresh` + `zypper se --repo home_akerman` must list every package (count via `ls -d */`, never hardcode); `osc` `co`/`build` dry-run if available. Think like new openSUSE user who just added the repo -- if they would hit it, you must hit it first.
 
@@ -889,12 +897,12 @@ jobs:
              third run cannot trip on it. Record every pattern-fix in the relay.
 
             CURRENT OPENSUSE RELEASES - DISCOVER EVERY RUN. This repo
-            serves the rolling codestreams Tumbleweed and Slowroll (NOT
-            Leap 16). Each run:
-              a. WEB-SEARCH the current Tumbleweed snapshot number and the
-                 Slowroll lag (news.opensuse.org Tumbleweed monthly
-                 updates announce the current snapshot; Slowroll
-                 re-releases ~5-10 days later).
+            serves openSUSE Tumbleweed (RPMs) and Debian_Testing (DEBs);
+            Slowroll is RETIRED (see SLOWROLL RETIREMENT above) and Leap
+            16 was never in scope. Each run:
+              a. WEB-SEARCH the current Tumbleweed snapshot number
+                 (news.opensuse.org Tumbleweed monthly updates announce
+                 the current snapshot).
               b. Verify packages build with the CURRENT Tumbleweed
                  toolchain: GCC 16 is the default compiler (GCC 16.1 since
                  mid-2026) and Tumbleweed periodically does full rebuild
@@ -917,9 +925,8 @@ jobs:
                internals for prebuilt binaries - real change only, per
                NO-CHURN). The eight named below simply go FIRST and get
                the DEEPEST treatment each run because they move fast and
-               break silently - niri-git, xwayland-satellite-git, noctalia,
-               noctalia-greeter, mangowm-git, zen-browser, helium-browser,
-               lazyvim-git.
+               break silently - zen-browser, helium-browser, lazyvim-git,
+               opencode-desktop, protonplus, fluxer, obsidian, vesktop.
                The delta/carry-over logic does NOT apply to the eight:
                a. EVERY run, FIRST: check each against upstream HEAD
                   (`git ls-remote` default branch + `gh api
@@ -946,7 +953,7 @@ jobs:
                   counterpart spec (same upstream stack - concrete wins
                   already proven there that must NOT regress here: helium
                   /opt/helium `__provides_exclude_from` guard, fuller
-                  noctalia BuildRequires, LTO escape-hatch documentation)
+                  vesktop soname Requires, LTO escape-hatch documentation)
                   AND the openSUSE Factory spec
                   (build.opensuse.org/package/show/openSUSE:Factory/<pkg>)
                   where one exists. Terra anda specs may be consulted as an
@@ -986,15 +993,15 @@ jobs:
                cause: usually a bad source URL, version bump without checksum update, or a
                spec problem. Web-search the package and its upstream for known issues
                before patching.
-               UNRESOLVABLE-STATE RULE (this is how noctalia/protonplus went
-               unresolvable): an "unresolvable" OBS state means a dependency
-               does not exist under the declared name in that codestream's
-               repos. REPRODUCE IT IN DOCKER FIRST - run the dual-distro
+               UNRESOLVABLE-STATE RULE: an "unresolvable" OBS state means a
+               dependency does not exist under the declared name in that
+               distro's repos. REPRODUCE IT IN DOCKER FIRST - run the
                install test from the INSTALL-VERIFICATION SWEEP (TW container
-               + Slowroll container, OBS repos enabled) and watch zypper fail
-               with the same missing provider. The fix is a spec dep rename to
-               the real provider (proven via `zypper what-provides` inside the
-               container), then re-resolve in BOTH containers, then sync +
+               for RPMs, debian:testing container for DEBs, OBS repos enabled)
+               and watch the installer fail with the same missing provider.
+               The fix is a spec/recipe dep rename to the real provider
+               (proven via `zypper what-provides` / `apt-cache policy` inside
+               the container), then re-resolve in BOTH distros, then sync +
                rebuild. NEVER fix an unresolvable blind (no container repro =
                guessing) and never close it as transient: re-resolution output
                from both distros is the only closure evidence. Repair the spec / .changes / update.sh so it is consistent
@@ -1064,7 +1071,7 @@ jobs:
                project itself, and (4) the actual source/binary artifact, opened
                and inspected (see the DEEP AUDIT above). Never special-case only
                rootapp - treat EVERY prebuilt-binary package in this repo the same
-               way (localsend, noctalia, noctalia-greeter, obsidian, vesktop,
+               way (localsend, obsidian, vesktop,
                zen-browser, ...): tear the artifact apart, read the real version
                from inside, and verify sha256 against the pinned checksum. rootapp
                below is the canonical worked example.

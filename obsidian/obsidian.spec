@@ -29,7 +29,7 @@ BuildRequires:  hicolor-icon-theme
 BuildRequires:  squashfs
 Requires:       bash
 # Runtime dependencies for the bundled Electron/Chromium runtime (soname
-# form where possible so TW/Slowroll resolve identically; no longer uses
+# form where possible for distro-agnostic resolution; no longer uses
 # the distro `electron` provider - fixes issue #9 where nodejs-electron
 # required libabsl sonames nothing provides).
 Requires:       at-spi2-core
