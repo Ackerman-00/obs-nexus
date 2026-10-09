@@ -1,9 +1,31 @@
 #!/usr/bin/make -f
 # Debian build of upstream ProtonPlus (Vala + meson, same dependency set
 # as the RPM spec: gtk4/adwaita/soup/sdl3 verified mandatory upstream).
-# Standard debhelper meson flow: configure.prefix defaults to /usr
-# (matches the spec's --prefix), meson test runs via dh_auto_test like
-# the spec's %check, schema/desktop caches ride triggers. No network at
-# build time: the orig tarball IS the upstream source archive.
+# The meson buildsystem is forced explicitly: the upstream root Makefile
+# wraps meson with a `sudo meson install` target, and debhelper's
+# auto-detection picks the make flow, which fails in the buildroot
+# ("sudo: No such file or directory", 2026-10-09). The forced meson flow
+# below is exactly what the wrapper runs (meson setup --prefix=/usr,
+# meson install with DESTDIR) minus sudo, mirroring the RPM's
+# %meson/%meson_install. meson test runs via dh_auto_test like the
+# spec's %check. No network at build time: the orig tarball IS the
+# upstream source archive.
 %:
 	dh $@
+
+override_dh_auto_configure:
+	mkdir -p debian/source; \
+	printf '%s\n' 'extend-diff-ignore = "build/.*"' 'extend-diff-ignore = "build-native/.*"' > debian/source/options; \
+	dh_auto_configure --buildsystem=meson -- --prefix=/usr
+# NOTE: debian/source/options is generated (not shipped as a flat
+# debian.* file, which cannot carry debian/source/* paths): without it
+# dpkg-source -b aborts on the in-tree meson build dir binaries.
+
+override_dh_auto_build:
+	dh_auto_build --buildsystem=meson
+
+override_dh_auto_test:
+	dh_auto_test --buildsystem=meson
+
+override_dh_auto_install:
+	dh_auto_install --buildsystem=meson

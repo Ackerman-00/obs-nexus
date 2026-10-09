@@ -3,7 +3,11 @@
 # policy as the RPM spec: install init.lua + lua/doc/queries/scripts +
 # LICENSE/NEWS.md under /usr/share/lazyvim). No network at build time:
 # the orig tarball IS the snapshot tarball update.sh already generates
-# for the RPM flow (top dir LazyVim-<commit>/).
+# for the RPM flow (single top dir LazyVim-<commit>/). dpkg-source -x
+# strips that single top-level directory, so the payload files land
+# directly at the build root (same convention as bibata-cursor-theme's
+# working rules) -- never glob for LazyVim-*/ here (it matches nothing
+# post-strip and failed the Debian_Testing build on 2026-10-09).
 %:
 	dh $@
 
@@ -17,7 +21,5 @@ override_dh_auto_test:
 	:
 
 override_dh_auto_install:
-	SRCDIR=$$(ls -d LazyVim-*/ | head -n1); \
-	if [ -z "$$SRCDIR" ]; then echo "No LazyVim source dir found"; exit 1; fi; \
-	mkdir -p debian/lazyvim-git/usr/share/lazyvim; \
-	cp -a "$$SRCDIR"init.lua "$$SRCDIR"lua "$$SRCDIR"doc "$$SRCDIR"queries "$$SRCDIR"scripts "$$SRCDIR"LICENSE "$$SRCDIR"NEWS.md debian/lazyvim-git/usr/share/lazyvim/
+	mkdir -p debian/lazyvim-git/usr/share/lazyvim
+	cp -a init.lua lua doc queries scripts LICENSE NEWS.md debian/lazyvim-git/usr/share/lazyvim/
