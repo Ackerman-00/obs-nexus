@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream concat .deb (binary re-distributor, same
+# file policy as the RPM spec: /opt/concat install, PATH launcher,
+# desktop entry, icon, docs). Upstream's own Depends are pre-t64 names
+# (libgtk-3-0, libasound2) that do not resolve on Testing - debian/control
+# carries the corrected set. No network at build time: the orig tarball
+# holds the upstream .deb, opened here with binutils ar + tar.
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	desktop-file-validate debian/concat/usr/share/applications/concat.desktop
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && ar x ../"$$(ls ../*.deb)" 2>/dev/null; cd ..
+	if [ -f payload/data.tar.gz ]; then \
+	    tar -xzf payload/data.tar.gz -C payload; \
+	elif [ -f payload/data.tar.xz ]; then \
+	    tar -xJf payload/data.tar.xz -C payload; \
+	elif [ -f payload/data.tar.zst ]; then \
+	    tar --zstd -xf payload/data.tar.zst -C payload; \
+	else \
+	    echo "ERROR: unexpected data.tar compression in upstream DEB"; exit 1; \
+	fi
+	mkdir -p debian/concat/opt/concat debian/concat/usr/bin debian/concat/usr/share
+	cp -a payload/opt/concat/* debian/concat/opt/concat/
+	cp -a payload/usr/bin/concat debian/concat/usr/bin/concat
+	cp -a payload/usr/share/applications debian/concat/usr/share/
+	cp -a payload/usr/share/icons debian/concat/usr/share/
+	cp -a payload/usr/share/doc debian/concat/usr/share/
+	sed -i 's|^Exec=.*|Exec=/usr/bin/concat %U|' debian/concat/usr/share/applications/concat.desktop

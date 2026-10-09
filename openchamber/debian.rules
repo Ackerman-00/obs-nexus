@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream openchamber AppImage (binary
+# re-distributor, same payload policy as the RPM spec: /opt/openchamber
+# install, APPDIR wrapper through AppRun, repointed desktop entry, SVG
+# icon, 0755 chrome-sandbox). No network at build time: the orig tarball
+# holds the upstream AppImage, extracted with --appimage-extract (no FUSE).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	desktop-file-validate debian/openchamber/usr/share/applications/openchamber.desktop
+
+override_dh_auto_install:
+	chmod +x "$$(ls *.AppImage)" && ./"$$(ls *.AppImage)" --appimage-extract >/dev/null && mv squashfs-root appimage-root
+	mkdir -p debian/openchamber/opt/openchamber debian/openchamber/usr/bin debian/openchamber/usr/share/applications
+	cp -ar appimage-root/* debian/openchamber/opt/openchamber/
+	chmod 0755 debian/openchamber/opt/openchamber/chrome-sandbox
+	printf '#!/bin/sh\nexport APPDIR="/opt/openchamber"\nexec /opt/openchamber/AppRun "$$@"\n' > debian/openchamber/usr/bin/openchamber
+	chmod 0755 debian/openchamber/usr/bin/openchamber
+	sed -e 's|^Exec=.*|Exec=/usr/bin/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
+	    appimage-root/openchamber.desktop > debian/openchamber/usr/share/applications/openchamber.desktop
+	install -Dm644 appimage-root/openchamber.svg debian/openchamber/usr/share/icons/hicolor/scalable/apps/openchamber.svg

@@ -1,0 +1,45 @@
+#!/usr/bin/make -f
+# Debian source build of upstream main (same env recipe as the RPM spec
+# and upstream's own Linux CI: BtbN FFmpeg tree via FFMPEG_DIR, Microsoft
+# ONNX build via ORT_LIB_LOCATION + dynamic preference, vendored crates
+# offline, rpath $ORIGIN/lib with old-style DT_RPATH). The unified orig
+# tarball carries everything (top dir concat-<commit>/): source tree with
+# src/vendor + src/.cargo, plus ffmpeg-dev/ and onnxlib/ beside it.
+# shlibdeps is skipped (bundled FFmpeg/ONNX have no system providers);
+# Depends are hand-mapped like all other repo recipes and re-verified by
+# docker-sweep ldd on the built .deb.
+# SKIA CAVEAT (two-step plan): Slint's Skia renderer (vendored patched copy
+# in-tree) resolves its binaries via skia-safe's binary cache, keyed by
+# crate git hash. If the OBS log shows the download failing offline, read
+# the exact {tag}/{key} from its "TRYING TO DOWNLOAD" line, teach
+# update.sh to prefetch that archive into the unified tarball, and export
+# SKIA_BINARIES_URL=file://... here. Do NOT guess the key.
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	cd concat-*/src && \
+	CARGO_NET_OFFLINE=true ORT_SKIP_DOWNLOAD=1 \
+	FFMPEG_DIR="$$PWD/../ffmpeg-dev" ORT_LIB_LOCATION="$$PWD/../onnxlib" \
+	ORT_PREFER_DYNAMIC_LINK=1 \
+	RUSTFLAGS="-C link-arg=-Wl,-rpath,\$$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags" \
+	cargo build --offline --frozen --release --bin concat
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_shlibdeps:
+	: # bundled FFmpeg/ONNX have no system providers; hand-mapped Depends instead
+
+override_dh_auto_install:
+	mkdir -p debian/concat-unstable/opt/concat-unstable/lib debian/concat-unstable/usr/bin debian/concat-unstable/usr/share/applications
+	install -m0755 concat-*/src/target/release/concat debian/concat-unstable/opt/concat-unstable/concat-unstable
+	cp -a concat-*/ffmpeg-dev/lib/lib*.so* debian/concat-unstable/opt/concat-unstable/lib/
+	cp -a concat-*/onnxlib/libonnxruntime.so* debian/concat-unstable/opt/concat-unstable/lib/
+	printf '#!/bin/sh\nexec /opt/concat-unstable/concat-unstable "$$@"\n' > debian/concat-unstable/usr/bin/concat-unstable
+	chmod 0755 debian/concat-unstable/usr/bin/concat-unstable
+	printf '[Desktop Entry]\nType=Application\nName=Concat (Unstable)\nComment=Video editor - main branch snapshot\nExec=/usr/bin/concat-unstable %%U\nIcon=concat-unstable\nTerminal=false\nCategories=AudioVideo;Video;\n' > debian/concat-unstable/usr/share/applications/concat-unstable.desktop
+	install -Dm644 concat-*/assets/icons/concat_logo_256.png debian/concat-unstable/usr/share/icons/hicolor/256x256/apps/concat-unstable.png

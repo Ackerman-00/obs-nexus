@@ -85,6 +85,12 @@ def cpio_extract(raw, dest):
         dataoff += (-dataoff) % 4
         if name == 'TRAILER!!!':
             break
+        # Sanitize: strip leading slashes (some vendor RPMs store absolute
+        # paths like /opt/foo) and refuse path traversal, so extraction
+        # can never escape destdir.
+        name = name.lstrip('/')
+        if not name or name in ('.',) or '..' in Path(name).parts:
+            continue
         target = dest / name
         if mode & 0o040000:
             target.mkdir(parents=True, exist_ok=True)

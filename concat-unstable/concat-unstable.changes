@@ -1,0 +1,4 @@
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6+git20261009145217.48e48a1-0
+- Initial package: Concat main-branch snapshot, native cargo source build
+  (vendored offline + BtbN FFmpeg + Microsoft ONNX sidecars) + Debian_Testing
+  build recipe maintained by update.sh; debtransform at build time

@@ -43,12 +43,15 @@ Or **[browse all packages and their builds online](https://build.opensuse.org/pr
 | Package | Description | Install |
 |---|---|---|
 | **bibata-cursor-theme** | Open source, compact, material designed cursor set | `sudo zypper install bibata-cursor-theme` |
+| **concat** | Free and open source video editor | `sudo zypper install concat` |
+| **concat-unstable** | Video editor main-branch snapshot (native source build) | `sudo zypper install concat-unstable` |
 | **fluxer** | Free and open source messaging & VoIP platform | `sudo zypper install fluxer` |
 | **helium-browser** | Private, fast, and honest Chromium-based browser | `sudo zypper install helium-browser` |
 | **localsend** | Open source cross-platform alternative to AirDrop | `sudo zypper install localsend` |
 | **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot) | `sudo zypper install lazyvim-git` |
 | **matugen** | Material You color generation tool | `sudo zypper install matugen` |
 | **obsidian** | Knowledge base for plain-text Markdown notes | `sudo zypper install obsidian` |
+| **openchamber** | Agentic development environment boards for issues and pull requests | `sudo zypper install openchamber` |
 | **opencode-desktop** | Open source AI coding agent | `sudo zypper install opencode-desktop` |
 | **protonplus** | Wine and Proton-based compatibility tools manager | `sudo zypper install protonplus` |
 | **rootapp** | Discord alternative for gaming communities and large groups | `sudo zypper install rootapp` |

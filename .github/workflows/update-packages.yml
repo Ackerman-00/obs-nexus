@@ -88,6 +88,21 @@ jobs:
         with:
           path: zen-browser/*.tar.xz
           key: deb-orig-zen-${{ hashFiles('zen-browser/zen-browser.spec', 'zen-browser/zen-browser.dsc') }}
+      - name: Cache Debian orig tarball (concat)
+        uses: actions/cache@v6.1.0
+        with:
+          path: concat/*.tar
+          key: deb-orig-concat-${{ hashFiles('concat/concat.spec', 'concat/concat.dsc') }}
+      - name: Cache snapshot tarball (concat-unstable)
+        uses: actions/cache@v6.1.0
+        with:
+          path: concat-unstable/*.tar.gz
+          key: deb-orig-concat-unstable-${{ hashFiles('concat-unstable/concat-unstable.spec', 'concat-unstable/concat-unstable.dsc') }}
+      - name: Cache Debian orig tarball (openchamber)
+        uses: actions/cache@v6.1.0
+        with:
+          path: openchamber/*.tar
+          key: deb-orig-openchamber-${{ hashFiles('openchamber/openchamber.spec', 'openchamber/openchamber.dsc') }}
       - name: Cache Debian orig tarball (bibata-cursor-theme)
         uses: actions/cache@v6.1.0
         with:
