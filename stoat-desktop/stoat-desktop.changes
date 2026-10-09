@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 17:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Filter the (correct) setuid sandbox bit with a scoped filter; the
+  registration pattern alone does not silence rpmlint's bit check
+
+-------------------------------------------------------------------
 Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Register chrome-sandbox with the permissions system (%verifyscript

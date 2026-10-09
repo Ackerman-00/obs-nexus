@@ -3,4 +3,8 @@ addFilter("filelist-forbidden-opt")
 addFilter("explicit-lib-dependency")
 addFilter("dir-or-file-outside-snapshot")
 addFilter("binary-or-shlib-calls-gethostbyname")
-addFilter("missing-call-to-setgroups-before-setuid")
+addFilter("missing-call-to-setgroups-before-setuid")# Upstream Electron sandbox MUST stay setuid (verified working payload);
+# it is registered via %verifyscript + %set_permissions + PreReq
+# permissions in the spec. Scoped form: the bare tag variant proved
+# unreliable in this repo, the pkg.*: E: form is consumed (rootapp precedent).
+addFilter("stoat-desktop.*: E: permissions-file-setuid-bit")
