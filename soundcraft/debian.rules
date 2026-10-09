@@ -19,6 +19,14 @@ override_dh_auto_test:
 	: # stages the payload (same ordering trap concat documents); the
 	: # desktop entry is validated by the RPM %check instead.
 
+# Binary repack with a DT_NEEDED system lib (libasound.so.2) whose
+# -dev shlibs are not in Build-Depends, so automatic shlibdeps
+# analysis cannot run; the manually maintained Depends (libasound2t64,
+# verified against the upstream .deb control file) IS the dependency
+# declaration. Same pattern as concat's no-op override.
+override_dh_shlibdeps:
+	:
+
 override_dh_auto_install:
 	mkdir -p payload
 	cd payload && ar x "$$(ls ../*.deb)" 2>/dev/null; cd ..
