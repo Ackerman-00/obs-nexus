@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream opencode-desktop .deb (binary re-distributor,
+# same payload policy as the RPM spec: drop the updater/apparmor extras,
+# ship a Wayland-flags wrapper, normalize chrome-sandbox to 0755 since a
+# setuid helper can never pass openSUSE-side checks and userns covers it).
+# No network at build time: the orig tarball holds the upstream .deb,
+# opened here with binutils ar + tar (same tools as the RPM %prep).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && ar x ../"$$(ls ../*.deb)" data.tar.xz && tar -xf data.tar.xz && cd ..
+	mkdir -p debian/opencode-desktop/opt debian/opencode-desktop/usr/bin debian/opencode-desktop/usr/share
+	cp -a payload/opt/OpenCode debian/opencode-desktop/opt/
+	cp -a payload/usr/share/applications payload/usr/share/icons payload/usr/share/metainfo debian/opencode-desktop/usr/share/
+	rm -rf debian/opencode-desktop/opt/OpenCode/resources/apparmor-profile
+	rm -f debian/opencode-desktop/opt/OpenCode/resources/app-update.yml
+	rm -f debian/opencode-desktop/opt/OpenCode/resources/app.asar.unpacked/node_modules/@msgpackr-extract/msgpackr-extract-linux-x64/*.musl.node
+	rm -rf debian/opencode-desktop/opt/OpenCode/resources/app.asar.unpacked/node_modules/@parcel/watcher-linux-x64-musl
+	printf '#!/bin/sh\nflags="--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true --wayland-text-input-version=3"\nconf="$${XDG_CONFIG_HOME:-$$HOME/.config}/opencode-desktop-flags.conf"\nif [ -r "$$conf" ]; then\n    while IFS= read -r line; do\n        case "$$line" in\n            ""|""[!#]*) ;;\n            *) continue ;;\n        esac\n        flags="$$flags $$line"\n    done < "$$conf"\nfi\nexec /opt/OpenCode/ai.opencode.desktop $$flags "$$@"\n' > debian/opencode-desktop/usr/bin/opencode-desktop
+	chmod 0755 debian/opencode-desktop/usr/bin/opencode-desktop
+	sed -i 's|^Exec=.*|Exec=/usr/bin/opencode-desktop %U|' debian/opencode-desktop/usr/share/applications/opencode-desktop.desktop
+	sed -i 's|^Exec=.*|Exec=/usr/bin/opencode-desktop %U|' debian/opencode-desktop/usr/share/applications/ai.opencode.desktop.desktop
+	chmod 0755 debian/opencode-desktop/opt/OpenCode/chrome-sandbox
+	
+	#deb rules

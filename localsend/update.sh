@@ -31,6 +31,40 @@ LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//;s@-@.@g')
 # Grab the current version from the spec file
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
+# Debian_Testing recipe helper: wrap an upstream .deb into the plain-tar
+# debtransform orig input. The wrapper is gitignored (*.tar) and rides the
+# OBS sync; per-package actions/cache in update-packages.yml keeps it
+# across fresh CI checkouts.
+build_orig_wrapper() {
+    local ver="$1" url="$2" tmpd
+    tmpd=$(mktemp -d)
+    trap 'rm -rf "$tmpd"' EXIT
+    curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.deb" \
+        || { echo "orig .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -cf "localsend-$ver.tar" -C "$tmpd" upstream.deb
+    for old in localsend-*.tar; do
+        [ "$old" = "localsend-$ver.tar" ] || rm -f "$old"
+    done
+    ls -l "localsend-$ver.tar"
+    trap - EXIT
+    rm -rf "$tmpd"
+}
+
+deb_url_for() {
+    # deb_url_for <version>: reconstruct the upstream .deb URL (spec
+    # Source0 carries a %{url} macro and a hardcoded tag).
+    echo "https://github.com/$GITHUB_REPO/releases/download/v$1/LocalSend-$1-linux-x86-64.deb"
+}
+
+# Orig-tarball guard: fresh CI checkouts start without the gitignored
+# wrapper (actions/cache usually restores it). Rebuild when missing so an
+# OBS sync can never wipe the remote copy with nothing to re-upload.
+if [ ! -f "localsend-$CURRENT_VERSION.tar" ]; then
+    echo "Orig wrapper missing locally; rebuilding..."
+    build_orig_wrapper "$CURRENT_VERSION" "$(deb_url_for "$CURRENT_VERSION")" || \
+        echo "WARNING: orig wrapper rebuild failed; continuing version check."
+fi
+
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
     echo "Already up to date ($CURRENT_VERSION)."
     exit 0
@@ -53,6 +87,19 @@ sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
 # 2. Update the download URL path in the spec file with the RAW tag
 sed -i -E "s|download/[^/]+/LocalSend-[^/]+\.deb|download/$LATEST_TAG/LocalSend-$LATEST_VERSION-linux-x86-64.deb|g" "$SPEC_FILE"
+
+# 2b. Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync.
+build_orig_wrapper "$LATEST_VERSION" "$SOURCE_URL"
+DSC_FILE="localsend.dsc"
+sed -i -E "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
+sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: localsend-$LATEST_VERSION.tar|" "$DSC_FILE"
+DEB_DATE=$(date -R -u)
+DEB_ENTRY="localsend ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+if [ -f "debian.changelog" ]; then
+    echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
+else
+    echo -e "$DEB_ENTRY" > debian.changelog
+fi
 
 # 3. Update .changes
 CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")

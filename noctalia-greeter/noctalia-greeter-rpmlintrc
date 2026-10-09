@@ -1,8 +1,0 @@
-# Helper scripts ship from upstream with '#!/usr/bin/env bash' (portability)
-# and one lacks a shebang because it is sourced, not executed.
-addFilter("noctalia-greeter.*: E: env-script-interpreter")
-addFilter("noctalia-greeter.*: E: script-without-shebang /usr/share/noctalia-greeter/greetd_setup_lib.sh")
-# The polkit action is intentionally admin-only (auth_admin) and is shipped
-# as a .policy file; openSUSE privilege whitelist registration is not used
-# by this package.
-addFilter("noctalia-greeter.*: E: polkit-untracked-privilege")

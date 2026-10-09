@@ -895,6 +895,60 @@ def extract_deb_control_version(path, tmp):
     return None, "no control.tar.* member"
 
 
+def extract_deb_data(path, tmp):
+    """Extract the .deb data.tar.* payload into tmp/"deb-data" for ELF/ldd
+    dependency scanning. Returns the payload dir or None. Supports gz/xz/
+    bz2/plain tar via stdlib; zst via zstandard module or the zstd binary."""
+    members = ar_names(path)
+    if not members:
+        return None
+    blob = None
+    ext = None
+    for name, off, size in members:
+        if re.match(r"^data\.tar(\.(gz|xz|zst|bz2))?$", name):
+            blob = path.read_bytes()[off:off + size]
+            ext = name[len("data.tar"):]  # "" / ".gz" / ".xz" / ".zst" / ".bz2"
+            break
+    if blob is None:
+        return None
+    sub = tmp / "deb-data"
+    sub.mkdir(exist_ok=True)
+    try:
+        if ext == ".zst":
+            try:
+                import zstandard as zstd
+                dctx = zstd.ZstdDecompressor()
+                import io as _io
+                decompressed = dctx.stream_reader(_io.BytesIO(blob)).read()
+            except ImportError:
+                import subprocess as _sp
+                with tempfile.NamedTemporaryFile(suffix=".tar.zst", delete=False) as f:
+                    f.write(blob)
+                    zst_path = f.name
+                try:
+                    _sp.run(["zstd", "-d", "-c", zst_path], check=True,
+                            capture_output=True)
+                    res = _sp.run(["zstd", "-d", "-c", zst_path],
+                                  check=True, capture_output=True)
+                    decompressed = res.stdout
+                finally:
+                    try:
+                        os.unlink(zst_path)
+                    except OSError:
+                        pass
+            import io as _io
+            with tarfile.open(fileobj=_io.BytesIO(decompressed)) as t:
+                t.extractall(sub, filter="data")
+        else:
+            import io as _io
+            mode = "r:*"
+            with tarfile.open(fileobj=_io.BytesIO(blob), mode=mode) as t:
+                t.extractall(sub, filter="data")
+        return sub
+    except Exception:
+        return None
+
+
 def read_small(p, limit=200_000):
     try:
         if p.stat().st_size > limit:
@@ -1484,6 +1538,10 @@ def tear_apart(path, distname, tmp):
             return None, "AppImage teardown error: %s" % e, False, False
     if ext.endswith(".deb"):
         ver, note = extract_deb_control_version(path, tmp)
+        payload = extract_deb_data(path, tmp)
+        if payload is not None:
+            elfs = find_elfs_in_dir(payload)
+            note = "%s | payload %d ELF(s) extracted for ldd scan" % (note, len(elfs))
         return ver, note, bool(ver), False
     if ext.endswith(".rpm"):
         ver, note = read_rpm_version(path)

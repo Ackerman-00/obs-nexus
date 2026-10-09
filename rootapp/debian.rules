@@ -1,0 +1,30 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream rootapp AppImage (binary re-distributor,
+# same payload policy as the RPM spec: /opt/rootapp install, APPDIR
+# wrapper, setuid chrome-sandbox, inline desktop entry + icons).
+# No network at build time: the orig tarball holds the upstream AppImage,
+# extracted here with --appimage-extract (no FUSE needed).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	chmod +x "$$(ls *.AppImage)" && ./"$$(ls *.AppImage)" --appimage-extract >/dev/null && mv squashfs-root appimage-root
+	mkdir -p debian/rootapp/opt/rootapp debian/rootapp/usr/bin debian/rootapp/usr/share/applications
+	cp -ar appimage-root/* debian/rootapp/opt/rootapp/
+	if [ -f debian/rootapp/opt/rootapp/chrome-sandbox ]; then \
+	    chmod 4755 debian/rootapp/opt/rootapp/chrome-sandbox; \
+	fi
+	printf '#!/bin/sh\nexport APPDIR="/opt/rootapp"\nexec /opt/rootapp/AppRun "$$@"\n' > debian/rootapp/usr/bin/rootapp
+	chmod 0755 debian/rootapp/usr/bin/rootapp
+	install -Dm644 appimage-root/Root.png debian/rootapp/usr/share/pixmaps/rootapp.png
+	install -Dm644 appimage-root/Root.png debian/rootapp/usr/share/icons/hicolor/256x256/apps/rootapp.png
+	printf '[Desktop Entry]\nType=Application\nName=Root\nComment=Root App is a new Discord alternative, designed for gaming communities and large online groups\nExec=rootapp %%U\nIcon=rootapp\nTerminal=false\nStartupWMClass=Root\nCategories=Network;InstantMessaging;\nMimeType=x-scheme-handler/rootapp;\n' > debian/rootapp/usr/share/applications/rootapp.desktop

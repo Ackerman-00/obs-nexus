@@ -25,6 +25,34 @@ LATEST_VERSION="$LATEST_TAG"
 # Read current version from the spec file
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
+# Debian_Testing recipe helper: fetch the upstream tarball under its
+# versioned orig name (content-identical rename, no recompression). The
+# tarball is gitignored (*.tar.xz) and rides the OBS sync; per-package
+# actions/cache in update-packages.yml keeps it across fresh CI checkouts.
+fetch_orig_tarball() {
+    local ver="$1" url="$2" tmpd
+    tmpd=$(mktemp -d)
+    trap 'rm -rf "$tmpd"' EXIT
+    curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.tar.xz" \
+        || { echo "orig tarball download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    mv "$tmpd/upstream.tar.xz" "helium-browser-$ver.tar.xz"
+    for old in helium-browser-*.tar.xz; do
+        [ "$old" = "helium-browser-$ver.tar.xz" ] || rm -f "$old"
+    done
+    ls -l "helium-browser-$ver.tar.xz"
+    trap - EXIT
+    rm -rf "$tmpd"
+}
+
+# Orig-tarball guard: fresh CI checkouts start without the gitignored
+# tarball (actions/cache usually restores it). Rebuild when missing so an
+# OBS sync can never wipe the remote copy with nothing to re-upload.
+if [ ! -f "helium-browser-$CURRENT_VERSION.tar.xz" ]; then
+    echo "  -> Orig tarball missing locally; rebuilding..."
+    fetch_orig_tarball "$CURRENT_VERSION" "https://github.com/$GITHUB_REPO/releases/download/$CURRENT_VERSION/helium-$CURRENT_VERSION-x86_64_linux.tar.xz" || \
+        echo "  -> WARNING: orig tarball rebuild failed; continuing version check."
+fi
+
 # Compare and update
 if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     echo "  -> 🚀 [UPDATE] New version detected: $LATEST_VERSION (Current: $CURRENT_VERSION)"
@@ -43,6 +71,25 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     # 1. Update the Version and Release fields
     sed -i "s/^Version:\s*.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
     sed -i "s/^Release:\s*.*/Release:        0/" "$SPEC_FILE"
+
+    # 1b. Debian_Testing recipe: refresh the orig tarball + metainfo
+    # sidecar and keep .dsc/changelog in sync (TARBALL_URL verified 200
+    # above; the metainfo sidecar is absent from the tarball).
+    fetch_orig_tarball "$LATEST_VERSION" "$TARBALL_URL"
+    curl -fsSL --retry 3 --connect-timeout 30 \
+        "https://raw.githubusercontent.com/$GITHUB_REPO/$LATEST_VERSION/package/net.imput.helium.metainfo.xml" \
+        -o "debian.net.imput.helium.metainfo.xml" \
+        || echo "WARNING: metainfo sidecar refresh failed; keeping previous copy."
+    DSC_FILE="helium-browser.dsc"
+    sed -i "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
+    sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: helium-browser-$LATEST_VERSION.tar.xz|" "$DSC_FILE"
+    DEB_DATE=$(date -R -u)
+    DEB_ENTRY="helium-browser ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+    if [ -f "debian.changelog" ]; then
+        echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
+    else
+        echo -e "$DEB_ENTRY" > debian.changelog
+    fi
 
     # 2. Prepend an entry to the OBS changes file
     DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")

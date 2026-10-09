@@ -37,6 +37,10 @@ CURRENT_VERSION=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 # failure. The version guard above stays a pure version comparison.
 if [ -f "$RPM_FILE" ] && [ "$CURRENT_VERSION" = "$VERSION" ]; then
     echo "Package is already at $VERSION. No update needed."
+    # Keep the Debian orig wrapper in step (no download needed here).
+    if [ ! -f "fluxer-$VERSION.tar" ]; then
+        tar -cf "fluxer-$VERSION.tar" "$RPM_FILE"
+    fi
     exit 0
 fi
 
@@ -59,6 +63,16 @@ if ! [ -s "$RPM_FILE" ] || ! rpm -qp "$RPM_FILE" >/dev/null 2>&1; then
     exit 1
 fi
 
+# Debian_Testing recipe: (re)build the debtransform orig wrapper (plain tar
+# holding the upstream RPM) whenever the RPM was (re)downloaded above --
+# this covers version bumps AND same-version refreshes. The wrapper is
+# gitignored (*.tar) and rides the OBS sync; per-package actions/cache in
+# update-packages.yml keeps it across fresh CI checkouts.
+tar -cf "fluxer-$VERSION.tar" "$RPM_FILE"
+for old in fluxer-*.tar; do
+    [ "$old" = "fluxer-$VERSION.tar" ] || rm -f "$old"
+done
+
 if [ "$CURRENT_VERSION" = "$VERSION" ]; then
     echo "Version unchanged but RPM refreshed; only the artifact needs re-syncing to OBS."
     exit 0
@@ -68,6 +82,18 @@ echo "Update available: $CURRENT_VERSION -> $VERSION"
 
 sed -i "s/^Version:.*/Version:        $VERSION/" "$SPEC_FILE"
 sed -i "s/^Release:.*/Release:        0/" "$SPEC_FILE"
+
+# Debian_Testing recipe: keep the .dsc Version/Tar and debian/changelog in sync.
+DSC_FILE="fluxer.dsc"
+sed -i "s/^Version: .*/Version: $VERSION/" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: fluxer-$VERSION.tar|" "$DSC_FILE"
+DEB_DATE=$(date -R -u)
+DEB_ENTRY="fluxer ($VERSION-1) unstable; urgency=medium\n\n  * New upstream release $VERSION.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+if [ -f "debian.changelog" ]; then
+    echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
+else
+    echo -e "$DEB_ENTRY" > debian.changelog
+fi
 
 CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")
 NEW_CHANGELOG_ENTRY="* $CURRENT_DATE $PACKAGER - $VERSION-0\n- Update fluxer to v$VERSION\n\n"

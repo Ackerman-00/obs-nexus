@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream fluxer .rpm (binary re-distributor, same
+# payload policy as the RPM spec: /usr/lib/fluxer install, appid desktop
+# file, Wayland-agnostic exec wrapper). No network at build time: the orig
+# tarball holds the upstream .rpm; debian/rpm2tree.py (stdlib-only,
+# copy of tools/rpm2tree.py) materializes the payload tree.
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	python3 debian/rpm2tree.py "$$(ls *.rpm)" payload
+	mkdir -p debian/fluxer/usr/lib/fluxer debian/fluxer/usr/bin debian/fluxer/usr/share
+	FLUXER_SRC=$$(ls -d payload/opt/Fluxer* | head -n1); \
+	if [ -z "$$FLUXER_SRC" ]; then echo "No Fluxer source dir found in RPM"; exit 1; fi; \
+	cp -a "$$FLUXER_SRC"/* debian/fluxer/usr/lib/fluxer/
+	if [ ! -x debian/fluxer/usr/lib/fluxer/fluxer ] && [ -x debian/fluxer/usr/lib/fluxer/fluxer-canary ]; then \
+	    ln -sf fluxer-canary debian/fluxer/usr/lib/fluxer/fluxer; \
+	fi
+	printf '#!/bin/sh\nexec /usr/lib/fluxer/fluxer "$$@"\n' > debian/fluxer/usr/bin/fluxer
+	chmod 0755 debian/fluxer/usr/bin/fluxer
+	DESKTOP_SRC=$$(ls payload/usr/share/applications/fluxer*.desktop payload/usr/share/applications/app.fluxer*.desktop 2>/dev/null | head -n1); \
+	if [ -z "$$DESKTOP_SRC" ]; then echo "No desktop file found"; exit 1; fi; \
+	install -Dm0644 "$$DESKTOP_SRC" debian/fluxer/usr/share/applications/app.fluxer.Fluxer.desktop
+	sed -i 's|^Exec=.*|Exec=/usr/bin/fluxer %U|' debian/fluxer/usr/share/applications/app.fluxer.Fluxer.desktop
+	sed -i 's|^Icon=.*|Icon=app.fluxer.Fluxer|' debian/fluxer/usr/share/applications/app.fluxer.Fluxer.desktop
+	ICON_COUNT=0; \
+	for iconpath in payload/usr/share/icons/hicolor/*/apps/fluxer*.png payload/usr/share/icons/hicolor/*/apps/app.fluxer*.png; do \
+	    [ -e "$$iconpath" ] || continue; \
+	    size=$$(basename $$(dirname $$(dirname "$$iconpath"))); \
+	    install -Dm0644 "$$iconpath" debian/fluxer/usr/share/icons/hicolor/$${size}/apps/app.fluxer.Fluxer.png; \
+	    ICON_COUNT=$$((ICON_COUNT+1)); \
+	done; \
+	if [ "$$ICON_COUNT" -eq 0 ]; then echo "No icons found"; exit 1; fi

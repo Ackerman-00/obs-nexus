@@ -1,0 +1,12 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: obsidian
+Upstream-Contact: Obsidian <https://obsidian.md/>
+Source: https://obsidian.md/
+
+Files: *
+Copyright: 2026 Dynomite Designs Pty Ltd
+License: Proprietary
+ The Obsidian desktop application is proprietary software. Redistribution
+ of the application itself is not permitted; this package repacks the
+ upstream binary for installation convenience. See
+ https://obsidian.md/terms for the upstream terms.

@@ -14,11 +14,11 @@ permissions:
 
 jobs:
   update-packages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v6.1.0
+      - uses: actions/checkout@v7.0.1
 
       - name: Install System Dependencies
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils jq curl
@@ -26,11 +26,63 @@ jobs:
       - name: Install Rust toolchain (for cargo vendor)
         uses: dtolnay/rust-toolchain@stable
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.11'
 
       - run: pip install requests
+
+      # Gitignored debtransform orig inputs maintained by each package's
+      # update.sh (Debian_Testing recipe: <pkg>.dsc + flat debian.* + orig
+      # tarball). Per-package caches keep them across fresh checkouts so
+      # multi-hundred-MB upstream downloads only happen on real version
+      # changes or cache eviction; keys are per-package so one package's
+      # bump never invalidates the others.
+      - name: Cache Debian orig tarball (fluxer)
+        uses: actions/cache@v6.1.0
+        with:
+          path: fluxer/*.tar
+          key: deb-orig-fluxer-${{ hashFiles('fluxer/fluxer.spec', 'fluxer/fluxer.dsc') }}
+      - name: Cache Debian orig tarball (helium-browser)
+        uses: actions/cache@v6.1.0
+        with:
+          path: helium-browser/*.tar.xz
+          key: deb-orig-helium-${{ hashFiles('helium-browser/helium-browser.spec', 'helium-browser/helium-browser.dsc') }}
+      - name: Cache Debian orig tarball (localsend)
+        uses: actions/cache@v6.1.0
+        with:
+          path: localsend/*.tar
+          key: deb-orig-localsend-${{ hashFiles('localsend/localsend.spec', 'localsend/localsend.dsc') }}
+      - name: Cache Debian orig tarball (obsidian)
+        uses: actions/cache@v6.1.0
+        with:
+          path: obsidian/*.tar
+          key: deb-orig-obsidian-${{ hashFiles('obsidian/obsidian.spec', 'obsidian/obsidian.dsc') }}
+      - name: Cache Debian orig tarball (opencode-desktop)
+        uses: actions/cache@v6.1.0
+        with:
+          path: opencode-desktop/*.tar
+          key: deb-orig-opencode-${{ hashFiles('opencode-desktop/opencode-desktop.spec', 'opencode-desktop/opencode-desktop.dsc') }}
+      - name: Cache Debian orig tarball (rootapp)
+        uses: actions/cache@v6.1.0
+        with:
+          path: rootapp/*.tar
+          key: deb-orig-rootapp-${{ hashFiles('rootapp/rootapp.spec', 'rootapp/rootapp.dsc') }}
+      - name: Cache Debian orig tarball (stoat-desktop)
+        uses: actions/cache@v6.1.0
+        with:
+          path: stoat-desktop/*.tar
+          key: deb-orig-stoat-${{ hashFiles('stoat-desktop/stoat-desktop.spec', 'stoat-desktop/stoat-desktop.dsc') }}
+      - name: Cache Debian orig tarball (vesktop)
+        uses: actions/cache@v6.1.0
+        with:
+          path: vesktop/*.tar
+          key: deb-orig-vesktop-${{ hashFiles('vesktop/vesktop.spec', 'vesktop/vesktop.dsc') }}
+      - name: Cache Debian orig tarball (zen-browser)
+        uses: actions/cache@v6.1.0
+        with:
+          path: zen-browser/*.tar.xz
+          key: deb-orig-zen-${{ hashFiles('zen-browser/zen-browser.spec', 'zen-browser/zen-browser.dsc') }}
 
       - name: Run Modular Updaters
         id: updater

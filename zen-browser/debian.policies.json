@@ -1,0 +1,9 @@
+{
+  "update": {
+    "enabled": false,
+    "auto": false,
+    "managed_by": "package"
+  }
+}
+
+

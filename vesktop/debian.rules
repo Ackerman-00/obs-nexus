@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream vesktop .rpm (binary re-distributor, same
+# payload policy as the RPM spec: /opt/Vesktop install, Wayland wrapper,
+# Exec repointed at the wrapper, setuid chrome-sandbox like the spec).
+# No network at build time: the orig tarball holds the upstream .rpm;
+# debian/rpm2tree.py (stdlib-only, copy of tools/rpm2tree.py) materializes
+# the payload tree.
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	python3 debian/rpm2tree.py "$$(ls *.rpm)" payload
+	mkdir -p debian/vesktop/opt/Vesktop debian/vesktop/usr/bin debian/vesktop/usr/share
+	cp -a payload/opt/Vesktop/* debian/vesktop/opt/Vesktop/
+	cp -a payload/usr/share/applications debian/vesktop/usr/share/
+	cp -a payload/usr/share/icons debian/vesktop/usr/share/
+	printf '#!/bin/sh\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="auto"\nfi\nexec /opt/Vesktop/vesktop "$$@"\n' > debian/vesktop/usr/bin/vesktop
+	chmod 0755 debian/vesktop/usr/bin/vesktop
+	sed -i 's|^Exec=.*|Exec=/usr/bin/vesktop %U|' debian/vesktop/usr/share/applications/vesktop.desktop
+	chmod 4755 debian/vesktop/opt/Vesktop/chrome-sandbox

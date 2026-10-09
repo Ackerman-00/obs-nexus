@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   opencode:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 355
     permissions:
       contents: write
@@ -43,6 +43,13 @@ jobs:
           git config --global user.email "41898282+opencode-agent[bot]@users.noreply.github.com"
           git config --global url."https://x-access-token:${{ secrets.REPO_FULL_ACCESS_TOKEN || github.token }}@github.com/".insteadOf "https://github.com/"
 
+      - name: Set up Node.js (npm fallback toolchain)
+        uses: actions/setup-node@v7.1.0
+        with:
+          # Node 24 = Active LTS as of Oct 2026 (nodejs.org). Pinned so the
+          # npm fallback below never depends on the runner's bundled node.
+          node-version: '24'
+
       - name: Install opencode (latest, resilient)
         shell: bash
         env:
@@ -51,21 +58,23 @@ jobs:
           set -u
           mkdir -p "$HOME/.opencode/bin"
           export PATH="$HOME/.opencode/bin:$PATH"
-          # 1) Official installer, retried: its internal version fetch can flap
+          # 1) Official v2 installer, retried: its internal version fetch can flap
           #    or hit the shared-runner-IP 60/hr GitHub quota. curl retries +
           #    4 outer attempts ride out transients.
           for i in 1 2 3 4; do
-            if curl -fsSL --retry 3 --retry-delay 10 --retry-all-errors https://opencode.ai/install | bash; then
+            if curl -fsSL --retry 3 --retry-delay 10 --retry-all-errors https://opencode.ai/v2/install | bash; then
               break
             fi
             echo "opencode install attempt $i/4 failed - sleeping 30s"
             sleep 30
           done
-          # 2) npm fallback (documented install method at opencode.ai). Link the
-          #    binary into $HOME/.opencode/bin so later steps need no PATH change.
+          # 2) npm fallback (documented v2 install method at opencode.ai/v2:
+          #    package @opencode/cli with a postinstall native-binary picker).
+          #    Link the binary into $HOME/.opencode/bin so later steps need
+          #    no PATH change.
           if ! command -v opencode >/dev/null 2>&1; then
             echo "official installer failed - trying npm"
-            npm install -g opencode-ai || sudo npm install -g opencode-ai || true
+            npm install -g @opencode/cli || sudo npm install -g @opencode/cli || true
             if command -v opencode >/dev/null 2>&1; then
               ln -sf "$(command -v opencode)" "$HOME/.opencode/bin/opencode"
             fi
@@ -73,19 +82,20 @@ jobs:
           # 3) Authenticated GitHub-release fallback: GITHUB_TOKEN gets 1000/hr
           #    in Actions, immune to the shared-IP quota that breaks the script's
           #    version fetch. Asset name discovered live via API, never hardcoded.
+          #    Canonical repo is anomalyco/opencode (sst/opencode redirects there).
           if ! command -v opencode >/dev/null 2>&1; then
             echo "npm fallback failed - trying authenticated gh release download"
-            asset="$(gh release view --repo sst/opencode --json assets --jq '.assets[].name' | grep -E '^opencode-linux-(x64|amd64).*\.(tar\.gz|tgz|zip)$' | head -n 1)"
+            asset="$(gh release view --repo anomalyco/opencode --json assets --jq '.assets[].name' | grep -E '^opencode-linux-(x64|amd64).*\.(tar\.gz|tgz|zip)$' | head -n 1)"
             if [ -n "$asset" ]; then
               echo "downloading asset: $asset"
               mkdir -p /tmp/opencode-dl
-              gh release download --repo sst/opencode --pattern "$asset" --dir /tmp/opencode-dl --clobber
+              gh release download --repo anomalyco/opencode --pattern "$asset" --dir /tmp/opencode-dl --clobber
               case "$asset" in
                 *.zip) unzip -o /tmp/opencode-dl/"$asset" -d "$HOME/.opencode/bin" ;;
                 *) tar -xzf /tmp/opencode-dl/"$asset" -C "$HOME/.opencode/bin" ;;
               esac
             else
-              echo "no linux x64 asset found in latest sst/opencode release"
+              echo "no linux x64 asset found in latest anomalyco/opencode release"
             fi
           fi
           # Hard gate: every later step assumes `opencode` exists.
@@ -114,7 +124,7 @@ jobs:
           # free-model gateways over (AI_APICallError: socket closed). Cheap
           # insurance inside a 355-min job.
           sleep $((RANDOM % 180))
-          for model in "opencode/muse-spark-1.3-contributor-free" "opencode/mimo-v2.5-free" "opencode/ling-3.0-flash-fin-free" "opencode/nemotron-3-ultra-free" "opencode/nemotron-3.5-lightning-free" "opencode/big-pickle"; do
+          for model in "opencode/muse-spark-1.3-contributor-free" "opencode/mimo-v2.6-flash-free" "opencode/ling-3.1-flash-free" "opencode/nemotron-3-ultra-free" "opencode/nemotron-3.5-lightning-free" "opencode/big-pickle"; do
             echo "=== opencode run attempt with $model ==="
             exit_code=0
             # Per-model retries with backoff: free-tier gateways drop sockets under
@@ -156,7 +166,7 @@ jobs:
           exit 1
         env:
           MODEL: opencode/muse-spark-1.3-contributor-free
-          OPENCODE_CONFIG_CONTENT: '{"small_model":"opencode/mimo-v2.5-free"}'
+          OPENCODE_CONFIG_CONTENT: '{"small_model":"opencode/mimo-v2.6-flash-free"}'
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -615,7 +625,7 @@ jobs:
                        openSUSE_Tumbleweed/x86_64/ - list it with curl to find the RPM)
               b. REAL INSTALL TEST IN A CLEAN TUMBLEWEED CONTAINER. You need
                  a working container runtime on the runner. Docker is
-                 preinstalled on the ubuntu-latest runner, but VERIFY it
+                 preinstalled on the ubuntu-24.04 runner, but VERIFY it
                  first: `docker version` (and `docker run --rm hello-world`
                  once to confirm the daemon works; on GitHub runners no sudo
                  is needed). If docker is missing, broken, or the daemon is
@@ -711,6 +721,36 @@ jobs:
                  where status is one of: installable / fixed / broken-(dep)
                  / blocked-(reason). Any package you changed but did not
                  install-test is an unfinished package.
+                 DEBIAN TESTING (deb-backed packages ONLY): OBS enables ONLY
+                 the Debian_Testing repository (no Ubuntu, no Debian stable -
+                 never invent other targets). Derive the deb-backed set live
+                 via `grep -l '\.deb' */*.spec` (never hardcode the list).
+                 For each, run `python3 tools/docker-sweep.py --overlay .
+                 --type debian --packages "<name>"` (debian:testing image
+                 only, apt/dpkg install + ldd of the upstream .deb payload)
+                 and record the result in a `deb install test (testing)`
+                 table column. A .deb that fails to install or shows missing
+                 libs on testing is a real failure: fix the spec dep mapping
+                 (or HOLD + issue with evidence), same bar as a TW/Slowroll
+                 failure. Non-deb packages get `n/a-(rpm-only)` in that column.
+                 All prebuilt/binary packages (deb/rpm/AppImage/zip/tarball
+                 Source0) additionally carry a Debian_Testing BUILD recipe
+                 (`<pkg>.dsc` + flat `debian.*` + orig tarball, all maintained
+                 by update.sh with per-package actions/cache): when you touch
+                 one, keep .dsc Version/Tar and the debian.changelog head in
+                 sync with the spec Version and verify recipe consistency
+                 (Binary == control Package, exactly one orig tar).
+                 UPSTREAM DEPENDENCY RE-CHECK (all nine prebuilt recipes,
+                 every run): re-derive each recipe's Depends from the LIVE
+                 upstream payload (control file inside the .deb, ldd NEEDED
+                 of AppImage/rpm/zip payloads, upstream meson/Cargo/manifest
+                 for tarballs) and diff against debian/control + the spec
+                 Requires. A drifted soname set, a renamed upstream dep, or
+                 a t64-transition rename that no longer resolves on
+                 Debian_Testing (or TW/Slowroll) is a bug: fix the mapping,
+                 rebuild, retest. Record per recipe one line:
+                 `deb-deps: <pkg> <ver> | upstream sonames: <n> |
+                 unmapped: <list/none> | testing-resolves: yes/no`.
               g. DOCKER BATTLE TEST + ALL CONTENT (MANDATORY - every binary + repo itself in a clean Tumbleweed container, not just OBS "succeeded"). This is not optional:
                  1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install on BOTH TW and Slowroll containers per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run per distro, oldest-uncovered first, plus every touched on both) + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
                  2. ALL CONTENT: `ls -R`/`find . -type f | sort` -- every `*/*.spec`, `*/*.changes`, `*/_service`, `*/update.sh`, `.github/workflows/*.yml` (`yaml.safe_load` valid), `README.md` install (`zypper addrepo` URL must match Docker path or fix README) must be checked; any file not checked = gap.
@@ -1195,6 +1235,25 @@ jobs:
                checksums with `sha256sum` on downloaded sources. Never commit an untested
                change.
 
+            8. MODEL + TOOLCHAIN FRESHNESS (MANDATORY - free models churn
+               weekly; a dead model ID burns a full 6h run on retries).
+               Every run, before starting package work: fetch the live free
+               set (`GET https://opencode.ai/zen/v1/models` - the ground
+               truth; `docs/zen` table as cross-check) and confirm every ID
+               in this workflow's model cascade plus opencode.json is still
+               listed. Any ID returning 401/404/delisted (past casualties:
+               x-preview-f-free, hy3-free, deepseek-v4-flash-free,
+               mimo-v2.5-free) is removed THAT run: patch the cascade(s)
+               and opencode.json to live equivalents, keeping the order
+               muse-spark-1.3-contributor-free first, mimo-2.6-flash-free
+               second, then the remaining verified *-free IDs. Same pass:
+               `python3 -m py_compile tools/*.py`, `bash -n` on
+               tools/verify-opensuse.sh, and confirm the pinned action
+               versions in .github/workflows/* are still the latest majors
+               (checkout/upload-artifact/setup-python/setup-node/cache).
+               Log one line: `toolchain: models <n/n live> | tools OK |
+               actions current/<outdated-what>`.
+
             THEN, for each package you fixed:
               a. Commit DIRECTLY to main. Never open a pull request.
                  git fetch origin && git pull --rebase origin main
@@ -1387,14 +1446,14 @@ jobs:
       # ---- topic: teardown-sweep ----
       - name: Upload opencode logs (on failure)
         if: failure()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: opencode-logs
           path: ~/.local/share/opencode/log/
           if-no-files-found: ignore
 
   cleanup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: always()
     needs: opencode
     permissions:

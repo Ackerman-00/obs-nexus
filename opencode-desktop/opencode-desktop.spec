@@ -3,13 +3,17 @@
 %global __requires_exclude_from ^/opt/OpenCode/.*$
 %global __provides_exclude_from ^/opt/OpenCode/.*$
 Name:           opencode-desktop
-Version:        1.18.35
+Version:        2.0.26
 Release:        0
 Summary:        Open source AI coding agent
 License:        MIT
 Group:          Development/Tools/Other
 URL:            https://opencode.ai
-Source0:        https://github.com/anomalyco/opencode/releases/download/v%{version}/opencode-desktop-linux-amd64.deb
+# Upstream v2 desktop builds are published on the stable channel
+# (https://opencode.ai/download/stable/linux-x64-deb -> files/bin/<ver>/);
+# GitHub tags carry no desktop DEB asset, so the versioned files/bin URL is
+# the canonical source (floating stable URL avoided for reproducibility).
+Source0:        https://opencode.ai/files/bin/%{version}/opencode-desktop-linux-amd64.deb
 Source1:        opencode-desktop-rpmlintrc
 BuildRequires:  python3
 Requires:       at-spi2-core

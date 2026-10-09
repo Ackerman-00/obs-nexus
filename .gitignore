@@ -12,8 +12,14 @@ tools/__pycache__/
 *.tar.gz
 *.tar.xz
 *.tar.bz2
+*.tar
 *.AppImage
 *.keyring
 cargo_config
 fluxer.rpm
 Root.AppImage
+# Debian debtransform orig wrappers + upstream artifacts repacked by
+# update.sh (never committed; they ride the OBS sync as untracked files).
+*.deb
+*.rpm
+*.zip

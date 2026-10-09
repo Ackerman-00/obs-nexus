@@ -1,0 +1,11 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: rootapp
+Upstream-Contact: RootApp <https://www.rootapp.com>
+Source: https://www.rootapp.com
+
+Files: *
+Copyright: 2026 RootApp
+License: Proprietary
+ The Root desktop application is proprietary software. Redistribution
+ of the application itself is not permitted; this package repacks the
+ upstream binary for installation convenience.

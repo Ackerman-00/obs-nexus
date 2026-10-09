@@ -1,0 +1,18 @@
+Source: zen-browser
+Section: web
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13), chrpath, desktop-file-utils
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/zen-browser/desktop
+
+Package: zen-browser
+Architecture: amd64
+# Runtime set mapped from the RPM spec: dictionaries/hyphenation dirs,
+# system CA certs module (libnssckbi is linked from the system libnss3
+# instead of the bundled copy, like the spec). The bundled Firefox-private
+# libs resolve via $ORIGIN and need no system providers.
+Depends: ${misc:Depends}, hicolor-icon-theme, libhunspell, libhyphen0, libnss3
+Description: Minimal browser focused on privacy and calm browsing
+ Zen Browser is a free, open-source web browser based on Mozilla Firefox.

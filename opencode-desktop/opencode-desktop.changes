@@ -1,3 +1,8 @@
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2.0.26-0
+- Update opencode-desktop to v2.0.26 from the upstream stable channel
+  (GitHub tags carry no desktop DEB asset; Source0 now uses the versioned
+  files/bin URL)
+
 * Tue Oct 06 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.35-0
 - Update opencode-desktop to v1.18.35
 

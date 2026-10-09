@@ -41,6 +41,15 @@ Runs INSIDE the agent, clean `opensuse/tumbleweed` every run:
 2. `zypper --no-gpg-checks in` + `ldd` + `--version` for each binary (5+ per run)
 3. Battle-tests `ls -R` (all `*.spec`/`*.changes`/`_service`/`update.sh`) + `yaml` workflows + README `zypper addrepo` path
 4. Reports `| package | zypper install | ldd | status |` — any fail = fix spec/README
+5. Debian Testing ONLY (`--type debian`, `debian:testing` image): for specs
+   whose Source0 is an upstream .deb (derived via `grep -l '\.deb' */*.spec`),
+   apt/dpkg-install the payload + ldd — no Ubuntu, no Debian stable
+6. Debian BUILD recipes: every prebuilt/binary package (deb/rpm/AppImage/
+   zip/tarball Source0) carries `<pkg>.dsc` + flat `debian.*` + orig tarball
+   (debtransform input, assembled at build time). update.sh maintains all
+   three (.dsc Version/Tar, debian.changelog entry, orig artifact) on every
+   bump plus an ensure-guard; per-package actions/cache in update-packages.yml
+   preserves the gitignored tarballs across fresh checkouts
 
 Key features:
 - `trivy_scan_image()`: scans base images for CRITICAL/HIGH/MEDIUM CVEs

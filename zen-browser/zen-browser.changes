@@ -1,3 +1,7 @@
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+- Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
+  maintained by update.sh; debtransform at build time)
+
 * Wed Oct 07 2026 GitHub Actions <actions@github.com> - 1.23.1b-0
 - Update zen-browser to v1.23.1b
 

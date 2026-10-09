@@ -12,6 +12,10 @@ Runs INSIDE the agent's execution. For each package:
 Usage (called by the agent during its run):
   python3 tools/docker-sweep.py --overlay . --type fedora --packages "pkg1 pkg2" --report docker-report.md
   python3 tools/docker-sweep.py --overlay . --type gentoo --all --report docker-report.md
+  python3 tools/docker-sweep.py --overlay . --type opensuse --packages "zen-browser" --report docker-report.md
+  python3 tools/docker-sweep.py --overlay . --type debian --all --report debian-report.md
+      (debian type: verifies each spec's upstream .deb in a debian:testing
+       container via apt/dpkg + ldd; RPM specs stay the source of truth)
 
 Exit 0 = all tested packages passed. Exit 1 = any failures.
 """
@@ -43,6 +47,8 @@ def log(msg):
 def detect_type(root):
     if list(root.rglob("*.ebuild")):
         return "gentoo"
+    if (root / "debian" / "control").exists() or list(root.rglob("debian/control")):
+        return "debian"
     if list(root.rglob("*.spec")):
         return "fedora"
     if (root / "pkgs").is_dir():
@@ -107,6 +113,48 @@ def get_void_packages(root):
         name = tmpl.parent.name
         pkgs.append((name, name, tmpl))
     return pkgs
+
+
+def get_deb_source_packages(root):
+    """Packages whose RPM spec repacks an upstream .deb (e.g. localsend,
+    opencode-desktop). Returns (name, version, spec_path) triples. Used for
+    Debian testing verification: the upstream .deb must install cleanly
+    under debian:testing even though this repo ships RPMs."""
+    pkgs = []
+    for spec in sorted(root.rglob("*.spec")):
+        if any(x in spec.parts for x in SKIP_DIRS):
+            continue
+        try:
+            txt = spec.read_text()
+        except Exception:
+            continue
+        if ".deb" not in txt:
+            continue
+        m_name = re.search(r"^Name:\s*(.+)$", txt, re.M)
+        m_ver = re.search(r"^Version:\s*(.+)$", txt, re.M)
+        if m_name and m_ver:
+            pkgs.append((m_name.group(1).strip(), m_ver.group(1).strip(), spec))
+    return pkgs
+
+
+def deb_source_urls(spec_path):
+    """Extract candidate upstream .deb URLs from a spec's Source0 lines
+    (with %{version}/%{url} macros left unexpanded when unresolvable —
+    caller expands or matches by suffix). Returns list of raw URL strings."""
+    try:
+        txt = spec_path.read_text()
+    except Exception:
+        return []
+    urls = []
+    for m in re.finditer(r"^Source\d*:\s*(\S+)\s*$", txt, re.M):
+        raw = m.group(1).strip()
+        if ".deb" in raw:
+            urls.append(raw)
+    # Also catch commented canonical URLs (e.g. "# Source: https://...deb")
+    for m in re.finditer(r"https?://\S+\.deb", txt):
+        if m.group(0) not in urls:
+            urls.append(m.group(0))
+    return urls
 
 
 # ---------------------------------------------------------------------------
@@ -176,6 +224,106 @@ def test_fedora_package(name, nvra, spec_path, workdir):
         result["details"] = "unsatisfied dependencies: %s" % combined[-500:]
         return result
     result["details"] = "installed + verified"
+    return result
+
+
+def test_opensuse_package(name, nvra, spec_path, workdir):
+    commands = [
+        "zypper --non-interactive --gpg-auto-import-keys addrepo --refresh "
+        "https://download.opensuse.org/tumbleweed/repo/oss/ oss 2>&1 | tail -3",
+        "zypper --non-interactive --gpg-auto-import-keys addrepo --refresh "
+        "https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus 2>&1 | tail -3",
+        "zypper --non-interactive refresh 2>&1 | tail -3",
+        "zypper --non-interactive install --no-recommends -y %s 2>&1 | tail -30" % name,
+        "rpm -V %s 2>&1 | head -20" % name,
+        "which %s 2>/dev/null && ldd $(which %s) 2>/dev/null | grep 'not found' || true" % (name, name),
+    ]
+    rc, out, err = docker_run("registry.opensuse.org/opensuse/tumbleweed:latest", commands, timeout=300)
+    combined = out + err
+    result = {"package": name, "status": STATUS_PASS, "details": ""}
+    if "nothing provides" in combined.lower() or "no provider" in combined.lower():
+        result["status"] = STATUS_DEPS_MISSING
+        result["details"] = "zypper resolution failed: %s" % combined[-500:]
+        return result
+    if rc != 0 and "is already installed" not in combined and "Nothing to do" not in combined:
+        result["status"] = STATUS_INSTALL_FAIL
+        result["details"] = "zypper install failed (rc=%d): %s" % (rc, combined[-500:])
+        return result
+    if "not found" in combined:
+        result["status"] = STATUS_DEPS_MISSING
+        missing = [l for l in combined.splitlines() if "not found" in l]
+        result["details"] = "missing deps: %s" % "; ".join(missing[:5])
+        return result
+    result["details"] = "installed + verified (zypper)"
+    return result
+
+
+def expand_deb_url(spec_path, ver):
+    """Resolve the spec's upstream .deb URL host-side: prefer an https
+    literal, else expand the %{url} macro form (Source0: %{url}/...deb)
+    against the spec's URL: tag plus %{version}. Returns "" if unresolvable."""
+    try:
+        txt = Path(spec_path).read_text()
+    except Exception:
+        return ""
+    for m in re.finditer(r"https?://\S+\.deb", txt):
+        return m.group(0).replace("%{version}", ver).replace("%{ver}", ver)
+    m_url = re.search(r"^URL:\s*(\S+)\s*$", txt, re.M)
+    base = m_url.group(1).strip() if m_url else ""
+    for m in re.finditer(r"^Source\d*:\s*(\S+)\s*$", txt, re.M):
+        raw = m.group(1).strip()
+        if ".deb" not in raw:
+            continue
+        u = raw.replace("%{url}", base).replace("%{URL}", base)
+        u = u.replace("%{version}", ver).replace("%{ver}", ver)
+        if u.startswith(("http://", "https://")):
+            return u
+    return ""
+
+
+def test_debian_package(name, ver, spec_path, workdir):
+    """Verify the upstream .deb repacked by this spec installs on Debian
+    testing (debian:testing image): download the .deb from the spec's
+    Source0 URL, check control Version, install with apt (dpkg fallback),
+    then ldd + binary probe. RPM-spec parsing stays the source of truth —
+    this only exercises the .deb payload Debian users would touch."""
+    deb_url = expand_deb_url(spec_path, ver)
+    if not deb_url or "'" in deb_url:
+        return {"package": name, "status": STATUS_SKIP,
+                "details": "no resolvable upstream .deb URL in spec"}
+    commands = [
+        "apt-get update -qq 2>&1 | tail -3",
+        "apt-get install -y -qq curl binutils file 2>&1 | tail -3",
+        "curl -fsSL '%s' -o /tmp/pkg.deb && ls -l /tmp/pkg.deb || echo NO-DEB-URL" % deb_url,
+        "dpkg-deb -f /tmp/pkg.deb Version 2>&1 || echo NO-DEB-FILE",
+        # Install: apt handles deps, dpkg -i + apt -f fallback covers odd control files
+        "apt-get install -y /tmp/pkg.deb 2>&1 | tail -15 || "
+        "(dpkg -i /tmp/pkg.deb 2>&1 | tail -10 && apt-get install -f -y 2>&1 | tail -10)",
+        "dpkg -l '%s' 2>/dev/null | tail -3 || dpkg -l | grep -i '%s' | head -5 || true" % (name, name),
+        # ldd sweep over payload ELFs: any 'not found' is a real missing dep
+        "for b in $(dpkg -L '%s' 2>/dev/null | head -50); do "
+        "test -f \"$b\" && file \"$b\" 2>/dev/null | grep -q ELF && ldd \"$b\" 2>/dev/null; done "
+        "| grep 'not found' | sort -u | head -10 || true" % name,
+    ]
+    rc, out, err = docker_run("debian:testing", commands, timeout=300)
+    combined = out + err
+    result = {"package": name, "status": STATUS_PASS, "details": ""}
+    if "NO-DEB-URL" in combined or "NO-DEB-FILE" in combined:
+        result["status"] = STATUS_SKIP
+        result["details"] = "upstream .deb unfetchable (url=%s)" % deb_url[:100]
+        return result
+    if "not found" in combined:
+        missing = [l.strip() for l in combined.splitlines() if "not found" in l]
+        # The ldd-not-found lines are the last stage; distinguish from shell noise
+        if missing:
+            result["status"] = STATUS_DEPS_MISSING
+            result["details"] = "missing libs on testing: %s" % "; ".join(missing[:5])
+            return result
+    if rc != 0:
+        result["status"] = STATUS_INSTALL_FAIL
+        result["details"] = "apt/dpkg install failed (rc=%d): %s" % (rc, combined[-500:])
+        return result
+    result["details"] = "upstream .deb installs on debian:testing"
     return result
 
 
@@ -252,7 +400,7 @@ def trivy_scan_image(image_tag):
 def main():
     ap = argparse.ArgumentParser(description="Docker-based package install + dependency sweep")
     ap.add_argument("--overlay", default=".", help="repo root")
-    ap.add_argument("--type", default="auto", choices=["auto", "gentoo", "fedora", "nix", "void", "opensuse"])
+    ap.add_argument("--type", default="auto", choices=["auto", "gentoo", "fedora", "nix", "void", "opensuse", "debian"])
     ap.add_argument("--packages", default="", help="space-separated package names to test")
     ap.add_argument("--all", action="store_true", help="test all packages (slow)")
     ap.add_argument("--report", default="docker-report.md", help="output report path")
@@ -270,6 +418,8 @@ def main():
         all_pkgs = get_gentoo_packages(root)
     elif repo_type in ("fedora", "opensuse"):
         all_pkgs = get_fedora_packages(root)
+    elif repo_type == "debian":
+        all_pkgs = get_deb_source_packages(root)
     elif repo_type == "nix":
         all_pkgs = get_nix_packages(root)
     elif repo_type == "void":
@@ -296,8 +446,12 @@ def main():
         log("Testing %s ..." % name)
         if repo_type == "gentoo":
             r = test_gentoo_package(name, root, root)
-        elif repo_type in ("fedora", "opensuse"):
+        elif repo_type == "fedora":
             r = test_fedora_package(name, ver, path, root)
+        elif repo_type == "opensuse":
+            r = test_opensuse_package(name, ver, path, root)
+        elif repo_type == "debian":
+            r = test_debian_package(name, ver, path, root)
         elif repo_type == "nix":
             r = test_nix_package(name, path, root)
         elif repo_type == "void":
@@ -315,6 +469,8 @@ def main():
             "gentoo": "gentoo/stage3",
             "fedora": "fedora:latest",
             "void": "voidlinux/voidlinux:latest",
+            "opensuse": "registry.opensuse.org/opensuse/tumbleweed:latest",
+            "debian": "debian:testing",
         }
         img = BASE_IMAGES.get(repo_type)
         if img:

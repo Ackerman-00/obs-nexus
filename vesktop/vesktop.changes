@@ -1,3 +1,7 @@
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.6.7-0
+- Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper
+  maintained by update.sh; debtransform at build time)
+
 * Mon Sep 21 2026 opencode-agent[bot] <41898282+opencode-agent[bot]@users.noreply.github.com> - 1.6.7-0
 - Drop unversioned runtime Requires: hicolor-icon-theme (tripped rpmlint
   E: branding-requires-unversioned on the built RPM); own the icon dirs

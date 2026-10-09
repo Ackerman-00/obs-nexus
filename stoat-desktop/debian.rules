@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream stoat .zip (binary re-distributor, same
+# payload policy as the RPM spec: /opt/Stoat install, Wayland wrapper,
+# setuid chrome-sandbox, static desktop/icon/metainfo from debian/).
+# No network at build time: the orig tarball holds the upstream .zip.
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	desktop-file-validate debian/stoat-desktop/usr/share/applications/chat.stoat.StoatDesktop.desktop
+
+override_dh_auto_install:
+	unzip -q "$$(ls *.zip)" -d ziproot
+	mkdir -p debian/stoat-desktop/opt/Stoat debian/stoat-desktop/usr/bin debian/stoat-desktop/usr/share/applications debian/stoat-desktop/usr/share/metainfo
+	cp -a ziproot/Stoat-linux-x64/* debian/stoat-desktop/opt/Stoat/
+	install -Dm0644 debian/chat.stoat.StoatDesktop.desktop debian/stoat-desktop/usr/share/applications/chat.stoat.StoatDesktop.desktop
+	install -Dm0644 debian/chat.stoat.StoatDesktop.png debian/stoat-desktop/usr/share/icons/hicolor/256x256/apps/chat.stoat.StoatDesktop.png
+	install -Dm0644 debian/chat.stoat.StoatDesktop.metainfo.xml debian/stoat-desktop/usr/share/metainfo/chat.stoat.StoatDesktop.metainfo.xml
+	printf '#!/bin/sh\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="auto"\nfi\nexec /opt/Stoat/stoat-desktop "$$@"\n' > debian/stoat-desktop/usr/bin/stoat-desktop
+	chmod 0755 debian/stoat-desktop/usr/bin/stoat-desktop
+	chmod 4755 debian/stoat-desktop/opt/Stoat/chrome-sandbox

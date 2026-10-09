@@ -1,0 +1,32 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream helium tarball (binary re-distributor, same
+# payload policy as the RPM spec: /opt/helium install, branded wrapper,
+# desktop entry via desktop-file-install, metainfo sidecar, icon).
+# No network at build time: the orig tarball IS the upstream release
+# tarball (renamed by update.sh); the metainfo sidecar rides as a
+# debian.* copy refreshed per bump.
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	desktop-file-validate debian/helium-browser/usr/share/applications/helium.desktop
+
+override_dh_auto_install:
+	HELIUM_SRC=$$(ls -d helium-*_linux | head -n1); \
+	if [ -z "$$HELIUM_SRC" ]; then echo "No helium source dir found"; exit 1; fi; \
+	mkdir -p debian/helium-browser/opt debian/helium-browser/usr/bin debian/helium-browser/usr/share/applications debian/helium-browser/usr/share/metainfo debian/helium-browser/usr/share/icons/hicolor/256x256/apps; \
+	cp -a "$$HELIUM_SRC"/. debian/helium-browser/opt/helium
+	sed -Ei "s/(CHROME_VERSION_EXTRA=).*/\1suse/" debian/helium-browser/opt/helium/helium-wrapper
+	install -m 644 debian/helium-browser/opt/helium/product_logo_256.png \
+	    debian/helium-browser/usr/share/icons/hicolor/256x256/apps/helium.png
+	desktop-file-install --dir=debian/helium-browser/usr/share/applications \
+	    debian/helium-browser/opt/helium/helium.desktop
+	install -m 644 debian/net.imput.helium.metainfo.xml \
+	    debian/helium-browser/usr/share/metainfo/net.imput.helium.metainfo.xml
+	ln -sf /opt/helium/helium-wrapper debian/helium-browser/usr/bin/helium

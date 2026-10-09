@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream obsidian AppImages (binary re-distributor,
+# same payload policy as the RPM spec: /opt/obsidian install, bash wrapper
+# with user-flags + Wayland detection, setuid chrome-sandbox, repointed
+# desktop entry + icons). No network at build time: the orig tarball holds
+# both upstream AppImages; the arch-appropriate one is picked per
+# DEB_HOST_ARCH and extracted with --appimage-extract (no FUSE needed).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	desktop-file-validate debian/obsidian/usr/share/applications/md.obsidian.Obsidian.desktop
+
+override_dh_auto_install:
+	ARCH=$$(dpkg-architecture -qDEB_HOST_ARCH); \
+	if [ "$$ARCH" = amd64 ]; then APPIMAGE=Obsidian-*.AppImage; APPIMAGE=$$(ls $$APPIMAGE | grep -v arm64 | head -n1); \
+	elif [ "$$ARCH" = arm64 ]; then APPIMAGE=$$(ls Obsidian-*-arm64.AppImage | head -n1); \
+	else echo "unsupported arch $$ARCH"; exit 1; fi; \
+	chmod +x "$$APPIMAGE" && ./"$$APPIMAGE" --appimage-extract >/dev/null && mv squashfs-root appimage-root
+	mkdir -p debian/obsidian/opt/obsidian debian/obsidian/usr/bin debian/obsidian/usr/share/applications
+	cp -ar appimage-root/* debian/obsidian/opt/obsidian/
+	if [ -f debian/obsidian/opt/obsidian/chrome-sandbox ]; then \
+	    chmod 4755 debian/obsidian/opt/obsidian/chrome-sandbox; \
+	fi
+	printf '#!/bin/bash\nOBSIDIAN_USER_FLAGS_FILE="$${XDG_CONFIG_HOME:-$$HOME/.config}/obsidian/user-flags.conf"\nif [ -f "$$OBSIDIAN_USER_FLAGS_FILE" ]; then\n    mapfile -t OBSIDIAN_USER_FLAGS < <(sed -r "/^( *#|$$)/d;s%% %%\\n%%g" "$$OBSIDIAN_USER_FLAGS_FILE")\nfi\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="$${ELECTRON_OZONE_PLATFORM_HINT:-auto}"\nfi\nexec /opt/obsidian/obsidian "$${OBSIDIAN_USER_FLAGS[@]}" "$$@"\n' > debian/obsidian/usr/bin/obsidian
+	chmod 0755 debian/obsidian/usr/bin/obsidian
+	sed -e 's|^Exec=.*|Exec=/usr/bin/obsidian %U|' -e 's|^Icon=.*|Icon=md.obsidian.Obsidian|' \
+	    appimage-root/md.obsidian.Obsidian.desktop > debian/obsidian/usr/share/applications/md.obsidian.Obsidian.desktop
+	install -Dm644 appimage-root/obsidian.png debian/obsidian/usr/share/icons/hicolor/256x256/apps/md.obsidian.Obsidian.png
+	install -Dm644 appimage-root/obsidian.png debian/obsidian/usr/share/pixmaps/md.obsidian.Obsidian.png

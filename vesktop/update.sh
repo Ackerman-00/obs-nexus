@@ -41,6 +41,36 @@ CURRENT_VER=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 echo "   📂 Current Local: $CURRENT_VER"
 echo "   ☁️  Latest Online: $NEW_VER"
 
+# Debian_Testing recipe helper: wrap an upstream .rpm into the plain-tar
+# debtransform orig input. The wrapper is gitignored (*.tar) and rides the
+# OBS sync; per-package actions/cache in update-packages.yml keeps it
+# across fresh CI checkouts.
+build_orig_wrapper() {
+    local ver="$1" url="$2" tmpd
+    tmpd=$(mktemp -d)
+    trap 'rm -rf "$tmpd"' EXIT
+    curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.rpm" \
+        || { echo "❌ orig RPM download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -cf "vesktop-$ver.tar" -C "$tmpd" upstream.rpm
+    for old in vesktop-*.tar; do
+        [ "$old" = "vesktop-$ver.tar" ] || rm -f "$old"
+    done
+    ls -l "vesktop-$ver.tar"
+    trap - EXIT
+    rm -rf "$tmpd"
+}
+
+# Orig-tarball guard: fresh CI checkouts start without the gitignored
+# wrapper (actions/cache usually restores it). Rebuild from the current
+# spec Source0 URL when missing so an OBS sync can never wipe the remote
+# copy with nothing to re-upload.
+if [ ! -f "vesktop-$CURRENT_VER.tar" ]; then
+    echo "   Orig wrapper missing locally; rebuilding..."
+    CUR_URL=$(grep "^Source0:" "$SPEC_FILE" | awk '{print $2}')
+    build_orig_wrapper "$CURRENT_VER" "$CUR_URL" || \
+        echo "   WARNING: orig wrapper rebuild failed; continuing version check."
+fi
+
 if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     echo "✅ Package is already up to date."
     exit 0
@@ -58,6 +88,19 @@ echo "🚀 New version found! Updating $SPEC_FILE..."
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 sed -i "s|^Source0:.*|Source0:        $DOWNLOAD_URL|" "$SPEC_FILE"
+
+# Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync.
+build_orig_wrapper "$NEW_VER" "$DOWNLOAD_URL"
+DSC_FILE="vesktop.dsc"
+sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: vesktop-$NEW_VER.tar|" "$DSC_FILE"
+DEB_DATE=$(date -R -u)
+DEB_ENTRY="vesktop ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- Ackerman-00 <quietcraft@gmail.com>  $DEB_DATE\n\n"
+if [ -f "debian.changelog" ]; then
+    echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
+else
+    echo -e "$DEB_ENTRY" > debian.changelog
+fi
 
 echo "📝 Updating changelog..."
 CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")

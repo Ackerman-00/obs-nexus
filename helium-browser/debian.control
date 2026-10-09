@@ -1,0 +1,20 @@
+Source: helium-browser
+Section: web
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13), desktop-file-utils
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/imputnet/helium-linux
+
+Package: helium-browser
+Architecture: amd64
+Provides: www-browser
+# Runtime set mapped from the RPM spec's soname Requires (bundled
+# Chromium runtime; t64 names target Debian Testing).
+Depends: ${misc:Depends}, hicolor-icon-theme, libasound2t64, libgbm1, libnspr4, libnss3
+Recommends: fonts-liberation, libvulkan1
+Description: Private, fast, and honest web browser
+ Helium is a private, fast, and honest web browser based on Chromium.
+ It strips Google services, telemetry and other privacy-invasive features,
+ while keeping the Chromium browsing experience.

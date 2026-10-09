@@ -13,7 +13,7 @@ jobs:
       startsWith(github.event.comment.body, '/oc') ||
       contains(github.event.comment.body, ' /opencode') ||
       startsWith(github.event.comment.body, '/opencode')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       pull-requests: write
@@ -22,7 +22,7 @@ jobs:
       id-token: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.1.0
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           token: ${{ secrets.REPO_FULL_ACCESS_TOKEN || github.token }}
@@ -33,9 +33,9 @@ jobs:
           git config --global user.email "41898282+opencode-agent[bot]@users.noreply.github.com"
           git config --global url."https://x-access-token:${{ secrets.REPO_FULL_ACCESS_TOKEN || github.token }}@github.com/".insteadOf "https://github.com/"
 
-      - name: Install opencode (latest)
+      - name: Install opencode (v2, latest)
         shell: bash
-        run: curl -fsSL https://opencode.ai/install | bash
+        run: curl -fsSL https://opencode.ai/v2/install | bash
 
       - name: Build prompt from triggering issue/PR
         shell: bash
@@ -66,7 +66,7 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
-          for model in "opencode/deepseek-v4-flash-free" "opencode/big-pickle" "opencode/mimo-v2.5-free" "opencode/laguna-s-2.1-free"; do
+          for model in "opencode/muse-spark-1.3-contributor-free" "opencode/mimo-v2.6-flash-free" "opencode/ling-3.1-flash-free" "opencode/big-pickle"; do
             echo "=== opencode run attempt with $model ==="
             if MODEL="$model" opencode run -m "$model" --dangerously-skip-permissions --agent=build --print-logs "$PROMPT"; then
               git fetch origin main >/dev/null 2>&1
@@ -82,7 +82,7 @@ jobs:
           done
           exit 1
         env:
-          MODEL: opencode/deepseek-v4-flash-free
+          MODEL: opencode/muse-spark-1.3-contributor-free
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

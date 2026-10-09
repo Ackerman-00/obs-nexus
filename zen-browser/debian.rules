@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream zen tarball (binary re-distributor, same
+# payload policy as the RPM spec: /usr/lib/zen-browser install, wrapper,
+# desktop entry, icons, distribution policies, dictionaries/hyphenation
+# symlinks, system libnssckbi instead of the bundled copy since it lacks
+# the NSS_3.126 symbol set zen needs). No network at build time: the orig
+# tarball IS the upstream release tarball (renamed by update.sh).
+# Static branding rides as debian.* copies (wrapper adapted to /usr/lib).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	desktop-file-validate debian/zen-browser/usr/share/applications/zen-browser.desktop
+
+override_dh_auto_install:
+	mkdir -p debian/zen-browser/usr/bin debian/zen-browser/usr/share/applications debian/zen-browser/usr/lib/zen-browser
+	cp -a zen/* debian/zen-browser/usr/lib/zen-browser/
+	rm -f debian/zen-browser/usr/lib/zen-browser/removed-files
+	install -m0755 debian/zen-browser.sh debian/zen-browser/usr/bin/zen-browser
+	desktop-file-install --dir=debian/zen-browser/usr/share/applications debian/zen-browser.desktop
+	for size in 16x16 32x32 48x48 64x64 128x128; do \
+	    num=$$(echo $$size | cut -dx -f1); \
+	    install -Dm644 debian/zen-browser/usr/lib/zen-browser/browser/chrome/icons/default/default$$num.png \
+	        debian/zen-browser/usr/share/icons/hicolor/$$size/apps/zen-browser.png; \
+	done
+	mkdir -p debian/zen-browser/usr/lib/zen-browser/distribution
+	install -m644 debian/policies.json debian/zen-browser/usr/lib/zen-browser/distribution/policies.json
+	ln -sf /usr/share/hunspell debian/zen-browser/usr/lib/zen-browser/dictionaries
+	ln -sf /usr/share/hyphen debian/zen-browser/usr/lib/zen-browser/hyphenation
+	rm -f debian/zen-browser/usr/lib/zen-browser/libnssckbi.so
+	ln -sf /usr/lib/x86_64-linux-gnu/libnssckbi.so debian/zen-browser/usr/lib/zen-browser/libnssckbi.so
+	if [ -f debian/zen-browser/usr/lib/zen-browser/libonnxruntime.so ]; then \
+	    chrpath -d debian/zen-browser/usr/lib/zen-browser/libonnxruntime.so; \
+	    if command -v execstack >/dev/null; then execstack -c debian/zen-browser/usr/lib/zen-browser/libonnxruntime.so; \
+	    else echo "execstack not in buildroot (prelink retired), leaving libonnxruntime.so stack as shipped"; fi; \
+	fi
