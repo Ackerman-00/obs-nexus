@@ -4,7 +4,7 @@ Binary: openchamber
 Architecture: amd64
 Version: 2.2.0
 Maintainer: Ackerman-00 <quietcraft@gmail.com>
-Build-Depends: debhelper-compat (= 13)
+Build-Depends: debhelper-compat (= 13), desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the
 # flat debian.* files into .debian.tar.gz, computes Files:/Checksums, and

@@ -24,6 +24,7 @@ BuildRequires:  cargo
 # NOTE: no `rustc` BuildRequires - no such package exists on Tumbleweed
 # (verified `zypper se --match-exact rustc` = 0 hits); `cargo` requires
 # the Rust toolchain, so the compiler is always present.
+BuildRequires:  pkgconfig(openssl)
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  cmake

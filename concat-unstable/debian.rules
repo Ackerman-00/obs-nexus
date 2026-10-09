@@ -47,3 +47,11 @@ override_dh_auto_install:
 	chmod 0755 debian/concat-unstable/usr/bin/concat-unstable
 	printf '[Desktop Entry]\nType=Application\nName=Concat (Unstable)\nComment=Video editor - main branch snapshot\nExec=/usr/bin/concat-unstable %%U\nIcon=concat-unstable\nTerminal=false\nCategories=AudioVideo;Video;\n' > debian/concat-unstable/usr/share/applications/concat-unstable.desktop
 	install -Dm644 assets/icons/concat_logo_256.png debian/concat-unstable/usr/share/icons/hicolor/256x256/apps/concat-unstable.png
+
+override_dh_clean:
+	dh_clean -X.orig
+# NOTE (2026-10-09): dh_clean deletes every *.orig as "detritus", but
+# cargo verifies the sha256 of each vendor/*/Cargo.toml.orig recorded in
+# .cargo-checksum.json -- deleting them breaks the offline build
+# ("failed to calculate checksum of .../vendor/slint-build/Cargo.toml.orig",
+# Debian_Testing 17:29 UTC build). Same fix as matugen's rules.
