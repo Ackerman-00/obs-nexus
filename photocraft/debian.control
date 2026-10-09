@@ -1,0 +1,18 @@
+Source: photocraft
+Section: graphics
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/storytold/photocraft
+
+Package: photocraft
+Architecture: amd64
+# Runtime set: upstream's own DEB Depends verified correct as-is
+# (libc6/libgcc-s1/libxkbcommon0 + vulkan-or-EGL loaders); t64-era names
+# need no adjustment for this set on Debian Testing.
+Depends: ${misc:Depends}, hicolor-icon-theme, libc6 (>= 2.35), libegl1, libgcc-s1, libvulkan1, libxkbcommon0
+Description: Photo editor - clean-room Photoshop in pure Rust
+ PhotoCraft: a clean-room Adobe Photoshop reimplementation in pure Rust.
+ Layer-based photo editing and digital painting.

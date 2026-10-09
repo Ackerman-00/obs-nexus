@@ -1,0 +1,18 @@
+Source: filmcraft
+Section: video
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/storytold/filmcraft
+
+Package: filmcraft
+Architecture: amd64
+# Runtime set: upstream's own DEB Depends (libc6/libgcc-s1/libxkbcommon0 +
+# vulkan-or-EGL loaders + libasound2) corrected for Debian Testing
+# (libasound2 -> libasound2t64; EGL/GL both listed explicitly).
+Depends: ${misc:Depends}, hicolor-icon-theme, libasound2t64, libc6 (>= 2.35), libegl1, libgcc-s1, libvulkan1, libxkbcommon0
+Description: Video editor in pure Rust
+ FilmCraft: a clean-room Adobe Premiere Pro reimplementation in pure
+ Rust. Timeline video editing with effects and export.

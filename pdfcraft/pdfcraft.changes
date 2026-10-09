@@ -1,0 +1,4 @@
+* Fri Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.4.0-0
+- Initial package: PDFCraft v0.4.0 upstream RPM repack with corrected
+  openSUSE Requires (upstream ships Fedora names) + Debian_Testing
+  build recipe maintained by update.sh; debtransform at build time

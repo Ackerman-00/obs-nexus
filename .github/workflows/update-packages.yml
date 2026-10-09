@@ -88,6 +88,51 @@ jobs:
         with:
           path: zen-browser/*.tar.xz
           key: deb-orig-zen-${{ hashFiles('zen-browser/zen-browser.spec', 'zen-browser/zen-browser.dsc') }}
+      - name: Cache Debian orig tarball (cadcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: cadcraft/*.tar
+          key: deb-orig-cadcraft-${{ hashFiles('cadcraft/cadcraft.spec', 'cadcraft/cadcraft.dsc') }}
+      - name: Cache Debian orig tarball (soundcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: soundcraft/*.tar
+          key: deb-orig-soundcraft-${{ hashFiles('soundcraft/soundcraft.spec', 'soundcraft/soundcraft.dsc') }}
+      - name: Cache Debian orig tarball (filmcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: filmcraft/*.tar
+          key: deb-orig-filmcraft-${{ hashFiles('filmcraft/filmcraft.spec', 'filmcraft/filmcraft.dsc') }}
+      - name: Cache Debian orig tarball (lightcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: lightcraft/*.tar
+          key: deb-orig-lightcraft-${{ hashFiles('lightcraft/lightcraft.spec', 'lightcraft/lightcraft.dsc') }}
+      - name: Cache Debian orig tarball (effectcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: effectcraft/*.tar
+          key: deb-orig-effectcraft-${{ hashFiles('effectcraft/effectcraft.spec', 'effectcraft/effectcraft.dsc') }}
+      - name: Cache Debian orig tarball (vectorcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: vectorcraft/*.tar
+          key: deb-orig-vectorcraft-${{ hashFiles('vectorcraft/vectorcraft.spec', 'vectorcraft/vectorcraft.dsc') }}
+      - name: Cache Debian orig tarball (pdfcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: pdfcraft/*.tar
+          key: deb-orig-pdfcraft-${{ hashFiles('pdfcraft/pdfcraft.spec', 'pdfcraft/pdfcraft.dsc') }}
+      - name: Cache Debian orig tarball (photocraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: photocraft/*.tar
+          key: deb-orig-photocraft-${{ hashFiles('photocraft/photocraft.spec', 'photocraft/photocraft.dsc') }}
+      - name: Cache Debian orig tarball (designcraft)
+        uses: actions/cache@v6.1.0
+        with:
+          path: designcraft/*.tar
+          key: deb-orig-designcraft-${{ hashFiles('designcraft/designcraft.spec', 'designcraft/designcraft.dsc') }}
       - name: Cache Debian orig tarball (concat)
         uses: actions/cache@v6.1.0
         with:

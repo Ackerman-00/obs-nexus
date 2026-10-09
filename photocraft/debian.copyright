@@ -1,0 +1,11 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: photocraft
+Upstream-Contact: storytold <https://github.com/storytold/photocraft>
+Source: https://github.com/storytold/photocraft
+
+Files: *
+Copyright: 2026 photocraft contributors
+License: MIT OR Apache-2.0
+ Either license applies, at the recipient's option. On Debian systems
+ the Apache-2.0 text can be found in
+ /usr/share/common-licenses/Apache-2.0.

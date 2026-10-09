@@ -116,10 +116,13 @@ def get_void_packages(root):
 
 
 def get_deb_source_packages(root):
-    """Packages whose RPM spec repacks an upstream .deb (e.g. localsend,
-    opencode-desktop). Returns (name, version, spec_path) triples. Used for
-    Debian testing verification: the upstream .deb must install cleanly
-    under debian:testing even though this repo ships RPMs."""
+    """Packages whose upstream .deb payload is verifiable on Debian testing:
+    specs repacking an upstream .deb directly (e.g. localsend,
+    opencode-desktop), plus any spec with a sibling Debian recipe
+    (<pkg>.dsc) whose update.sh carries an upstream .deb URL (e.g. the
+    storytold/*craft repacks, whose Source0 is the upstream .rpm).
+    Returns (name, version, spec_path) triples. The upstream .deb must
+    install cleanly under debian:testing even though this repo ships RPMs."""
     pkgs = []
     for spec in sorted(root.rglob("*.spec")):
         if any(x in spec.parts for x in SKIP_DIRS):
@@ -128,7 +131,9 @@ def get_deb_source_packages(root):
             txt = spec.read_text()
         except Exception:
             continue
-        if ".deb" not in txt:
+        has_deb = ".deb" in txt
+        has_dsc = (spec.parent / (spec.stem + ".dsc")).exists()
+        if not (has_deb or has_dsc):
             continue
         m_name = re.search(r"^Name:\s*(.+)$", txt, re.M)
         m_ver = re.search(r"^Version:\s*(.+)$", txt, re.M)
@@ -261,7 +266,11 @@ def test_opensuse_package(name, nvra, spec_path, workdir):
 def expand_deb_url(spec_path, ver):
     """Resolve the spec's upstream .deb URL host-side: prefer an https
     literal, else expand the %{url} macro form (Source0: %{url}/...deb)
-    against the spec's URL: tag plus %{version}. Returns "" if unresolvable."""
+    against the spec's URL: tag plus %{version}. If the spec has no .deb
+    URL (e.g. its Source0 is the upstream .rpm), fall back to the sibling
+    update.sh's first https .deb URL template, expanding shell version
+    vars ($1, $NEW_VER, $LATEST_VERSION, $CURRENT_VER, $VERSION, $LATEST_TAG)
+    and $GITHUB_REPO. Returns "" if unresolvable."""
     try:
         txt = Path(spec_path).read_text()
     except Exception:
@@ -277,6 +286,25 @@ def expand_deb_url(spec_path, ver):
         u = raw.replace("%{url}", base).replace("%{URL}", base)
         u = u.replace("%{version}", ver).replace("%{ver}", ver)
         if u.startswith(("http://", "https://")):
+            return u
+    # Sibling update.sh fallback (craft-style repacks: Source0 is the
+    # upstream .rpm, the .deb URL lives in deb_url_for()/ensure guards).
+    try:
+        shu = Path(spec_path).parent / "update.sh"
+        shtxt = shu.read_text()
+    except Exception:
+        return ""
+    m_repo = re.search(r'^GITHUB_REPO="([^"]+)"', shtxt, re.M)
+    repo = m_repo.group(1).strip() if m_repo else ""
+    for m in re.finditer(r"https?://\S+\.deb", shtxt):
+        u = m.group(0).strip('"\'')
+        for pat in ("%{version}", "%{ver}", "$1", "${1}", "$NEW_VER",
+                     "$LATEST_VERSION", "$CURRENT_VER", "$VERSION"):
+            u = u.replace(pat, ver)
+        u = u.replace("$LATEST_TAG", "v" + ver)
+        if repo:
+            u = u.replace("$GITHUB_REPO", repo)
+        if u.startswith(("http://", "https://")) and "$" not in u and "%" not in u:
             return u
     return ""
 

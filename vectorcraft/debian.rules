@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream vectorcraft .deb (binary re-distributor,
+# same file policy as the RPM spec: /usr hierarchy installed verbatim -
+# upstream already ships correct FHS layout with PATH-based Exec).
+# Upstream's own Depends verified correct, no remapping needed. No network
+# at build time: the orig tarball holds the upstream .deb, opened here
+# with binutils ar + tar (data.tar may be .gz/.xz/.zst).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	desktop-file-validate debian/vectorcraft/usr/share/applications/ai.storyteller.vectorcraft.desktop
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && ar x ../"$$(ls ../*.deb)" 2>/dev/null; cd ..
+	if [ -f payload/data.tar.gz ]; then \
+	    tar -xzf payload/data.tar.gz -C payload; \
+	elif [ -f payload/data.tar.xz ]; then \
+	    tar -xJf payload/data.tar.xz -C payload; \
+	elif [ -f payload/data.tar.zst ]; then \
+	    tar --zstd -xf payload/data.tar.zst -C payload; \
+	else \
+	    echo "ERROR: unexpected data.tar compression in upstream DEB"; exit 1; \
+	fi
+	mkdir -p debian/vectorcraft/usr/bin debian/vectorcraft/usr/share
+	cp -a payload/usr/bin/* debian/vectorcraft/usr/bin/
+	cp -a payload/usr/share/applications debian/vectorcraft/usr/share/
+	cp -a payload/usr/share/icons debian/vectorcraft/usr/share/
+	cp -a payload/usr/share/metainfo debian/vectorcraft/usr/share/
+	cp -a payload/usr/share/mime debian/vectorcraft/usr/share/
+	cp -a payload/usr/share/doc debian/vectorcraft/usr/share/

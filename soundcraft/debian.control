@@ -1,0 +1,17 @@
+Source: soundcraft
+Section: sound
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/storytold/soundcraft
+
+Package: soundcraft
+Architecture: amd64
+# Runtime set: upstream's own DEB Depends corrected for Debian Testing
+# (libasound2 -> libasound2t64; the t64 transition renamed it).
+Depends: ${misc:Depends}, hicolor-icon-theme, libasound2t64, libc6 (>= 2.35), libegl1, libgcc-s1, libvulkan1, libxkbcommon0
+Description: Digital audio workstation in pure Rust
+ SoundCraft: an open-source, clean-room reimplementation of Avid Pro
+ Tools in pure Rust. Record, edit and mix audio and MIDI.

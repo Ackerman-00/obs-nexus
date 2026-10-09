@@ -43,19 +43,28 @@ Or **[browse all packages and their builds online](https://build.opensuse.org/pr
 | Package | Description | Install |
 |---|---|---|
 | **bibata-cursor-theme** | Open source, compact, material designed cursor set | `sudo zypper install bibata-cursor-theme` |
+| **cadcraft** | CAD/drafting - clean-room AutoCAD-style app in pure Rust | `sudo zypper install cadcraft` |
 | **concat** | Free and open source video editor | `sudo zypper install concat` |
 | **concat-unstable** | Video editor main-branch snapshot (native source build) | `sudo zypper install concat-unstable` |
+| **designcraft** | Page layout/publishing - clean-room InDesign in pure Rust | `sudo zypper install designcraft` |
+| **effectcraft** | Motion graphics/VFX - clean-room After Effects in pure Rust | `sudo zypper install effectcraft` |
+| **filmcraft** | Video editor - clean-room Premiere Pro in pure Rust | `sudo zypper install filmcraft` |
 | **fluxer** | Free and open source messaging & VoIP platform | `sudo zypper install fluxer` |
 | **helium-browser** | Private, fast, and honest Chromium-based browser | `sudo zypper install helium-browser` |
 | **localsend** | Open source cross-platform alternative to AirDrop | `sudo zypper install localsend` |
 | **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot) | `sudo zypper install lazyvim-git` |
+| **lightcraft** | Photo manager - clean-room Lightroom in pure Rust | `sudo zypper install lightcraft` |
 | **matugen** | Material You color generation tool | `sudo zypper install matugen` |
 | **obsidian** | Knowledge base for plain-text Markdown notes | `sudo zypper install obsidian` |
 | **openchamber** | Agentic development environment boards for issues and pull requests | `sudo zypper install openchamber` |
 | **opencode-desktop** | Open source AI coding agent | `sudo zypper install opencode-desktop` |
+| **pdfcraft** | Document viewer/editor - clean-room Acrobat in pure Rust | `sudo zypper install pdfcraft` |
+| **photocraft** | Photo editor - clean-room Photoshop in pure Rust | `sudo zypper install photocraft` |
 | **protonplus** | Wine and Proton-based compatibility tools manager | `sudo zypper install protonplus` |
 | **rootapp** | Discord alternative for gaming communities and large groups | `sudo zypper install rootapp` |
+| **soundcraft** | Digital audio workstation - clean-room Pro Tools in pure Rust | `sudo zypper install soundcraft` |
 | **stoat-desktop** | Open source, user-first chat platform desktop client | `sudo zypper install stoat-desktop` |
+| **vectorcraft** | Vector editor - clean-room Illustrator in pure Rust | `sudo zypper install vectorcraft` |
 | **vesktop** | Custom Discord client with Vencord preinstalled | `sudo zypper install vesktop` |
 | **zen-browser** | Minimal browser focused on privacy and calm browsing | `sudo zypper install zen-browser` |
 
