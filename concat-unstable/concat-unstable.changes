@@ -1,3 +1,6 @@
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6+git20261009164842.c260c2d-0
+- Update concat-unstable to base 0.2.6 + main c260c2d
+
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6+git20261009145217.48e48a1-0
 - Initial package: Concat main-branch snapshot, native cargo source build
   (vendored offline + BtbN FFmpeg + Microsoft ONNX sidecars) + Debian_Testing

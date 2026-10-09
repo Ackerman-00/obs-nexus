@@ -1,3 +1,9 @@
+concat-unstable (0.2.6+git20261009164842.c260c2d-1) unstable; urgency=medium
+
+  * New upstream snapshot c260c2d (base 0.2.6).
+
+ -- Ackerman-00 <quietcraft@gmail.com>  Fri, 09 Oct 2026 16:55:48 +0000
+
 concat-unstable (0.2.6+git20261009145217.48e48a1-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (main-branch source build).
