@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Drop unused zero-length rpmlintrc filter (2.0.26 payload has no
+  zero-length stubs)
+
+-------------------------------------------------------------------
 Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Fix debian/rules ar path (ls already prints the ../ prefix)

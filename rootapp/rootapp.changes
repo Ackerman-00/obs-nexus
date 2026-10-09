@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Convert 14 package-name Requires to soname form (rpmlint
+  explicit-lib-dependency); filter unversioned hicolor (repo
+  convention)
+
+-------------------------------------------------------------------
 Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;

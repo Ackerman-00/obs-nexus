@@ -3,19 +3,13 @@
 # not packaging mistakes. Same pattern as stoat-desktop/vesktop.
 addFilter("binary-or-shlib-defines-rpath")
 addFilter("filelist-forbidden-opt")
-# NOTE: a few filters below (permissions-*, setgroups, explicit-lib)
-# report "unused" under a plain local `rpmlint` run but ARE consumed by
-# the stricter OBS build-time check set (proven by the 2026-09-27
-# build log: E: permissions-missing-postin, permissions-file-setuid-bit,
-# missing-call-to-setgroups-before-setuid, explicit-lib-dependency).
-# Do NOT prune them based on local output alone.
-addFilter("explicit-lib-dependency")
+# NOTE (2026-10-09): the permissions-*/setgroups/explicit-lib filters that
+# used to live here were removed -- the current 1.14.4 payload triggers
+# none of those findings on OBS (verified E: unused-rpmlintrc-filter on
+# the 1.14.4-29.1 TW build), so keeping them is itself an error. If a
+# future payload reintroduces setuid findings, re-add scoped filters then.
 addFilter("dir-or-file-outside-snapshot")
 addFilter("binary-or-shlib-calls-gethostbyname")
-addFilter("missing-call-to-setgroups-before-setuid")
-addFilter("permissions-file-setuid-bit")
-addFilter("permissions-missing-postin")
-addFilter("permissions-missing-requires")
 # Private bundled libs under /opt/obsidian/usr/lib (never in ldconfig
 # path, never +x upstream): not ours to chmod or register.
 addFilter("shared-library-not-executable")

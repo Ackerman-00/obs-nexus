@@ -4,6 +4,5 @@
 addFilter("binary-or-shlib-defines-rpath")
 addFilter("filelist-forbidden-opt")
 addFilter("explicit-lib-dependency")
-addFilter("zero-length")
 addFilter("missing-call-to-setgroups-before-setuid")
 addFilter("invalid-desktopfile")

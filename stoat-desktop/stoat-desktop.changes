@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Register chrome-sandbox with the permissions system (%verifyscript
+  + %set_permissions + PreReq); drop the 3 filters that hid the
+  missing registration
+
+-------------------------------------------------------------------
 Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Ship the icon inside the orig wrapper (binaries are rejected in

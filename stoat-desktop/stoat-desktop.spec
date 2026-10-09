@@ -39,6 +39,9 @@ Requires:       xdg-utils
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
+# chrome-sandbox ships setuid: register it with the permissions system
+# (rpmlint permissions-missing-* otherwise, Badness 10).
+PreReq: permissions
 ExclusiveArch:  x86_64
 
 %description
@@ -81,6 +84,7 @@ chmod 0755 %{buildroot}%{_bindir}/stoat-desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 
 %post
+%set_permissions /opt/Stoat/chrome-sandbox
 # Refresh the desktop database and icon cache
 %{_bindir}/update-desktop-database > /dev/null 2>&1 || :
 /bin/touch --no-create %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
@@ -96,6 +100,9 @@ esac
 
 %posttrans
 %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
+
+%verifyscript
+%verify_permissions -e /opt/Stoat/chrome-sandbox
 
 %files
 %{_bindir}/stoat-desktop

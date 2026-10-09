@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Prune 5 stale rpmlintrc filters (unused on the current payload;
+  keeping them is itself an error)
+
+-------------------------------------------------------------------
 Fri Oct 09 16:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Drop uninstallable gtk2 dbusmenu chain from Debian Depends
