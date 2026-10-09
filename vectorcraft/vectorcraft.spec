@@ -50,6 +50,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.vector
 %files
 %license %{_datadir}/doc/vectorcraft/LICENSE-APACHE
 %license %{_datadir}/doc/vectorcraft/LICENSE-MIT
+%dir %{_datadir}/doc/vectorcraft
 %doc %{_datadir}/doc/vectorcraft/OFL-*.txt
 %doc %{_datadir}/doc/vectorcraft/README.md
 %{_bindir}/vectorcraft

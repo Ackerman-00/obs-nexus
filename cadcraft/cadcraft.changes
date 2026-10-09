@@ -1,3 +1,6 @@
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.3.0-0
+- Own doc dir (%dir), fix unowned-directory build failure
+
 * Fri Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.3.0-0
 - Initial package: CADCraft v0.3.0 upstream RPM repack with corrected
   openSUSE Requires (upstream ships Fedora names) + Debian_Testing

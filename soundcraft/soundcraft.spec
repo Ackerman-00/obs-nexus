@@ -51,6 +51,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.soundc
 %files
 %license %{_datadir}/doc/soundcraft/LICENSE-APACHE
 %license %{_datadir}/doc/soundcraft/LICENSE-MIT
+%dir %{_datadir}/doc/soundcraft
 %doc %{_datadir}/doc/soundcraft/ATTRIBUTION.md
 %doc %{_datadir}/doc/soundcraft/NOTICE
 %doc %{_datadir}/doc/soundcraft/README.md

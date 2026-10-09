@@ -52,6 +52,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.filmcr
 %files
 %license %{_datadir}/doc/filmcraft/LICENSE-APACHE
 %license %{_datadir}/doc/filmcraft/LICENSE-MIT
+%dir %{_datadir}/doc/filmcraft
 %doc %{_datadir}/doc/filmcraft/README.md
 %doc %{_datadir}/doc/filmcraft/OFL-*.txt
 %{_bindir}/filmcraft

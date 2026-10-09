@@ -57,6 +57,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.photoc
 %files
 %license %{_datadir}/doc/photocraft/LICENSE-APACHE
 %license %{_datadir}/doc/photocraft/LICENSE-MIT
+%dir %{_datadir}/doc/photocraft
 %doc %{_datadir}/doc/photocraft/OFL-*.txt
 %doc %{_datadir}/doc/photocraft/README.md
 %{_bindir}/photocraft

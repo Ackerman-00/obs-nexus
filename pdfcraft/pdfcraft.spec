@@ -50,6 +50,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.pdfcra
 %files
 %license %{_datadir}/doc/pdfcraft/LICENSE-APACHE
 %license %{_datadir}/doc/pdfcraft/LICENSE-MIT
+%dir %{_datadir}/doc/pdfcraft
 %doc %{_datadir}/doc/pdfcraft/OFL-*.txt
 %doc %{_datadir}/doc/pdfcraft/README.md
 %{_bindir}/pdfcraft

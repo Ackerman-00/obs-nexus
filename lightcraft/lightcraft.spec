@@ -50,6 +50,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.lightc
 %files
 %license %{_datadir}/doc/lightcraft/LICENSE-APACHE
 %license %{_datadir}/doc/lightcraft/LICENSE-MIT
+%dir %{_datadir}/doc/lightcraft
 %doc %{_datadir}/doc/lightcraft/NOTICE
 %doc %{_datadir}/doc/lightcraft/OFL-*.txt
 %doc %{_datadir}/doc/lightcraft/README.md

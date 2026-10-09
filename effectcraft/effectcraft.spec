@@ -50,6 +50,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.effect
 %files
 %license %{_datadir}/doc/effectcraft/LICENSE-APACHE
 %license %{_datadir}/doc/effectcraft/LICENSE-MIT
+%dir %{_datadir}/doc/effectcraft
 %doc %{_datadir}/doc/effectcraft/README.md
 %{_bindir}/effectcraft
 %{_bindir}/effectcraft-cli

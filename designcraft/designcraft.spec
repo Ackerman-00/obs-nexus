@@ -50,6 +50,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.design
 %files
 %license %{_datadir}/doc/designcraft/LICENSE-APACHE
 %license %{_datadir}/doc/designcraft/LICENSE-MIT
+%dir %{_datadir}/doc/designcraft
 %doc %{_datadir}/doc/designcraft/OFL-*.txt
 %doc %{_datadir}/doc/designcraft/README.md
 %{_bindir}/designcraft

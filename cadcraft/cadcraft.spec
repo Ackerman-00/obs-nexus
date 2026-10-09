@@ -50,6 +50,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.cadcra
 %files
 %license %{_datadir}/doc/cadcraft/LICENSE-APACHE
 %license %{_datadir}/doc/cadcraft/LICENSE-MIT
+%dir %{_datadir}/doc/cadcraft
 %doc %{_datadir}/doc/cadcraft/README.md
 %{_bindir}/cadcraft
 %{_bindir}/cadcraft-cli
