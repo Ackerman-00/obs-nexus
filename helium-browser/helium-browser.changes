@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 09 17:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Fix payload copy: pre-create opt/helium and use cp -t (the old
+  find/cp created the dest as a file copy, dropping locales and the
+  Qt5 shim); exclude dpkg .pc metadata
+
+-------------------------------------------------------------------
 Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Fix debian/rules for dpkg-source top-dir stripping (payload files

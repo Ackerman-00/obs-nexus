@@ -36,8 +36,8 @@ override_dh_auto_test:
 # here (there is no helium-*_linux dir at build time); debian/ itself must
 # be excluded from the payload copy.
 override_dh_auto_install:
-	mkdir -p debian/helium-browser/opt debian/helium-browser/usr/bin debian/helium-browser/usr/share/applications debian/helium-browser/usr/share/metainfo debian/helium-browser/usr/share/icons/hicolor/256x256/apps; \
-	find . -maxdepth 1 -mindepth 1 ! -name debian -exec cp -a {} debian/helium-browser/opt/helium/ \;
+	mkdir -p debian/helium-browser/opt/helium debian/helium-browser/usr/bin debian/helium-browser/usr/share/applications debian/helium-browser/usr/share/metainfo debian/helium-browser/usr/share/icons/hicolor/256x256/apps; \
+	find . -maxdepth 1 -mindepth 1 ! -name debian ! -name '.pc' -exec cp -a -t debian/helium-browser/opt/helium/ {} +
 	sed -Ei "s/(CHROME_VERSION_EXTRA=).*/\1suse/" debian/helium-browser/opt/helium/helium-wrapper
 	install -m 644 debian/helium-browser/opt/helium/product_logo_256.png \
 	    debian/helium-browser/usr/share/icons/hicolor/256x256/apps/helium.png
