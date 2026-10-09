@@ -20,6 +20,14 @@ override_dh_auto_test:
 	: # runs BEFORE auto_install stages the files (same ordering trap
 	: # localsend avoids with a no-op test).
 
+# Binary repack: the payload is prebuilt upstream, so automatic
+# shlibdeps analysis cannot run (bundled FFmpeg/ONNX libs have no system
+# providers) and its ${shlib:Depends} output is unused -- the manually
+# maintained Depends (derived from the payload's ELF DT_NEEDED union)
+# IS the dependency declaration. Same as stoat-desktop/vesktop rules.
+override_dh_shlibdeps:
+	:
+
 override_dh_auto_install:
 	mkdir -p payload
 	cd payload && ar x "$$(ls ../*.deb)" 2>/dev/null; cd ..

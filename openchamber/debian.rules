@@ -30,6 +30,14 @@ override_dh_auto_install:
 	    appimage-root/openchamber.desktop > debian/openchamber/usr/share/applications/openchamber.desktop
 	install -Dm644 appimage-root/openchamber.svg debian/openchamber/usr/share/icons/hicolor/scalable/apps/openchamber.svg
 
+# Binary repack: the payload is prebuilt upstream, so automatic
+# shlibdeps analysis cannot run (bundled Electron/Chromium tree) and its
+# ${shlib:Depends} output is unused -- the manually maintained Depends
+# (derived from the payload's ELF DT_NEEDED union) IS the dependency
+# declaration. Same as stoat-desktop/vesktop rules.
+override_dh_shlibdeps:
+	:
+
 # Prebuilt upstream binaries are already stripped and carry no usable
 # debuginfo -- and the payload even contains foreign-arch (linux-arm64,
 # musl) .node files that make objcopy fail. Skip stripping; same class
