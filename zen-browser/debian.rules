@@ -16,7 +16,7 @@ override_dh_auto_build:
 	:
 
 override_dh_auto_test:
-	desktop-file-validate debian/zen-browser/usr/share/applications/zen-browser.desktop
+	desktop-file-validate debian/zen-browser.desktop
 
 override_dh_auto_install:
 	mkdir -p debian/zen-browser/usr/bin debian/zen-browser/usr/share/applications debian/zen-browser/usr/lib/zen-browser

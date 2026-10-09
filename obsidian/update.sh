@@ -43,23 +43,28 @@ fi
 CURRENT_VER=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
 # Debian_Testing recipe helper: wrap upstream artifact(s) into the
-# plain-tar debtransform orig input. The wrapper is gitignored (*.tar) and
+# gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt) rejects
+# an uncompressed .orig.tar). The wrapper is gitignored (*.tar.gz) and
 # rides the OBS sync; per-package actions/cache in update-packages.yml
 # keeps it across fresh CI checkouts.
 build_orig_wrapper() {
     local ver="$1"; shift
-    tar -cf "obsidian-$ver.tar" "$@"
-    for old in obsidian-*.tar; do
-        [ "$old" = "obsidian-$ver.tar" ] || rm -f "$old"
+    tar -czf "obsidian-$ver.tar.gz" "$@"
+    for old in obsidian-*.tar obsidian-*.tar.gz; do
+        [ "$old" = "obsidian-$ver.tar.gz" ] || rm -f "$old"
     done
-    ls -l "obsidian-$ver.tar"
+    ls -l "obsidian-$ver.tar.gz"
 }
 
 # Orig-tarball guard: fresh CI checkouts start without the gitignored
 # wrapper (actions/cache usually restores it). Rebuild from the current
 # release assets when missing so an OBS sync can never wipe the remote
-# copy with nothing to re-upload.
-if [ ! -f "obsidian-$CURRENT_VER.tar" ]; then
+# copy with nothing to re-upload. The AppImages are KEPT locally (not
+# deleted): they are the spec Source0/Source1, and the pipeline drift-sync
+# gate requires every Source artifact to be present before it uploads any
+# tracked-file changes (e.g. new debian.* files) -- deleting them here
+# would defer the drift-sync forever.
+if [ ! -f "obsidian-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding from release assets..."
     X86_FN="Obsidian-$CURRENT_VER.AppImage"
     ARM_FN="Obsidian-$CURRENT_VER-arm64.AppImage"
@@ -67,7 +72,7 @@ if [ ! -f "obsidian-$CURRENT_VER.tar" ]; then
         "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VER/$X86_FN" -o "$X86_FN" && \
     curl -fsSL --retry 3 --connect-timeout 20 \
         "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VER/$ARM_FN" -o "$ARM_FN" && \
-    build_orig_wrapper "$CURRENT_VER" "$X86_FN" "$ARM_FN" && rm -f "$X86_FN" "$ARM_FN" || \
+    build_orig_wrapper "$CURRENT_VER" "$X86_FN" "$ARM_FN" || \
         { echo "WARNING: orig wrapper rebuild failed; continuing version check."; rm -f "$X86_FN" "$ARM_FN"; }
 fi
 
@@ -137,7 +142,7 @@ sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 build_orig_wrapper "$LATEST_VER" "$X86_APPIMAGE" "$ARM_APPIMAGE"
 DSC_FILE="obsidian.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VER/" "$DSC_FILE"
-sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: obsidian-$LATEST_VER.tar|" "$DSC_FILE"
+sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: obsidian-$LATEST_VER.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
 DEB_ENTRY="obsidian ($LATEST_VER-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VER.\n\n -- $PACKAGER  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then

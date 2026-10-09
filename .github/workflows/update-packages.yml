@@ -41,7 +41,7 @@ jobs:
       - name: Cache Debian orig tarball (fluxer)
         uses: actions/cache@v6.1.0
         with:
-          path: fluxer/*.tar
+          path: fluxer/*.tar.gz
           key: deb-orig-fluxer-${{ hashFiles('fluxer/fluxer.spec', 'fluxer/fluxer.dsc') }}
       - name: Cache Debian orig tarball (helium-browser)
         uses: actions/cache@v6.1.0
@@ -51,32 +51,37 @@ jobs:
       - name: Cache Debian orig tarball (localsend)
         uses: actions/cache@v6.1.0
         with:
-          path: localsend/*.tar
+          path: localsend/*.tar.gz
           key: deb-orig-localsend-${{ hashFiles('localsend/localsend.spec', 'localsend/localsend.dsc') }}
       - name: Cache Debian orig tarball (obsidian)
         uses: actions/cache@v6.1.0
         with:
-          path: obsidian/*.tar
+          path: obsidian/*.tar.gz
           key: deb-orig-obsidian-${{ hashFiles('obsidian/obsidian.spec', 'obsidian/obsidian.dsc') }}
+      - name: Cache Obsidian AppImages (obsidian)
+        uses: actions/cache@v6.1.0
+        with:
+          path: obsidian/*.AppImage
+          key: deb-orig-obsidian-appimage-${{ hashFiles('obsidian/obsidian.spec') }}
       - name: Cache Debian orig tarball (opencode-desktop)
         uses: actions/cache@v6.1.0
         with:
-          path: opencode-desktop/*.tar
+          path: opencode-desktop/*.tar.gz
           key: deb-orig-opencode-${{ hashFiles('opencode-desktop/opencode-desktop.spec', 'opencode-desktop/opencode-desktop.dsc') }}
       - name: Cache Debian orig tarball (rootapp)
         uses: actions/cache@v6.1.0
         with:
-          path: rootapp/*.tar
+          path: rootapp/*.tar.gz
           key: deb-orig-rootapp-${{ hashFiles('rootapp/rootapp.spec', 'rootapp/rootapp.dsc') }}
       - name: Cache Debian orig tarball (stoat-desktop)
         uses: actions/cache@v6.1.0
         with:
-          path: stoat-desktop/*.tar
+          path: stoat-desktop/*.tar.gz
           key: deb-orig-stoat-${{ hashFiles('stoat-desktop/stoat-desktop.spec', 'stoat-desktop/stoat-desktop.dsc') }}
       - name: Cache Debian orig tarball (vesktop)
         uses: actions/cache@v6.1.0
         with:
-          path: vesktop/*.tar
+          path: vesktop/*.tar.gz
           key: deb-orig-vesktop-${{ hashFiles('vesktop/vesktop.spec', 'vesktop/vesktop.dsc') }}
       - name: Cache Debian orig tarball (zen-browser)
         uses: actions/cache@v6.1.0

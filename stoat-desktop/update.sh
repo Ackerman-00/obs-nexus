@@ -25,21 +25,22 @@ LATEST_VERSION="${LATEST_TAG#v}"
 # Read current version from the spec file
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Debian_Testing recipe helper: wrap an upstream .zip into the plain-tar
-# debtransform orig input. The wrapper is gitignored (*.tar) and rides the
-# OBS sync; per-package actions/cache in update-packages.yml keeps it
-# across fresh CI checkouts.
+# Debian_Testing recipe helper: wrap an upstream .zip into the
+# gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt) rejects
+# an uncompressed .orig.tar). The wrapper is gitignored (*.tar.gz) and
+# rides the OBS sync; per-package actions/cache in update-packages.yml
+# keeps it across fresh CI checkouts.
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
     trap 'rm -rf "$tmpd"' EXIT
     curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.zip" \
         || { echo "orig .zip download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -cf "stoat-desktop-$ver.tar" -C "$tmpd" upstream.zip
-    for old in stoat-desktop-*.tar; do
-        [ "$old" = "stoat-desktop-$ver.tar" ] || rm -f "$old"
+    tar -czf "stoat-desktop-$ver.tar.gz" -C "$tmpd" upstream.zip
+    for old in stoat-desktop-*.tar stoat-desktop-*.tar.gz; do
+        [ "$old" = "stoat-desktop-$ver.tar.gz" ] || rm -f "$old"
     done
-    ls -l "stoat-desktop-$ver.tar"
+    ls -l "stoat-desktop-$ver.tar.gz"
     trap - EXIT
     rm -rf "$tmpd"
 }
@@ -51,7 +52,7 @@ zip_url_for() {
 # Orig-tarball guard: fresh CI checkouts start without the gitignored
 # wrapper (actions/cache usually restores it). Rebuild when missing so an
 # OBS sync can never wipe the remote copy with nothing to re-upload.
-if [ ! -f "stoat-desktop-$CURRENT_VERSION.tar" ]; then
+if [ ! -f "stoat-desktop-$CURRENT_VERSION.tar.gz" ]; then
     echo "  -> Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VERSION" "$(zip_url_for "$CURRENT_VERSION")" || \
         echo "  -> WARNING: orig wrapper rebuild failed; continuing version check."
@@ -81,7 +82,7 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     build_orig_wrapper "$LATEST_VERSION" "$ZIP_URL"
     DSC_FILE="stoat-desktop.dsc"
     sed -i "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
-    sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: stoat-desktop-$LATEST_VERSION.tar|" "$DSC_FILE"
+    sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: stoat-desktop-$LATEST_VERSION.tar.gz|" "$DSC_FILE"
     DEB_DATE=$(date -R -u)
     DEB_ENTRY="stoat-desktop ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION.\n\n -- $PACKAGER  $DEB_DATE\n\n"
     if [ -f "debian.changelog" ]; then

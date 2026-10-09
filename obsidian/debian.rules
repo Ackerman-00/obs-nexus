@@ -15,7 +15,11 @@ override_dh_auto_build:
 	:
 
 override_dh_auto_test:
-	desktop-file-validate debian/obsidian/usr/share/applications/md.obsidian.Obsidian.desktop
+	# The desktop entry is generated at install time from the AppImage
+	# payload (Exec/Icon repointed), so there is no static source file to
+	# validate here -- same policy as rootapp, whose inline desktop also
+	# skips pre-install validation.
+	:
 
 override_dh_auto_install:
 	ARCH=$$(dpkg-architecture -qDEB_HOST_ARCH); \

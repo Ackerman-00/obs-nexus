@@ -1,4 +1,8 @@
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2.0.26-0
+- Fix Debian_Testing recipe: gzip the debtransform orig wrapper
+  (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
+
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2.0.26-0
 - Update opencode-desktop to v2.0.26 from the upstream stable channel
   (GitHub tags carry no desktop DEB asset; Source0 now uses the versioned
   files/bin URL)

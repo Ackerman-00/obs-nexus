@@ -17,7 +17,8 @@ DSC_FILE="opencode-desktop.dsc"
 DEB_CHANGELOG="debian.changelog"
 
 # build_orig_tarball <version> <deb-url>: wrap the whole upstream .deb
-# into a plain-tar debtransform orig input (no parsing, no recompression),
+# into a gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt)
+# rejects an uncompressed .orig.tar, so the wrapper MUST stay compressed),
 # dropping tarballs for any other version. The tarball is gitignored and
 # rides the OBS sync; it is the DEBTRANSFORM-TAR input debtransform needs
 # at build time.
@@ -27,13 +28,13 @@ build_orig_tarball() {
     trap 'rm -rf "$tmpd"' EXIT
     curl -fsSL --retry 3 --retry-all-errors -L --max-time 900 "$url" -o "$tmpd/upstream.deb" \
         || { echo "orig .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -cf "opencode-desktop-$ver.tar" -C "$tmpd" upstream.deb
-    for old in opencode-desktop-*.tar; do
-        [ "$old" = "opencode-desktop-$ver.tar" ] || rm -f "$old"
+    tar -czf "opencode-desktop-$ver.tar.gz" -C "$tmpd" upstream.deb
+    for old in opencode-desktop-*.tar opencode-desktop-*.tar.gz; do
+        [ "$old" = "opencode-desktop-$ver.tar.gz" ] || rm -f "$old"
     done
     # Drop any tarballs from the previous member-copy scheme.
     rm -f opencode-desktop-*.tar.xz
-    ls -l "opencode-desktop-$ver.tar"
+    ls -l "opencode-desktop-$ver.tar.gz"
     trap - EXIT
     rm -rf "$tmpd"
 }
@@ -47,7 +48,7 @@ CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 # triggered by any tracked-file drift would wipe the remote copy with
 # nothing to re-upload and break the Debian_Testing build -- so rebuild it
 # from the (unchanged) upstream .deb before doing anything else.
-if [ ! -f "opencode-desktop-$CURRENT_VERSION.tar" ]; then
+if [ ! -f "opencode-desktop-$CURRENT_VERSION.tar.gz" ]; then
     echo "Orig tarball missing locally; rebuilding from upstream .deb..."
     build_orig_tarball "$CURRENT_VERSION" "https://opencode.ai/files/bin/$CURRENT_VERSION/opencode-desktop-linux-amd64.deb" || \
         echo "WARNING: orig tarball rebuild failed; continuing version check anyway."
@@ -134,13 +135,13 @@ sed -i "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 # Debian_Testing recipe (opencode-desktop.dsc + flat debian.* files, built
 # server-side via debtransform at build time): keep the .dsc Version and
 # Debtransform-Tar in sync, prepend a debian/changelog entry, and refresh
-# the orig wrapper tar holding the whole upstream .deb (no parsing, no
-# recompression). The tarball is gitignored (*.tar) and rides the OBS sync
+# the orig wrapper tar holding the whole upstream .deb (gzip-compressed;
+# dpkg-source rejects an uncompressed .orig.tar). The tarball is gitignored (*.tar) and rides the OBS sync
 # like any other top-level package file; actions/cache in update-packages.yml
 # keeps it across fresh CI checkouts so this 218MB download only happens on
 # real version changes.
 sed -i "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
-sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: opencode-desktop-$LATEST_VERSION.tar|" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: opencode-desktop-$LATEST_VERSION.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
 DEB_ENTRY="opencode-desktop ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION (stable channel repack).\n\n -- $PACKAGER  $DEB_DATE\n\n"
 if [ -f "$DEB_CHANGELOG" ]; then

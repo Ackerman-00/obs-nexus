@@ -9,7 +9,7 @@ Build-Depends: debhelper-compat (= 13), binutils, xz-utils
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the
 # flat debian.* files into .debian.tar.gz, computes Files:/Checksums, and
 # appends the -1 Debian revision (Version here carries no revision).
-# Debtransform-Tar is a plain (uncompressed) wrapper tar holding the upstream
-# .deb; it is versioned per bump and maintained by update.sh alongside the
+# Debtransform-Tar is a gzip-compressed wrapper tar holding the upstream
+# .deb (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar); it is versioned per bump and maintained by update.sh alongside the
 # spec. debian/rules opens it with binutils ar + tar (same as the RPM %prep).
-Debtransform-Tar: opencode-desktop-2.0.26.tar
+Debtransform-Tar: opencode-desktop-2.0.26.tar.gz

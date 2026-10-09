@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Fix Debian_Testing recipe: gzip the debtransform orig wrapper
+  (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
+
+-------------------------------------------------------------------
 Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper

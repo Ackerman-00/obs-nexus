@@ -15,7 +15,9 @@ override_dh_auto_build:
 	:
 
 override_dh_auto_test:
-	desktop-file-validate debian/helium-browser/usr/share/applications/helium.desktop
+	HELIUM_SRC=$$(ls -d helium-*_linux | head -n1); \
+	if [ -z "$$HELIUM_SRC" ]; then echo "No helium source dir found"; exit 1; fi; \
+	desktop-file-validate "$$HELIUM_SRC/helium.desktop"
 
 override_dh_auto_install:
 	HELIUM_SRC=$$(ls -d helium-*_linux | head -n1); \

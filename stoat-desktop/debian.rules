@@ -13,7 +13,7 @@ override_dh_auto_build:
 	:
 
 override_dh_auto_test:
-	desktop-file-validate debian/stoat-desktop/usr/share/applications/chat.stoat.StoatDesktop.desktop
+	desktop-file-validate debian/chat.stoat.StoatDesktop.desktop
 
 override_dh_auto_install:
 	unzip -q "$$(ls *.zip)" -d ziproot

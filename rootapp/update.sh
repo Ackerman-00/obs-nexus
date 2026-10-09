@@ -26,16 +26,17 @@ CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | awk '{print $3}')
 
 # Debian_Testing recipe helper: wrap the upstream AppImage into the
-# plain-tar debtransform orig input. The wrapper is gitignored (*.tar) and
+# gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt) rejects
+# an uncompressed .orig.tar). The wrapper is gitignored (*.tar.gz) and
 # rides the OBS sync; per-package actions/cache in update-packages.yml
 # keeps it across fresh CI checkouts.
 build_orig_wrapper() {
     local ver="$1" img="$2"
-    tar -cf "rootapp-$ver.tar" -C "$(dirname "$img")" "$(basename "$img")"
-    for old in rootapp-*.tar; do
-        [ "$old" = "rootapp-$ver.tar" ] || rm -f "$old"
+    tar -czf "rootapp-$ver.tar.gz" -C "$(dirname "$img")" "$(basename "$img")"
+    for old in rootapp-*.tar rootapp-*.tar.gz; do
+        [ "$old" = "rootapp-$ver.tar.gz" ] || rm -f "$old"
     done
-    ls -l "rootapp-$ver.tar"
+    ls -l "rootapp-$ver.tar.gz"
 }
 
 if [ -n "$CURRENT_SHA" ] && [ "$NEW_SHA" = "$CURRENT_SHA" ]; then
@@ -44,7 +45,7 @@ if [ -n "$CURRENT_SHA" ] && [ "$NEW_SHA" = "$CURRENT_SHA" ]; then
     # wrapper (actions/cache usually restores it). Rebuild it here from the
     # just-downloaded AppImage so an OBS sync can never wipe the remote copy
     # with nothing to re-upload.
-    if [ ! -f "rootapp-$CURRENT_VERSION.tar" ]; then
+    if [ ! -f "rootapp-$CURRENT_VERSION.tar.gz" ]; then
         build_orig_wrapper "$CURRENT_VERSION" "$TMPDIR/Root.AppImage"
     fi
     exit 0
@@ -148,7 +149,7 @@ fi
 build_orig_wrapper "$VERSION" "$TMPDIR/Root.AppImage"
 DSC_FILE="rootapp.dsc"
 sed -i "s/^Version: .*/Version: $VERSION/" "$DSC_FILE"
-sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: rootapp-$VERSION.tar|" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: rootapp-$VERSION.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
 DEB_ENTRY="rootapp ($VERSION-1) unstable; urgency=medium\n\n  * New upstream release $VERSION.\n\n -- $PACKAGER  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then

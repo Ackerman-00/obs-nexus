@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Validate the upstream desktop from the extracted release
+  tree in the test phase (was validating the not-yet-installed
+  path, failing the Debian_Testing build)
+- Add missing metainfo sidecar (debian.net.imput.helium.metainfo.xml)
+
+-------------------------------------------------------------------
 Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball

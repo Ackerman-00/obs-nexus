@@ -5,7 +5,7 @@
 
 **Bleeding-edge Wayland & gaming packages for openSUSE**
 
-Curated packages optimized for minimal Wayland compositors (Niri, Mangowm) and high-performance gaming. Recipes live in [opensuse-nexus](https://github.com/Ackerman-00/opensuse-nexus) and are built on the [openSUSE Build Service](https://build.opensuse.org/project/show/home:ackerman).
+Curated packages optimized for minimal Wayland compositors (Niri, Mangowm) and high-performance gaming. Recipes live in [obs-nexus](https://github.com/Ackerman-00/obs-nexus) and are built on the [openSUSE Build Service](https://build.opensuse.org/project/show/home:ackerman).
 
 > [!TIP]
 > Packages update automatically — just run `sudo zypper dup` as usual.
@@ -50,21 +50,13 @@ Or **[browse all packages and their builds online](https://build.opensuse.org/pr
 | **helium-browser** | Private, fast, and honest Chromium-based browser | `sudo zypper install helium-browser` |
 | **localsend** | Open source cross-platform alternative to AirDrop | `sudo zypper install localsend` |
 | **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot) | `sudo zypper install lazyvim-git` |
-| **mangowm-git** | Scrollable-tiling Wayland compositor (Nexus optimized) | `sudo zypper install mangowm-git` |
 | **matugen** | Material You color generation tool | `sudo zypper install matugen` |
-| **noctalia** | Sleek minimal Wayland desktop shell | `sudo zypper install noctalia` |
-| **noctalia-greeter** | Greeter for Noctalia (greetd login screen) | `sudo zypper install noctalia-greeter` |
-| **niri-git** | Scrollable-tiling Wayland compositor | `sudo zypper install niri-git` |
 | **obsidian** | Knowledge base for plain-text Markdown notes | `sudo zypper install obsidian` |
 | **opencode-desktop** | Open source AI coding agent | `sudo zypper install opencode-desktop` |
 | **protonplus** | Wine and Proton-based compatibility tools manager | `sudo zypper install protonplus` |
 | **rootapp** | Discord alternative for gaming communities and large groups | `sudo zypper install rootapp` |
-| **scenefx** | Drop-in wlroots scene API replacement with eye-candy effects | `sudo zypper install libscenefx-0_5` |
-| **stb** | Single-file public domain libraries for C/C++ | `sudo zypper install stb-devel` |
 | **stoat-desktop** | Open source, user-first chat platform desktop client | `sudo zypper install stoat-desktop` |
 | **vesktop** | Custom Discord client with Vencord preinstalled | `sudo zypper install vesktop` |
-| **wlroots** | Modular Wayland compositor library | `sudo zypper install libwlroots-0_20` |
-| **xwayland-satellite-git** | Rootless Xwayland integration for Wayland compositors | `sudo zypper install xwayland-satellite-git` |
 | **zen-browser** | Minimal browser focused on privacy and calm browsing | `sudo zypper install zen-browser` |
 
 ---
