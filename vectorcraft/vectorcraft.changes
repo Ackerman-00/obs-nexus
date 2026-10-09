@@ -1,5 +1,5 @@
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.7.0-0
-- Own doc dir (%dir) and icon glob covers the scalable .svg, fix unpackaged/unowned build failures
+- Own doc dir (%dir) and icon glob covers the scalable .svg, fix unpackaged/unowned build failures; gzip debtransform orig wrapper (dpkg-source rejects plain .tar)
 
 * Fri Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.7.0-0
 - Initial package: VectorCraft v0.7.0 upstream RPM repack with corrected
