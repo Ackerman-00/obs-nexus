@@ -72,6 +72,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/concat.desktop
 
 %files
 %license %{_datadir}/doc/concat/LICENSE
+%dir %{_datadir}/doc/concat
 %doc %{_datadir}/doc/concat/THIRD_PARTY_NOTICES.md
 %{_bindir}/concat
 %{_datadir}/applications/concat.desktop

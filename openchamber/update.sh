@@ -48,23 +48,26 @@ echo "   Latest Online: $NEW_VER"
 X86_APPIMAGE="OpenChamber-$NEW_VER-linux-x86_64.AppImage"
 
 # Debian_Testing recipe helper: wrap upstream artifact(s) into the
-# plain-tar debtransform orig input. The wrapper is gitignored (*.tar) and
-# rides the OBS sync; per-package actions/cache in update-packages.yml
-# keeps it across fresh CI checkouts.
+# gzip-compressed debtransform orig input. dpkg-source 3.0 (quilt) REJECTS
+# an uncompressed .orig.tar ("unrecognized file for a v2.0 source
+# package", Debian_Testing 2026-10-09) - same fix as localsend. The
+# wrapper is gitignored (*.tar.gz) and rides the OBS sync; per-package
+# actions/cache in update-packages.yml keeps it across fresh CI
+# checkouts.
 build_orig_wrapper() {
     local ver="$1"; shift
-    tar -cf "openchamber-$ver.tar" "$@"
-    for old in openchamber-*.tar; do
-        [ "$old" = "openchamber-$ver.tar" ] || rm -f "$old"
+    tar -czf "openchamber-$ver.tar.gz" "$@"
+    for old in openchamber-*.tar.gz; do
+        [ "$old" = "openchamber-$ver.tar.gz" ] || rm -f "$old"
     done
-    ls -l "openchamber-$ver.tar"
+    ls -l "openchamber-$ver.tar.gz"
 }
 
 # Orig-tarball guard: fresh CI checkouts start without the gitignored
 # wrapper (actions/cache usually restores it). Rebuild from the current
 # release asset when missing so an OBS sync can never wipe the remote copy
 # with nothing to re-upload.
-if [ ! -f "openchamber-$CURRENT_VER.tar" ]; then
+if [ ! -f "openchamber-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     CUR_IMG="OpenChamber-$CURRENT_VER-linux-x86_64.AppImage"
     # NOTE: the downloaded AppImage is deliberately KEPT (not rm'd): the
@@ -111,7 +114,7 @@ fi
 build_orig_wrapper "$NEW_VER" "$X86_APPIMAGE"
 DSC_FILE="openchamber.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
-sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: openchamber-$NEW_VER.tar|" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: openchamber-$NEW_VER.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
 DEB_ENTRY="openchamber ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then

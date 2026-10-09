@@ -9,7 +9,8 @@ Build-Depends: debhelper-compat (= 13)
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the
 # flat debian.* files into .debian.tar.gz, computes Files:/Checksums, and
 # appends the -1 Debian revision (Version here carries no revision).
-# Debtransform-Tar is a plain (uncompressed) wrapper tar holding the upstream
-# AppImage; it is versioned per bump and maintained by update.sh alongside
+# Debtransform-Tar is a gzip-compressed wrapper tar holding the upstream
+# AppImage (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar);
+# it is versioned per bump and maintained by update.sh alongside
 # the spec.
-Debtransform-Tar: openchamber-2.2.0.tar
+Debtransform-Tar: openchamber-2.2.0.tar.gz

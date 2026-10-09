@@ -8,6 +8,10 @@
 # shlibdeps is skipped (bundled FFmpeg/ONNX have no system providers);
 # Depends are hand-mapped like all other repo recipes and re-verified by
 # docker-sweep ldd on the built .deb.
+# NOTE (2026-10-09): dpkg-source -x strips the single top-level dir
+# (repo convention, cf. lazyvim-git/matugen rules) -- the payload lands
+# at the build root, so NEVER glob for concat-*/ here (it matches
+# nothing post-strip and failed the first Debian_Testing build).
 # SKIA CAVEAT (two-step plan): Slint's Skia renderer (vendored patched copy
 # in-tree) resolves its binaries via skia-safe's binary cache, keyed by
 # crate git hash. If the OBS log shows the download failing offline, read
@@ -21,7 +25,7 @@ override_dh_auto_configure:
 	:
 
 override_dh_auto_build:
-	cd concat-*/src && \
+	cd src && \
 	CARGO_NET_OFFLINE=true ORT_SKIP_DOWNLOAD=1 \
 	FFMPEG_DIR="$$PWD/../ffmpeg-dev" ORT_LIB_LOCATION="$$PWD/../onnxlib" \
 	ORT_PREFER_DYNAMIC_LINK=1 \
@@ -36,10 +40,10 @@ override_dh_auto_shlibdeps:
 
 override_dh_auto_install:
 	mkdir -p debian/concat-unstable/opt/concat-unstable/lib debian/concat-unstable/usr/bin debian/concat-unstable/usr/share/applications
-	install -m0755 concat-*/src/target/release/concat debian/concat-unstable/opt/concat-unstable/concat-unstable
-	cp -a concat-*/ffmpeg-dev/lib/lib*.so* debian/concat-unstable/opt/concat-unstable/lib/
-	cp -a concat-*/onnxlib/libonnxruntime.so* debian/concat-unstable/opt/concat-unstable/lib/
+	install -m0755 src/target/release/concat debian/concat-unstable/opt/concat-unstable/concat-unstable
+	cp -a ffmpeg-dev/lib/lib*.so* debian/concat-unstable/opt/concat-unstable/lib/
+	cp -a onnxlib/libonnxruntime.so* debian/concat-unstable/opt/concat-unstable/lib/
 	printf '#!/bin/sh\nexec /opt/concat-unstable/concat-unstable "$$@"\n' > debian/concat-unstable/usr/bin/concat-unstable
 	chmod 0755 debian/concat-unstable/usr/bin/concat-unstable
 	printf '[Desktop Entry]\nType=Application\nName=Concat (Unstable)\nComment=Video editor - main branch snapshot\nExec=/usr/bin/concat-unstable %%U\nIcon=concat-unstable\nTerminal=false\nCategories=AudioVideo;Video;\n' > debian/concat-unstable/usr/share/applications/concat-unstable.desktop
-	install -Dm644 concat-*/assets/icons/concat_logo_256.png debian/concat-unstable/usr/share/icons/hicolor/256x256/apps/concat-unstable.png
+	install -Dm644 assets/icons/concat_logo_256.png debian/concat-unstable/usr/share/icons/hicolor/256x256/apps/concat-unstable.png

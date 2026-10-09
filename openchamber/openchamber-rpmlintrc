@@ -1,0 +1,20 @@
+# Bundled prebuilt Electron runtime under /opt/openchamber is immutable
+# upstream binaries - these findings describe upstream's own files,
+# not packaging mistakes. Same pattern as obsidian/vesktop/stoat-desktop
+# (verified against the 2.2.0 TW build log: 36 E:, badness 120122).
+addFilter("binary-or-shlib-defines-rpath")
+addFilter("filelist-forbidden-opt")
+# Private bundled libs under /opt/openchamber/usr/lib (legacy tray libs
+# the AppImage carries for old distros; never in ldconfig path, never +x
+# upstream): not ours to chmod or register. Same as obsidian.
+addFilter("shared-library-not-executable")
+addFilter("missing-hash-section")
+addFilter("library-without-ldconfig-postin")
+addFilter("library-without-ldconfig-postun")
+# Upstream data files inside the bundled app.asar node_modules tree
+# (bun-pty .bun-tag, msgpackr index.js) and node-pty win headers.
+addFilter("zero-length")
+addFilter("devel-file-in-non-devel-package")
+# hicolor-icon-theme is intentionally unversioned (repo convention,
+# same as every other spec in this repo).
+addFilter("branding-requires-unversioned")

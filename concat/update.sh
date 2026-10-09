@@ -50,10 +50,13 @@ echo "   Latest Online: $NEW_VER"
 RPM_NAME="Concat-$NEW_VER-linux-x86_64.rpm"
 DEB_NAME="Concat-$NEW_VER-linux-x86_64.deb"
 
-# Debian_Testing recipe helper: wrap the upstream .deb into the plain-tar
-# debtransform orig input. The wrapper is gitignored (*.tar) and rides the
-# OBS sync; per-package actions/cache in update-packages.yml keeps it
-# across fresh CI checkouts. (The RPM side needs nothing local: Source0 is
+# Debian_Testing recipe helper: wrap the upstream .deb into the
+# gzip-compressed debtransform orig input. dpkg-source 3.0 (quilt) REJECTS
+# an uncompressed .orig.tar ("unrecognized file for a v2.0 source
+# package", Debian_Testing 2026-10-09) - same fix as localsend. The
+# wrapper is gitignored (*.tar.gz) and rides the OBS sync; per-package
+# actions/cache in update-packages.yml keeps it across fresh CI
+# checkouts. (The RPM side needs nothing local: Source0 is
 # a versioned URL fetched server-side by download_files.)
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
@@ -61,11 +64,11 @@ build_orig_wrapper() {
     trap 'rm -rf "$tmpd"' EXIT
     curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.deb" \
         || { echo "orig .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -cf "concat-$ver.tar" -C "$tmpd" upstream.deb
-    for old in concat-*.tar; do
-        [ "$old" = "concat-$ver.tar" ] || rm -f "$old"
+    tar -czf "concat-$ver.tar.gz" -C "$tmpd" upstream.deb
+    for old in concat-*.tar.gz; do
+        [ "$old" = "concat-$ver.tar.gz" ] || rm -f "$old"
     done
-    ls -l "concat-$ver.tar"
+    ls -l "concat-$ver.tar.gz"
     trap - EXIT
     rm -rf "$tmpd"
 }
@@ -77,7 +80,7 @@ deb_url_for() {
 # Orig-tarball guard: fresh CI checkouts start without the gitignored
 # wrapper (actions/cache usually restores it). Rebuild when missing so an
 # OBS sync can never wipe the remote copy with nothing to re-upload.
-if [ ! -f "concat-$CURRENT_VER.tar" ]; then
+if [ ! -f "concat-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VER" "$(deb_url_for "$CURRENT_VER")" || \
         echo "WARNING: orig wrapper rebuild failed; continuing version check."
@@ -109,7 +112,7 @@ sed -i "s|^Source0:.*|Source0:        https://github.com/$GITHUB_REPO/releases/d
 build_orig_wrapper "$NEW_VER" "$(deb_url_for "$NEW_VER")"
 DSC_FILE="concat.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
-sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: concat-$NEW_VER.tar|" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: concat-$NEW_VER.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
 DEB_ENTRY="concat ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then

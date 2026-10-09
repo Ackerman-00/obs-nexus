@@ -91,7 +91,7 @@ jobs:
       - name: Cache Debian orig tarball (concat)
         uses: actions/cache@v6.1.0
         with:
-          path: concat/*.tar
+          path: concat/*.tar.gz
           key: deb-orig-concat-${{ hashFiles('concat/concat.spec', 'concat/concat.dsc') }}
       - name: Cache snapshot tarball (concat-unstable)
         uses: actions/cache@v6.1.0
@@ -101,7 +101,7 @@ jobs:
       - name: Cache Debian orig tarball (openchamber)
         uses: actions/cache@v6.1.0
         with:
-          path: openchamber/*.tar
+          path: openchamber/*.tar.gz
           key: deb-orig-openchamber-${{ hashFiles('openchamber/openchamber.spec', 'openchamber/openchamber.dsc') }}
       - name: Cache Debian orig tarball (bibata-cursor-theme)
         uses: actions/cache@v6.1.0

@@ -21,7 +21,9 @@ URL:            https://github.com/jub0t/concat
 # the Debian orig trivially in sync (cf. lazyvim-git generated tarballs).
 Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  cargo
-BuildRequires:  rustc
+# NOTE: no `rustc` BuildRequires - no such package exists on Tumbleweed
+# (verified `zypper se --match-exact rustc` = 0 hits); `cargo` requires
+# the Rust toolchain, so the compiler is always present.
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  cmake
@@ -71,8 +73,11 @@ the newest commit show in the package version.
 # SKIA_BINARIES_URL=file://... here. Do NOT guess the key.
 export CARGO_NET_OFFLINE=true
 export ORT_SKIP_DOWNLOAD=1
-export FFMPEG_DIR="%{_builddir}/%{name}-%{version}/ffmpeg-dev"
-export ORT_LIB_LOCATION="%{_builddir}/%{name}-%{version}/onnxlib"
+# NOTE (2026-10-09): %autosetup -n concat-%{commit} unpacks to
+# %{_builddir}/concat-%{commit}, NOT %{_builddir}/%{name}-%{version} - the
+# env dirs must use the real top dir (wrong path broke the first build).
+export FFMPEG_DIR="%{_builddir}/concat-%{commit}/ffmpeg-dev"
+export ORT_LIB_LOCATION="%{_builddir}/concat-%{commit}/onnxlib"
 export ORT_PREFER_DYNAMIC_LINK=1
 export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags"
 cd src && cargo build --offline --frozen --release --bin concat
