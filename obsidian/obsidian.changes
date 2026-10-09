@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 09 16:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Drop uninstallable gtk2 dbusmenu chain from Debian Depends
+  (libdbusmenu-gtk.so.4 has no provider on Testing); tray works via
+  the system ayatana stack instead
+
+-------------------------------------------------------------------
 Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
