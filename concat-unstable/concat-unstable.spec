@@ -73,9 +73,12 @@ the newest commit show in the package version.
 # SKIA_BINARIES_URL=file://... here. Do NOT guess the key.
 export CARGO_NET_OFFLINE=true
 export ORT_SKIP_DOWNLOAD=1
-# NOTE (2026-10-09): %autosetup -n concat-%{commit} unpacks to
-# %{_builddir}/concat-%{commit}, NOT %{_builddir}/%{name}-%{version} - the
-# env dirs must use the real top dir (wrong path broke the first build).
+# NOTE (2026-10-09): %%autosetup -n concat-%%{commit} unpacks to
+# %%{_builddir}/concat-%%{commit}, NOT %%{_builddir}/%%{name}-%%{version} -
+# the env dirs must use the real top dir (wrong path broke the first
+# build). (Double-%%: a bare %macro in a comment WOULD expand - that
+# exact mistake injected a literal %setup line into %build and broke
+# the second build with "fg: no job control".)
 export FFMPEG_DIR="%{_builddir}/concat-%{commit}/ffmpeg-dev"
 export ORT_LIB_LOCATION="%{_builddir}/concat-%{commit}/onnxlib"
 export ORT_PREFER_DYNAMIC_LINK=1

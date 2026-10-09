@@ -14,7 +14,10 @@ override_dh_auto_build:
 	:
 
 override_dh_auto_test:
-	desktop-file-validate debian/openchamber/usr/share/applications/openchamber.desktop
+	: # desktop entry is validated post-install by the RPM %check and by
+	: # docker-sweep on the built .deb; validating debian/<pkg>/... here
+	: # runs BEFORE auto_install stages the files (same ordering trap
+	: # localsend avoids with a no-op test).
 
 override_dh_auto_install:
 	chmod +x "$$(ls *.AppImage)" && ./"$$(ls *.AppImage)" --appimage-extract >/dev/null && mv squashfs-root appimage-root

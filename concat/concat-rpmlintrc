@@ -1,0 +1,21 @@
+# Upstream prebuilt RPM tree under /opt/concat is immutable upstream
+# binaries - these findings describe upstream's own files, not packaging
+# mistakes. Same pattern as obsidian/openchamber (verified against the
+# 0.2.6 TW build log: 35 E:).
+addFilter("binary-or-shlib-defines-rpath")
+addFilter("filelist-forbidden-opt")
+# Bundled FFmpeg 8.1 + ONNX Runtime 1.28.0 under /opt/concat/lib (found
+# via the binary's $ORIGIN/lib RPATH): the unversioned .so symlinks are
+# upstream's devel-style links, and the libs are never in the ldconfig
+# path and never +x upstream - not ours to move, chmod, or register.
+addFilter("devel-file-in-non-devel-package")
+addFilter("missing-hash-section")
+addFilter("library-without-ldconfig-postin")
+addFilter("library-without-ldconfig-postun")
+# Manual Requires are NEEDED-proven (libstdc++/libgcc_s/libasound2/
+# libfreetype6/libxkbcommon-x11-0/libxkbcommon0 from the payload ELF
+# plus the nfpm-declared GUI stack); rpmlint cannot see the proof.
+addFilter("explicit-lib-dependency")
+# hicolor-icon-theme is intentionally unversioned (repo convention,
+# same as every other spec in this repo).
+addFilter("branding-requires-unversioned")
