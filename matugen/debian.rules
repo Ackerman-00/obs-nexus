@@ -25,3 +25,12 @@ override_dh_auto_install:
 
 override_dh_auto_clean:
 	rm -rf target .cargo
+
+override_dh_clean:
+	dh_clean -X.orig
+# NOTE (2026-10-09): dh_clean deletes every *.orig as "detritus", but
+# cargo verifies the sha256 of each vendor/*/Cargo.toml.orig recorded in
+# .cargo-checksum.json -- deleting them breaks the offline build
+# ("failed to calculate checksum of .../vendor/ariadne/Cargo.toml.orig",
+# Debian_Testing 15:50 UTC build). -X.orig keeps them; nothing else in
+# this tree relies on *.orig cleanup.

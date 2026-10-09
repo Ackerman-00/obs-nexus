@@ -7,9 +7,9 @@
 # ("sudo: No such file or directory", 2026-10-09). The forced meson flow
 # below is exactly what the wrapper runs (meson setup --prefix=/usr,
 # meson install with DESTDIR) minus sudo, mirroring the RPM's
-# %meson/%meson_install. meson test runs via dh_auto_test like the
-# spec's %check. No network at build time: the orig tarball IS the
-# upstream source archive.
+# %meson/%meson_install. meson test runs like the spec's %check (via a
+# direct meson test call, see the HOME note below). No network at build
+# time: the orig tarball IS the upstream source archive.
 %:
 	dh $@
 
@@ -30,16 +30,20 @@ override_dh_auto_build:
 	dh_auto_build --buildsystem=meson
 
 override_dh_auto_test:
-	mkdir -p /tmp/protonplus-test-home
-	HOME=/tmp/protonplus-test-home dh_auto_test --buildsystem=meson
-# NOTE (2026-10-09): debhelper runs tests with HOME pointed inside the
-# build tree (/usr/src/packages/BUILD/...), and the upstream test
-# native-distro-paths-and-projection asserts the managed tool root does
-# NOT live under /usr/ -- with that HOME it always does, failing 4/5.
-# An in-tree HOME (./debian/test-home) does NOT help: the whole build
-# tree is itself under /usr/src. HOME must leave /usr/ entirely; /tmp
-# keeps the test's intent (user-dir, never system /usr) while dropping
-# the buildroot-path artifact (RPM builds use /home/abuild: unaffected).
+	mkdir -p /tmp/protonplus-test-home; \
+	BUILDDIR=$$(ls -d obj-* build build-native 2>/dev/null | head -n1); \
+	HOME=/tmp/protonplus-test-home meson test -C "$$BUILDDIR" --verbose
+# NOTE (2026-10-09): debhelper resets HOME to
+# debian/.debhelper/generated/_source/home for every dh_* command, and the
+# upstream test native-distro-paths-and-projection asserts the managed tool
+# root does NOT live under /usr/ -- with that HOME it always does (the
+# whole build tree is under /usr/src), failing 4/5. An inline HOME= on
+# dh_auto_test is silently scrubbed (proven: the 15:49 UTC build log still
+# shows the debhelper HOME), so the test step calls meson test directly
+# with HOME=/tmp/protonplus-test-home. That preserves the test's intent
+# (user-dir, never system /usr) while dropping the buildroot artifact
+# (RPM builds use /home/abuild: unaffected). BUILDDIR is derived, never
+# hardcoded (debhelper uses obj-<arch>).
 
 override_dh_auto_install:
 	dh_auto_install --buildsystem=meson
