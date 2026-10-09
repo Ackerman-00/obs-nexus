@@ -149,6 +149,22 @@ cp -a "$TMPD/skia-binaries.tar.gz" "$SRC/skia-cache/skia-binaries-$SKIA_KEY.tar.
 # Keep the spec/rules file:// names in sync with the key above.
 sed -i -E "s|skia-binaries-[^\"']*\.tar\.gz|skia-binaries-$SKIA_KEY.tar.gz|g" "$SPEC_FILE" debian.rules
 
+# 4c. sherpa-onnx static libs (sherpa-onnx-sys build.rs supports
+# SHERPA_ONNX_ARCHIVE_DIR: a dir holding the exact archive, copied to the
+# cargo cache instead of downloading). Archive name embeds
+# sherpa-onnx-sys's CARGO_PKG_VERSION (read from the vendored crate, never
+# guessed); refresh both together when the crate bumps.
+SHERPA_VER=$(grep -A2 'name = "sherpa-onnx-sys"' "$SRC/src/Cargo.lock" | grep '^version' | head -1 | cut -d'"' -f2)
+[ -n "$SHERPA_VER" ] || { echo "sherpa-onnx-sys version unreadable; spec left untouched."; exit 1; }
+SHERPA_ARCHIVE="sherpa-onnx-v$SHERPA_VER-linux-x64-static-lib.tar.bz2"
+curl -fsSL --retry 3 --connect-timeout 60 \
+    "https://github.com/k2-fsa/sherpa-onnx/releases/download/v$SHERPA_VER/$SHERPA_ARCHIVE" \
+    -o "$TMPD/sherpa.tar.bz2" \
+    || { echo "sherpa-onnx download failed; spec left untouched."; exit 1; }
+mkdir -p "$SRC/sherpa-cache"
+cp -a "$TMPD/sherpa.tar.bz2" "$SRC/sherpa-cache/$SHERPA_ARCHIVE"
+sed -i -E "s|sherpa-onnx-v[0-9.]+-linux-x64-static-lib\.tar\.bz2|$SHERPA_ARCHIVE|g" "$SPEC_FILE" debian.rules
+
 # 5. Pack the unified snapshot tarball, drop superseded ones.
 rm -f concat-unstable-*.tar.gz
 tar -czf "$TARBALL" -C "$TMPD" "concat-$HEAD_SHA"

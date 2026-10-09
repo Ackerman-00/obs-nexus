@@ -88,6 +88,11 @@ export ORT_PREFER_DYNAMIC_LINK=1
 # prefetched into skia-cache/ by update.sh; file:// is read verbatim
 # (skia-bindings utils::download supports file:// with empty hostname).
 export SKIA_BINARIES_URL="file://%{_builddir}/concat-%{commit}/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
+# sherpa-onnx static libs (sherpa-onnx-sys build.rs): SHERPA_ONNX_ARCHIVE_DIR
+# is copied to the cargo cache instead of downloading (offline DNS fails).
+# Archive name embeds sherpa-onnx-sys's CARGO_PKG_VERSION - refresh with
+# update.sh step 4c when it changes (a stale name errors loudly, no guess).
+export SHERPA_ONNX_ARCHIVE_DIR="%{_builddir}/concat-%{commit}/sherpa-cache"
 export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags"
 cd src && cargo build --offline --frozen --release --bin concat
 
