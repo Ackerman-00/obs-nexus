@@ -54,7 +54,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.effect
 %{_bindir}/effectcraft
 %{_bindir}/effectcraft-cli
 %{_datadir}/applications/ai.storyteller.effectcraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.effectcraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.effectcraft.*
 %{_datadir}/metainfo/ai.storyteller.effectcraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.effectcraft.xml
 

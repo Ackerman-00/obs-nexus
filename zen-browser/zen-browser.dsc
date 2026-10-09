@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: zen-browser
 Binary: zen-browser
 Architecture: amd64
-Version: 1.23.1b
+Version: 1.23.2b
 Maintainer: Ackerman-00 <quietcraft@gmail.com>
 Build-Depends: debhelper-compat (= 13), chrpath, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,

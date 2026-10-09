@@ -57,7 +57,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.soundc
 %{_bindir}/soundcraft
 %{_bindir}/soundcraft-cli
 %{_datadir}/applications/ai.storyteller.soundcraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.soundcraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.soundcraft.*
 %{_datadir}/metainfo/ai.storyteller.soundcraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.soundcraft.xml
 

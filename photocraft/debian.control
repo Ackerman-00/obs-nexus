@@ -9,10 +9,9 @@ Homepage: https://github.com/storytold/photocraft
 
 Package: photocraft
 Architecture: amd64
-# Runtime set: upstream's own DEB Depends verified correct as-is
-# (libc6/libgcc-s1/libxkbcommon0 + vulkan-or-EGL loaders); t64-era names
-# need no adjustment for this set on Debian Testing.
-Depends: ${misc:Depends}, hicolor-icon-theme, libc6 (>= 2.35), libegl1, libgcc-s1, libvulkan1, libxkbcommon0
+# Runtime set: full upstream DEB Depends (control file inside the
+# upstream .deb), X11/wayland libs included; boolean vulkan-or-EGL kept.
+Depends: ${misc:Depends}, hicolor-icon-theme, libc6 (>= 2.35), libgcc-s1, libxkbcommon0, libxkbcommon-x11-0, libwayland-client0, libx11-6, libx11-xcb1, libxcb1, libxcursor1, libxi6, libvulkan1 | libegl1
 Description: Photo editor - clean-room Photoshop in pure Rust
  PhotoCraft: a clean-room Adobe Photoshop reimplementation in pure Rust.
  Layer-based photo editing and digital painting.

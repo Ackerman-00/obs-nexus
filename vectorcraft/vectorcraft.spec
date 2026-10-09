@@ -55,7 +55,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.vector
 %{_bindir}/vectorcraft
 %{_bindir}/vectorcraft-cli
 %{_datadir}/applications/ai.storyteller.vectorcraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.vectorcraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.vectorcraft.*
 %{_datadir}/metainfo/ai.storyteller.vectorcraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.vectorcraft.xml
 

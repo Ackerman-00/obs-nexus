@@ -55,7 +55,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.design
 %{_bindir}/designcraft
 %{_bindir}/designcraft-cli
 %{_datadir}/applications/ai.storyteller.designcraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.designcraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.designcraft.*
 %{_datadir}/metainfo/ai.storyteller.designcraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.designcraft.xml
 

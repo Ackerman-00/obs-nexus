@@ -1,3 +1,6 @@
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.2b-0
+- Update to 1.23.2b (upstream bugfix release: library/session fixes)
+
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
 - Exclude dpkg .pc metadata from the payload copy; use cp -t form
 

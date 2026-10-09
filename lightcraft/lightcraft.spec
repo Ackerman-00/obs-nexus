@@ -56,7 +56,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.lightc
 %{_bindir}/lightcraft
 %{_bindir}/lightcraft-cli
 %{_datadir}/applications/ai.storyteller.lightcraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.lightcraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.lightcraft.*
 %{_datadir}/metainfo/ai.storyteller.lightcraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.lightcraft.xml
 

@@ -55,7 +55,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.pdfcra
 %{_bindir}/pdfcraft
 %{_bindir}/pdfcraft-cli
 %{_datadir}/applications/ai.storyteller.pdfcraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.pdfcraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.pdfcraft.*
 %{_datadir}/metainfo/ai.storyteller.pdfcraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.pdfcraft.xml
 

@@ -62,7 +62,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.photoc
 %{_bindir}/photocraft
 %{_bindir}/photocraft-cli
 %{_datadir}/applications/ai.storyteller.photocraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.photocraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.photocraft.*
 %{_datadir}/metainfo/ai.storyteller.photocraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.photocraft.xml
 

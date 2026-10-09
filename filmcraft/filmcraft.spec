@@ -57,7 +57,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.filmcr
 %{_bindir}/filmcraft
 %{_bindir}/filmcraft-cli
 %{_datadir}/applications/ai.storyteller.filmcraft.desktop
-%{_datadir}/icons/hicolor/*/apps/ai.storyteller.filmcraft.png
+%{_datadir}/icons/hicolor/*/apps/ai.storyteller.filmcraft.*
 %{_datadir}/metainfo/ai.storyteller.filmcraft.metainfo.xml
 %{_datadir}/mime/packages/ai.storyteller.filmcraft.xml
 
