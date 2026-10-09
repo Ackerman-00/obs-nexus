@@ -15,11 +15,12 @@
 
 override_dh_auto_configure:
 	mkdir -p debian/source; \
-	printf '%s\n' 'extend-diff-ignore = "build/.*"' 'extend-diff-ignore = "build-native/.*"' > debian/source/options; \
+	printf '%s\n' 'extend-diff-ignore = "build/.*"' 'extend-diff-ignore = "build-native/.*"' 'extend-diff-ignore = "obj-.*/.*"' > debian/source/options; \
 	dh_auto_configure --buildsystem=meson -- --prefix=/usr
 # NOTE: debian/source/options is generated (not shipped as a flat
 # debian.* file, which cannot carry debian/source/* paths): without it
-# dpkg-source -b aborts on the in-tree meson build dir binaries.
+# dpkg-source -b aborts on the in-tree meson build dir binaries
+# (debhelper uses obj-<arch>; the wrapper script used build-native).
 
 override_dh_auto_build:
 	dh_auto_build --buildsystem=meson
