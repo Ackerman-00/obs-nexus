@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Oct 09 17:45:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Ship chrome-sandbox 0755 instead of setuid (rpmlint SUID tags are
+  in BlockedFilters: no filter or registration can silence them, and
+  third-party paths can never join the whitelist; userns covers the
+  sandbox, same pattern as opencode-desktop)
+
+-------------------------------------------------------------------
 Fri Oct 09 17:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Filter the (correct) setuid sandbox bit with a scoped filter; the

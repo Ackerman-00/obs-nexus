@@ -39,9 +39,6 @@ Requires:       xdg-utils
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
-# chrome-sandbox ships setuid: register it with the permissions system
-# (rpmlint permissions-missing-* otherwise, Badness 10).
-PreReq: permissions
 ExclusiveArch:  x86_64
 
 %description
@@ -80,11 +77,19 @@ exec /opt/Stoat/stoat-desktop "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/stoat-desktop
 
+# chrome-sandbox ships 0755 (NOT setuid): rpmlint's SUIDPermissionsCheck tags
+# are in BlockedFilters (unwaivable; proven this run: even a scoped filter
+# for permissions-file-setuid-bit reports unused while the finding fires),
+# and third-party drop-ins can never join the central permissions
+# whitelist, so a setuid sandbox can never be E-clean here. The sandbox
+# still works via unprivileged user namespaces (default on Tumbleweed;
+# same pattern as opencode-desktop in this repo).
+chmod 0755 %{buildroot}/opt/Stoat/chrome-sandbox
+
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 
 %post
-%set_permissions /opt/Stoat/chrome-sandbox
 # Refresh the desktop database and icon cache
 %{_bindir}/update-desktop-database > /dev/null 2>&1 || :
 /bin/touch --no-create %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
@@ -101,16 +106,12 @@ esac
 %posttrans
 %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
 
-%verifyscript
-%verify_permissions -e /opt/Stoat/chrome-sandbox
-
 %files
 %{_bindir}/stoat-desktop
 %{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 %{_datadir}/icons/hicolor/256x256/apps/chat.stoat.StoatDesktop.png
 %{_datadir}/metainfo/chat.stoat.StoatDesktop.metainfo.xml
 /opt/Stoat/
-# Enforce strict sandbox permissions natively
-%attr(4755, root, root) /opt/Stoat/chrome-sandbox
+%{_bindir}/stoat-desktop
 
 %changelog
