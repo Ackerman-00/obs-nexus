@@ -1,4 +1,8 @@
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+- Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
+  aborts on them)
+
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 

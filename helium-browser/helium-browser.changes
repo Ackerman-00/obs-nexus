@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
+  aborts on them)
+
+-------------------------------------------------------------------
 Fri Oct 09 14:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED

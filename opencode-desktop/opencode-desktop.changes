@@ -1,3 +1,9 @@
+-------------------------------------------------------------------
+Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
+  aborts on them)
+
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2.0.26-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)

@@ -14,6 +14,12 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	:
 
+# Prebuilt upstream binaries are already stripped and carry no
+# usable debuginfo -- dwz aborts on them (exit 25). Skip it; same
+# class as the RPM-side debuginfo exclusion for repackaged binaries.
+override_dh_dwz:
+	:
+
 override_dh_auto_test:
 	:
 
