@@ -103,18 +103,22 @@ SRC="$TMPD/concat-$HEAD_SHA"
 ) || exit 1
 [ -s "$SRC/cargo_config" ] || { echo "cargo_config missing; spec left untouched."; exit 1; }
 
-# 3. BtbN FFmpeg 8.1 shared tree (upstream's own Linux recipe).
+# 3. BtbN FFmpeg 8.1 shared tree (upstream's own Linux recipe). NOTE
+# (2026-10-09): the shared tarball ships BOTH lib/ (runtime .so) and
+# include/ (headers) - both are copied. ffmpeg-sys-the-third needs the
+# headers at build time (without them it detects version (0,0) and the
+# build fails); the .so files land in /opt at install via $ORIGIN/lib.
 curl -fsSL --retry 3 --connect-timeout 60 "$FFMPEG_RELEASE/$FFMPEG_FILE" -o "$TMPD/ffmpeg.tar.xz" \
     || { echo "FFmpeg sidecar download failed; spec left untouched."; exit 1; }
 mkdir -p "$SRC/ffmpeg-dev"
 tar -xf "$TMPD/ffmpeg.tar.xz" -C "$TMPD" \
     || { echo "FFmpeg sidecar corrupt; spec left untouched."; exit 1; }
 FFTOP=$(ls -d "$TMPD"/ffmpeg-n* 2>/dev/null | head -n1)
-if [ -z "$FFTOP" ] || [ -z "$(ls "$FFTOP"/lib/libavcodec.* 2>/dev/null)" ]; then
+if [ -z "$FFTOP" ] || [ -z "$(ls "$FFTOP"/lib/libavcodec.* 2>/dev/null)" ] || [ ! -d "$FFTOP/include/libavcodec" ]; then
     echo "FFmpeg sidecar layout unexpected; spec left untouched."
     exit 1
 fi
-cp -a "$FFTOP"/lib "$SRC/ffmpeg-dev/"
+cp -a "$FFTOP"/lib "$FFTOP"/include "$SRC/ffmpeg-dev/"
 
 # 4. Microsoft ONNX Runtime shared lib (upstream's own Linux recipe:
 # ORT_LIB_LOCATION + dynamic preference). Linker name symlink included.

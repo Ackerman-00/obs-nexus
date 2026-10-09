@@ -29,3 +29,9 @@ override_dh_auto_install:
 	sed -e 's|^Exec=.*|Exec=/usr/bin/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
 	    appimage-root/openchamber.desktop > debian/openchamber/usr/share/applications/openchamber.desktop
 	install -Dm644 appimage-root/openchamber.svg debian/openchamber/usr/share/icons/hicolor/scalable/apps/openchamber.svg
+
+# Prebuilt upstream binaries are already stripped and carry no
+# usable debuginfo -- dwz aborts on them. Skip it; same pattern as
+# stoat-desktop/vesktop/helium-browser/obsidian/fluxer rules.
+override_dh_dwz:
+	:
