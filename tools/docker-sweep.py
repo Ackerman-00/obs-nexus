@@ -328,9 +328,14 @@ def test_debian_package(name, ver, spec_path, workdir):
         "apt-get install -y /tmp/pkg.deb 2>&1 | tail -15 || "
         "(dpkg -i /tmp/pkg.deb 2>&1 | tail -10 && apt-get install -f -y 2>&1 | tail -10)",
         "dpkg -l '%s' 2>/dev/null | tail -3 || dpkg -l | grep -i '%s' | head -5 || true" % (name, name),
-        # ldd sweep over payload ELFs: any 'not found' is a real missing dep
+        # ldd sweep over installed executables (NOT bundled *.so* libs: they
+        # carry no RPATH of their own and resolve via the main binary's
+        # $ORIGIN at runtime, so ldd'ing them directly reports false
+        # "not found" - proven 2026-10-09 on concat's bundled libav*.
+        # Transitive system deps still surface via the executable's ldd.)
         "for b in $(dpkg -L '%s' 2>/dev/null | head -50); do "
-        "test -f \"$b\" && file \"$b\" 2>/dev/null | grep -q ELF && ldd \"$b\" 2>/dev/null; done "
+        "case \"$b\" in *.so*) continue;; esac; "
+        "test -f \"$b\" && test -x \"$b\" && file \"$b\" 2>/dev/null | grep -q ELF && ldd \"$b\" 2>/dev/null; done "
         "| grep 'not found' | sort -u | head -10 || true" % name,
     ]
     rc, out, err = docker_run("debian:testing", commands, timeout=300)
