@@ -44,8 +44,7 @@ echo "   ☁️  Latest Online: $NEW_VER"
 # tree and write cargo_config. Shared by the bump path below and the
 # no-bump ensure guard (fresh CI checkouts start without these gitignored
 # artifacts; actions/cache usually restores them). Artifacts double as the
-# RPM offline-build inputs AND the Debian debtransform
-# Debtransform-Files-Tar/Files inputs.
+# RPM offline-build inputs; the combined Debian orig below reuses them.
 build_vendor() {
     local ver="$1" tag="$2"
     echo "📦 Downloading source tarball..."
@@ -81,6 +80,38 @@ build_vendor() {
         echo "❌ Vendor tarball/config missing."
         return 1
     fi
+    build_debian_orig "$ver" || return 1
+}
+
+# build_debian_orig <ver>: assemble the COMBINED Debian orig tarball
+# matugen-<ver>-debian.tar.gz (single top dir matugen-<ver>/ holding the
+# upstream source PLUS vendor/ PLUS cargo_config at its root) from the
+# artifacts build_vendor already produced. The Debian recipe uses this as
+# its Debtransform-Tar instead of merging vendor.tar.xz via
+# Debtransform-Files-Tar: that merge path silently dropped every
+# vendor/*/Cargo.toml.orig file (proven 2026-10-09: cargo failed on
+# vendor/ariadne/Cargo.toml.orig although vendor.tar.xz contains it),
+# breaking the offline build. A combined orig keeps vendor/ inside the
+# upstream tarball so dpkg-source never diffs it.
+build_debian_orig() {
+    local ver="$1" tmpd
+    tmpd=$(mktemp -d) || return 1
+    echo "📦 Assembling combined Debian orig tarball..."
+    rm -f matugen-*-debian.tar.gz
+    rm -rf "$tmpd/matugen-$ver"
+    tar -xzf "matugen-$ver.tar.gz" -C "$tmpd" || { rm -rf "$tmpd"; return 1; }
+    tar -xJf vendor.tar.xz -C "$tmpd/matugen-$ver" || { rm -rf "$tmpd"; return 1; }
+    cp cargo_config "$tmpd/matugen-$ver/cargo_config" || { rm -rf "$tmpd"; return 1; }
+    tar -czf "matugen-$ver-debian.tar.gz" -C "$tmpd" "matugen-$ver" || { rm -rf "$tmpd"; return 1; }
+    rm -rf "$tmpd"
+    if ! [ -s "matugen-$ver-debian.tar.gz" ]; then
+        echo "❌ Combined Debian orig tarball missing."
+        return 1
+    fi
+    # The combined tree must carry vendor/ + cargo_config at the top level
+    # (dpkg-source strips the single top dir on unpack).
+    tar -tzf "matugen-$ver-debian.tar.gz" | grep -q "matugen-$ver/vendor/ariadne/Cargo.toml" || { echo "❌ Combined orig lacks vendor tree."; return 1; }
+    tar -tzf "matugen-$ver-debian.tar.gz" | grep -q "matugen-$ver/cargo_config$" || { echo "❌ Combined orig lacks cargo_config."; return 1; }
 }
 
 if [ "$NEW_VER" == "$CURRENT_VER" ]; then
@@ -90,6 +121,10 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
         echo "📦 Vendor artifacts missing locally; regenerating..."
         build_vendor "$CURRENT_VER" "v$CURRENT_VER" || \
             echo "⚠️  Vendor regeneration failed; continuing (OBS keeps remote copies until next sync)."
+    elif [ ! -f "matugen-$CURRENT_VER-debian.tar.gz" ]; then
+        echo "📦 Combined Debian orig missing locally; reassembling..."
+        build_debian_orig "$CURRENT_VER" || \
+            echo "⚠️  Debian orig reassembly failed; continuing (OBS keeps remote copies until next sync)."
     else
         echo "✅ Package is already up to date."
     fi
@@ -108,11 +143,11 @@ sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 
 # Debian_Testing recipe: keep the .dsc Version and debian/changelog in
-# sync (the orig tarball + vendor.tar.xz + cargo_config above are shared
-# with the RPM flow; DEBTRANSFORM-TAR name derives from the version).
+# sync (the combined Debian orig assembled above already embeds vendor/ +
+# cargo_config; DEBTRANSFORM-TAR points at it, never at the RPM tarball).
 DSC_FILE="matugen.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
-sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: matugen-$NEW_VER.tar.gz|" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: matugen-$NEW_VER-debian.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
 DEB_ENTRY="matugen ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
