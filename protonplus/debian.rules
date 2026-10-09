@@ -13,20 +13,33 @@
 %:
 	dh $@
 
-override_dh_auto_configure:
+override_dh_auto_clean:
 	mkdir -p debian/source; \
 	printf '%s\n' 'extend-diff-ignore = "build/.*"' 'extend-diff-ignore = "build-native/.*"' 'extend-diff-ignore = "obj-.*/.*"' > debian/source/options; \
+	rm -rf debian/test-home; \
+	dh_auto_clean
+# NOTE (2026-10-09): OBS runs dpkg-source -b right AFTER debian/rules
+# clean and BEFORE configure, so the in-tree meson build-dir exclusion
+# MUST be generated here (debian/source/options cannot ride the flat
+# debian.* channel). Without it -b aborts on build-dir binaries on
+# dirty-tree rebuilds.
+
+override_dh_auto_configure:
 	dh_auto_configure --buildsystem=meson -- --prefix=/usr
-# NOTE: debian/source/options is generated (not shipped as a flat
-# debian.* file, which cannot carry debian/source/* paths): without it
-# dpkg-source -b aborts on the in-tree meson build dir binaries
-# (debhelper uses obj-<arch>; the wrapper script used build-native).
 
 override_dh_auto_build:
 	dh_auto_build --buildsystem=meson
 
 override_dh_auto_test:
-	dh_auto_test --buildsystem=meson
+	mkdir -p debian/test-home
+	HOME=$$(pwd)/debian/test-home dh_auto_test --buildsystem=meson
+# NOTE (2026-10-09): debhelper runs tests with HOME pointed inside the
+# build tree (/usr/src/packages/BUILD/debian/.debhelper/...), and the
+# upstream test native-distro-paths-and-projection asserts the managed
+# tool root does NOT live under /usr/ -- with that HOME it always does,
+# failing 4/5 -> ERROR. A clean HOME under the build tree keeps the
+# test's intent (user-dir, never system /usr) while dropping the
+# buildroot-path artifact (RPM builds use /home/abuild: unaffected).
 
 override_dh_auto_install:
 	dh_auto_install --buildsystem=meson

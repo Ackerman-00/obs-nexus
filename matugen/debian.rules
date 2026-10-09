@@ -9,15 +9,16 @@
 	dh $@
 
 override_dh_auto_configure:
-	:; \
-	mkdir -p debian/source; \
-	printf '%s\n' 'extend-diff-ignore = "vendor/.*"' 'extend-diff-ignore = "cargo_config"' 'extend-diff-ignore = ".cargo/.*"' 'extend-diff-ignore = "target/.*"' > debian/source/options
+	:
+
 # NOTE (2026-10-09): vendor/ + cargo_config arrive via the .dsc's
 # Debtransform-Files-Tar/Files merge, so dpkg-source -b would treat them
 # as new upstream files and abort on their binaries ("cannot represent
-# changes ... add in debian/source/include-binaries"). The generated
-# debian/source/options above excludes them (plus build outputs) from
-# the regenerated debian tar instead -- the flat debian.* channel cannot
+# changes ... add in debian/source/include-binaries"). OBS runs
+# dpkg-source -b right AFTER debian/rules clean and BEFORE configure,
+# so the exclusion MUST be generated in the clean override below, not
+# here -- generating it in configure is too late (proven by the
+# 14:31 UTC Debian_Testing build log). The flat debian.* channel cannot
 # carry debian/source/* files, so the rules generate it every build.
 
 override_dh_auto_build:
@@ -31,4 +32,6 @@ override_dh_auto_install:
 	install -Dm0755 target/release/matugen debian/matugen/usr/bin/matugen
 
 override_dh_auto_clean:
+	mkdir -p debian/source; \
+	printf '%s\n' 'extend-diff-ignore = "vendor/.*"' 'extend-diff-ignore = "cargo_config"' 'extend-diff-ignore = ".cargo/.*"' 'extend-diff-ignore = "target/.*"' > debian/source/options; \
 	rm -rf target .cargo
