@@ -81,6 +81,22 @@ sed -i -E "s/^%global base_version.*/%global base_version    $LATEST_BASE/" "$SP
 sed -i -E "s/^Version:.*/Version:        %{base_version}+git%{gitdate}.%{shortcommit}/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
+# Debian_Testing recipe: keep the .dsc template Version/Tar and the
+# debian/changelog head in sync (the snapshot tarball lifecycle above is
+# shared with the RPM flow, no extra download). Template Version mirrors
+# the spec's macro Version with values substituted.
+DSC_FILE="lazyvim-git.dsc"
+DSC_VER="${LATEST_BASE}+git${LATEST_DATE}.${SHORT_COMMIT}"
+sed -i -E "s/^Version: .*/Version: $DSC_VER/" "$DSC_FILE"
+sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: lazyvim-$SHORT_COMMIT.tar.gz|" "$DSC_FILE"
+DEB_DATE=$(date -R -u)
+DEB_ENTRY="lazyvim-git ($DSC_VER-1) unstable; urgency=medium\n\n  * New upstream snapshot $SHORT_COMMIT (base $LATEST_BASE).\n\n -- $PACKAGER  $DEB_DATE\n\n"
+if [ -f "debian.changelog" ]; then
+    echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
+else
+    echo -e "$DEB_ENTRY" > debian.changelog
+fi
+
 echo "Generating OBS changes file..."
 FORMATTED_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
 if [ "$CURRENT_BASE" != "$LATEST_BASE" ]; then

@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+# Debian build of upstream ProtonPlus (Vala + meson, same dependency set
+# as the RPM spec: gtk4/adwaita/soup/sdl3 verified mandatory upstream).
+# Standard debhelper meson flow: configure.prefix defaults to /usr
+# (matches the spec's --prefix), meson test runs via dh_auto_test like
+# the spec's %check, schema/desktop caches ride triggers. No network at
+# build time: the orig tarball IS the upstream source archive.
+%:
+	dh $@

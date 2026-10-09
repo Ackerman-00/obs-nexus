@@ -40,58 +40,86 @@ CURRENT_VER=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 echo "   📂 Current Local: $CURRENT_VER"
 echo "   ☁️  Latest Online: $NEW_VER"
 
+# build_vendor <ver> <tag>: download the source tarball, vendor the cargo
+# tree and write cargo_config. Shared by the bump path below and the
+# no-bump ensure guard (fresh CI checkouts start without these gitignored
+# artifacts; actions/cache usually restores them). Artifacts double as the
+# RPM offline-build inputs AND the Debian debtransform
+# Debtransform-Files-Tar/Files inputs.
+build_vendor() {
+    local ver="$1" tag="$2"
+    echo "📦 Downloading source tarball..."
+    rm -f "matugen-$ver.tar.gz"
+    curl -fsSL --retry 3 --connect-timeout 20 "https://github.com/$REPO/archive/refs/tags/$tag.tar.gz" -o "matugen-$ver.tar.gz" \
+        || { echo "❌ Download failed."; return 1; }
+    if ! [ -s "matugen-$ver.tar.gz" ] || ! tar -tzf "matugen-$ver.tar.gz" > /dev/null 2>&1; then
+        echo "❌ Downloaded tarball is empty or corrupt."
+        return 1
+    fi
+    echo "📦 Generating Rust vendor tarball..."
+    rm -rf "matugen-$ver"
+    tar -xzf "matugen-$ver.tar.gz"
+    cd "matugen-$ver" || return 1
+    echo "⚙️  Vendoring cargo dependencies..."
+    if ! cargo vendor > ../cargo_config.tmp 2> /tmp/cargo-vendor.err; then
+        cat /tmp/cargo-vendor.err
+        echo "❌ cargo vendor failed."
+        cd .. && rm -rf "matugen-$ver"
+        return 1
+    fi
+    if ! head -1 ../cargo_config.tmp | grep -q "^\[source"; then
+        sed -n '/^\[source/,$p' ../cargo_config.tmp > ../cargo_config
+    else
+        mv ../cargo_config.tmp ../cargo_config
+    fi
+    rm -f ../cargo_config.tmp
+    echo "🗜️  Compressing vendor tarball..."
+    tar -cJf ../vendor.tar.xz vendor
+    cd ..
+    rm -rf "matugen-$ver"
+    if ! [ -s vendor.tar.xz ] || ! [ -s cargo_config ]; then
+        echo "❌ Vendor tarball/config missing."
+        return 1
+    fi
+}
+
 if [ "$NEW_VER" == "$CURRENT_VER" ]; then
-    echo "✅ Package is already up to date."
+    # No-bump path: ensure every gitignored artifact exists so an OBS sync
+    # can never wipe a remote copy with nothing to re-upload.
+    if [ ! -f "matugen-$CURRENT_VER.tar.gz" ] || [ ! -f vendor.tar.xz ] || [ ! -f cargo_config ]; then
+        echo "📦 Vendor artifacts missing locally; regenerating..."
+        build_vendor "$CURRENT_VER" "v$CURRENT_VER" || \
+            echo "⚠️  Vendor regeneration failed; continuing (OBS keeps remote copies until next sync)."
+    else
+        echo "✅ Package is already up to date."
+    fi
     exit 0
 fi
 
 echo "🚀 New version found! Updating $SPEC_FILE..."
 
-# 0. Download and VERIFY the source tarball BEFORE touching the spec.
-echo "📦 Downloading source tarball..."
-rm -f "matugen-$NEW_VER.tar.gz"
-curl -fsSL --retry 3 --connect-timeout 20 "https://github.com/$REPO/archive/refs/tags/$LATEST_TAG.tar.gz" -o "matugen-$NEW_VER.tar.gz" \
-    || { echo "❌ Download failed; spec left untouched."; exit 1; }
-if ! [ -s "matugen-$NEW_VER.tar.gz" ] || ! tar -tzf "matugen-$NEW_VER.tar.gz" > /dev/null 2>&1; then
-    echo "❌ Downloaded tarball is empty or corrupt; spec left untouched."
-    exit 1
-fi
-
-echo "📦 Generating Rust vendor tarball..."
-
-tar -xzf "matugen-$NEW_VER.tar.gz"
-cd "matugen-$NEW_VER" || exit 1
-
-# Generate vendor directory and config
-echo "⚙️  Vendoring cargo dependencies..."
-if ! cargo vendor > ../cargo_config.tmp 2> /tmp/cargo-vendor.err; then
-    cat /tmp/cargo-vendor.err
-    echo "❌ cargo vendor failed; spec left untouched."
-    exit 1
-fi
-if ! head -1 ../cargo_config.tmp | grep -q "^\[source"; then
-    sed -n '/^\[source/,$p' ../cargo_config.tmp > ../cargo_config
-else
-    mv ../cargo_config.tmp ../cargo_config
-fi
-rm -f ../cargo_config.tmp
-
-# Compress the vendor directory
-echo "🗜️  Compressing vendor tarball..."
-tar -cJf ../vendor.tar.xz vendor
-
-# Cleanup
-cd ..
-rm -rf "matugen-$NEW_VER"
-
-if ! [ -s vendor.tar.xz ] || ! [ -s cargo_config ]; then
-    echo "❌ Vendor tarball/config missing; spec left untouched."
-    exit 1
-fi
+# 0. Download and vendor (shared builder; aborts the bump on failure so a
+#    failed fetch can never leave git/OBS touched).
+build_vendor "$NEW_VER" "$LATEST_TAG" \
+    || { echo "❌ Vendor build failed; spec left untouched."; exit 1; }
 
 # Update the spec (last, so a failure above leaves git/OBS untouched)
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
+
+# Debian_Testing recipe: keep the .dsc Version and debian/changelog in
+# sync (the orig tarball + vendor.tar.xz + cargo_config above are shared
+# with the RPM flow; DEBTRANSFORM-TAR name derives from the version).
+DSC_FILE="matugen.dsc"
+sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: matugen-$NEW_VER.tar.gz|" "$DSC_FILE"
+DEB_DATE=$(date -R -u)
+DEB_ENTRY="matugen ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+if [ -f "debian.changelog" ]; then
+    echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
+else
+    echo -e "$DEB_ENTRY" > debian.changelog
+fi
 
 echo "📝 Updating changelog..."
 FORMATTED_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")

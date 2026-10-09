@@ -88,6 +88,29 @@ jobs:
         with:
           path: zen-browser/*.tar.xz
           key: deb-orig-zen-${{ hashFiles('zen-browser/zen-browser.spec', 'zen-browser/zen-browser.dsc') }}
+      - name: Cache Debian orig tarball (bibata-cursor-theme)
+        uses: actions/cache@v6.1.0
+        with:
+          path: bibata-cursor-theme/*.tar.xz
+          key: deb-orig-bibata-${{ hashFiles('bibata-cursor-theme/bibata-cursor-theme.spec', 'bibata-cursor-theme/bibata-cursor-theme.dsc') }}
+      - name: Cache Debian orig tarball (lazyvim-git)
+        uses: actions/cache@v6.1.0
+        with:
+          path: lazyvim-git/*.tar.gz
+          key: deb-orig-lazyvim-${{ hashFiles('lazyvim-git/lazyvim-git.spec', 'lazyvim-git/lazyvim-git.dsc') }}
+      - name: Cache Debian orig artifacts (matugen)
+        uses: actions/cache@v6.1.0
+        with:
+          path: |
+            matugen/*.tar.gz
+            matugen/vendor.tar.xz
+            matugen/cargo_config
+          key: deb-orig-matugen-${{ hashFiles('matugen/matugen.spec', 'matugen/matugen.dsc') }}
+      - name: Cache Debian orig tarball (protonplus)
+        uses: actions/cache@v6.1.0
+        with:
+          path: protonplus/*.tar.gz
+          key: deb-orig-protonplus-${{ hashFiles('protonplus/protonplus.spec', 'protonplus/protonplus.dsc') }}
 
       - name: Run Modular Updaters
         id: updater

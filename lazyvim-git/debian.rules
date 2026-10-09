@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+# Debian packaging of the LazyVim git snapshot (data-only, same payload
+# policy as the RPM spec: install init.lua + lua/doc/queries/scripts +
+# LICENSE/NEWS.md under /usr/share/lazyvim). No network at build time:
+# the orig tarball IS the snapshot tarball update.sh already generates
+# for the RPM flow (top dir LazyVim-<commit>/).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	SRCDIR=$$(ls -d LazyVim-*/ | head -n1); \
+	if [ -z "$$SRCDIR" ]; then echo "No LazyVim source dir found"; exit 1; fi; \
+	mkdir -p debian/lazyvim-git/usr/share/lazyvim; \
+	cp -a "$$SRCDIR"init.lua "$$SRCDIR"lua "$$SRCDIR"doc "$$SRCDIR"queries "$$SRCDIR"scripts "$$SRCDIR"LICENSE "$$SRCDIR"NEWS.md debian/lazyvim-git/usr/share/lazyvim/

@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+# Debian packaging of the upstream Bibata cursor set (data-only, same
+# payload policy as the RPM spec: move every Bibata-* variant directory
+# under /usr/share/icons, dedupe with fdupes). No network at build time:
+# the orig tarball IS the upstream release tarball (renamed by update.sh).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p debian/bibata-cursor-theme/usr/share/icons
+	mv Bibata-* debian/bibata-cursor-theme/usr/share/icons/
+	fdupes -r debian/bibata-cursor-theme/usr/share/icons

@@ -62,7 +62,7 @@ YOU are the sweep. The PROMPT's TEAR-APART + DOCKER BATTLE TEST is NOT optional.
 It must:
 
 1. Tear every `*.spec`/`*.changes`/`_service` apart itself (Source0 → extract → Cargo.toml/meson.build vs BuildRequires), run 2026 toolchain: `spec-cleaner` + `rpmlint`/`brp-check-suse` (openSUSE:Specfile_guidelines Aug 2026), `rpmspec -P`, `osc build` — log output
-2. Produce mandatory `| package | upstream deps | in spec | missing | status |` for ALL 21 packages
+2. Produce mandatory `| package | upstream deps | in spec | missing | status |` for ALL packages in the repo (count via `ls -d */`, never hardcode)
    - OSV.dev vulnerability scan (CVEs on pinned version)
    - Repology freshness (outdated vs 120+ repos)
    - Libyear drift (years behind upstream, budget=20yr)

@@ -1,0 +1,16 @@
+Source: matugen
+Section: utils
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13), cargo, rustc
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/InioX/matugen
+
+Package: matugen
+Architecture: any
+# Compiled Rust binary, fully vendored: shlibdeps resolves the linked
+# system libs (libc only, in practice).
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Material You color generation tool
+ Matugen is a Material You color generation tool that supports templates.

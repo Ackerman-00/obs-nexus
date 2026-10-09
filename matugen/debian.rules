@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+# Debian build of upstream matugen (Rust, fully vendored offline build,
+# same policy as the RPM spec: cargo --offline --frozen --release against
+# the vendored crates + source-replacement config update.sh generates).
+# No network at build time: the orig tarball IS the upstream source
+# archive; vendor.tar.xz + cargo_config ride in via Debtransform-Files-Tar
+# / Debtransform-Files and land at the source root (vendor/, cargo_config).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	mkdir -p .cargo && cp cargo_config .cargo/config
+	cargo build --offline --frozen --release
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	install -Dm0755 target/release/matugen debian/matugen/usr/bin/matugen
+
+override_dh_auto_clean:
+	rm -rf target .cargo

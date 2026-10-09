@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: lazyvim-git
+Upstream-Contact: LazyVim <https://github.com/LazyVim/LazyVim>
+Source: https://github.com/LazyVim/LazyVim
+
+Files: *
+Copyright: 2026 LazyVim contributors
+License: Apache-2.0
+ Licensed under the Apache License, Version 2.0. See
+ https://www.apache.org/licenses/LICENSE-2.0 for the full license text.

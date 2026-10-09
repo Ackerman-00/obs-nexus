@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
+  maintained by update.sh; debtransform at build time)
+
+-------------------------------------------------------------------
 Thu Sep 10 17:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Add upstream version floor sdl3 >= 3.2.0 (src/meson.build) and

@@ -1,0 +1,17 @@
+Source: lazyvim-git
+Section: editors
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/LazyVim/LazyVim
+
+Package: lazyvim-git
+Architecture: all
+# Data-only Neovim config snapshot (mirrors the RPM spec, which carries no
+# runtime Requires either).
+Depends: ${misc:Depends}
+Description: Neovim setup for lazy people (git snapshot)
+ LazyVim is a Neovim setup powered by lazy.nvim to make it easy to
+ customize and extend your configuration.

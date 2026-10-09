@@ -546,7 +546,7 @@ jobs:
                  (high/medium/low) for any package you could not fully verify,
                  and why.
               h. 2026 AUTOMATED EXCELLENCE CHECKS (MANDATORY - August 2026 openSUSE - excellent .spec aka excellent specfile):
-                 For EVERY spec you touched (and for at least a 5-sample of the full STEP A inventory - derive the count via `ls */*.spec`, currently 21, NEVER hardcode the number), run the modern openSUSE toolchain locally and paste output. This is how an "excellent spec" (openSUSE:Specfile_guidelines Aug 2026) is proven:
+                 For EVERY spec you touched (and for at least a 5-sample of the full STEP A inventory - derive the count via `ls */*.spec`, currently 13, NEVER hardcode the number), run the modern openSUSE toolchain locally and paste output. This is how an "excellent spec" (openSUSE:Specfile_guidelines Aug 2026) is proven:
                  - `spec-cleaner` (openSUSE:Tools, Factory dos/donts) -- run `spec-cleaner <spec>`; must be clean or diff justified (one BuildRequires per line, macros not hard-coded `/usr/bin` etc.)
                  - `rpmlint <spec>` + `rpmlint <rpm>` + `brp-check-suse`/`post-build-checks` -- fix E: errors, handle badness score; OBS runs these as `rpmlint.log` after build -- must be clean. See `openSUSE:Packaging_checks` for suppressing false positives via `*rpmlintrc`
                  - `rpmspec -P --define "_topdir /tmp" <spec>` -- macro expansion must exit 0; `rpmbuild -bs` must produce SRPM
@@ -754,7 +754,7 @@ jobs:
               g. DOCKER BATTLE TEST + ALL CONTENT (MANDATORY - every binary + repo itself in a clean Tumbleweed container, not just OBS "succeeded"). This is not optional:
                  1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install on BOTH TW and Slowroll containers per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run per distro, oldest-uncovered first, plus every touched on both) + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
                  2. ALL CONTENT: `ls -R`/`find . -type f | sort` -- every `*/*.spec`, `*/*.changes`, `*/_service`, `*/update.sh`, `.github/workflows/*.yml` (`yaml.safe_load` valid), `README.md` install (`zypper addrepo` URL must match Docker path or fix README) must be checked; any file not checked = gap.
-                 3. REPO ITSELF: inside clean `opensuse/tumbleweed` container, `zypper addrepo https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo` + `zypper refresh` + `zypper se --repo home_akerman` must list all 21; `osc` `co`/`build` dry-run if available. Think like new openSUSE user who just added the repo -- if they would hit it, you must hit it first.
+                 3. REPO ITSELF: inside clean `opensuse/tumbleweed` container, `zypper addrepo https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo` + `zypper refresh` + `zypper se --repo home_akerman` must list every package (count via `ls -d */`, never hardcode); `osc` `co`/`build` dry-run if available. Think like new openSUSE user who just added the repo -- if they would hit it, you must hit it first.
 
             OPTIMIZATION DISCIPLINE (MANDATORY for every source-built
             package you touch; skip only for prebuilt/repackaged binaries,
@@ -876,7 +876,8 @@ jobs:
              (`rpmbuild -bb` in a fresh TW container per package, up to 4
              parallel `docker run` jobs), installs the result with zypper,
              and smoke-tests it. A failure here enters the priority-1 loop
-             exactly like a failed OBS build. The full 21-package fleet must
+             exactly like a failed OBS build. The full fleet (count via
+             `ls -d */`, never hardcode) must
              rotate through within 3 runs; record slice + next-start in the
              relay. Fan out with parallel subagents (one per batch); serialize
              only pushes and OBS syncs. Time-box the SLICE, never the rigor:

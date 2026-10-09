@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Add Debian_Testing build recipe (.dsc + debian.* reusing the vendored
+  offline build; debtransform at build time)
+
+-------------------------------------------------------------------
 Mon Aug 17 18:56:36 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Update matugen to v4.2.0

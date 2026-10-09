@@ -1,0 +1,18 @@
+Source: protonplus
+Section: gnome
+Priority: optional
+Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Build-Depends: debhelper-compat (= 13), meson, ninja-build, valac, gettext, cmake, pkgconf, appstream, desktop-file-utils, libappstream-dev, libcairo2-dev, libgee-0.8-dev, libglib2.0-dev, libgtk-4-dev, libjson-glib-dev, libadwaita-1-dev (>= 1.6), libarchive-dev, libnotify-dev, libsoup-3.0-dev, libsdl3-dev (>= 3.2.0)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/vysp3r/ProtonPlus
+
+Package: protonplus
+Architecture: any
+# Compiled Vala/GTK4 app: shlibdeps resolves the linked system libs
+# (translations ship in-package; gsettings/desktop caches ride triggers).
+Depends: ${shlibs:Depends}, ${misc:Depends}, hicolor-icon-theme
+Description: A Wine and Proton-based compatibility tools manager for GNOME
+ ProtonPlus is a Proton version manager for installing and managing
+ Proton versions. It works with Steam, Lutris, Heroic Games Launcher
+ and Bottles. It uses GTK4.

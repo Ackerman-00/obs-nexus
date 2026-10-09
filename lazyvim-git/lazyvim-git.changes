@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Add Debian_Testing build recipe (.dsc + debian.* sharing the snapshot
+  tarball; debtransform at build time)
+
+-------------------------------------------------------------------
 Tue Sep 08 20:51:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Update to base version 16.0.1 (Commit: 9997009)
