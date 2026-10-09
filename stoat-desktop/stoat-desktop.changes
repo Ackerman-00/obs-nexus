@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Skip dh_shlibdeps (binary repack with manually maintained Depends;
+  the analysis cannot run without the runtime libs in the buildroot)
+
+-------------------------------------------------------------------
 Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz

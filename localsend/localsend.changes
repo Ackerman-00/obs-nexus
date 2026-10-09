@@ -1,4 +1,8 @@
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+- Skip dh_shlibdeps (binary repack with manually maintained Depends;
+  the analysis cannot run without the runtime libs in the buildroot)
+
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
