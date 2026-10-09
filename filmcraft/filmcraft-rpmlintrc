@@ -1,0 +1,7 @@
+# Upstream prebuilt RPM tree is immutable upstream binaries - manual
+# Requires map upstream's Fedora names to openSUSE providers (verified
+# via payload ELF NEEDED + rpm header dump); rpmlint cannot see the proof.
+addFilter("explicit-lib-dependency")
+# hicolor-icon-theme is intentionally unversioned (repo convention,
+# same as every other spec in this repo).
+addFilter("branding-requires-unversioned")
