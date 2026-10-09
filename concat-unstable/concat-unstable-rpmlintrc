@@ -1,0 +1,20 @@
+# Native source build installing under /opt/concat-unstable with the
+# bundled BtbN FFmpeg 8.1 + ONNX Runtime 1.28.0 libs found via the
+# binary's $ORIGIN/lib RPATH (deliberate design, same as the stable
+# concat repack) - these findings describe intended bundled libs,
+# not packaging mistakes. Same pattern as concat/openchamber.
+addFilter("binary-or-shlib-defines-rpath")
+addFilter("filelist-forbidden-opt")
+# Bundled libs under /opt/concat-unstable/lib: unversioned .so symlinks
+# are upstream's devel-style links, never in the ldconfig path - not
+# ours to move or register.
+addFilter("devel-file-in-non-devel-package")
+addFilter("missing-hash-section")
+addFilter("library-without-ldconfig-postin")
+addFilter("library-without-ldconfig-postun")
+# Manual Requires are payload-proven (NEEDED + GUI stack); rpmlint
+# cannot see the proof.
+addFilter("explicit-lib-dependency")
+# hicolor-icon-theme is intentionally unversioned (repo convention,
+# same as every other spec in this repo).
+addFilter("branding-requires-unversioned")
