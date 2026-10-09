@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Fix debian/rules ar path (ls already prints the ../ prefix)
+
+-------------------------------------------------------------------
 Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;

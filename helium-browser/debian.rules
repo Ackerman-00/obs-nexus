@@ -29,15 +29,15 @@ override_dh_dwz:
 	:
 
 override_dh_auto_test:
-	HELIUM_SRC=$$(ls -d helium-*_linux | head -n1); \
-	if [ -z "$$HELIUM_SRC" ]; then echo "No helium source dir found"; exit 1; fi; \
-	desktop-file-validate "$$HELIUM_SRC/helium.desktop"
+	desktop-file-validate helium.desktop
 
+# NOTE: dpkg-source -x strips the orig tarball's single top-level dir
+# when unpacking into BUILD, so the payload files sit at the BUILD root
+# here (there is no helium-*_linux dir at build time); debian/ itself must
+# be excluded from the payload copy.
 override_dh_auto_install:
-	HELIUM_SRC=$$(ls -d helium-*_linux | head -n1); \
-	if [ -z "$$HELIUM_SRC" ]; then echo "No helium source dir found"; exit 1; fi; \
 	mkdir -p debian/helium-browser/opt debian/helium-browser/usr/bin debian/helium-browser/usr/share/applications debian/helium-browser/usr/share/metainfo debian/helium-browser/usr/share/icons/hicolor/256x256/apps; \
-	cp -a "$$HELIUM_SRC"/. debian/helium-browser/opt/helium
+	find . -maxdepth 1 -mindepth 1 ! -name debian -exec cp -a {} debian/helium-browser/opt/helium/ \;
 	sed -Ei "s/(CHROME_VERSION_EXTRA=).*/\1suse/" debian/helium-browser/opt/helium/helium-wrapper
 	install -m 644 debian/helium-browser/opt/helium/product_logo_256.png \
 	    debian/helium-browser/usr/share/icons/hicolor/256x256/apps/helium.png

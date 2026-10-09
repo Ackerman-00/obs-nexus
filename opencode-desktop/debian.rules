@@ -33,7 +33,7 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	mkdir -p payload
-	cd payload && ar x ../"$$(ls ../*.deb)" data.tar.xz && tar -xf data.tar.xz && cd ..
+	cd payload && ar x "$$(ls ../*.deb)" data.tar.xz && tar -xf data.tar.xz && cd ..
 	mkdir -p debian/opencode-desktop/opt debian/opencode-desktop/usr/bin debian/opencode-desktop/usr/share
 	cp -a payload/opt/OpenCode debian/opencode-desktop/opt/
 	cp -a payload/usr/share/applications payload/usr/share/icons payload/usr/share/metainfo debian/opencode-desktop/usr/share/

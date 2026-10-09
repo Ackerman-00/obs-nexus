@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Fix debian/rules for dpkg-source top-dir stripping (payload files
+  sit at the BUILD root; copy everything except debian/)
+
+-------------------------------------------------------------------
 Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;

@@ -32,9 +32,12 @@ override_dh_dwz:
 override_dh_auto_test:
 	desktop-file-validate debian/zen-browser.desktop
 
+# NOTE: dpkg-source -x strips the orig tarball's single top-level dir
+# when unpacking into BUILD (no zen/ dir at build time); debian/ itself
+# must be excluded from the payload copy.
 override_dh_auto_install:
 	mkdir -p debian/zen-browser/usr/bin debian/zen-browser/usr/share/applications debian/zen-browser/usr/lib/zen-browser
-	cp -a zen/* debian/zen-browser/usr/lib/zen-browser/
+	find . -maxdepth 1 -mindepth 1 ! -name debian -exec cp -a {} debian/zen-browser/usr/lib/zen-browser/ \;
 	rm -f debian/zen-browser/usr/lib/zen-browser/removed-files
 	install -m0755 debian/zen-browser.sh debian/zen-browser/usr/bin/zen-browser
 	desktop-file-install --dir=debian/zen-browser/usr/share/applications debian/zen-browser.desktop

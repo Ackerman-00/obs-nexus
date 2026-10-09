@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+
+- Ship the icon inside the orig wrapper (binaries are rejected in
+  debian.*); add libpipewire-0.3-0 for the node-pipewire binding
+
+-------------------------------------------------------------------
 Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;

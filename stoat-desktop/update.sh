@@ -27,16 +27,20 @@ CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
 # Debian_Testing recipe helper: wrap an upstream .zip into the
 # gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt) rejects
-# an uncompressed .orig.tar). The wrapper is gitignored (*.tar.gz) and
-# rides the OBS sync; per-package actions/cache in update-packages.yml
-# keeps it across fresh CI checkouts.
+# an uncompressed .orig.tar). The wrapper also carries icon.png (a copy of
+# the tracked stoat.png): binary files are rejected inside debian.* by
+# dpkg-source ("unwanted binary file"), so the icon rides the orig instead.
+# The wrapper is gitignored (*.tar.gz) and rides the OBS sync; per-package
+# actions/cache in update-packages.yml keeps it across fresh CI checkouts.
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
     trap 'rm -rf "$tmpd"' EXIT
     curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.zip" \
         || { echo "orig .zip download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -czf "stoat-desktop-$ver.tar.gz" -C "$tmpd" upstream.zip
+    cp stoat.png "$tmpd/icon.png" \
+        || { echo "icon copy failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -czf "stoat-desktop-$ver.tar.gz" -C "$tmpd" upstream.zip icon.png
     for old in stoat-desktop-*.tar stoat-desktop-*.tar.gz; do
         [ "$old" = "stoat-desktop-$ver.tar.gz" ] || rm -f "$old"
     done

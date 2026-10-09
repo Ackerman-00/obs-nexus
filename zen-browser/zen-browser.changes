@@ -1,4 +1,8 @@
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+- Fix debian/rules for dpkg-source top-dir stripping (copy BUILD
+  root except debian/ instead of a nonexistent zen/ dir)
+
+* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
