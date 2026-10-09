@@ -262,6 +262,52 @@ jobs:
             echo "updates_made=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Validate Debian recipe consistency
+        # Generator guard (added 2026-10-09 after the zen-browser 1.23.2b
+        # incident: spec/.dsc Version was bumped but Debtransform-Tar still
+        # named the 1.23.1b tarball, failing the Debian_Testing build in
+        # debtransform). For every <pkg>.dsc: the .dsc Version must equal
+        # the spec Version (or its base_version for macro-composed -git
+        # versions), and Debtransform-Tar must embed that version (or the
+        # spec shortcommit for snapshot recipes like lazyvim-git).
+        # Fails the run BEFORE commit so a broken recipe never lands.
+        run: |
+          python3 << 'EOF'
+          import re, sys
+          from pathlib import Path
+          bad = []
+          for dsc in sorted(Path('.').glob('*/*.dsc')):
+              txt = dsc.read_text(encoding='utf-8')
+              v = re.search(r'^Version:\s*(\S+)', txt, re.M)
+              t = re.search(r'^Debtransform-Tar:\s*(\S+)', txt, re.M)
+              if not v or not t:
+                  bad.append(f'{dsc}: missing Version/Debtransform-Tar')
+                  continue
+              v, t = v.group(1), t.group(1)
+              spec = dsc.with_suffix('.spec')
+              if not spec.exists():
+                  bad.append(f'{dsc}: no sibling spec')
+                  continue
+              stxt = spec.read_text(encoding='utf-8')
+              sv = re.search(r'^Version:\s*(\S+)', stxt, re.M).group(1)
+              if '%' in sv:
+                  m = re.search(r'%global\s+base_version\s+(\S+)', stxt)
+                  ver_ok = v.startswith(m.group(1)) if m else False
+              else:
+                  ver_ok = (v == sv)
+              sc = re.search(r'%global\s+shortcommit\s+(\S+)', stxt)
+              tar_ok = (v in t) or (sc and sc.group(1) in t)
+              if not ver_ok:
+                  bad.append(f'{dsc}: dsc Version {v} != spec Version {sv}')
+              if not tar_ok:
+                  bad.append(f'{dsc}: Debtransform-Tar {t} embeds neither {v} nor shortcommit')
+          if bad:
+              print('RECIPE MISMATCH:')
+              print('\n'.join(f'  - {b}' for b in bad))
+              sys.exit(1)
+          print('Debian recipes consistent.')
+          EOF
+
       - name: Commit and Push
         if: steps.updater.outputs.updates_made == 'true'
         run: |
