@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: concat-unstable
 Binary: concat-unstable
 Architecture: amd64
-Version: 0.2.6+git20261009170713.948b6db
+Version: 0.2.6+git20261010035213.7223d64
 Maintainer: Ackerman-00 <quietcraft@gmail.com>
 Build-Depends: debhelper-compat (= 13), cargo, rustc, gcc, g++, cmake, make, pkgconf, libclang-dev, libfontconfig1-dev, libfreetype6-dev, libxkbcommon-dev, libgl1-mesa-dev, libgtk-3-dev, libasound2-dev, libssl-dev, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -13,4 +13,4 @@ Build-Depends: debhelper-compat (= 13), cargo, rustc, gcc, g++, cmake, make, pkg
 # (upstream main tree + vendored crates + BtbN FFmpeg + ONNX libs); all
 # build inputs travel in this ONE tarball, so the Debian and RPM builds
 # consume identical sources. Version mirrors the spec template.
-Debtransform-Tar: concat-unstable-0.2.6+git20261009170713.948b6db.tar.gz
+Debtransform-Tar: concat-unstable-0.2.6+git20261010035213.7223d64.tar.gz

@@ -1,3 +1,9 @@
+concat-unstable (0.2.6+git20261010035213.7223d64-1) unstable; urgency=medium
+
+  * New upstream snapshot 7223d64 (base 0.2.6).
+
+ -- Ackerman-00 <quietcraft@gmail.com>  Sat, 10 Oct 2026 04:46:57 +0000
+
 concat-unstable (0.2.6+git20261009170713.948b6db-1) unstable; urgency=medium
 
   * New upstream snapshot 948b6db (base 0.2.6).
