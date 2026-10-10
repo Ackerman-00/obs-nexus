@@ -58,6 +58,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.pdfcra
 %doc %{_datadir}/doc/pdfcraft/NOTICE
 %doc %{_datadir}/doc/pdfcraft/OFL-*.txt
 %doc %{_datadir}/doc/pdfcraft/README.md
+%dir %{_datadir}/pdfcraft
 %dir %{_datadir}/pdfcraft/models
 %{_datadir}/pdfcraft/models/text-detection.rten
 %{_datadir}/pdfcraft/models/text-recognition.rten

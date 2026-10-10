@@ -123,6 +123,11 @@ def main():
                    or p.rstrip("*").startswith(f"/usr/share/{dirname}/")
                    for p in patterns):
             problems.append(f"missing-%files-cover: /usr/share/{dirname}/")
+        # SUSE 50-check-filelist: the top data dir itself must be owned
+        # (a %dir entry); file entries underneath do not own it
+        # (pdfcraft-0.5.0-19.1: "/usr/share/pdfcraft not owned").
+        if f"/usr/share/{dirname}" not in patterns:
+            problems.append(f"missing-%dir: /usr/share/{dirname}")
 
     bins = sorted({f.split("/")[-1] for f in files
                    if f.startswith("/usr/bin/")})
