@@ -1,10 +1,12 @@
 * Sat Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.5.0-0
-- Update pdfcraft to v0.5.0
+- Update pdfcraft to v0.5.0; package new NOTICE + usr/share/pdfcraft/models
+  OCR data shipped upstream since 0.5.0 (fix unpackaged-file build failure);
+  fix changelog date order
 
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.4.0-0
 - Own doc dir (%dir) and icon glob covers the scalable .svg, fix unpackaged/unowned build failures; gzip debtransform orig wrapper (dpkg-source rejects plain .tar)
 
-* Fri Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.4.0-0
+* Thu Oct 08 2026 Ackerman-00 <quietcraft@gmail.com> - 0.4.0-0
 - Initial package: PDFCraft v0.4.0 upstream RPM repack with corrected
   openSUSE Requires (upstream ships Fedora names) + Debian_Testing
   build recipe maintained by update.sh; debtransform at build time

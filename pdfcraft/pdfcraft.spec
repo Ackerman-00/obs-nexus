@@ -43,6 +43,10 @@ cp -a usr/share/icons %{buildroot}%{_datadir}/
 cp -a usr/share/metainfo %{buildroot}%{_datadir}/
 cp -a usr/share/mime %{buildroot}%{_datadir}/
 cp -a usr/share/doc %{buildroot}%{_datadir}/
+# OCR models shipped since 0.5.0 (text-detection/recognition .rten + licences)
+if [ -d usr/share/pdfcraft ]; then
+  cp -a usr/share/pdfcraft %{buildroot}%{_datadir}/
+fi
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.pdfcraft.desktop
@@ -51,8 +55,14 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.pdfcra
 %license %{_datadir}/doc/pdfcraft/LICENSE-APACHE
 %license %{_datadir}/doc/pdfcraft/LICENSE-MIT
 %dir %{_datadir}/doc/pdfcraft
+%doc %{_datadir}/doc/pdfcraft/NOTICE
 %doc %{_datadir}/doc/pdfcraft/OFL-*.txt
 %doc %{_datadir}/doc/pdfcraft/README.md
+%dir %{_datadir}/pdfcraft/models
+%{_datadir}/pdfcraft/models/text-detection.rten
+%{_datadir}/pdfcraft/models/text-recognition.rten
+%doc %{_datadir}/pdfcraft/models/ATTRIBUTION.txt
+%doc %{_datadir}/pdfcraft/models/*.LICENCE.txt
 %{_bindir}/pdfcraft
 %{_bindir}/pdfcraft-cli
 %{_datadir}/applications/ai.storyteller.pdfcraft.desktop

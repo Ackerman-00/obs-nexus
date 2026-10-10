@@ -98,6 +98,33 @@ for want in "$RPM_NAME" "$DEB_NAME"; do
     fi
 done
 echo "RPM + DEB assets present; proceeding."
+# Payload reconciliation guard (2026-10-10: pdfcraft 0.5.0 shipped a new
+# NOTICE + usr/share/pdfcraft/models dir that spec %files / debian.rules
+# did not cover -> TW "Installed (but unpackaged) file(s)" failure).
+# Runs BEFORE any mutation: the NEW .deb payload (presence verified by
+# the asset guard above) must be fully covered by spec %files, with
+# %install + debian.rules copies for any new data dir, and the .changes
+# order must stay descending. A HOLD leaves the tree untouched.
+echo "Reconciling new payload against spec..."
+RECON_TMP=$(mktemp -d)
+RECON_TOOL="$(pwd)/../tools/reconcile-payload.py"
+if [ ! -f "$RECON_TOOL" ]; then
+    echo "HOLD: reconcile tool missing ($RECON_TOOL). Spec stays on $CURRENT_VER."
+    rm -rf "$RECON_TMP"
+    exit 0
+fi
+if ! curl -fsSL --retry 3 --connect-timeout 30 \
+        "$(deb_url_for "$NEW_VER")" -o "$RECON_TMP/new.deb"; then
+    echo "HOLD: new .deb download failed; cannot reconcile. Spec stays on $CURRENT_VER."
+    rm -rf "$RECON_TMP"
+    exit 0
+fi
+if ! python3 "$RECON_TOOL" "designcraft" "$RECON_TMP/new.deb" "$SPEC_FILE" "$CHANGES_FILE" "debian.rules"; then
+    echo "HOLD: payload/spec drift above. Spec stays on $CURRENT_VER."
+    rm -rf "$RECON_TMP"
+    exit 0
+fi
+rm -rf "$RECON_TMP"
 
 echo "New version found! Updating $SPEC_FILE..."
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
