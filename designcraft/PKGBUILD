@@ -1,0 +1,28 @@
+# Maintainer: Ackerman-00
+pkgname=designcraft
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="Page layout/publishing - clean-room InDesign in pure Rust"
+arch=('x86_64')
+url="https://github.com/storytold/designcraft"
+license=('MIT' 'Apache-2.0')
+source=("https://github.com/storytold/designcraft/releases/download/v0.5.0/designcraft-0.5.0-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('cpio')
+depends=('hicolor-icon-theme' 'libglvnd' 'vulkan-icd-loader' 'libxkbcommon')
+noextract=("designcraft-0.5.0-linux-x86_64.rpm")
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "designcraft-0.5.0-linux-x86_64.rpm"
+
+	install -Dm755 usr/bin/designcraft "$pkgdir/usr/bin/designcraft"
+	install -Dm755 usr/bin/designcraft-cli "$pkgdir/usr/bin/designcraft-cli"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications "$pkgdir/usr/share/"
+	cp -a usr/share/icons "$pkgdir/usr/share/"
+	cp -a usr/share/metainfo "$pkgdir/usr/share/"
+	cp -a usr/share/mime "$pkgdir/usr/share/"
+	cp -a usr/share/doc "$pkgdir/usr/share/"
+}

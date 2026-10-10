@@ -1,0 +1,24 @@
+# Maintainer: Ackerman-00
+# Arch recipe mirroring lazyvim-git.spec (rolling git snapshot, noarch).
+pkgname=lazyvim-git
+pkgver=16.0.1+git20260908200953.9997009
+pkgrel=1
+pkgdesc="Neovim setup for lazy people (Nexus Optimized Git Snapshot)"
+arch=('any')
+url="https://github.com/LazyVim/LazyVim"
+license=('Apache-2.0')
+# Pinned snapshot. update.sh advances base_version/gitdate/shortcommit together
+# and rewrites pkgver. The commit SHA is duplicated on purpose: the source URL is
+# a literal (OBS does not expand shell vars in source URLs, §7) while _commit
+# drives the unpacked LazyVim-<sha> top dir; keep both in sync.
+_commit=999700997f72227187d49d8b92667183dc7fc809
+source=("https://github.com/LazyVim/LazyVim/archive/999700997f72227187d49d8b92667183dc7fc809.tar.gz")
+# update.sh: run `updpkgsums` on every pin bump (docs/arch-packaging.md §7).
+sha256sums=('SKIP')
+
+package() {
+  cd "$srcdir/LazyVim-$_commit" || return 1
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -dm755 "$pkgdir/usr/share/lazyvim"
+  cp -a init.lua lua doc queries scripts LICENSE NEWS.md "$pkgdir/usr/share/lazyvim/"
+}

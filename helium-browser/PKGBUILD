@@ -1,0 +1,72 @@
+# Maintainer: Ackerman-00
+# Arch repack of the upstream Helium tarball, mirroring helium-browser.spec
+# %install. The binary tarball ships no metainfo, so it is pulled from the
+# same release tag (Source1 in the spec).
+pkgname=helium-browser
+pkgver=0.19.2.1
+pkgrel=1
+pkgdesc="Private, fast, and honest web browser"
+arch=('x86_64')
+url="https://github.com/imputnet/helium-linux"
+license=('GPL-3.0-only')
+depends=(
+	'alsa-lib'
+	'at-spi2-core'
+	'cairo'
+	'dbus'
+	'expat'
+	'glib2'
+	'gtk3'
+	'hicolor-icon-theme'
+	'libcups'
+	'libx11'
+	'libxcb'
+	'libxcomposite'
+	'libxdamage'
+	'libxext'
+	'libxfixes'
+	'libxkbcommon'
+	'libxrandr'
+	'libxss'
+	'mesa'
+	'nspr'
+	'nss'
+	'pango'
+	'systemd-libs'
+	'xdg-utils'
+)
+optdepends=(
+	'ttf-liberation: fallback fonts'
+	'vulkan-icd-loader: GPU rasterization'
+)
+makedepends=()
+options=('!strip')
+source=(
+	"https://github.com/imputnet/helium-linux/releases/download/${pkgver}/helium-${pkgver}-x86_64_linux.tar.xz"
+	"https://raw.githubusercontent.com/imputnet/helium-linux/${pkgver}/package/net.imput.helium.metainfo.xml"
+)
+sha256sums=('SKIP')
+
+package() {
+	cd "${srcdir}/helium-${pkgver}-x86_64_linux" || return 1
+
+	install -dm755 "$pkgdir/opt/helium" \
+		"$pkgdir/usr/bin" \
+		"$pkgdir/usr/share/applications" \
+		"$pkgdir/usr/share/metainfo" \
+		"$pkgdir/usr/share/icons/hicolor/256x256/apps"
+
+	cp -a . "$pkgdir/opt/helium/"
+
+	# Brand the wrapper so bug reports show the distribution the build came from.
+	sed -Ei "s/(CHROME_VERSION_EXTRA=).*/\1arch/" "$pkgdir/opt/helium/helium-wrapper"
+
+	install -m644 product_logo_256.png \
+		"$pkgdir/usr/share/icons/hicolor/256x256/apps/helium.png"
+	install -m644 helium.desktop \
+		"$pkgdir/usr/share/applications/helium.desktop"
+	install -m644 "$srcdir/net.imput.helium.metainfo.xml" \
+		"$pkgdir/usr/share/metainfo/net.imput.helium.metainfo.xml"
+
+	ln -sf /opt/helium/helium-wrapper "$pkgdir/usr/bin/helium"
+}

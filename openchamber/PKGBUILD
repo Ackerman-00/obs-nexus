@@ -1,0 +1,83 @@
+# Maintainer: Ackerman-00
+# Arch repack of the upstream OpenChamber AppImage, mirroring
+# openchamber.spec %install (AppRun must ship: the wrapper execs it).
+pkgname=openchamber
+pkgver=2.2.0
+pkgrel=1
+pkgdesc="Agentic development environment boards for issues and pull requests"
+arch=('x86_64')
+url="https://github.com/openchamber/openchamber"
+license=('MIT')
+depends=(
+	'alsa-lib'
+	'at-spi2-core'
+	'cairo'
+	'dbus'
+	'expat'
+	'glib2'
+	'gtk3'
+	'hicolor-icon-theme'
+	'libcups'
+	'libnotify'
+	'libsecret'
+	'libx11'
+	'libxcb'
+	'libxcomposite'
+	'libxdamage'
+	'libxext'
+	'libxfixes'
+	'libxkbcommon'
+	'libxrandr'
+	'libxss'
+	'libxtst'
+	'mesa'
+	'nspr'
+	'nss'
+	'pango'
+	'systemd-libs'
+	'util-linux'
+	'xdg-utils'
+)
+makedepends=('squashfs-tools')
+options=('!strip')
+source=("https://github.com/openchamber/openchamber/releases/download/v${pkgver}/OpenChamber-${pkgver}-linux-x86_64.AppImage")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+noextract=("OpenChamber-${pkgver}-linux-x86_64.AppImage")
+
+package() {
+	cd "$srcdir" || return 1
+
+	# Type-2 runtime self-extract: no FUSE and no unsquashfs offset math.
+	chmod +x "OpenChamber-${pkgver}-linux-x86_64.AppImage"
+	"./OpenChamber-${pkgver}-linux-x86_64.AppImage" --appimage-extract || return 1
+	chmod go-w "$srcdir/squashfs-root"
+
+	install -dm755 "$pkgdir/opt/openchamber"
+	cp -a "$srcdir/squashfs-root/." "$pkgdir/opt/openchamber/"
+
+	# Unprivileged user namespace sandbox path, never setuid.
+	chmod 0755 "$pkgdir/opt/openchamber/chrome-sandbox"
+
+	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+	install -Dm644 "$pkgdir/opt/openchamber/LICENSE.electron.txt" \
+		"$pkgdir/usr/share/licenses/$pkgname/LICENSE.electron.txt"
+	install -Dm644 "$pkgdir/opt/openchamber/LICENSES.chromium.html" \
+		"$pkgdir/usr/share/licenses/$pkgname/LICENSES.chromium.html"
+	rm -f "$pkgdir/opt/openchamber/LICENSE.electron.txt" "$pkgdir/opt/openchamber/LICENSES.chromium.html"
+
+	install -dm755 "$pkgdir/usr/bin"
+	cat >"$pkgdir/usr/bin/openchamber" <<'EOF'
+#!/bin/sh
+export APPDIR="/opt/openchamber"
+exec /opt/openchamber/AppRun "$@"
+EOF
+	chmod 0755 "$pkgdir/usr/bin/openchamber"
+
+	install -dm755 "$pkgdir/usr/share/applications"
+	sed -e 's|^Exec=.*|Exec=/usr/bin/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
+		"$srcdir/squashfs-root/openchamber.desktop" \
+		>"$pkgdir/usr/share/applications/openchamber.desktop"
+
+	install -Dm644 "$srcdir/squashfs-root/openchamber.svg" \
+		"$pkgdir/usr/share/icons/hicolor/scalable/apps/openchamber.svg"
+}

@@ -1,0 +1,28 @@
+# Maintainer: Ackerman-00
+pkgname=effectcraft
+pkgver=0.7.0
+pkgrel=1
+pkgdesc="Motion graphics/VFX - clean-room After Effects in pure Rust"
+arch=('x86_64')
+url="https://github.com/storytold/effectcraft"
+license=('MIT' 'Apache-2.0')
+source=("https://github.com/storytold/effectcraft/releases/download/v0.7.0/effectcraft-0.7.0-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('cpio')
+depends=('alsa-lib' 'hicolor-icon-theme' 'libglvnd' 'vulkan-icd-loader' 'libxkbcommon')
+noextract=("effectcraft-0.7.0-linux-x86_64.rpm")
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "effectcraft-0.7.0-linux-x86_64.rpm"
+
+	install -Dm755 usr/bin/effectcraft "$pkgdir/usr/bin/effectcraft"
+	install -Dm755 usr/bin/effectcraft-cli "$pkgdir/usr/bin/effectcraft-cli"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications "$pkgdir/usr/share/"
+	cp -a usr/share/icons "$pkgdir/usr/share/"
+	cp -a usr/share/metainfo "$pkgdir/usr/share/"
+	cp -a usr/share/mime "$pkgdir/usr/share/"
+	cp -a usr/share/doc "$pkgdir/usr/share/"
+}

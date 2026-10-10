@@ -36,21 +36,37 @@ FAIL/MISMATCH/STALE/UNVERIFIED → CI opens an issue.
 
 ### Layer 1b: Docker battle test + dependency sweep (`tools/docker-sweep.py`) — MANDATORY
 
-Runs INSIDE the agent, clean `opensuse/tumbleweed` every run:
-1. Downloads EVERY .rpm from OBS home:ackerman + reindexes
+Runs INSIDE the agent, clean containers for the EIGHT-target matrix every
+run (`opensuse/tumbleweed`, the Slowroll repo-switched TW image and
+`opensuse/leap:16.0`; `debian:testing`, `debian:sid`, `debian:13`,
+`ubuntu:26.04`; `archlinux:latest`):
+1. Downloads EVERY .rpm from OBS home:ackerman (TW + Slowroll + Leap 16.0 repos) + reindexes
 2. `zypper --no-gpg-checks in` + `ldd` + `--version` for each binary (5+ per run)
-3. Battle-tests `ls -R` (all `*.spec`/`*.changes`/`_service`/`update.sh`) + `yaml` workflows + README `zypper addrepo` path
+3. Battle-tests `ls -R` (all `*.spec`/`*.changes`/`_service`/`update.sh`/`PKGBUILD`) + `yaml` workflows + README `zypper addrepo` path
 4. Reports `| package | zypper install | ldd | status |` — any fail = fix spec/README
-5. Debian Testing + Sid (`--type debian --debdist both`, `debian:testing`
-   and `debian:sid` images): for specs whose Source0 is an upstream .deb
-   (derived via `grep -l '\.deb' */*.spec`), apt/dpkg-install the payload
-   + ldd on BOTH — no Ubuntu, no Debian stable
+5. DEB family (`--type debian --debdist all`; `debian:testing`,
+   `debian:sid`, `debian:13` and `ubuntu:26.04` images): for specs whose
+   Source0 is an upstream .deb (derived via `grep -l '\.deb' */*.spec`),
+   apt/dpkg-install the payload + ldd on ALL FOUR — Debian 13 Trixie
+   (stable) + Forky (testing) + Sid + Ubuntu 26.04 LTS; ONE `.dsc` recipe
+   builds all four (all post-t64, no per-distro forks)
 6. Debian BUILD recipes: every prebuilt/binary package (deb/rpm/AppImage/
    zip/tarball Source0) carries `<pkg>.dsc` + flat `debian.*` + orig tarball
    (debtransform input, assembled at build time). update.sh maintains all
    three (.dsc Version/Tar, debian.changelog entry, orig artifact) on every
    bump plus an ensure-guard; per-package actions/cache in update-packages.yml
    preserves the gitignored tarballs across fresh checkouts
+7. Arch extra (every package carries a `PKGBUILD` next to the
+   `.spec`/`.dsc`; x86_64, `[extra]` only since `[community]` merged into
+   `[extra]` in 2023 and the old repos were deleted 2025-03-01): in a clean
+   `archlinux:latest` container (`--type arch`), `pacman -Syu` then either
+   install the built `.pkg.tar.zst` (`pacman -U`) or `makepkg -si` from the
+   PKGBUILD as a non-root build user, plus a `namcap` scan of the PKGBUILD
+   and the built package. update.sh keeps `pkgver`/`pkgrel`/`source=()`/
+   checksums in sync with the spec on every bump (pkgrel reset 1 on an
+   upstream bump, +1 on a recipe-only fix; `updpkgsums`/`makepkg -g`);
+   `source=()` is https-only (OBS ignores local files); no `.SRCINFO` and
+   no changelog needed on OBS. Details: docs/arch-packaging.md
 
 Key features:
 - `trivy_scan_image()`: scans base images for CRITICAL/HIGH/MEDIUM CVEs

@@ -1,0 +1,28 @@
+# Maintainer: Ackerman-00
+pkgname=lightcraft
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="Photo manager - clean-room Lightroom in pure Rust"
+arch=('x86_64')
+url="https://github.com/storytold/lightcraft"
+license=('MIT' 'Apache-2.0')
+source=("https://github.com/storytold/lightcraft/releases/download/v0.5.0/lightcraft-0.5.0-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('cpio')
+depends=('hicolor-icon-theme' 'libglvnd' 'vulkan-icd-loader' 'libxkbcommon')
+noextract=("lightcraft-0.5.0-linux-x86_64.rpm")
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "lightcraft-0.5.0-linux-x86_64.rpm"
+
+	install -Dm755 usr/bin/lightcraft "$pkgdir/usr/bin/lightcraft"
+	install -Dm755 usr/bin/lightcraft-cli "$pkgdir/usr/bin/lightcraft-cli"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications "$pkgdir/usr/share/"
+	cp -a usr/share/icons "$pkgdir/usr/share/"
+	cp -a usr/share/metainfo "$pkgdir/usr/share/"
+	cp -a usr/share/mime "$pkgdir/usr/share/"
+	cp -a usr/share/doc "$pkgdir/usr/share/"
+}

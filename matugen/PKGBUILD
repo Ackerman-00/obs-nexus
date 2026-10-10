@@ -1,0 +1,34 @@
+# Maintainer: Ackerman-00
+# Arch recipe mirroring matugen.spec (native Rust source build).
+pkgname=matugen
+pkgver=4.2.0
+pkgrel=1
+pkgdesc="Material You color generation tool"
+arch=('x86_64' 'aarch64')
+url="https://github.com/InioX/matugen"
+license=('GPL-2.0-or-later' 'MIT' 'Apache-2.0' 'Zlib')
+source=("https://github.com/InioX/matugen/archive/refs/tags/v${pkgver}.tar.gz")
+# gcc/make/pkgconf come from base-devel (§4.1); cargo is the only real makedepends.
+makedepends=('cargo')
+# KNOWN GAP (offline vendor): the RPM/.dsc recipes ship vendored crates
+# (vendor.tar.xz + .cargo/config, produced by _service cargo_vendor and
+# update.sh build_vendor()). The OBS Arch build root cannot reach crates.io,
+# so `cargo build --locked` fails offline. Next step for update.sh: build a
+# vendor tarball, add it + a .cargo/config to source=(), and compile with
+# `cargo build --release --locked --offline` pointing at the vendored tree.
+# Until then this recipe builds only where the crates.io network is reachable.
+# Runtime depends are intentionally unset: fill from `find-libdeps`/namcap after
+# the first real (online) build confirms what the default-feature binary links.
+# update.sh: run `updpkgsums` on version bump (docs/arch-packaging.md §7).
+sha256sums=('SKIP')
+
+build() {
+  cd "$srcdir/matugen-$pkgver" || return 1
+  cargo build --release --locked
+}
+
+package() {
+  cd "$srcdir/matugen-$pkgver" || return 1
+  cargo install --path . --root "$pkgdir/usr"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,68 @@
+# Maintainer: Ackerman-00
+# Bundled Electron runtime under /usr/lib/fluxer must ship untouched: no
+# makepkg strip, matching the spec's __requires_exclude_from.
+pkgname=fluxer
+pkgver=2026.1006.171735
+pkgrel=1
+pkgdesc="Free and open source instant messaging and VoIP platform"
+arch=('x86_64')
+url="https://fluxer.app"
+license=('AGPL-3.0-or-later' 'BSD')
+# upstream serves unversioned latest rpm; pkgver tracks served-file state, update.sh pins
+source=("https://api.fluxer.app/dl/desktop/stable/linux/x64/latest/rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('libarchive')
+depends=('gtk3' 'nss' 'alsa-lib' 'libxss' 'libxtst' 'libxcomposite' 'libxdamage' 'libxrandr' 'libxfixes' 'libxext' 'libx11' 'libxcb' 'libxkbcommon' 'cups' 'libdrm' 'mesa' 'pango' 'cairo' 'expat' 'libnotify' 'at-spi2-core' 'hicolor-icon-theme' 'xdg-utils')
+noextract=("rpm")
+options=('!strip')
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf rpm
+
+	# Stable payload is opt/Fluxer; fall back to whatever Fluxer* the
+	# endpoint redirects to (canary migrations happened before).
+	_fluxer_src=$(ls -d opt/Fluxer* 2>/dev/null | head -n1)
+	if [ -z "$_fluxer_src" ]; then
+		echo "fluxer: no app dir in the served rpm payload" >&2
+		return 1
+	fi
+
+	install -dm755 "$pkgdir/usr/lib/$pkgname"
+	cp -a "$_fluxer_src"/. "$pkgdir/usr/lib/$pkgname/"
+
+	# Canary payloads ship fluxer-canary and need the stable name alias.
+	if [ ! -e "$pkgdir/usr/lib/$pkgname/$pkgname" ] && [ -e "$pkgdir/usr/lib/$pkgname/$pkgname-canary" ]; then
+		ln -sf $pkgname-canary "$pkgdir/usr/lib/$pkgname/$pkgname"
+	fi
+
+	install -dm755 "$pkgdir/usr/bin"
+	cat > "$pkgdir/usr/bin/$pkgname" <<'EOF'
+#!/bin/sh
+exec /usr/lib/fluxer/fluxer "$@"
+EOF
+	chmod 0755 "$pkgdir/usr/bin/$pkgname"
+
+	# Desktop entry: upstream renamed fluxer.desktop to the appid style in
+	# 2026.1004.13532; accept either, ship the appid name.
+	_desktop_src=$(ls usr/share/applications/fluxer*.desktop \
+		usr/share/applications/app.fluxer*.desktop 2>/dev/null | head -n1)
+	if [ -z "$_desktop_src" ]; then
+		echo "fluxer: no desktop file in the served rpm payload" >&2
+		return 1
+	fi
+	install -Dm644 "$_desktop_src" "$pkgdir/usr/share/applications/app.fluxer.Fluxer.desktop"
+	sed -i 's|^Exec=.*|Exec=/usr/bin/fluxer %U|; s|^Icon=.*|Icon=app.fluxer.Fluxer|' \
+		"$pkgdir/usr/share/applications/app.fluxer.Fluxer.desktop"
+
+	for iconpath in usr/share/icons/hicolor/*/apps/fluxer*.png \
+		usr/share/icons/hicolor/*/apps/app.fluxer*.png; do
+		[ -e "$iconpath" ] || continue
+		_size=$(echo "$iconpath" | cut -d/ -f5)
+		install -Dm644 "$iconpath" \
+			"$pkgdir/usr/share/icons/hicolor/$_size/apps/app.fluxer.Fluxer.png"
+	done
+
+	install -Dm644 "$pkgdir/usr/lib/$pkgname/LICENSE.electron.txt" \
+		"$pkgdir/usr/share/licenses/$pkgname/LICENSE.electron.txt"
+}

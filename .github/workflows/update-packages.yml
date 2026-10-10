@@ -33,8 +33,9 @@ jobs:
       - run: pip install requests
 
       # Gitignored debtransform orig inputs maintained by each package's
-      # update.sh (Debian_Testing recipe: <pkg>.dsc + flat debian.* + orig
-      # tarball). Per-package caches keep them across fresh checkouts so
+      # update.sh (Debian recipe: <pkg>.dsc + flat debian.* + orig tarball,
+      # ONE recipe building Trixie/Forky/Sid/Ubuntu 26.04). Per-package
+      # caches keep them across fresh checkouts so
       # multi-hundred-MB upstream downloads only happen on real version
       # changes or cache eviction; keys are per-package so one package's
       # bump never invalidates the others.
@@ -262,7 +263,7 @@ jobs:
             echo "updates_made=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Validate Debian recipe consistency
+      - name: Validate recipe consistency (Debian .dsc + Arch PKGBUILD)
         # Generator guard (added 2026-10-09 after the zen-browser 1.23.2b
         # incident: spec/.dsc Version was bumped but Debtransform-Tar still
         # named the 1.23.1b tarball, failing the Debian_Testing build in
@@ -271,6 +272,10 @@ jobs:
         # versions), and Debtransform-Tar must embed that version (or the
         # spec shortcommit for snapshot recipes like lazyvim-git).
         # Fails the run BEFORE commit so a broken recipe never lands.
+        # The Arch PKGBUILD check appended below (extra target) is
+        # WARN-ONLY on this first iteration - the fleet is mid-rollout, so
+        # a missing PKGBUILD or a pkgver skew is surfaced via
+        # ::warning:: and never fails the run.
         run: |
           python3 << 'EOF'
           import re, sys
@@ -306,6 +311,43 @@ jobs:
               print('\n'.join(f'  - {b}' for b in bad))
               sys.exit(1)
           print('Debian recipes consistent.')
+          EOF
+
+          # Arch extra: PKGBUILD pkgver must track the sibling spec
+          # Version (or its base_version for macro-composed -git versions).
+          # WARN-ONLY: echo the skew, never fail the run on this iteration.
+          python3 << 'EOF'
+          import re
+          from pathlib import Path
+          warns = []
+          specs = 0
+          for spec in sorted(Path('.').glob('*/*.spec')):
+              specs += 1
+              pkgbuild = spec.parent / 'PKGBUILD'
+              if not pkgbuild.exists():
+                  warns.append(f'{spec.parent.name}: no PKGBUILD yet (Arch extra rollout in progress)')
+                  continue
+              stxt = spec.read_text(encoding='utf-8')
+              sv = re.search(r'^Version:\s*(\S+)', stxt, re.M).group(1)
+              pv = re.search(r'^pkgver=([^\s#]+)', txt, re.M)
+              if not pv:
+                  warns.append(f'{pkgbuild}: no pkgver= line')
+                  continue
+              got = pv.group(1).strip('\'"')
+              if '%' in sv:
+                  # macro-composed snapshot version: pkgver must embed
+                  # base_version + shortcommit (same rule as the .dsc check)
+                  m = re.search(r'%global\s+base_version\s+(\S+)', stxt)
+                  sc = re.search(r'%global\s+shortcommit\s+(\S+)', stxt)
+                  ver_ok = (got.startswith(m.group(1)) if m else False) \
+                      and (sc.group(1) in got if sc else True)
+              else:
+                  ver_ok = (got == sv)
+              if not ver_ok:
+                  warns.append(f'{pkgbuild}: pkgver {got} does not track spec Version {sv}')
+          for w in warns:
+              print(f'::warning::PKGBUILD check: {w}')
+          print(f'PKGBUILD check: {specs} specs scanned, {len(warns)} warning(s) (soft, no run failure).')
           EOF
 
       - name: Commit and Push

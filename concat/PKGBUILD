@@ -1,0 +1,42 @@
+# Maintainer: Ackerman-00
+# Bundled FFmpeg/ONNX Runtime under /opt/concat/lib must ship untouched:
+# no makepkg strip, matching the spec's __requires_exclude_from /
+# debug_package %{nil} pair.
+pkgname=concat
+pkgver=0.2.6
+pkgrel=1
+pkgdesc="Free and open source video editor"
+arch=('x86_64')
+url="https://github.com/jub0t/concat"
+license=('AGPL-3.0-or-later')
+source=("https://github.com/jub0t/concat/releases/download/v${pkgver}/Concat-${pkgver}-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('libarchive')
+depends=('libgl' 'fontconfig' 'gtk3' 'alsa-lib' 'freetype2' 'libxkbcommon' 'libxkbcommon-x11')
+noextract=("Concat-${pkgver}-linux-x86_64.rpm")
+options=('!strip')
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "Concat-${pkgver}-linux-x86_64.rpm"
+
+	# Upstream's RPM stores lib/*.so* mode 000 (its DEB correctly uses 0755).
+	# chmod the extracted payload first: a non-root makepkg cannot read - and
+	# therefore cannot copy - mode 000 files (rpm's %install runs as root).
+	chmod 755 opt/concat/lib/*.so*
+
+	install -dm755 "$pkgdir/opt/concat"
+	cp -a opt/concat/. "$pkgdir/opt/concat/"
+	chmod 755 "$pkgdir"/opt/concat/lib/*.so*
+
+	install -Dm755 usr/bin/concat "$pkgdir/usr/bin/concat"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications usr/share/icons usr/share/doc "$pkgdir/usr/share/"
+
+	install -Dm644 usr/share/doc/concat/LICENSE \
+		"$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+	sed -i 's|^Exec=.*|Exec=/usr/bin/concat %U|' \
+		"$pkgdir/usr/share/applications/concat.desktop"
+}

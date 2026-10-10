@@ -1,0 +1,90 @@
+# Maintainer: Ackerman-00
+# Arch repack of the upstream Root AppImage, mirroring rootapp.spec %install
+# (offset unsquashfs, /opt/rootapp, AppRun wrapper).
+pkgname=rootapp
+pkgver=0.9.147
+pkgrel=1
+pkgdesc="Discord alternative for gaming communities and large groups"
+arch=('x86_64')
+url="https://www.rootapp.com"
+license=('custom')
+depends=(
+	'alsa-lib'
+	'at-spi2-core'
+	'cairo'
+	'dbus'
+	'fontconfig'
+	'gtk3'
+	'hicolor-icon-theme'
+	'libcups'
+	'libglvnd'
+	'libnotify'
+	'libpulse'
+	'libx11'
+	'libxcb'
+	'libxcomposite'
+	'libxcursor'
+	'libxdamage'
+	'libxinerama'
+	'libxkbcommon'
+	'libxrandr'
+	'libxrender'
+	'libxss'
+	'libxt'
+	'libxtst'
+	'mesa'
+	'nspr'
+	'nss'
+	'systemd-libs'
+	'vulkan-icd-loader'
+	'wayland'
+	'wl-clipboard'
+	'xdg-utils'
+)
+makedepends=('squashfs-tools')
+options=('!strip')
+source=("https://installer.rootapp.com/installer/Linux/X64/Root.AppImage")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+noextract=("Root.AppImage")
+
+package() {
+	local offset
+
+	offset=$(LC_ALL=C readelf -h "$srcdir/Root.AppImage" | awk 'NR==13{e_shoff=$5} NR==18{e_shentsize=$5} NR==19{e_snum=$5} END{print e_shoff+e_shentsize*e_snum}')
+	unsquashfs -q -d "$srcdir/squashfs-root" -o "$offset" "$srcdir/Root.AppImage" || return 1
+	chmod go-w "$srcdir/squashfs-root"
+
+	install -dm755 "$pkgdir/opt/rootapp"
+	cp -a "$srcdir/squashfs-root/." "$pkgdir/opt/rootapp/"
+
+	if [[ -f "$pkgdir/opt/rootapp/chrome-sandbox" ]]; then
+		chmod 0755 "$pkgdir/opt/rootapp/chrome-sandbox"
+	fi
+
+	install -dm755 "$pkgdir/usr/bin"
+	cat >"$pkgdir/usr/bin/rootapp" <<'EOF'
+#!/bin/sh
+export APPDIR="/opt/rootapp"
+exec /opt/rootapp/AppRun "$@"
+EOF
+	chmod 0755 "$pkgdir/usr/bin/rootapp"
+
+	install -Dm644 "$srcdir/squashfs-root/Root.png" \
+		"$pkgdir/usr/share/pixmaps/rootapp.png"
+	install -Dm644 "$srcdir/squashfs-root/Root.png" \
+		"$pkgdir/usr/share/icons/hicolor/256x256/apps/rootapp.png"
+
+	install -dm755 "$pkgdir/usr/share/applications"
+	cat >"$pkgdir/usr/share/applications/rootapp.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Root
+Comment=Root App is a new Discord alternative, designed for gaming communities and large groups
+Exec=rootapp %U
+Icon=rootapp
+Terminal=false
+StartupWMClass=Root
+Categories=Network;InstantMessaging;
+MimeType=x-scheme-handler/rootapp;
+EOF
+}

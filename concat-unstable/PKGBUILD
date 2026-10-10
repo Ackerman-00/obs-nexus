@@ -1,0 +1,105 @@
+# Maintainer: Ackerman-00
+# Arch recipe mirroring concat-unstable.spec (Rust main-branch snapshot). x86_64
+# only: upstream ships prebuilt FFmpeg/ONNX/Skia/sherpa sidecars for x86_64.
+pkgname=concat-unstable
+pkgver=0.2.6+git20261010035213.7223d64
+pkgrel=1
+pkgdesc="Free and open source video editor (main-branch snapshot)"
+arch=('x86_64')
+url="https://github.com/jub0t/concat"
+license=('AGPL-3.0-or-later')
+# Pinned snapshot; update.sh advances base_version/gitdate/shortcommit + pkgver
+# together. Like lazyvim-git the commit SHA is duplicated: literal in source=
+# (OBS does not expand shell vars in source URLs, §7), _commit drives the
+# unpacked concat-<sha> top dir.
+_commit=7223d64a4243af8aaa0f2a9b80170556e534f7ee
+#
+# HONEST GAP: the RPM/.dsc recipes use ONE unified snapshot tarball that bundles
+# the upstream tree PLUS (a) vendored crates + .cargo/config and four sidecars:
+#   FFmpeg (BtbN 8.1): https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.1-latest-linux64-gpl-shared-8.1.tar.xz
+#   ONNX Runtime:     https://github.com/microsoft/onnxruntime/releases/download/v1.28.0/onnxruntime-linux-x64-1.28.0.tgz
+#   Skia cache:       https://github.com/rust-skia/skia-binaries/releases/download/0.153.3/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz
+#   sherpa-onnx:      https://github.com/k2-fsa/sherpa-onnx/releases/download/v<VER>/sherpa-onnx-v<VER>-linux-x64-static-lib.tar.bz2 (<VER> = vendored sherpa-onnx-sys CARGO_PKG_VERSION from Cargo.lock)
+# The Arch recipe below fetches ONLY the bare upstream main archive, so
+# `cargo build --offline --frozen` cannot succeed until update.sh grows a vendor
+# step that materialises the vendored crates + the four sidecars into a tarball
+# listed here in source=(). This PKGBUILD is best-effort structure for now.
+source=("https://github.com/jub0t/concat/archive/7223d64a4243af8aaa0f2a9b80170556e534f7ee.tar.gz")
+# Best-effort mapping of the spec's BuildRequires to Arch makedepends (gcc/make/
+# pkgconf come from base-devel, §4.1). clang supplies libclang for bindgen.
+makedepends=('cargo' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
+             'libxkbcommon' 'libxkbcommon-x11' 'mesa' 'gtk3' 'alsa-lib'
+             'desktop-file-utils')
+# System runtime libs mirroring the spec's Requires. Bundled libav*/libonnxruntime
+# land under /opt/concat-unstable/lib and are deliberately NOT turned into system
+# deps (mirrors the spec's __requires_exclude_from ^/opt/...); confirm the final
+# set with find-libdeps/namcap once the package builds.
+depends=('mesa' 'fontconfig' 'gtk3' 'alsa-lib' 'freetype2' 'libxkbcommon'
+         'libxkbcommon-x11' 'openssl' 'hicolor-icon-theme')
+# update.sh: run `updpkgsums` on every pin bump (docs/arch-packaging.md §7).
+sha256sums=('SKIP')
+
+build() {
+  local root="$srcdir/concat-$_commit"
+
+  # Emit the shipped .desktop here so check() can validate it and package()
+  # installs one copy. Arch runs build() -> check() -> package(); the RPM
+  # %check validated the already-installed copy, which does not exist at
+  # check() time in Arch.
+  cat > "$srcdir/concat-unstable.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=Concat (Unstable)
+Comment=Video editor - main branch snapshot
+Exec=/usr/bin/concat-unstable %U
+Icon=concat-unstable
+Terminal=false
+Categories=AudioVideo;Video;
+EOF
+
+  # Offline vendored build; env mirrors upstream's Linux CI. BtbN FFmpeg via
+  # FFMPEG_DIR, Microsoft ONNX via ORT_LIB_LOCATION + dynamic link, Skia via the
+  # prefetched file:// cache, sherpa-onnx statics via SHERPA_ONNX_ARCHIVE_DIR,
+  # and an $ORIGIN/lib DT_RPATH so the bundled libs resolve transitively.
+  export CARGO_NET_OFFLINE=true
+  export ORT_SKIP_DOWNLOAD=1
+  export FFMPEG_DIR="$root/ffmpeg-dev"
+  export ORT_LIB_LOCATION="$root/onnxlib"
+  export ORT_PREFER_DYNAMIC_LINK=1
+  export SKIA_BINARIES_URL="file://$root/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
+  export SHERPA_ONNX_ARCHIVE_DIR="$root/sherpa-cache"
+  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags"
+
+  cd "$root/src" || return 1
+  cargo build --offline --frozen --release --bin concat
+}
+
+check() {
+  desktop-file-validate "$srcdir/concat-unstable.desktop"
+}
+
+package() {
+  local root="$srcdir/concat-$_commit"
+
+  install -dm755 "$pkgdir/opt/concat-unstable/lib"
+  install -m0755 "$root/src/target/release/concat" \
+    "$pkgdir/opt/concat-unstable/concat-unstable"
+  cp -a "$root"/ffmpeg-dev/lib/lib*.so* "$pkgdir/opt/concat-unstable/lib/"
+  cp -a "$root"/onnxlib/libonnxruntime.so* "$pkgdir/opt/concat-unstable/lib/"
+
+  install -dm755 "$pkgdir/usr/bin"
+  cat > "$pkgdir/usr/bin/concat-unstable" <<'EOF'
+#!/bin/sh
+exec /opt/concat-unstable/concat-unstable "$@"
+EOF
+  chmod 0755 "$pkgdir/usr/bin/concat-unstable"
+
+  install -Dm644 "$srcdir/concat-unstable.desktop" \
+    "$pkgdir/usr/share/applications/concat-unstable.desktop"
+
+  install -Dm644 "$root/assets/icons/concat_logo_256.png" \
+    "$pkgdir/usr/share/icons/hicolor/256x256/apps/concat-unstable.png"
+
+  install -Dm644 "$root/LICENSE" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

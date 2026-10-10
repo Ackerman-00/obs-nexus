@@ -1,0 +1,26 @@
+# Maintainer: Ackerman-00
+pkgname=artcraft-launcher
+pkgver=0.1.3
+pkgrel=1
+pkgdesc="App launcher for the Craft suite"
+arch=('x86_64')
+url="https://github.com/storytold/craft-launcher"
+license=('MIT' 'Apache-2.0')
+source=("https://github.com/storytold/craft-launcher/releases/download/v${pkgver}/artcraft-launcher-${pkgver}-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('cpio')
+depends=('hicolor-icon-theme' 'libx11' 'libxcb' 'libxcursor' 'libxi' 'libxkbcommon' 'libglvnd' 'vulkan-icd-loader' 'wayland')
+noextract=("artcraft-launcher-${pkgver}-linux-x86_64.rpm")
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "artcraft-launcher-${pkgver}-linux-x86_64.rpm"
+
+	install -Dm755 usr/bin/artcraft-launcher "$pkgdir/usr/bin/artcraft-launcher"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications "$pkgdir/usr/share/"
+	cp -a usr/share/icons "$pkgdir/usr/share/"
+	cp -a usr/share/metainfo "$pkgdir/usr/share/"
+	cp -a usr/share/doc "$pkgdir/usr/share/"
+}

@@ -1,0 +1,112 @@
+# Maintainer: Ackerman-00
+# Arch repack of the upstream dual-arch Obsidian AppImages, mirroring
+# obsidian.spec %install (offset unsquashfs, /opt/obsidian, bundled electron).
+pkgname=obsidian
+pkgver=1.14.4
+pkgrel=1
+pkgdesc="A powerful knowledge base for plain text Markdown files"
+arch=('x86_64' 'aarch64')
+url="https://obsidian.md/"
+license=('custom')
+depends=(
+	'alsa-lib'
+	'at-spi2-core'
+	'bash'
+	'cairo'
+	'dbus'
+	'expat'
+	'fontconfig'
+	'gdk-pixbuf2'
+	'glib2'
+	'gtk3'
+	'hicolor-icon-theme'
+	'libayatana-appindicator'
+	'libcups'
+	'libdbusmenu-glib'
+	'libnotify'
+	'libsecret'
+	'libx11'
+	'libxcb'
+	'libxcomposite'
+	'libxdamage'
+	'libxext'
+	'libxfixes'
+	'libxkbcommon'
+	'libxrandr'
+	'libxss'
+	'libxtst'
+	'mesa'
+	'nspr'
+	'nss'
+	'pango'
+	'systemd-libs'
+	'util-linux'
+	'xdg-utils'
+)
+makedepends=('squashfs-tools')
+options=('!strip')
+source=()
+source_x86_64=("https://github.com/obsidianmd/obsidian-releases/releases/download/v${pkgver}/Obsidian-${pkgver}.AppImage")
+source_aarch64=("https://github.com/obsidianmd/obsidian-releases/releases/download/v${pkgver}/Obsidian-${pkgver}-arm64.AppImage")
+sha256sums=('SKIP')
+sha256sums_x86_64=('SKIP')
+sha256sums_aarch64=('SKIP')
+
+package() {
+	local appimage offset
+
+	if [[ $CARCH == x86_64 ]]; then
+		appimage="Obsidian-${pkgver}.AppImage"
+	else
+		appimage="Obsidian-${pkgver}-arm64.AppImage"
+	fi
+
+	offset=$(LC_ALL=C readelf -h "$srcdir/$appimage" | awk 'NR==13{e_shoff=$5} NR==18{e_shentsize=$5} NR==19{e_snum=$5} END{print e_shoff+e_shentsize*e_snum}')
+	unsquashfs -q -d "$srcdir/squashfs-root" -o "$offset" "$srcdir/$appimage" || return 1
+	chmod go-w "$srcdir/squashfs-root"
+
+	install -dm755 "$pkgdir/opt/obsidian"
+	cp -a "$srcdir/squashfs-root/." "$pkgdir/opt/obsidian/"
+
+	if [[ -f "$pkgdir/opt/obsidian/chrome-sandbox" ]]; then
+		chmod 0755 "$pkgdir/opt/obsidian/chrome-sandbox"
+	fi
+
+	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+	install -Dm644 "$pkgdir/opt/obsidian/LICENSE.electron.txt" \
+		"$pkgdir/usr/share/licenses/$pkgname/LICENSE.electron.txt"
+	install -Dm644 "$pkgdir/opt/obsidian/LICENSES.chromium.html" \
+		"$pkgdir/usr/share/licenses/$pkgname/LICENSES.chromium.html"
+	rm -f "$pkgdir/opt/obsidian/LICENSE.electron.txt" "$pkgdir/opt/obsidian/LICENSES.chromium.html"
+
+	install -dm755 "$pkgdir/usr/bin"
+	cat >"$pkgdir/usr/bin/obsidian" <<'EOF'
+#!/bin/bash
+OBSIDIAN_USER_FLAGS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/obsidian/user-flags.conf"
+
+if [ -f "$OBSIDIAN_USER_FLAGS_FILE" ]; then
+   mapfile -t OBSIDIAN_USER_FLAGS < <(sed -r "/^( *#|$)/d;s% %\n%g" "$OBSIDIAN_USER_FLAGS_FILE")
+fi
+
+if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+    export ELECTRON_OZONE_PLATFORM_HINT="${ELECTRON_OZONE_PLATFORM_HINT:-auto}"
+fi
+
+exec /opt/obsidian/obsidian "${OBSIDIAN_USER_FLAGS[@]}" "$@"
+EOF
+	chmod 0755 "$pkgdir/usr/bin/obsidian"
+
+	install -dm755 "$pkgdir/usr/share/applications"
+	sed -e 's|^Exec=.*|Exec=/usr/bin/obsidian %U|' -e 's|^Icon=.*|Icon=md.obsidian.Obsidian|' \
+		"$srcdir/squashfs-root/md.obsidian.Obsidian.desktop" \
+		>"$pkgdir/usr/share/applications/md.obsidian.Obsidian.desktop"
+
+	install -Dm644 "$srcdir/squashfs-root/obsidian.png" \
+		"$pkgdir/usr/share/icons/hicolor/256x256/apps/md.obsidian.Obsidian.png"
+	install -Dm644 "$srcdir/squashfs-root/obsidian.png" \
+		"$pkgdir/usr/share/pixmaps/md.obsidian.Obsidian.png"
+
+	# The AppImage runtime loader is unused: obsidian.sh execs the bundled
+	# binary directly, and its /usr/bin/env shebang only adds noise.
+	rm -f "$pkgdir/opt/obsidian/AppRun"
+}

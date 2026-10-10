@@ -1,0 +1,96 @@
+# Maintainer: Ackerman-00
+# Arch repack of the upstream OpenCode desktop .deb, mirroring
+# opencode-desktop.spec %install.
+pkgname=opencode-desktop
+pkgver=2.0.26
+pkgrel=1
+pkgdesc="Open source AI coding agent"
+arch=('x86_64')
+url="https://opencode.ai"
+license=('MIT')
+depends=(
+	'alsa-lib'
+	'at-spi2-core'
+	'cairo'
+	'dbus'
+	'expat'
+	'glib2'
+	'gtk3'
+	'hicolor-icon-theme'
+	'libcups'
+	'libnotify'
+	'libsecret'
+	'libx11'
+	'libxcb'
+	'libxcomposite'
+	'libxdamage'
+	'libxext'
+	'libxfixes'
+	'libxkbcommon'
+	'libxrandr'
+	'libxss'
+	'libxtst'
+	'mesa'
+	'nspr'
+	'nss'
+	'pango'
+	'ripgrep'
+	'systemd-libs'
+	'util-linux'
+	'xdg-utils'
+)
+makedepends=('binutils' 'tar' 'zstd')
+options=('!strip')
+source=("https://opencode.ai/files/bin/${pkgver}/opencode-desktop-linux-amd64.deb")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+noextract=("opencode-desktop-linux-amd64.deb")
+
+package() {
+	cd "$srcdir" || return 1
+
+	ar x "opencode-desktop-linux-amd64.deb" || return 1
+	if [[ -f data.tar.xz ]]; then
+		tar xf data.tar.xz || return 1
+	elif [[ -f data.tar.zst ]]; then
+		tar --zstd -xf data.tar.zst || return 1
+	else
+		echo "ERROR: unexpected data.tar compression in upstream DEB" >&2
+		return 1
+	fi
+
+	install -dm755 "$pkgdir/opt/OpenCode"
+	cp -a opt/OpenCode/. "$pkgdir/opt/OpenCode/"
+
+	rm -rf "$pkgdir/opt/OpenCode/resources/apparmor-profile"
+	rm -f "$pkgdir/opt/OpenCode/resources/app-update.yml"
+	rm -f "$pkgdir/opt/OpenCode/resources/app.asar.unpacked/node_modules/@msgpackr-extract/msgpackr-extract-linux-x64/"*.musl.node
+	rm -rf "$pkgdir/opt/OpenCode/resources/app.asar.unpacked/node_modules/@parcel/watcher-linux-x64-musl"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/. "$pkgdir/usr/share/"
+
+	install -dm755 "$pkgdir/usr/bin"
+	cat >"$pkgdir/usr/bin/opencode-desktop" <<'EOF'
+#!/bin/sh
+flags="--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true --wayland-text-input-version=3"
+conf="${XDG_CONFIG_HOME:-$HOME/.config}/opencode-desktop-flags.conf"
+if [ -r "$conf" ]; then
+    while IFS= read -r line; do
+        case "$line" in
+            ''|\#*) continue ;;
+        esac
+        flags="$flags $line"
+    done < "$conf"
+fi
+exec /opt/OpenCode/ai.opencode.desktop $flags "$@"
+EOF
+	chmod 0755 "$pkgdir/usr/bin/opencode-desktop"
+
+	sed -i 's|^Exec=.*|Exec=/usr/bin/opencode-desktop %U|' \
+		"$pkgdir/usr/share/applications/opencode-desktop.desktop"
+	sed -i 's|^Exec=.*|Exec=/usr/bin/opencode-desktop %U|' \
+		"$pkgdir/usr/share/applications/ai.opencode.desktop.desktop"
+
+	# chrome-sandbox stays 0755 (never setuid): unprivileged user namespaces.
+	chmod 0755 "$pkgdir/opt/OpenCode/chrome-sandbox"
+}

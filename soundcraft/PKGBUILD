@@ -1,0 +1,28 @@
+# Maintainer: Ackerman-00
+pkgname=soundcraft
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="Digital audio workstation - clean-room Pro Tools in pure Rust"
+arch=('x86_64')
+url="https://github.com/storytold/soundcraft"
+license=('MIT' 'Apache-2.0')
+source=("https://github.com/storytold/soundcraft/releases/download/v0.4.0/soundcraft-0.4.0-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('cpio')
+depends=('alsa-lib' 'hicolor-icon-theme' 'libglvnd' 'vulkan-icd-loader' 'libxkbcommon')
+noextract=("soundcraft-0.4.0-linux-x86_64.rpm")
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "soundcraft-0.4.0-linux-x86_64.rpm"
+
+	install -Dm755 usr/bin/soundcraft "$pkgdir/usr/bin/soundcraft"
+	install -Dm755 usr/bin/soundcraft-cli "$pkgdir/usr/bin/soundcraft-cli"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications "$pkgdir/usr/share/"
+	cp -a usr/share/icons "$pkgdir/usr/share/"
+	cp -a usr/share/metainfo "$pkgdir/usr/share/"
+	cp -a usr/share/mime "$pkgdir/usr/share/"
+	cp -a usr/share/doc "$pkgdir/usr/share/"
+}

@@ -1,0 +1,32 @@
+# Maintainer: Ackerman-00
+# ELF payload NEEDED is libc/m/gcc only (Vulkan/GL are dlopened): ship the
+# binaries as released, no makepkg strip.
+pkgname=vectorcraft
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="Vector editor - clean-room Illustrator in pure Rust"
+arch=('x86_64')
+url="https://github.com/storytold/vectorcraft"
+license=('MIT' 'Apache-2.0')
+source=("https://github.com/storytold/vectorcraft/releases/download/v${pkgver}/vectorcraft-${pkgver}-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('libarchive')
+depends=('hicolor-icon-theme' 'gcc-libs' 'libglvnd' 'vulkan-icd-loader' 'libxkbcommon')
+noextract=("vectorcraft-${pkgver}-linux-x86_64.rpm")
+options=('!strip')
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "vectorcraft-${pkgver}-linux-x86_64.rpm"
+
+	install -Dm755 usr/bin/vectorcraft "$pkgdir/usr/bin/vectorcraft"
+	install -Dm755 usr/bin/vectorcraft-cli "$pkgdir/usr/bin/vectorcraft-cli"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications usr/share/icons usr/share/metainfo \
+		usr/share/mime usr/share/doc "$pkgdir/usr/share/"
+
+	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+	install -m644 usr/share/doc/vectorcraft/LICENSE-APACHE \
+		usr/share/doc/vectorcraft/LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/"
+}

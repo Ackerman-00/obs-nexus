@@ -1,0 +1,46 @@
+# Maintainer: Ackerman-00
+# Bundled Electron runtime under /opt/Vesktop must ship untouched: no makepkg
+# strip, matching the spec's __requires_exclude_from / debug_package %{nil}.
+pkgname=vesktop
+pkgver=1.6.7
+pkgrel=1
+pkgdesc="Custom Discord desktop client with Vencord preinstalled"
+arch=('x86_64')
+url="https://github.com/Vencord/Vesktop"
+license=('GPL-3.0-or-later')
+source=("https://github.com/Vencord/Vesktop/releases/download/v${pkgver}/vesktop-${pkgver}.x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('libarchive')
+depends=('gtk3' 'nss' 'alsa-lib' 'libxss' 'libxtst' 'libxcomposite' 'libxdamage' 'libxrandr' 'libxfixes' 'libxext' 'libx11' 'libxcb' 'libxkbcommon' 'cups' 'libdrm' 'mesa' 'pango' 'cairo' 'expat' 'libnotify' 'at-spi2-core' 'hicolor-icon-theme' 'xdg-utils')
+noextract=("vesktop-${pkgver}.x86_64.rpm")
+options=('!strip')
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "vesktop-${pkgver}.x86_64.rpm"
+
+	install -dm755 "$pkgdir/opt/Vesktop"
+	cp -a opt/Vesktop/. "$pkgdir/opt/Vesktop/"
+
+	# Arch counterpart of %attr(4755, root, root) on the Electron sandbox.
+	chmod 4755 "$pkgdir/opt/Vesktop/chrome-sandbox"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications usr/share/icons "$pkgdir/usr/share/"
+
+	# Native Wayland wrapper.
+	install -dm755 "$pkgdir/usr/bin"
+	cat > "$pkgdir/usr/bin/vesktop" <<'EOF'
+#!/bin/sh
+if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+    export ELECTRON_OZONE_PLATFORM_HINT="auto"
+fi
+exec /opt/Vesktop/vesktop "$@"
+EOF
+	chmod 0755 "$pkgdir/usr/bin/vesktop"
+
+	for f in "$pkgdir"/usr/share/applications/*.desktop; do
+		[ -e "$f" ] || continue
+		sed -i 's|^Exec=.*|Exec=/usr/bin/vesktop %U|' "$f"
+	done
+}

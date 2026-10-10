@@ -1,0 +1,37 @@
+# Maintainer: Ackerman-00
+# ELF payload NEEDED is libc/m/gcc only (Vulkan/GL are dlopened): ship the
+# binaries as released, no makepkg strip.
+pkgname=pdfcraft
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="Document viewer/editor - clean-room Acrobat in pure Rust"
+arch=('x86_64')
+url="https://github.com/storytold/pdfcraft"
+license=('MIT' 'Apache-2.0')
+source=("https://github.com/storytold/pdfcraft/releases/download/v${pkgver}/pdfcraft-${pkgver}-linux-x86_64.rpm")
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+makedepends=('libarchive')
+depends=('hicolor-icon-theme' 'gcc-libs' 'libglvnd' 'vulkan-icd-loader' 'libxkbcommon')
+noextract=("pdfcraft-${pkgver}-linux-x86_64.rpm")
+options=('!strip')
+
+package() {
+	cd "$srcdir"
+	bsdtar -xf "pdfcraft-${pkgver}-linux-x86_64.rpm"
+
+	install -Dm755 usr/bin/pdfcraft "$pkgdir/usr/bin/pdfcraft"
+	install -Dm755 usr/bin/pdfcraft-cli "$pkgdir/usr/bin/pdfcraft-cli"
+
+	install -dm755 "$pkgdir/usr/share"
+	cp -a usr/share/applications usr/share/icons usr/share/metainfo \
+		usr/share/mime usr/share/doc "$pkgdir/usr/share/"
+
+	# OCR models shipped since 0.5.0.
+	if [ -d usr/share/pdfcraft ]; then
+		cp -a usr/share/pdfcraft "$pkgdir/usr/share/"
+	fi
+
+	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+	install -m644 usr/share/doc/pdfcraft/LICENSE-APACHE \
+		usr/share/doc/pdfcraft/LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/"
+}

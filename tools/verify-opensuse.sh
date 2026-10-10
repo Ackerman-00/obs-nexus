@@ -67,6 +67,24 @@ for spec in */*.spec; do
   if ! grep -q "^Name:" "$spec" 2>/dev/null; then echo "FAIL: $spec missing Name:"; bad=$((bad+1)); fi
 done
 if [[ "$bad" -gt 0 ]]; then echo "FAIL: $bad specs malformed"; FAIL=1; fi
+
+# ---- 8-target matrix soft checks (WARN only - never FAIL, never block) ----
+spec_count=$(ls */*.spec 2>/dev/null | grep -c . || true)
+pkgb_count=$(ls */PKGBUILD 2>/dev/null | grep -c . || true)
+echo "Arch extra coverage: $pkgb_count PKGBUILDs for $spec_count specs"
+if [[ "$pkgb_count" -lt "$spec_count" ]]; then
+  echo "WARN: $((spec_count - pkgb_count)) package(s) lack a PKGBUILD (Arch extra target incomplete - soft)"
+else
+  echo "PASS: every spec has a sibling PKGBUILD"
+fi
+for tgt in "Tumbleweed" "Slowroll" "Leap" "Trixie" "Forky" "Sid" "Ubuntu" "Arch"; do
+  if grep -qi "$tgt" "$RELAY" 2>/dev/null; then
+    echo "PASS: relay mentions target $tgt"
+  else
+    echo "WARN: relay has no $tgt install evidence yet (8-target matrix - soft)"
+  fi
+done
+
 if [[ "$FAIL" -ne 0 ]]; then echo "FAIL: NOT COMPLETE -- agent must continue working"; exit 1; fi
 echo "PASS: VERIFICATION PASSED -- all $expected deps rows, version table, evidence, install+battle test present"
 exit 0

@@ -1,0 +1,36 @@
+# Maintainer: Ackerman-00
+# Arch recipe mirroring protonplus.spec (Vala + meson + ninja; no ExclusiveArch).
+pkgname=protonplus
+pkgver=0.6.8
+pkgrel=1
+pkgdesc="A Wine and Proton-based compatibility tools manager for GNOME"
+arch=('x86_64' 'aarch64')
+url="https://github.com/vysp3r/ProtonPlus"
+license=('GPL-3.0-only')
+source=("https://github.com/vysp3r/ProtonPlus/archive/refs/tags/v${pkgver}.tar.gz")
+# pkgconf is arguably redundant (base-devel, §4.1; namcap flags it) but is kept
+# per the recipe's BuildRequires set. arch-meson ships in the meson package.
+makedepends=('vala' 'meson' 'ninja' 'git' 'pkgconf' 'cmake' 'gettext')
+# Arch runtime package names for the spec's lib* set (gtk4/libadwaita/... stack).
+# NOTE: appstream is really the build-time metainfo validator (upstream
+# BuildRequires appstream-glib), not a runtime lib; listed here per the recipe,
+# consider relocating it to makedepends. glib2 covers the gio-unix-2.0 dep.
+depends=('gtk4' 'libadwaita>=1.6' 'glib2' 'json-glib' 'libsoup3' 'libgee'
+         'libarchive' 'libnotify' 'cairo' 'appstream' 'sdl3')
+# update.sh: run `updpkgsums` on version bump (docs/arch-packaging.md §7).
+sha256sums=('SKIP')
+
+build() {
+  arch-meson ProtonPlus-$pkgver build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 ProtonPlus-$pkgver/LICENSE \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,170 @@
+# Maintainer: Ackerman-00
+# Arch repack of the upstream Stoat .zip, mirroring stoat-desktop.spec %install.
+# OBS ignores local source files, so the desktop entry, the icon and the
+# metainfo are generated here instead of shipped as Source1/2/3. The icon is the
+# pinned stoatchat/assets asset the shipped metainfo references: the upstream
+# svg, so it lands in hicolor/scalable instead of the 256x256 png dir the spec
+# uses (no local png exists in the zip).
+pkgname=stoat-desktop
+pkgver=1.5.4
+pkgrel=1
+pkgdesc="Open source, user-first chat platform desktop client"
+arch=('x86_64')
+url="https://github.com/stoatchat/for-desktop"
+license=('AGPL-3.0-only')
+depends=(
+	'alsa-lib'
+	'at-spi2-core'
+	'cairo'
+	'dbus'
+	'expat'
+	'glib2'
+	'gtk3'
+	'hicolor-icon-theme'
+	'libcups'
+	'libnotify'
+	'libsecret'
+	'libx11'
+	'libxcb'
+	'libxcomposite'
+	'libxdamage'
+	'libxext'
+	'libxfixes'
+	'libxkbcommon'
+	'libxrandr'
+	'libxss'
+	'libxtst'
+	'nspr'
+	'nss'
+	'pango'
+	'pipewire'
+	'systemd-libs'
+	'util-linux'
+	'xdg-utils'
+)
+makedepends=('unzip')
+options=('!strip')
+# The icon is the pinned stoatchat/assets asset the shipped metainfo itself
+# references; upstream svg, so it lands in hicolor/scalable instead of the
+# 256x256 png dir the spec uses (no local png exists in the zip).
+source=(
+	"https://github.com/stoatchat/for-desktop/releases/download/v${pkgver}/Stoat-linux-x64-${pkgver}.zip"
+	"chat.stoat.StoatDesktop.svg::https://raw.githubusercontent.com/stoatchat/assets/f106946659af67ad4f008588ac51570029b2fd47/desktop/icon.svg"
+)
+sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+noextract=("Stoat-linux-x64-${pkgver}.zip")
+
+package() {
+	cd "$srcdir" || return 1
+
+	unzip -q "Stoat-linux-x64-${pkgver}.zip" || return 1
+
+	install -dm755 "$pkgdir/opt/Stoat"
+	cp -a "Stoat-linux-x64/." "$pkgdir/opt/Stoat/"
+
+	install -dm755 "$pkgdir/usr/bin"
+	cat >"$pkgdir/usr/bin/stoat-desktop" <<'EOF'
+#!/bin/sh
+if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+    export ELECTRON_OZONE_PLATFORM_HINT="auto"
+fi
+exec /opt/Stoat/stoat-desktop "$@"
+EOF
+	chmod 0755 "$pkgdir/usr/bin/stoat-desktop"
+
+	chmod 0755 "$pkgdir/opt/Stoat/chrome-sandbox"
+
+	install -dm755 "$pkgdir/usr/share/applications" \
+		"$pkgdir/usr/share/icons/hicolor/scalable/apps" \
+		"$pkgdir/usr/share/metainfo"
+
+	cat >"$pkgdir/usr/share/applications/chat.stoat.StoatDesktop.desktop" <<'EOF'
+[Desktop Entry]
+Name=Stoat
+Comment=Open source, user-first chat platform
+Exec=stoat-desktop
+Terminal=false
+Type=Application
+Icon=chat.stoat.StoatDesktop
+Categories=Network;InstantMessaging
+StartupWMClass=stoat-desktop
+X-Desktop-File-Install-Version=0.26
+X-Flatpak=chat.stoat.StoatDesktop
+EOF
+
+	install -Dm644 "chat.stoat.StoatDesktop.svg" \
+		"$pkgdir/usr/share/icons/hicolor/scalable/apps/chat.stoat.StoatDesktop.svg"
+
+	cat >"$pkgdir/usr/share/metainfo/chat.stoat.StoatDesktop.metainfo.xml" <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>chat.stoat.StoatDesktop</id>
+  <launchable type="desktop-id">chat.stoat.StoatDesktop.desktop</launchable>
+  <name>Stoat</name>
+  <developer id="chat.stoat">
+    <name>Revolt Platforms Ltd</name>
+  </developer>
+  <summary>Open source, user-first chat platform</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0</project_license>
+  <icon type="remote" height="256" width="256">
+    https://raw.githubusercontent.com/stoatchat/assets/f106946659af67ad4f008588ac51570029b2fd47/desktop/icon.png</icon>
+  <description>
+    <p>Stoat is an open source, user-first chat platform. Send messages, share
+      images, mention users, and join voice channels — all from a native desktop
+      application.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main window</caption>
+      <image>https://raw.githubusercontent.com/stoatchat/for-desktop/b57faa2c59865fea15a879c9a9304271067d0020/screenshot.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release date="2026-02-14" version="1.2.0">
+      <description>
+        <p>Features:</p>
+        <ul>
+          <li>New Branding</li>
+          <li>Persist and restore window size and position</li>
+        </ul>
+        <p>Bug Fixes:</p>
+        <ul>
+          <li>App Autostart</li>
+        </ul>
+      </description>
+    </release>
+    <release date="2025-12-29" version="1.1.12">
+      <description>
+        <p>Bug fixes:</p>
+        <ul>
+          <li>Add NixOS compatibility for electron startup</li>
+          <li>Correctly load badge count; expose to renderer</li>
+          <li>Fix event listener accumulation from rpc client</li>
+          <li>Fix macOS tray icon size</li>
+          <li>Fix RPC largeImageText</li>
+          <li>Use the correct argument for auto start</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+  <url type="bugtracker">https://github.com/stoatchat/for-desktop/issues</url>
+  <url type="homepage">https://stoat.chat</url>
+  <url type="vcs-browser">https://github.com/stoatchat/for-desktop</url>
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-info">intense</content_attribute>
+    <content_attribute id="social-audio">intense</content_attribute>
+    <content_attribute id="social-contacts">intense</content_attribute>
+  </content_rating>
+  <requires>
+    <display_length compare="ge">940</display_length>
+    <internet>always</internet>
+  </requires>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+</component>
+EOF
+}
