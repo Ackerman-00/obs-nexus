@@ -58,6 +58,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/ai.storyteller.artcra
 %files
 %license %{_datadir}/doc/artcraft-launcher/LICENSE-APACHE
 %license %{_datadir}/doc/artcraft-launcher/LICENSE-MIT
+%dir %{_datadir}/doc/artcraft-launcher
 %doc %{_datadir}/doc/artcraft-launcher/ATTRIBUTION.md
 %doc %{_datadir}/doc/artcraft-launcher/NOTICE
 %doc %{_datadir}/doc/artcraft-launcher/README.md
