@@ -13,13 +13,7 @@ Curated packages optimized for minimal Wayland packages. Recipes live in [obs-ne
 > [OBS project page](https://build.opensuse.org/project/show/home:ackerman).
 > Slowroll is retired and no longer published.
 
-### List available packages
-
-```bash
-zypper se --repo home_ackerman
-```
-
-Or **[browse all packages and their builds online](https://build.opensuse.org/project/show/home:ackerman)**.
+**[browse all packages and their builds online](https://build.opensuse.org/project/show/home:ackerman)**.
 
 ---
 
