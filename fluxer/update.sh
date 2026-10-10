@@ -6,7 +6,7 @@ cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="fluxer.spec"
 CHANGES_FILE="fluxer.changes"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 API_URL="https://api.fluxer.app/dl/desktop/stable/linux/x64/latest/rpm"
 RPM_FILE="fluxer.rpm"
 

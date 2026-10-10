@@ -3,7 +3,7 @@ Source: photocraft
 Binary: photocraft
 Architecture: amd64
 Version: 0.6.0
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the

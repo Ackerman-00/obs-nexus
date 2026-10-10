@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="photocraft.spec"
 CHANGES_FILE="photocraft.changes"
 GITHUB_REPO="storytold/photocraft"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 # Upstream layout: release tag v<ver>, native per-distro artifacts
 # <name>-<ver>-linux-x86_64.{rpm,deb}. The RPM is repacked for

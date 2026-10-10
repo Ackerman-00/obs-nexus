@@ -1,32 +1,32 @@
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.2b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.2b-0
 - Update to 1.23.2b (upstream bugfix release: library/session fixes)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.1b-0
 - Exclude dpkg .pc metadata from the payload copy; use cp -t form
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.1b-0
 - Fix debian/rules for dpkg-source top-dir stripping (copy BUILD
   root except debian/ instead of a nonexistent zen/ dir)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.1b-0
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.1b-0
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.1b-0
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.1b-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
 - Validate the static debian sidecar desktop in %check phase
   (was validating the not-yet-installed path)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.23.1b-0
+* Fri Oct 09 2026 Ackerman-00 - 1.23.1b-0
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
   maintained by update.sh; debtransform at build time)
 
@@ -45,10 +45,10 @@
 * Sat Sep 12 2026 GitHub Actions <actions@github.com> - 1.22.1b-0
 - Update zen-browser to v1.22.1b
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.22b-0
+* Wed Sep 09 2026 Ackerman-00 - 1.22b-0
 - Exclude Firefox-private bundled SONAMEs from Requires (libgkcodecs etc. unresolvable after Provides guard; proven via rpm -q --whatprovides)
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.22b-0
+* Wed Sep 09 2026 Ackerman-00 - 1.22b-0
 - Add __provides_exclude_from for bundled Firefox/NSS libs: leaked Provides hijacked other packages soname deps (helium libnspr4 co-install breakage)
 
 * Sat Sep 05 2026 GitHub Actions <actions@github.com> - 1.22b-0
@@ -57,7 +57,7 @@
 * Sun Aug 30 2026 GitHub Actions <actions@github.com> - 1.21.16b-0
 - Update zen-browser to v1.21.16b
 
-* Thu Aug 20 2026 Ackerman-00 <quietcraft@gmail.com> - 1.21.15b-0
+* Thu Aug 20 2026 Ackerman-00 - 1.21.15b-0
 
 - Fix OBS build: add BuildRequires mozilla-nspr to resolve the
   "have choice for libnspr4.so()(64bit)" error. The bundled NSPR libs
@@ -68,7 +68,7 @@
 - Update zen-browser to v1.21.15b
 
 -------------------------------------------------------------------
-Wed Aug 19 19:06 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Aug 19 19:06 UTC 2026 - Ackerman-00
 
 - Fix install failure on v1.21.15b: keep the bundled NSS stack.
   libxul.so references the NSS_3.126 versioned symbol which the system

@@ -1,36 +1,36 @@
 -------------------------------------------------------------------
-Fri Oct 09 17:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 17:00:00 UTC 2026 - Ackerman-00
 
 - Fix payload copy: pre-create opt/helium and use cp -t (the old
   find/cp created the dest as a file copy, dropping locales and the
   Qt5 shim); exclude dpkg .pc metadata
 
 -------------------------------------------------------------------
-Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00
 
 - Fix debian/rules for dpkg-source top-dir stripping (payload files
   sit at the BUILD root; copy everything except debian/)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00
 
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
 -------------------------------------------------------------------
-Fri Oct 09 14:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 14:30:00 UTC 2026 - Ackerman-00
 
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
 -------------------------------------------------------------------
-Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00
 
 - Validate the upstream desktop from the extracted release
   tree in the test phase (was validating the not-yet-installed
@@ -38,18 +38,18 @@ Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
 - Add missing metainfo sidecar (debian.net.imput.helium.metainfo.xml)
 
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
   maintained by update.sh; debtransform at build time)
 
 -------------------------------------------------------------------
-Thu Oct 08 23:02:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Oct 08 23:02:00 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.19.2.1
 
 -------------------------------------------------------------------
-Thu Oct 08 13:40:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Oct 08 13:40:00 UTC 2026 - Ackerman-00
 
 - Fix rpmlintrc for 0.19.x payload: drop obsolete zero-length
   *.pak.info filter (upstream removed the stubs), rename
@@ -57,37 +57,37 @@ Thu Oct 08 13:40:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
   filter inherent dir-or-file-outside-snapshot for /opt/helium
 
 -------------------------------------------------------------------
-Thu Oct 08 12:57:34 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Oct 08 12:57:34 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.19.1.2
 
 -------------------------------------------------------------------
-Sat Oct 03 04:11:40 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Oct 03 04:11:40 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.18.3.1
 
 -------------------------------------------------------------------
-Wed Sep 30 04:24:54 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Sep 30 04:24:54 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.18.2.1
 
 -------------------------------------------------------------------
-Wed Sep 23 21:12:24 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Sep 23 21:12:24 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.18.1.1
 
 -------------------------------------------------------------------
-Fri Sep 18 03:38:36 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Sep 18 03:38:36 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.17.2.1
 
 -------------------------------------------------------------------
-Wed Sep 16 11:01:14 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Sep 16 11:01:14 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.17.1.1
 
 -------------------------------------------------------------------
-Thu Sep 10 03:30:46 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Sep 10 03:30:46 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.17.0.1
 
@@ -98,47 +98,47 @@ Wed Sep 09 03:00:00 UTC 2026 - opencode-agent[bot] <41898282+opencode-agent[bot]
   zero-length Chromium locale *.pak.info stubs (rpmlint E: zero-length).
 
 -------------------------------------------------------------------
-Wed Sep 09 02:12:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Sep 09 02:12:00 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.16.6.1
 
 -------------------------------------------------------------------
-Sat Sep 05 01:42:33 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Sep 05 01:42:33 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.16.5.1
 
 -------------------------------------------------------------------
-Wed Sep 02 20:37:43 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Sep 02 20:37:43 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.16.4.1
 
 -------------------------------------------------------------------
-Tue Sep 01 03:58:05 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Tue Sep 01 03:58:05 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.16.3.1
 
 -------------------------------------------------------------------
-Fri Aug 28 21:46:44 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Aug 28 21:46:44 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.16.2.1
 
 -------------------------------------------------------------------
-Fri Aug 28 10:00:59 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Aug 28 10:00:59 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.16.1.1
 
 -------------------------------------------------------------------
-Mon Aug 24 12:51:36 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Aug 24 12:51:36 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.15.7.1
 
 -------------------------------------------------------------------
-Thu Aug 20 01:16:01 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Aug 20 01:16:01 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.15.6.1
 
 -------------------------------------------------------------------
-Mon Aug 17 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Aug 17 2026 - Ackerman-00
 
 - Fix install/runtime: add missing soname Requires (libasound.so.2,
   libgbm.so.1, libnspr4.so, libnss3.so, libnssutil3.so, libsmime3.so).
@@ -148,11 +148,11 @@ Mon Aug 17 2026 - Ackerman-00 <quietcraft@gmail.com>
   libnspr4.so").
 
 -------------------------------------------------------------------
-Sat Aug 15 23:42:44 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Aug 15 23:42:44 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.15.5.1
 
 -------------------------------------------------------------------
-Sat Aug 15 23:28:23 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Aug 15 23:28:23 UTC 2026 - Ackerman-00
 
 - Initial package of Helium 0.15.4.1 for openSUSE (port of the fedora-nexus recipe to OBS)

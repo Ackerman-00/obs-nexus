@@ -3,7 +3,7 @@ Source: vesktop
 Binary: vesktop
 Architecture: amd64
 Version: 1.6.7
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), python3
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the

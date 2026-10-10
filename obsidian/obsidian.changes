@@ -1,36 +1,36 @@
 -------------------------------------------------------------------
-Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00
 
 - Prune 5 stale rpmlintrc filters (unused on the current payload;
   keeping them is itself an error)
 
 -------------------------------------------------------------------
-Fri Oct 09 16:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 16:00:00 UTC 2026 - Ackerman-00
 
 - Drop uninstallable gtk2 dbusmenu chain from Debian Depends
   (libdbusmenu-gtk.so.4 has no provider on Testing); tray works via
   the system ayatana stack instead
 
 -------------------------------------------------------------------
-Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00
 
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
 -------------------------------------------------------------------
-Fri Oct 09 14:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 14:30:00 UTC 2026 - Ackerman-00
 
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
 -------------------------------------------------------------------
-Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00
 
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
@@ -40,18 +40,18 @@ Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
   gate sees the spec Source artifacts and uploads debian files
 
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper
   maintained by update.sh; debtransform at build time)
 
 -------------------------------------------------------------------
-Mon Oct 05 23:50:08 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Oct 05 23:50:08 UTC 2026 - Ackerman-00
 
 - Update to upstream version 1.14.4 (bundled Electron AppImage)
 
 -------------------------------------------------------------------
-Sun Sep 13 19:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Sep 13 19:30:00 UTC 2026 - Ackerman-00
 
 - Switch to bundled Electron AppImage repack (fixes issue #9: distro
   nodejs-electron requires libabsl sonames nothing provides, so
@@ -60,25 +60,25 @@ Sun Sep 13 19:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
   APK-only) instead of failing
 
 -------------------------------------------------------------------
-Wed Aug 12 20:34:50 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Aug 12 20:34:50 UTC 2026 - Ackerman-00
 
 - Update to upstream version 1.13.7
 - Switch to native system Electron dependency
 
 -------------------------------------------------------------------
-Mon Aug 10 20:32:48 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Aug 10 20:32:48 UTC 2026 - Ackerman-00
 
 - Update to upstream version 1.13.6
 - Switch to native system Electron dependency
 
 -------------------------------------------------------------------
-Fri Jul 31 00:01:45 UTC 2026 - Ackermann-00 <quietcraft@gmail.com>
+Fri Jul 31 00:01:45 UTC 2026 - Ackerman-00
 
 - Update to upstream version 1.13.4
 - Switch to native system Electron dependency
 
 -------------------------------------------------------------------
-Thu May 07 01:24:41 UTC 2026 - Ackermann-00 <quietcraft@gmail.com>
+Thu May 07 01:24:41 UTC 2026 - Ackerman-00
 
 - Update to upstream version 1.12.7
 - Switch to native system Electron dependency

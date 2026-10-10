@@ -1,10 +1,10 @@
-* Sat Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.7.0-0
+* Sat Oct 10 2026 Ackerman-00 - 0.7.0-0
 - Update effectcraft to v0.7.0
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.6.0-0
+* Fri Oct 09 2026 Ackerman-00 - 0.6.0-0
 - Own doc dir (%dir) and icon glob covers the scalable .svg, fix unpackaged/unowned build failures; gzip debtransform orig wrapper (dpkg-source rejects plain .tar)
 
-* Thu Oct 08 2026 Ackerman-00 <quietcraft@gmail.com> - 0.6.0-0
+* Thu Oct 08 2026 Ackerman-00 - 0.6.0-0
 - Initial package: EffectCraft v0.6.0 upstream RPM repack with corrected
   openSUSE Requires (upstream ships Fedora names) + Debian_Testing
   build recipe maintained by update.sh; debtransform at build time

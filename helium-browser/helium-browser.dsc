@@ -3,7 +3,7 @@ Source: helium-browser
 Binary: helium-browser
 Architecture: amd64
 Version: 0.19.2.1
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the

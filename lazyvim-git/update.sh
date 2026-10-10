@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="lazyvim-git.spec"
 CHANGES_FILE="lazyvim-git.changes"
 GITHUB_REPO="LazyVim/LazyVim"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 VERSION_FILE="lua/lazyvim/config/init.lua"
 
 echo "Checking for upstream updates on $GITHUB_REPO..."

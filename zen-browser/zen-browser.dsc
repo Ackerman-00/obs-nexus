@@ -3,7 +3,7 @@ Source: zen-browser
 Binary: zen-browser
 Architecture: amd64
 Version: 1.23.2b
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), chrpath, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the

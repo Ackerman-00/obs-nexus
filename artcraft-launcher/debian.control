@@ -1,0 +1,17 @@
+Source: artcraft-launcher
+Section: utils
+Priority: optional
+Maintainer: Ackerman-00
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/storytold/craft-launcher
+
+Package: artcraft-launcher
+Architecture: amd64
+# Runtime set: upstream's own DEB Depends verified correct as-is
+# (t64-era names need no adjustment for this set on Debian Testing).
+Depends: ${misc:Depends}, hicolor-icon-theme, libc6 (>= 2.35), libegl1, libgcc-s1, libvulkan1, libwayland-client0, libx11-6, libx11-xcb1, libxcb1, libxcursor1, libxi6, libxkbcommon-x11-0, libxkbcommon0
+Description: App launcher for the Craft suite
+ ArtCraft Launcher: the app launcher for the Craft suite of clean-room
+ creative tools.

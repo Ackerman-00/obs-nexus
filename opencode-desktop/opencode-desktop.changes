@@ -1,114 +1,114 @@
 -------------------------------------------------------------------
-Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00
 
 - Drop unused zero-length rpmlintrc filter (2.0.26 payload has no
   zero-length stubs)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:30:00 UTC 2026 - Ackerman-00
 
 - Fix debian/rules ar path (ls already prints the ../ prefix)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00
 
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2.0.26-0
+* Fri Oct 09 2026 Ackerman-00 - 2.0.26-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2.0.26-0
+* Fri Oct 09 2026 Ackerman-00 - 2.0.26-0
 - Update opencode-desktop to v2.0.26 from the upstream stable channel
   (GitHub tags carry no desktop DEB asset; Source0 now uses the versioned
   files/bin URL)
 
-* Tue Oct 06 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.35-0
+* Tue Oct 06 2026 Ackerman-00 - 1.18.35-0
 - Update opencode-desktop to v1.18.35
 
-* Thu Oct 01 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.34-0
+* Thu Oct 01 2026 Ackerman-00 - 1.18.34-0
 - Update opencode-desktop to v1.18.34
 
-* Mon Sep 28 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.33-0
+* Mon Sep 28 2026 Ackerman-00 - 1.18.33-0
 - Update opencode-desktop to v1.18.33
 
-* Tue Sep 22 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.32-0
+* Tue Sep 22 2026 Ackerman-00 - 1.18.32-0
 - Update opencode-desktop to v1.18.32
 
-* Mon Sep 14 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.31-0
+* Mon Sep 14 2026 Ackerman-00 - 1.18.31-0
 - Update opencode-desktop to v1.18.31
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.30-0
+* Wed Sep 09 2026 Ackerman-00 - 1.18.30-0
 - Ship chrome-sandbox 0755 instead of setuid (permissions tags are BlockedFilters + central whitelist closed to us; sandbox works via userns like Factory chromium)
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.30-0
+* Wed Sep 09 2026 Ackerman-00 - 1.18.30-0
 - Proper permissions integration for setuid chrome-sandbox: Requires(pre) permissions + permissions.d drop-in + %post permctl + drop dead rpmlint filters (tags are BlockedFilters, unwaivable)
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.30-0
+* Wed Sep 09 2026 Ackerman-00 - 1.18.30-0
 - Scope the 3 permissions rpmlint filters to chrome-sandbox (bare-tag form never matched; caused 6 E: unused-filter + raw)
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.30-0
+* Wed Sep 09 2026 Ackerman-00 - 1.18.30-0
 - Update opencode-desktop to v1.18.30
 
-* Sat Sep 05 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.29-0
+* Sat Sep 05 2026 Ackerman-00 - 1.18.29-0
 - Update opencode-desktop to v1.18.29
 
-* Fri Sep 04 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.28-0
+* Fri Sep 04 2026 Ackerman-00 - 1.18.28-0
 - Update opencode-desktop to v1.18.28
 
-* Thu Sep 03 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.27-0
+* Thu Sep 03 2026 Ackerman-00 - 1.18.27-0
 - Update opencode-desktop to v1.18.27
 
-* Wed Sep 02 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.26-0
+* Wed Sep 02 2026 Ackerman-00 - 1.18.26-0
 - Update opencode-desktop to v1.18.26
 
-* Fri Aug 28 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.25-0
+* Fri Aug 28 2026 Ackerman-00 - 1.18.25-0
 - Update opencode-desktop to v1.18.25
 
-* Tue Aug 25 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.23-0
+* Tue Aug 25 2026 Ackerman-00 - 1.18.23-0
 - Update opencode-desktop to v1.18.23
 
-* Mon Aug 24 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.22-0
+* Mon Aug 24 2026 Ackerman-00 - 1.18.22-0
 - Update opencode-desktop to v1.18.22
 
-* Fri Aug 21 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.21-0
+* Fri Aug 21 2026 Ackerman-00 - 1.18.21-0
 - Update opencode-desktop to v1.18.21
 
-* Fri Aug 21 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.20-0
+* Fri Aug 21 2026 Ackerman-00 - 1.18.20-0
 - Update opencode-desktop to v1.18.20
 
-* Thu Aug 20 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.19-0
+* Thu Aug 20 2026 Ackerman-00 - 1.18.19-0
 - Update opencode-desktop to v1.18.19
 
-* Thu Aug 13 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.18-0
+* Thu Aug 13 2026 Ackerman-00 - 1.18.18-0
 - Update opencode-desktop to v1.18.18
 
-* Wed Aug 12 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.17-0
+* Wed Aug 12 2026 Ackerman-00 - 1.18.17-0
 - Update opencode-desktop to v1.18.17
 
-* Mon Aug 10 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.16-0
+* Mon Aug 10 2026 Ackerman-00 - 1.18.16-0
 - Update opencode-desktop to v1.18.16
 
-* Fri Aug 07 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.15-0
+* Fri Aug 07 2026 Ackerman-00 - 1.18.15-0
 - Update opencode-desktop to v1.18.15
 
-* Wed Aug 05 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.14-0
+* Wed Aug 05 2026 Ackerman-00 - 1.18.14-0
 - Update opencode-desktop to v1.18.14
 
-* Tue Aug 04 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.13-0
+* Tue Aug 04 2026 Ackerman-00 - 1.18.13-0
 - Update opencode-desktop to v1.18.13
 
-* Tue Aug 04 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.12-0
+* Tue Aug 04 2026 Ackerman-00 - 1.18.12-0
 - Update opencode-desktop to v1.18.12
 
-* Sun Aug 02 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.11-0
+* Sun Aug 02 2026 Ackerman-00 - 1.18.11-0
 - Own hicolor icon theme directories to fix OBS "directories not owned" build failure
 - Fix unresolvable Fedora package names in Requires (gtk3, nss, alsa-lib,
   cups-libs, Mesa-libgbm1, libXScrnSaver1, libnotify4) by replacing them

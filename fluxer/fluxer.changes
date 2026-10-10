@@ -1,184 +1,184 @@
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1006.171735-0
+* Fri Oct 09 2026 Ackerman-00 - 2026.1006.171735-0
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1006.171735-0
+* Fri Oct 09 2026 Ackerman-00 - 2026.1006.171735-0
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1006.171735-0
+* Fri Oct 09 2026 Ackerman-00 - 2026.1006.171735-0
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1006.171735-0
+* Fri Oct 09 2026 Ackerman-00 - 2026.1006.171735-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1006.171735-0
+* Fri Oct 09 2026 Ackerman-00 - 2026.1006.171735-0
 - Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper
   maintained by update.sh; debtransform at build time)
 
-* Tue Oct 06 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1006.171735-0
+* Tue Oct 06 2026 Ackerman-00 - 2026.1006.171735-0
 - Update fluxer to v2026.1006.171735
 
-* Sun Oct 04 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1004.13532-0
+* Sun Oct 04 2026 Ackerman-00 - 2026.1004.13532-0
 - Update fluxer to v2026.1004.13532
 - Fix build: upstream renamed desktop file to appid-style
   app.fluxer.FluxerDesktop.desktop; accept both layouts and fail loudly
   if no icon is found
 
-* Sat Oct 03 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1003.155758-0
+* Sat Oct 03 2026 Ackerman-00 - 2026.1003.155758-0
 - Update fluxer to v2026.1003.155758
 
-* Fri Oct 02 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.1001.230522-0
+* Fri Oct 02 2026 Ackerman-00 - 2026.1001.230522-0
 - Update fluxer to v2026.1001.230522
 
-* Mon Sep 28 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.928.213903-0
+* Mon Sep 28 2026 Ackerman-00 - 2026.928.213903-0
 - Update fluxer to v2026.928.213903
 
-* Sun Sep 27 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.927.142044-0
+* Sun Sep 27 2026 Ackerman-00 - 2026.927.142044-0
 - Update fluxer to v2026.927.142044
 
-* Sat Sep 26 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.925.203705-0
+* Sat Sep 26 2026 Ackerman-00 - 2026.925.203705-0
 - Update fluxer to v2026.925.203705
 
-* Fri Sep 25 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.925.141246-0
+* Fri Sep 25 2026 Ackerman-00 - 2026.925.141246-0
 - Update fluxer to v2026.925.141246
 
-* Thu Sep 24 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.924.13630-0
+* Thu Sep 24 2026 Ackerman-00 - 2026.924.13630-0
 - Update fluxer to v2026.924.13630
 
-* Tue Sep 22 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.922.193957-0
+* Tue Sep 22 2026 Ackerman-00 - 2026.922.193957-0
 - Update fluxer to v2026.922.193957
 
-* Mon Sep 21 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.921.180627-0
+* Mon Sep 21 2026 Ackerman-00 - 2026.921.180627-0
 - Update fluxer to v2026.921.180627
 
-* Sun Sep 20 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.920.144558-0
+* Sun Sep 20 2026 Ackerman-00 - 2026.920.144558-0
 - Update fluxer to v2026.920.144558
 
-* Sun Sep 20 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.920.41303-0
+* Sun Sep 20 2026 Ackerman-00 - 2026.920.41303-0
 - Update fluxer to v2026.920.41303
 
-* Sun Sep 20 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.920.41250-0
+* Sun Sep 20 2026 Ackerman-00 - 2026.920.41250-0
 - Update fluxer to v2026.920.41250
 - Fix rpmlint errors: soname Requires for libXtst/libuuid,
   drop unversioned hicolor-icon-theme runtime dep (helium pattern),
   remove unused rpmlintrc filter
 
-* Sun Sep 20 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.920.31043-0
+* Sun Sep 20 2026 Ackerman-00 - 2026.920.31043-0
 - Update fluxer to v2026.920.31043
 
-* Thu Sep 10 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.910.927-0
+* Thu Sep 10 2026 Ackerman-00 - 2026.910.927-0
 - Update fluxer to v2026.910.927
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.909.190205-0
+* Wed Sep 09 2026 Ackerman-00 - 2026.909.190205-0
 - Update fluxer to v2026.909.190205
 
-* Wed Sep 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.909.95516-0
+* Wed Sep 09 2026 Ackerman-00 - 2026.909.95516-0
 - Update fluxer to v2026.909.95516
 
-* Tue Sep 08 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.908.201237-0
+* Tue Sep 08 2026 Ackerman-00 - 2026.908.201237-0
 - Update fluxer to v2026.908.201237
 
-* Tue Sep 08 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.908.131640-0
+* Tue Sep 08 2026 Ackerman-00 - 2026.908.131640-0
 - Update fluxer to v2026.908.131640
 
-* Mon Sep 07 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.907.90248-0
+* Mon Sep 07 2026 Ackerman-00 - 2026.907.90248-0
 - Update fluxer to v2026.907.90248
 
-* Sun Sep 06 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.906.190911-0
+* Sun Sep 06 2026 Ackerman-00 - 2026.906.190911-0
 - Update fluxer to v2026.906.190911
 
-* Sun Sep 06 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.906.142314-0
+* Sun Sep 06 2026 Ackerman-00 - 2026.906.142314-0
 - Update fluxer to v2026.906.142314
 
-* Sun Sep 06 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.906.11108-0
+* Sun Sep 06 2026 Ackerman-00 - 2026.906.11108-0
 - Update fluxer to v2026.906.11108
 
-* Sat Sep 05 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.904.211039-0
+* Sat Sep 05 2026 Ackerman-00 - 2026.904.211039-0
 - Update fluxer to v2026.904.211039
 
-* Fri Sep 04 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.904.160027-0
+* Fri Sep 04 2026 Ackerman-00 - 2026.904.160027-0
 - Update fluxer to v2026.904.160027
 
-* Thu Sep 03 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.903.193158-0
+* Thu Sep 03 2026 Ackerman-00 - 2026.903.193158-0
 - Update fluxer to v2026.903.193158
 
-* Thu Sep 03 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.903.143755-0
+* Thu Sep 03 2026 Ackerman-00 - 2026.903.143755-0
 - Update fluxer to v2026.903.143755
 
-* Sat Aug 29 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.829.181028-0
+* Sat Aug 29 2026 Ackerman-00 - 2026.829.181028-0
 - Update fluxer to v2026.829.181028
 
-* Sat Aug 29 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.829.13954-0
+* Sat Aug 29 2026 Ackerman-00 - 2026.829.13954-0
 - Update fluxer to v2026.829.13954
 
-* Fri Aug 28 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.828.171908-0
+* Fri Aug 28 2026 Ackerman-00 - 2026.828.171908-0
 - Update fluxer to v2026.828.171908
 
-* Thu Aug 27 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.827.150705-0
+* Thu Aug 27 2026 Ackerman-00 - 2026.827.150705-0
 - Update fluxer to v2026.827.150705
 
-* Thu Aug 27 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.827.12850-0
+* Thu Aug 27 2026 Ackerman-00 - 2026.827.12850-0
 - Update fluxer to v2026.827.12850
 
-* Wed Aug 26 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.826.141003-0
+* Wed Aug 26 2026 Ackerman-00 - 2026.826.141003-0
 - Update fluxer to v2026.826.141003
 
-* Tue Aug 25 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.824.230024-0
+* Tue Aug 25 2026 Ackerman-00 - 2026.824.230024-0
 - Update fluxer to v2026.824.230024
 
-* Mon Aug 24 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.824.175909-0
+* Mon Aug 24 2026 Ackerman-00 - 2026.824.175909-0
 - Update fluxer to v2026.824.175909
 
-* Sat Aug 22 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.821.183746-0
+* Sat Aug 22 2026 Ackerman-00 - 2026.821.183746-0
 - Update fluxer to v2026.821.183746
 
-* Fri Aug 21 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.820.194906-0
+* Fri Aug 21 2026 Ackerman-00 - 2026.820.194906-0
 - Update fluxer to v2026.820.194906
 
-* Thu Aug 20 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.820.180738-0
+* Thu Aug 20 2026 Ackerman-00 - 2026.820.180738-0
 - Update fluxer to v2026.820.180738
 
-* Wed Aug 19 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.819.105810-0
+* Wed Aug 19 2026 Ackerman-00 - 2026.819.105810-0
 - Update fluxer to v2026.819.105810
 
-* Wed Aug 19 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.819.10042-0
+* Wed Aug 19 2026 Ackerman-00 - 2026.819.10042-0
 - Update fluxer to v2026.819.10042
 
-* Wed Aug 19 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.818.230856-0
+* Wed Aug 19 2026 Ackerman-00 - 2026.818.230856-0
 - Update fluxer to v2026.818.230856
 
-* Tue Aug 18 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.818.31606-0
+* Tue Aug 18 2026 Ackerman-00 - 2026.818.31606-0
 - Update fluxer to v2026.818.31606
 
-* Tue Aug 18 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.818.4659-0
+* Tue Aug 18 2026 Ackerman-00 - 2026.818.4659-0
 - Update fluxer to v2026.818.4659
 
-* Mon Aug 17 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.817.195019-0
+* Mon Aug 17 2026 Ackerman-00 - 2026.817.195019-0
 - Update fluxer to v2026.817.195019
 
-* Mon Aug 17 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.816.204155-0
+* Mon Aug 17 2026 Ackerman-00 - 2026.816.204155-0
 - Update fluxer to v2026.816.204155
 
-* Sat Aug 15 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.815.214426-0
+* Sat Aug 15 2026 Ackerman-00 - 2026.815.214426-0
 - Update fluxer to v2026.815.214426
 
-* Sat Aug 15 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.815.131154-0
+* Sat Aug 15 2026 Ackerman-00 - 2026.815.131154-0
 - Update fluxer to v2026.815.131154
 
-* Sat Aug 15 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.814.233002-0
+* Sat Aug 15 2026 Ackerman-00 - 2026.814.233002-0
 - Update fluxer to v2026.814.233002
 
-* Thu Aug 13 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.813.125222-0
+* Thu Aug 13 2026 Ackerman-00 - 2026.813.125222-0
 - Update fluxer to v2026.813.125222
 
-* Wed Aug 12 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.812.134312-0
+* Wed Aug 12 2026 Ackerman-00 - 2026.812.134312-0
 - Update fluxer to v2026.812.134312
 
-* Tue Aug 11 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.810.212541-0
+* Tue Aug 11 2026 Ackerman-00 - 2026.810.212541-0
 - Update fluxer to v2026.810.212541
 
-* Sun Aug 02 2026 Ackerman-00 <quietcraft@gmail.com> - 2026.731.153836-0
+* Sun Aug 02 2026 Ackerman-00 - 2026.731.153836-0
 - Add missing runtime dependencies for the bundled Electron runtime (NSS, NSPr, libgbm, libasound, GTK, CUPS, etc.) so the app launches

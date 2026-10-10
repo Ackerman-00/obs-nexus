@@ -3,7 +3,7 @@ Source: localsend
 Binary: localsend
 Architecture: amd64
 Version: 1.18.2
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the

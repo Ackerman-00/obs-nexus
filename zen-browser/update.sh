@@ -106,7 +106,7 @@ DSC_FILE="zen-browser.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: zen-browser-$NEW_VER.tar.xz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="zen-browser ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- Ackerman-00 <quietcraft@gmail.com>  $DEB_DATE\n\n"
+DEB_ENTRY="zen-browser ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- Ackerman-00  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else

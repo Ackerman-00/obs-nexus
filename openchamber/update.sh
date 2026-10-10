@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="openchamber.spec"
 CHANGES_FILE="openchamber.changes"
 GITHUB_REPO="openchamber/openchamber"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 # Upstream layout: release tag v<ver>, Linux asset
 # OpenChamber-<ver>-linux-x86_64.AppImage (note: version WITHOUT v prefix

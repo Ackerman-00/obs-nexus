@@ -1,13 +1,13 @@
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
   maintained by update.sh; debtransform at build time)
 
 -------------------------------------------------------------------
-Sat Aug 23 2026 Ackerman-00 <quietcraft@gmail.com>
+Sat Aug 23 2026 Ackerman-00
 
 - 2.0.7
 - Deduplicate identical cursor files with %%fdupes (rpmlint files-duplicated-waste, ~150 MB waste)
-* Sun Aug 02 2026 Ackerman-00 <quietcraft@gmail.com> - 2.0.7-0
+* Sun Aug 02 2026 Ackerman-00 - 2.0.7-0
 - Import bibata-cursor-theme from fedora-nexus (version 2.0.7)

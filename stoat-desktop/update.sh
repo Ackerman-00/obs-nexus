@@ -8,7 +8,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="stoat-desktop.spec"
 CHANGES_FILE="stoat-desktop.changes"
 GITHUB_REPO="stoatchat/for-desktop"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 

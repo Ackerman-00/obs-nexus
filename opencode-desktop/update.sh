@@ -12,7 +12,7 @@ GITHUB_REPO="anomalyco/opencode"
 # (GitHub tags carry no desktop DEB asset). The versioned files/bin URL below
 # floats with %{version}; only the stable endpoint is queried for discovery.
 STABLE_URL="https://opencode.ai/download/stable/linux-x64-deb"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 DSC_FILE="opencode-desktop.dsc"
 DEB_CHANGELOG="debian.changelog"
 

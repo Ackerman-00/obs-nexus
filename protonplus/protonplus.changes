@@ -1,44 +1,44 @@
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
   maintained by update.sh; debtransform at build time)
 
 -------------------------------------------------------------------
-Thu Sep 10 17:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Sep 10 17:00:00 UTC 2026 - Ackerman-00
 
 - Add upstream version floor sdl3 >= 3.2.0 (src/meson.build) and
   explicit BuildRequires pkgconfig(gio-unix-2.0) (used by
   src/meson.build, previously covered only via glib2-devel)
 
 -------------------------------------------------------------------
-Thu Sep 10 16:00:23 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Sep 10 16:00:23 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.6.8
 
 -------------------------------------------------------------------
-Wed Sep 09 02:12:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Sep 09 02:12:00 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.6.7
 
 -------------------------------------------------------------------
-Fri Sep 04 20:23:40 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Sep 04 20:23:40 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.6.6
 
 -------------------------------------------------------------------
-Sun Aug 30 20:40:37 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Aug 30 20:40:37 UTC 2026 - Ackerman-00
 
 - Update to upstream release 0.6.5
 
 -------------------------------------------------------------------
-Sun Aug 16 07:20:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Aug 16 07:20:00 UTC 2026 - Ackerman-00
 
 - Add explicit BuildRequires pkgconfig(appstream) and
   pkgconfig(cairo) (direct meson dependencies that were only
   resolved transitively before)
 
 -------------------------------------------------------------------
-Sun Aug 16 06:06:44 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Aug 16 06:06:44 UTC 2026 - Ackerman-00
 
 - Initial package of ProtonPlus 0.6.4 for openSUSE

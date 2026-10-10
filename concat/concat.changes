@@ -1,4 +1,4 @@
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6-0
+* Fri Oct 09 2026 Ackerman-00 - 0.2.6-0
 - Initial package: Concat v0.2.6 upstream RPM repack with corrected
   openSUSE Requires (upstream ships Fedora names) + Debian_Testing
   build recipe maintained by update.sh; debtransform at build time

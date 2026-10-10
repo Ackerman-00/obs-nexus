@@ -1,7 +1,7 @@
 Source: matugen
 Section: utils
 Priority: optional
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), cargo, rustc
 Standards-Version: 4.7.0
 Rules-Requires-Root: no

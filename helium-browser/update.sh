@@ -8,7 +8,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="helium-browser.spec"
 CHANGES_FILE="helium-browser.changes"
 GITHUB_REPO="imputnet/helium-linux"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 

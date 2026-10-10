@@ -2,4 +2,4 @@ fluxer (2026.1006.171735-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream .rpm).
 
- -- Ackerman-00 <quietcraft@gmail.com>  Fri, 09 Oct 2026 12:00:00 +0000
+ -- Ackerman-00  Fri, 09 Oct 2026 12:00:00 +0000

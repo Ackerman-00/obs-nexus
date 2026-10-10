@@ -1,36 +1,36 @@
 -------------------------------------------------------------------
-Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 16:30:00 UTC 2026 - Ackerman-00
 
 - Convert 14 package-name Requires to soname form (rpmlint
   explicit-lib-dependency); filter unversioned hicolor (repo
   convention)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:15:00 UTC 2026 - Ackerman-00
 
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
 -------------------------------------------------------------------
-Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 15:00:00 UTC 2026 - Ackerman-00
 
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
 -------------------------------------------------------------------
-Fri Oct 09 14:30:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 14:30:00 UTC 2026 - Ackerman-00
 
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
 -------------------------------------------------------------------
-Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 14:00:00 UTC 2026 - Ackerman-00
 
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
 
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper
   maintained by update.sh; debtransform at build time)
@@ -43,110 +43,110 @@ Wed Oct 07 13:25:00 UTC 2026 - opencode-agent[bot] <41898282+opencode-agent[bot]
   verified in 0.9.147 teardown
 
 -------------------------------------------------------------------
-Wed Oct 07 12:51:01 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Oct 07 12:51:01 UTC 2026 - Ackerman-00
 
 - Update to 0.9.147 (sha256: e92cb96e0ca5227b73946a7e181c11ce3f4ba7f2e72b864a84ba03841065ddd6)
 
 -------------------------------------------------------------------
-Tue Oct 06 05:20:01 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Tue Oct 06 05:20:01 UTC 2026 - Ackerman-00
 
 - Update to 0.9.146 (sha256: 21075c5c91652e839981fe5c3c9b5c703a0d11cada52ec996339ea96c02b24ff)
 
 -------------------------------------------------------------------
-Fri Oct 02 12:03:05 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 02 12:03:05 UTC 2026 - Ackerman-00
 
 - Update to 0.9.145 (sha256: b006d673ea17cc61afa2fb4a904eaae9bbb7e6d68b81c61974571b0b483ac889)
 
 -------------------------------------------------------------------
-Fri Oct 02 04:31:19 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 02 04:31:19 UTC 2026 - Ackerman-00
 
 - Update to 0.9.143 (sha256: deb8852868ea14b5d617e345ecc13f018a47ebc676aa40456c5d4d83542fddcc)
 
 -------------------------------------------------------------------
-Mon Sep 28 04:10:24 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Sep 28 04:10:24 UTC 2026 - Ackerman-00
 
 - Update to 0.9.142 (sha256: bed51ba72e110c947cc697da4ede05dde0a72af92b89992cf98ce036118a6f36)
 
 -------------------------------------------------------------------
-Sun Sep 27 11:36:46 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Sep 27 11:36:46 UTC 2026 - Ackerman-00
 
 - Update to 0.9.141 (sha256: 2cd321908d9999209009ba973c3215f2b520f5abbf9b3f55a9e6ca3d4d639390)
 
 -------------------------------------------------------------------
-Sat Sep 26 20:47:22 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Sep 26 20:47:22 UTC 2026 - Ackerman-00
 
 - Update to 0.9.140 (sha256: edbb0d09f742b05f9de54d197e29f5a2c6010c28a85937357f9e50fcf74d99c2)
 
 -------------------------------------------------------------------
-Sat Sep 26 10:59:21 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Sep 26 10:59:21 UTC 2026 - Ackerman-00
 
 - Update to 0.9.139 (sha256: f1ce2bde51246878c1f434c1a16656255f0ab3a0b41ff7c654068fa07b3ed903)
 
 -------------------------------------------------------------------
-Sat Sep 26 03:58:40 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Sep 26 03:58:40 UTC 2026 - Ackerman-00
 
 - Update to 0.9.138 (sha256: 7a9c470ca1a288e2e978c0779543b85def39f954ccc46f443faa5ae182d7fae5)
 
 -------------------------------------------------------------------
-Fri Sep 25 21:40:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Sep 25 21:40:00 UTC 2026 - Ackerman-00
 
 - Update to 0.9.136 (sha256: 7b5a8209900e7f50f159a7573b9a4e204229fe23c4d7b2713e763146cb25f6b1)
 
 -------------------------------------------------------------------
-Tue Sep 22 20:58:28 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Tue Sep 22 20:58:28 UTC 2026 - Ackerman-00
 
 - Update to 0.9.134 (sha256: 9db4a002c3d60bdf62eb16a313233890931b67d908bfc12ff226051abaf9aa03)
 
 -------------------------------------------------------------------
-Thu Sep 17 21:25:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Sep 17 21:25:00 UTC 2026 - Ackerman-00
 
 - Update to 0.9.132 (sha256: 1ee841d568540e78c7e04fd2c8d5d22053e424bd5e4d32c7c14f9e03cd82a7bf)
 
 -------------------------------------------------------------------
-Thu Sep 17 21:01:33 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Sep 17 21:01:33 UTC 2026 - Ackerman-00
 
 - Update to 0.9.131 (sha256: ed6c834d321d7e8298eb168371fcfd357fd6b8c73b5b66ebf30e9d1b12605ac5)
 
 -------------------------------------------------------------------
-Fri Sep 11 03:26:13 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Sep 11 03:26:13 UTC 2026 - Ackerman-00
 
 - Update to 0.9.130 (sha256: 1da3143e6a271d22b1ef5b8de019baba39013e67d5feb4c8292c9d1294a3c6d0)
 
 -------------------------------------------------------------------
-Wed Sep 02 20:37:56 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Wed Sep 02 20:37:56 UTC 2026 - Ackerman-00
 
 - Update to 0.9.129 (sha256: 51fec806888c320658162e8f9844c48613ad9ab2be662af427fd17dc5e2c42c0)
 
 -------------------------------------------------------------------
-Fri Aug 28 10:01:10 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Aug 28 10:01:10 UTC 2026 - Ackerman-00
 
 - Update to 0.9.128 (sha256: 697e80e74e06a95e77945b33c7fb714d58402cd43f237a443336ea05baa87cc2)
 
 -------------------------------------------------------------------
-Sat Aug 23 2026 Ackerman-00 <quietcraft@gmail.com>
+Sat Aug 23 2026 Ackerman-00
 
 - 0.9.127
 - Shorten Summary to satisfy rpmlint summary-too-long
 - Add rpmlintrc: invalid-desktopfile is a false positive (desktop-file-validate passes), prebuilt-tree duplicates and static binary documented
 -------------------------------------------------------------------
-Thu Aug 20 01:16:10 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Aug 20 01:16:10 UTC 2026 - Ackerman-00
 
 - Update to 0.9.127 (sha256: 2c54d9642f6a8477518105f335aea3ef884d9fca318c847f27e6d33340c1dc9b)
 
 -------------------------------------------------------------------
-Mon Aug 17 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Aug 17 2026 - Ackerman-00
 
 - Add missing runtime Requires libXt6: the bundled libuiohook.so loads
   libXt.so.6, which was not installed (input hooking/overlay would fail
   at runtime).
 
 -------------------------------------------------------------------
-Thu Aug 06 01:45:54 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Thu Aug 06 01:45:54 UTC 2026 - Ackerman-00
 
 - Update to 0.9.126 (sha256: 0736926fde923819d276ac6d4a3afe65c6d87c734689af47276fc4ebf075d910)
 
 -------------------------------------------------------------------
-Sun Aug 02 18:50:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Aug 02 18:50:00 UTC 2026 - Ackerman-00
 
 - Fix unresolvable Fedora package names in Requires: libXScrnSaver1,
   gtk3, libnotify, vulkan-loader do not exist on openSUSE. Replaced with
@@ -155,7 +155,7 @@ Sun Aug 02 18:50:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
   resolves cleanly on Tumbleweed/Slowroll.
 
 -------------------------------------------------------------------
-Sun Aug 02 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Aug 02 2026 - Ackerman-00
 
 - Fix wrong version 19.2.5 -> 0.9.125: 19.2.5 was a Stripe billing SDK
   version picked up by a wildcard grep; the authoritative version comes
@@ -163,26 +163,26 @@ Sun Aug 02 2026 - Ackerman-00 <quietcraft@gmail.com>
   AUR rootapp-bin package. update.sh now reads sq.version exclusively.
 
 -------------------------------------------------------------------
-Sat Aug 01 00:02:25 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Aug 01 00:02:25 UTC 2026 - Ackerman-00
 
 - Update to 19.2.5 (sha256: 86ed0d76bcd92b574c651ea37ebaa392f47f543ecf11c61ed6080f9653a73444)
 
 -------------------------------------------------------------------
-Fri Jul 31 00:01:52 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Jul 31 00:01:52 UTC 2026 - Ackerman-00
 
 - Update to 19.2.5 (sha256: 2a9e9f5c2557b5567ea3494911388bf813786e44d72f12ecac65ed00d938f33c)
 
 -------------------------------------------------------------------
-Sat Jul 25 00:03:33 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sat Jul 25 00:03:33 UTC 2026 - Ackerman-00
 
 - Update to 19.2.5 (sha256: 3cab1a0fb3283478c0e7c14530e061ff28f7a288df963bc580bcc069d191e59b)
 
 -------------------------------------------------------------------
-Fri Jul 24 00:00:39 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Jul 24 00:00:39 UTC 2026 - Ackerman-00
 
 - Update to 19.2.5 (sha256: 4fcc5c1c6b9922a8c82811ca525937ff04a9fbeff7ac88c91cc05c3fd22236bd)
 
 -------------------------------------------------------------------
-Fri Jul 17 23:52:54 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Jul 17 23:52:54 UTC 2026 - Ackerman-00
 
 - Update to 19.2.5 (sha256: d50d01eda97876ccb965470c982947b56ac649fa497825449efe4952b06d2526)

@@ -1,25 +1,25 @@
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* sharing the snapshot
   tarball; debtransform at build time)
 
 -------------------------------------------------------------------
-Tue Sep 08 20:51:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Tue Sep 08 20:51:00 UTC 2026 - Ackerman-00
 
 - Update to base version 16.0.1 (Commit: 9997009)
 
 -------------------------------------------------------------------
-Tue Sep 08 10:45:37 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Tue Sep 08 10:45:37 UTC 2026 - Ackerman-00
 
 - Nightly sync with upstream main branch (Commit: 2239177)
 
 -------------------------------------------------------------------
-Sat Aug 23 2026 Ackerman-00 <quietcraft@gmail.com>
+Sat Aug 23 2026 Ackerman-00
 
 - 16.0.0+git20260602133554.459a4c3
 - Add rpmlintrc for upstream env-script-interpreter false positive
 -------------------------------------------------------------------
-Sun Aug 16 06:12:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Sun Aug 16 06:12:00 UTC 2026 - Ackerman-00
 
 - Initial package of LazyVim 16.0.0 main-branch snapshot (Commit: 459a4c3)

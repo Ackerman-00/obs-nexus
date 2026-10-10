@@ -1,40 +1,40 @@
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Oct 09 2026 Ackerman-00 - 1.18.2-0
 - Fix debian/rules ar path (ls already prints the ../ prefix)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Oct 09 2026 Ackerman-00 - 1.18.2-0
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Oct 09 2026 Ackerman-00 - 1.18.2-0
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Oct 09 2026 Ackerman-00 - 1.18.2-0
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Oct 09 2026 Ackerman-00 - 1.18.2-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Oct 09 2026 Ackerman-00 - 1.18.2-0
 - Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper
   maintained by update.sh; debtransform at build time)
 
-* Fri Sep 25 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Sep 25 2026 Ackerman-00 - 1.18.2-0
 - Fix rpmlint errors: drop unused filters (arch-dependent-file-in-usr-share,
   explicit-lib-dependency) and filter filelist-forbidden-opt for the prebuilt
   Flutter bundle under /opt/localsend_app (by design)
 
-* Fri Aug 21 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.2-0
+* Fri Aug 21 2026 Ackerman-00 - 1.18.2-0
 - Update localsend to v1.18.2
 
-* Mon Aug 10 2026 Ackerman-00 <quietcraft@gmail.com> - 1.18.0-0
+* Mon Aug 10 2026 Ackerman-00 - 1.18.0-0
 - Update localsend to v1.18.0
 - Handle data.tar.zst compression in upstream DEB (1.18.0 switched from .xz)
 - Move app payload to /opt/localsend_app (1.18.0 DEB layout change)
 
-* Sun Aug 02 2026 Ackerman-00 <quietcraft@gmail.com> - 1.17.0-0
+* Sun Aug 02 2026 Ackerman-00 - 1.17.0-0
 - Own hicolor icon theme directories to fix OBS "directories not owned" build failure
 - Fix unresolvable Fedora package names in Requires (libayatana-appindicator-gtk3,
   libayatana-ido-gtk3) by replacing them with soname-based Requires so

@@ -1,13 +1,13 @@
-* Sat Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6+git20261010035213.7223d64-0
+* Sat Oct 10 2026 Ackerman-00 - 0.2.6+git20261010035213.7223d64-0
 - Update concat-unstable to base 0.2.6 + main 7223d64
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6+git20261009170713.948b6db-0
+* Fri Oct 09 2026 Ackerman-00 - 0.2.6+git20261009170713.948b6db-0
 - Update concat-unstable to base 0.2.6 + main 948b6db
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6+git20261009164842.c260c2d-0
+* Fri Oct 09 2026 Ackerman-00 - 0.2.6+git20261009164842.c260c2d-0
 - Update concat-unstable to base 0.2.6 + main c260c2d
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.2.6+git20261009145217.48e48a1-0
+* Fri Oct 09 2026 Ackerman-00 - 0.2.6+git20261009145217.48e48a1-0
 - Initial package: Concat main-branch snapshot, native cargo source build
   (vendored offline + BtbN FFmpeg + Microsoft ONNX sidecars) + Debian_Testing
   build recipe maintained by update.sh; debtransform at build time

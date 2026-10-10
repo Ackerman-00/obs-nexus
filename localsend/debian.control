@@ -1,7 +1,7 @@
 Source: localsend
 Section: net
 Priority: optional
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
 Standards-Version: 4.7.0
 Rules-Requires-Root: no

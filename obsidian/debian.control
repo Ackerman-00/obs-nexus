@@ -1,7 +1,7 @@
 Source: obsidian
 Section: editors
 Priority: optional
-Maintainer: Ackerman-00 <quietcraft@gmail.com>
+Maintainer: Ackerman-00
 Build-Depends: debhelper-compat (= 13), desktop-file-utils
 Standards-Version: 4.7.0
 Rules-Requires-Root: no

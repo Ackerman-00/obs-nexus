@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="localsend.spec"
 CHANGES_FILE="localsend.changes"
 GITHUB_REPO="localsend/localsend"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 echo "Checking for upstream updates on $GITHUB_REPO..."
 

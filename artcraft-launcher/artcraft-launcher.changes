@@ -1,0 +1,4 @@
+* Fri Oct 10 2026 Ackerman-00 - 0.1.3-0
+- Initial package: ArtCraft Launcher v0.1.3 upstream RPM repack
+  (upstream already ships correct soname Requires) + Debian_Testing
+  build recipe maintained by update.sh; debtransform at build time

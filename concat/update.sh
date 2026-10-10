@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="concat.spec"
 CHANGES_FILE="concat.changes"
 GITHUB_REPO="jub0t/concat"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 # Upstream layout: release tag v<ver>, native per-distro artifacts
 # Concat-<ver>-linux-x86_64.{rpm,deb} (plus AppImage, Arch tarball, ...).

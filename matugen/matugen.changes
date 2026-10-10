@@ -1,20 +1,20 @@
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* reusing the vendored
   offline build; debtransform at build time)
 
 -------------------------------------------------------------------
-Mon Aug 17 18:56:36 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Aug 17 18:56:36 UTC 2026 - Ackerman-00
 
 - Update matugen to v4.2.0
 
 -------------------------------------------------------------------
-Mon Aug 17 18:59:30 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Mon Aug 17 18:59:30 UTC 2026 - Ackerman-00
 
 - Enable debuginfo (remove %global debug_package %{nil}); source-built Rust package
 
 ----------------------------------------------------------------------
-Tue Jul 14 13:20:08 UTC 2026 - Ackerman-00 <quietcraft@gmail.com>
+Tue Jul 14 13:20:08 UTC 2026 - Ackerman-00
 
 - Update matugen to v4.1.0

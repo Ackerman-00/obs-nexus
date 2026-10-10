@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="matugen.spec"
 CHANGES_FILE="matugen.changes"
 REPO="InioX/matugen"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 echo "🔍 Checking for updates..."
 

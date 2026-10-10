@@ -1,20 +1,20 @@
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.6.7-0
+* Fri Oct 09 2026 Ackerman-00 - 1.6.7-0
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.6.7-0
+* Fri Oct 09 2026 Ackerman-00 - 1.6.7-0
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.6.7-0
+* Fri Oct 09 2026 Ackerman-00 - 1.6.7-0
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.6.7-0
+* Fri Oct 09 2026 Ackerman-00 - 1.6.7-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
 
-* Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 1.6.7-0
+* Fri Oct 09 2026 Ackerman-00 - 1.6.7-0
 - Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper
   maintained by update.sh; debtransform at build time)
 
@@ -29,7 +29,7 @@
 * Mon Aug 17 2026 GitHub Actions <actions@github.com> - 1.6.6-0
 - Update vesktop to v1.6.6
 
-* Sun Aug 02 2026 Ackerman-00 <quietcraft@gmail.com> - 1.6.5-0
+* Sun Aug 02 2026 Ackerman-00 - 1.6.5-0
 - Add missing runtime dependencies for the bundled Electron runtime (NSS, NSPr, libgbm, libasound, etc.) so the app launches
 
 * Sun May 03 2026 GitHub Actions <actions@github.com> - 1.6.5-0

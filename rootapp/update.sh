@@ -6,7 +6,7 @@ cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="rootapp.spec"
 CHANGES_FILE="rootapp.changes"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 APPIMAGE_URL="https://installer.rootapp.com/installer/Linux/X64/Root.AppImage"
 
 echo "Checking for rootapp updates..."

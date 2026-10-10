@@ -22,6 +22,7 @@ Curated packages optimized for minimal Wayland packages. Recipes live in [obs-ne
 | Package | Description |
 |---|---|
 | **bibata-cursor-theme** | Open source, compact, material designed cursor set
+| **artcraft-launcher** | App launcher for the Craft suite
 | **cadcraft** | CAD/drafting - clean-room AutoCAD-style app in pure Rust
 | **concat** | Free and open source video editor
 | **concat-unstable** | Video editor main-branch snapshot (native source build)

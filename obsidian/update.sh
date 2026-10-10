@@ -7,7 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="obsidian.spec"
 CHANGES_FILE="obsidian.changes"
 GITHUB_REPO="obsidianmd/obsidian-releases"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 
 # Our packaging format: self-contained Linux AppImages (bundled Electron,
 # no system electron - see issue #9). Both arches are required.

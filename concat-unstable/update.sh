@@ -17,7 +17,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="concat-unstable.spec"
 CHANGES_FILE="concat-unstable.changes"
 GITHUB_REPO="jub0t/concat"
-PACKAGER="Ackerman-00 <quietcraft@gmail.com>"
+PACKAGER="Ackerman-00"
 FFMPEG_RELEASE="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
 FFMPEG_VERSION="8.1"
 FFMPEG_FILE="ffmpeg-n8.1-latest-linux64-gpl-shared-8.1.tar.xz"
