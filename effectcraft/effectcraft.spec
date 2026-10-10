@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           effectcraft
-Version:        0.6.0
+Version:        0.7.0
 Release:        0
 Summary:        Motion graphics/VFX - clean-room After Effects in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Other
 URL:            https://github.com/storytold/effectcraft
-Source0:        https://github.com/storytold/effectcraft/releases/download/v%{version}/effectcraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/effectcraft/releases/download/v0.7.0/effectcraft-0.7.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

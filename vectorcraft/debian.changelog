@@ -1,3 +1,9 @@
+vectorcraft (0.8.0-1) unstable; urgency=medium
+
+  * New upstream release 0.8.0.
+
+ -- Ackerman-00 <quietcraft@gmail.com>  Sat, 10 Oct 2026 03:10:10 +0000
+
 vectorcraft (0.7.0-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream .deb).

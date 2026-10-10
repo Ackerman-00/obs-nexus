@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           photocraft
-Version:        0.5.0
+Version:        0.6.0
 Release:        0
 Summary:        Photo editor - clean-room Photoshop in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Editors
 URL:            https://github.com/storytold/photocraft
-Source0:        https://github.com/storytold/photocraft/releases/download/v%{version}/photocraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/photocraft/releases/download/v0.6.0/photocraft-0.6.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           vectorcraft
-Version:        0.7.0
+Version:        0.8.0
 Release:        0
 Summary:        Vector editor - clean-room Illustrator in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Editors
 URL:            https://github.com/storytold/vectorcraft
-Source0:        https://github.com/storytold/vectorcraft/releases/download/v%{version}/vectorcraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/vectorcraft/releases/download/v0.8.0/vectorcraft-0.8.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           filmcraft
-Version:        0.4.0
+Version:        0.5.0
 Release:        0
 Summary:        Video editor - clean-room Premiere Pro in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Multimedia/Video/Editors
 URL:            https://github.com/storytold/filmcraft
-Source0:        https://github.com/storytold/filmcraft/releases/download/v%{version}/filmcraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/filmcraft/releases/download/v0.5.0/filmcraft-0.5.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

@@ -1,3 +1,9 @@
+soundcraft (0.4.0-1) unstable; urgency=medium
+
+  * New upstream release 0.4.0.
+
+ -- Ackerman-00 <quietcraft@gmail.com>  Sat, 10 Oct 2026 03:10:19 +0000
+
 soundcraft (0.3.0-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream .deb).

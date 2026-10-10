@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           soundcraft
-Version:        0.3.0
+Version:        0.4.0
 Release:        0
 Summary:        Digital audio workstation - clean-room Pro Tools in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Multimedia/Audio
 URL:            https://github.com/storytold/soundcraft
-Source0:        https://github.com/storytold/soundcraft/releases/download/v%{version}/soundcraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/soundcraft/releases/download/v0.4.0/soundcraft-0.4.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

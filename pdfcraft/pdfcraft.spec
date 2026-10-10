@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           pdfcraft
-Version:        0.4.0
+Version:        0.5.0
 Release:        0
 Summary:        Document viewer/editor - clean-room Acrobat in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Office/Other
 URL:            https://github.com/storytold/pdfcraft
-Source0:        https://github.com/storytold/pdfcraft/releases/download/v%{version}/pdfcraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/pdfcraft/releases/download/v0.5.0/pdfcraft-0.5.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

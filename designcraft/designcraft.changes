@@ -1,3 +1,6 @@
+* Sat Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 0.5.0-0
+- Update designcraft to v0.5.0
+
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 0.4.0-0
 - Own doc dir (%dir) and icon glob covers the scalable .svg, fix unpackaged/unowned build failures; gzip debtransform orig wrapper (dpkg-source rejects plain .tar)
 

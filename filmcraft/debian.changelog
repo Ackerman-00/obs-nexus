@@ -1,3 +1,9 @@
+filmcraft (0.5.0-1) unstable; urgency=medium
+
+  * New upstream release 0.5.0.
+
+ -- Ackerman-00 <quietcraft@gmail.com>  Sat, 10 Oct 2026 03:10:05 +0000
+
 filmcraft (0.4.0-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream .deb).

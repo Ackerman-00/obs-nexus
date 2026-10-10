@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           designcraft
-Version:        0.4.0
+Version:        0.5.0
 Release:        0
 Summary:        Page layout/publishing - clean-room InDesign in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Editors
 URL:            https://github.com/storytold/designcraft
-Source0:        https://github.com/storytold/designcraft/releases/download/v%{version}/designcraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/designcraft/releases/download/v0.5.0/designcraft-0.5.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

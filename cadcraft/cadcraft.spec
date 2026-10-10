@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           cadcraft
-Version:        0.3.0
+Version:        0.4.0
 Release:        0
 Summary:        CAD/drafting - clean-room AutoCAD-style app in pure Rust
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/CAD
 URL:            https://github.com/storytold/cadcraft
-Source0:        https://github.com/storytold/cadcraft/releases/download/v%{version}/cadcraft-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/cadcraft/releases/download/v0.4.0/cadcraft-0.4.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
