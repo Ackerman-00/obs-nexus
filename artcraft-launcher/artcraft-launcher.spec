@@ -3,13 +3,13 @@
 # (rpm/deb/AppImage name, binary, desktop file, Cargo crates) is called
 # artcraft-launcher - the package follows the artifact name.
 Name:           artcraft-launcher
-Version:        0.1.3
+Version:        0.2.0
 Release:        0
 Summary:        App launcher for the Craft suite
 License:        MIT OR Apache-2.0
 Group:          System/Packages
 URL:            https://github.com/storytold/craft-launcher
-Source0:        https://github.com/storytold/craft-launcher/releases/download/v%{version}/artcraft-launcher-%{version}-linux-x86_64.rpm
+Source0:        https://github.com/storytold/craft-launcher/releases/download/v0.2.0/artcraft-launcher-0.2.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
