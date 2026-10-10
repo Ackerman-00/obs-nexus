@@ -17,6 +17,28 @@ Curated packages optimized for minimal Wayland packages. Recipes live in [obs-ne
 
 ---
 
+## Installation
+
+### openSUSE Tumbleweed
+
+```sh
+sudo zypper addrepo --refresh \
+  https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo
+sudo zypper refresh
+sudo zypper install <package>
+```
+
+The base distribution packages come from the standard Tumbleweed OSS
+repository (`https://download.opensuse.org/tumbleweed/repo/oss/`).
+
+### Debian Testing / Unstable
+
+`.deb` builds are published on the
+[OBS project page](https://build.opensuse.org/project/show/home:ackerman);
+follow the "Download package" instructions there for your release.
+
+---
+
 ## Packages
 
 | Package | Description |
