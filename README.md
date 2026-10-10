@@ -25,33 +25,33 @@ Or **[browse all packages and their builds online](https://build.opensuse.org/pr
 
 ## Packages
 
-| Package | Description | Install |
-|---|---|---|
-| **bibata-cursor-theme** | Open source, compact, material designed cursor set |
-| **cadcraft** | CAD/drafting - clean-room AutoCAD-style app in pure Rust |
-| **concat** | Free and open source video editor |
-| **concat-unstable** | Video editor main-branch snapshot (native source build) |
-| **designcraft** | Page layout/publishing - clean-room InDesign in pure Rust |
-| **effectcraft** | Motion graphics/VFX - clean-room After Effects in pure Rust |
-| **filmcraft** | Video editor - clean-room Premiere Pro in pure Rust |
-| **fluxer** | Free and open source messaging & VoIP platform |
-| **helium-browser** | Private, fast, and honest Chromium-based browser |
-| **localsend** | Open source cross-platform alternative to AirDrop |
-| **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot) |
-| **lightcraft** | Photo manager - clean-room Lightroom in pure Rust |
-| **matugen** | Material You color generation tool |
-| **obsidian** | Knowledge base for plain-text Markdown notes |
-| **openchamber** | Agentic development environment boards for issues and pull requests |
-| **opencode-desktop** | Open source AI coding agent |
-| **pdfcraft** | Document viewer/editor - clean-room Acrobat in pure Rust |
-| **photocraft** | Photo editor - clean-room Photoshop in pure Rust |
-| **protonplus** | Wine and Proton-based compatibility tools manager |
-| **rootapp** | Discord alternative for gaming communities and large groups |
-| **soundcraft** | Digital audio workstation - clean-room Pro Tools in pure Rust |
-| **stoat-desktop** | Open source, user-first chat platform desktop client |
-| **vectorcraft** | Vector editor - clean-room Illustrator in pure Rust |
-| **vesktop** | Custom Discord client with Vencord preinstalled |
-| **zen-browser** | Minimal browser focused on privacy and calm browsing |
+| Package | Description |
+|---|---|
+| **bibata-cursor-theme** | Open source, compact, material designed cursor set
+| **cadcraft** | CAD/drafting - clean-room AutoCAD-style app in pure Rust
+| **concat** | Free and open source video editor
+| **concat-unstable** | Video editor main-branch snapshot (native source build)
+| **designcraft** | Page layout/publishing - clean-room InDesign in pure Rust
+| **effectcraft** | Motion graphics/VFX - clean-room After Effects in pure Rust
+| **filmcraft** | Video editor - clean-room Premiere Pro in pure Rust
+| **fluxer** | Free and open source messaging & VoIP platform
+| **helium-browser** | Private, fast, and honest Chromium-based browser
+| **localsend** | Open source cross-platform alternative to AirDrop
+| **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot)
+| **lightcraft** | Photo manager - clean-room Lightroom in pure Rust
+| **matugen** | Material You color generation tool
+| **obsidian** | Knowledge base for plain-text Markdown notes
+| **openchamber** | Agentic development environment boards for issues and pull requests
+| **opencode-desktop** | Open source AI coding agent
+| **pdfcraft** | Document viewer/editor - clean-room Acrobat in pure Rust
+| **photocraft** | Photo editor - clean-room Photoshop in pure Rust
+| **protonplus** | Wine and Proton-based compatibility tools manager
+| **rootapp** | Discord alternative for gaming communities and large groups
+| **soundcraft** | Digital audio workstation - clean-room Pro Tools in pure Rust
+| **stoat-desktop** | Open source, user-first chat platform desktop client
+| **vectorcraft** | Vector editor - clean-room Illustrator in pure Rust
+| **vesktop** | Custom Discord client with Vencord preinstalled
+| **zen-browser** | Minimal browser focused on privacy and calm browsing
 
 ---
 
