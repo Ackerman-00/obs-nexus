@@ -107,8 +107,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/openchamber.desktop
 %{_datadir}/icons/hicolor/scalable/apps/openchamber.svg
 %exclude /opt/openchamber/LICENSE.electron.txt
 %exclude /opt/openchamber/LICENSES.chromium.html
-# Unused AppImage runtime loader (we launch via the wrapper script).
-%exclude /opt/openchamber/AppRun
+# AppRun is the electron-builder runtime loader the /usr/bin/openchamber
+# wrapper execs - it MUST ship (excluding it breaks every launch).
 /opt/openchamber/
 
 %changelog

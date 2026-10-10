@@ -1,3 +1,8 @@
+* Sat Oct 10 2026 Ackerman-00 <quietcraft@gmail.com> - 2.2.0-1
+- Fix broken launcher: stop excluding /opt/openchamber/AppRun, which the
+  /usr/bin/openchamber wrapper execs (every launch failed with
+  "No such file or directory")
+
 * Fri Oct 09 2026 Ackerman-00 <quietcraft@gmail.com> - 2.2.0-0
 - Initial package: OpenChamber v2.2.0 AppImage repack (+ Debian_Testing
   build recipe maintained by update.sh; debtransform at build time)
