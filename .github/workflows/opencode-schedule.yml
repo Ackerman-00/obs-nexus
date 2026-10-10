@@ -233,16 +233,17 @@ jobs:
               bumping spec versions and committing to main directly, then syncs changed
               packages to OBS via its API (using OBS_USER/OBS_PASS) and triggers a
               rebuild.
-            - The repo serves users on openSUSE Tumbleweed (RPMs) and
-              Debian_Testing (DEBs, every package carries a `<pkg>.dsc` +
-              flat `debian.*` + orig tarball recipe) - NOT Leap 16, and
+            - The repo serves users on openSUSE Tumbleweed (RPMs),
+              Debian_Testing and Debian_Sid/Unstable (DEBs; every package
+              carries a `<pkg>.dsc` + flat `debian.*` + orig tarball recipe
+              that builds for BOTH Debian repos) - NOT Leap 16, and
               NOT Slowroll anymore (see SLOWROLL RETIREMENT below). Keep
-              packaging usable on both (no Leap-only macros, use current
-              Tumbleweed defaults; t64-correct Depends for Testing) and
-              install-test on BOTH distros every time: RPMs in a clean
-              Tumbleweed container, DEBs in a clean debian:testing
-              container (`tools/docker-sweep.py --type debian`). A TW-only
-              pass is NOT proof for Testing.
+              packaging usable on all three (no Leap-only macros, use current
+              Tumbleweed defaults; t64-correct Depends for Testing AND Sid)
+              and install-test on ALL distros every time: RPMs in a clean
+              Tumbleweed container, DEBs in clean debian:testing AND
+              debian:sid containers (`tools/docker-sweep.py --type debian
+              --debdist both`). A TW-only pass is NOT proof for Testing/Sid.
               SLOWROLL RETIREMENT (owner decision, 2026-10-09, BINDING):
               the Slowroll repository was REMOVED from OBS home:ackerman
               and is no longer maintained. NEVER re-add or enable a
@@ -660,24 +661,28 @@ jobs:
                      rpm -V <pkg>
                      ldd "$(which <pkg>)"
                    '
-                 Then the SAME package's DEB on Debian_Testing (mandatory
-                 second distro - this is the test that catches
-                 uninstallable/unresolvable DEBs): use the repo's own
-                 tooling, which resolves each spec's upstream payload:
+                 Then the SAME package's DEB on Debian_Testing AND Debian_Sid
+                 (Unstable) (mandatory second + third distros - this is the
+                 test that catches uninstallable/unresolvable DEBs): use the
+                 repo's own tooling, which resolves each spec's upstream payload:
                  python3 tools/docker-sweep.py --overlay . --type debian
-                 --packages "<pkg>" --report deb-<pkg>.md
-                 (runs a clean debian:testing container: apt/dpkg install
-                 of the payload + ldd missing-lib scan). Once OBS publishes
-                 built DEBs, additionally install the actual published
-                 .deb in a clean debian:testing container:
+                 --debdist both --packages "<pkg>" --report deb-<pkg>.md
+                 (runs clean debian:testing AND debian:sid containers:
+                 apt/dpkg install of the payload + ldd missing-lib scan).
+                 Once OBS publishes built DEBs, additionally install the
+                 actual published .deb in clean debian:testing AND
+                 debian:sid containers:
                  docker run --rm debian:testing bash -lc '
                    echo "deb https://download.opensuse.org/repositories/home:ackerman/Debian_Testing/ /" > /etc/apt/sources.list.d/nexus.list
                    apt-get update -qq && apt-get install -y <pkg>
                    dpkg -l <pkg>
                  '
-                 A Testing-only failure is a real failure, not a waivable
-                 quirk. Record per-distro results in separate table columns
-                 (zypper TW column + deb Testing column).
+                 (and the same with debian:sid + .../Debian_Unstable/ for Sid).
+                 A Testing-only or Sid-only failure is a real failure, not a
+                 waivable quirk (Sid gets in-place library transitions; a
+                 skew there is HOLD + re-check, same as the old Slowroll
+                 rule). Record per-distro results in separate table columns
+                 (zypper TW column + deb Testing column + deb Sid column).
                  If zypper errors with "nothing provides 'X'" - the install
                  test FAILED and the package is NOT done, no matter what OBS
                  says. If docker is unavailable, fall back to
@@ -723,24 +728,27 @@ jobs:
                   recorded.
               f. MANDATORY DELIVERABLE - install-test table in your final
                  summary, one row per package tested:
-                  | package | repo/snapshot | OBS build | zypper install test (TW) | deb install test (Testing) | smoke test |
+                  | package | repo/snapshot | OBS build | zypper install test (TW) | deb install test (Testing) | deb install test (Sid) | smoke test |
                   status |
                  where status is one of: installable / fixed / broken-(dep)
                  / blocked-(reason). Any package you changed but did not
                  install-test is an unfinished package.
-                 DEBIAN TESTING (deb-backed packages ONLY): OBS enables ONLY
-                 the Debian_Testing repository (no Ubuntu, no Debian stable -
-                 never invent other targets). Derive the deb-backed set live
-                 via `grep -l '\.deb' */*.spec` (never hardcode the list).
-                 For each, run `python3 tools/docker-sweep.py --overlay .
-                 --type debian --packages "<name>"` (debian:testing image
-                 only, apt/dpkg install + ldd of the upstream .deb payload)
-                 and record the result in a `deb install test (testing)`
-                 table column. A .deb that fails to install or shows missing
-                 libs on testing is a real failure: fix the spec dep mapping
+                 DEBIAN TESTING + SID (all packages carry Debian recipes):
+                 OBS enables the Debian_Testing AND Debian_Unstable
+                 repositories (no Ubuntu, no Debian stable - never invent
+                 other targets). The same .dsc recipe builds for both; compat
+                 13 is supported on each. For each package, run
+                 `python3 tools/docker-sweep.py --overlay . --type debian
+                 --debdist both --packages "<name>"` (clean debian:testing
+                 AND debian:sid containers: apt/dpkg install + ldd of the
+                 upstream .deb payload) and record the results in `deb
+                 install test (Testing)` and `deb install test (Sid)` table
+                 columns. A .deb that fails to install or shows missing
+                 libs on either is a real failure: fix the spec dep mapping
                  (or HOLD + issue with evidence), same bar as a TW-only
-                 failure. Every package now carries a Debian recipe, so no
-                 package gets `n/a` in that column.
+                 failure. Sid takes in-place library transitions, so a
+                 Sid-only skew is HOLD + re-check next run, never silently
+                 waived and never fixed by weakening the recipe.
                  All prebuilt/binary packages (deb/rpm/AppImage/zip/tarball
                  Source0) additionally carry a Debian_Testing BUILD recipe
                  (`<pkg>.dsc` + flat `debian.*` + orig tarball, all maintained
@@ -748,7 +756,7 @@ jobs:
                  one, keep .dsc Version/Tar and the debian.changelog head in
                  sync with the spec Version and verify recipe consistency
                  (Binary == control Package, exactly one orig tar).
-                 UPSTREAM DEPENDENCY RE-CHECK (all nine prebuilt recipes,
+                 UPSTREAM DEPENDENCY RE-CHECK (all Debian recipes,
                  every run): re-derive each recipe's Depends from the LIVE
                  upstream payload (control file inside the .deb, ldd NEEDED
                  of AppImage/rpm/zip payloads, upstream meson/Cargo/manifest
@@ -758,9 +766,9 @@ jobs:
                  Debian_Testing (or TW) is a bug: fix the mapping,
                  rebuild, retest. Record per recipe one line:
                  `deb-deps: <pkg> <ver> | upstream sonames: <n> |
-                 unmapped: <list/none> | testing-resolves: yes/no`.
+                 unmapped: <list/none> | testing+sid-resolves: yes/no`.
               g. DOCKER BATTLE TEST + ALL CONTENT (MANDATORY - every binary + repo itself in a clean Tumbleweed container, not just OBS "succeeded"). This is not optional:
-                 1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install in the TW container per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run, oldest-uncovered first, plus every touched) AND test every built .deb in a debian:testing container per the DEBIAN TESTING clause above + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
+                 1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install in the TW container per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run, oldest-uncovered first, plus every touched) AND test every built .deb in clean debian:testing AND debian:sid containers per the DEBIAN TESTING + SID clause above + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
                  2. ALL CONTENT: `ls -R`/`find . -type f | sort` -- every `*/*.spec`, `*/*.changes`, `*/_service`, `*/update.sh`, `.github/workflows/*.yml` (`yaml.safe_load` valid), `README.md` install (`zypper addrepo` URL must match Docker path or fix README) must be checked; any file not checked = gap.
                  3. REPO ITSELF: inside clean `opensuse/tumbleweed` container, `zypper addrepo https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo` + `zypper refresh` + `zypper se --repo home_akerman` must list every package (count via `ls -d */`, never hardcode); `osc` `co`/`build` dry-run if available. Think like new openSUSE user who just added the repo -- if they would hit it, you must hit it first.
 
@@ -997,7 +1005,7 @@ jobs:
                dependency does not exist under the declared name in that
                distro's repos. REPRODUCE IT IN DOCKER FIRST - run the
                install test from the INSTALL-VERIFICATION SWEEP (TW container
-               for RPMs, debian:testing container for DEBs, OBS repos enabled)
+               for RPMs, debian:testing AND debian:sid containers for DEBs, OBS repos enabled)
                and watch the installer fail with the same missing provider.
                The fix is a spec/recipe dep rename to the real provider
                (proven via `zypper what-provides` / `apt-cache policy` inside

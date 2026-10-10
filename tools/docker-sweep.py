@@ -15,7 +15,8 @@ Usage (called by the agent during its run):
   python3 tools/docker-sweep.py --overlay . --type opensuse --packages "zen-browser" --report docker-report.md
   python3 tools/docker-sweep.py --overlay . --type debian --all --report debian-report.md
       (debian type: verifies each spec's upstream .deb in a debian:testing
-       container via apt/dpkg + ldd; RPM specs stay the source of truth)
+       container via apt/dpkg + ldd; --debdist testing|sid|both selects the
+       Debian release(s): testing and sid are both maintained)
 
 Exit 0 = all tested packages passed. Exit 1 = any failures.
 """
@@ -309,9 +310,9 @@ def expand_deb_url(spec_path, ver):
     return ""
 
 
-def test_debian_package(name, ver, spec_path, workdir):
+def test_debian_package(name, ver, spec_path, workdir, image="debian:testing"):
     """Verify the upstream .deb repacked by this spec installs on Debian
-    testing (debian:testing image): download the .deb from the spec's
+    (debian:testing image): download the .deb from the spec's
     Source0 URL, check control Version, install with apt (dpkg fallback),
     then ldd + binary probe. RPM-spec parsing stays the source of truth —
     this only exercises the .deb payload Debian users would touch."""
@@ -338,7 +339,7 @@ def test_debian_package(name, ver, spec_path, workdir):
         "test -f \"$b\" && test -x \"$b\" && file \"$b\" 2>/dev/null | grep -q ELF && ldd \"$b\" 2>/dev/null; done "
         "| grep 'not found' | sort -u | head -10 || true" % name,
     ]
-    rc, out, err = docker_run("debian:testing", commands, timeout=300)
+    rc, out, err = docker_run(image, commands, timeout=300)
     combined = out + err
     result = {"package": name, "status": STATUS_PASS, "details": ""}
     if "NO-DEB-URL" in combined or "NO-DEB-FILE" in combined:
@@ -350,13 +351,13 @@ def test_debian_package(name, ver, spec_path, workdir):
         # The ldd-not-found lines are the last stage; distinguish from shell noise
         if missing:
             result["status"] = STATUS_DEPS_MISSING
-            result["details"] = "missing libs on testing: %s" % "; ".join(missing[:5])
+            result["details"] = "missing libs on %s: %s" % (image, "; ".join(missing[:5]))
             return result
     if rc != 0:
         result["status"] = STATUS_INSTALL_FAIL
         result["details"] = "apt/dpkg install failed (rc=%d): %s" % (rc, combined[-500:])
         return result
-    result["details"] = "upstream .deb installs on debian:testing"
+    result["details"] = "upstream .deb installs on %s" % image
     return result
 
 
@@ -439,6 +440,8 @@ def main():
     ap.add_argument("--report", default="docker-report.md", help="output report path")
     ap.add_argument("--timeout", type=int, default=300, help="per-package Docker timeout")
     ap.add_argument("--scan-images", action="store_true", help="Trivy-scan base images for CVEs")
+    ap.add_argument("--debdist", default="testing", choices=["testing", "sid", "both"],
+                    help="Debian release(s) for --type debian (default: testing)")
     args = ap.parse_args()
 
     root = Path(args.overlay)
@@ -474,6 +477,13 @@ def main():
         log("Testing first 5 packages (use --all for all, --packages for specific)")
 
     log("=== DOCKER SWEEP [%s]: %d packages ===" % (repo_type, len(pkgs)))
+    deb_images = ["debian:testing"]
+    if repo_type == "debian":
+        if args.debdist == "sid":
+            deb_images = ["debian:sid"]
+        elif args.debdist == "both":
+            deb_images = ["debian:testing", "debian:sid"]
+        log("Debian release(s): %s" % ", ".join(deb_images))
     results = []
     for name, ver, path in pkgs:
         log("Testing %s ..." % name)
@@ -484,7 +494,11 @@ def main():
         elif repo_type == "opensuse":
             r = test_opensuse_package(name, ver, path, root)
         elif repo_type == "debian":
-            r = test_debian_package(name, ver, path, root)
+            for image in deb_images:
+                r = test_debian_package(name, ver, path, root, image)
+                results.append(r)
+                log("  [%s] %s (%s): %s" % (r["status"], name, image, r["details"]))
+            continue
         elif repo_type == "nix":
             r = test_nix_package(name, path, root)
         elif repo_type == "void":

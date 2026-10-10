@@ -24,7 +24,8 @@ zypper install zen-browser
 ```
 
 > [!NOTE]
-> Debian_Testing users: `.deb` builds are published on the
+> Debian_Testing and Debian_Sid (Unstable) users: `.deb` builds are
+> published on the
 > [OBS project page](https://build.opensuse.org/project/show/home:ackerman).
 > Slowroll is retired and no longer published.
 
