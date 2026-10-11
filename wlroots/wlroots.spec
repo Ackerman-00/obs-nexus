@@ -52,6 +52,22 @@ the 0.20 series required by current compositors (e.g. mangowm,
 scenefx 0.5). Companion to the system wlroots on Leap where the
 distro ships an older series.
 
+%package -n libwlroots-0_20
+Summary:        Modular Wayland compositor library (0.20 series)
+Group:          System/Libraries
+
+%description -n libwlroots-0_20
+wlroots is a modular Wayland compositor library (0.20 series shared
+objects, used by compositors such as mangowm via scenefx).
+
+%package devel
+Summary:        Development files for wlroots 0.20
+Group:          Development/Libraries/Other
+Requires:       libwlroots-0_20 = %{version}
+
+%description devel
+Headers and pkgconfig files for building against wlroots 0.20.
+
 %prep
 %autosetup -n wlroots-%{version}
 
@@ -63,11 +79,18 @@ distro ships an older series.
 %meson_install
 %fdupes %{buildroot}%{_prefix}
 
+%post -n libwlroots-0_20 -p /sbin/ldconfig
+%postun -n libwlroots-0_20 -p /sbin/ldconfig
+
 %files
 %license LICENSE
 %doc README.md CONTRIBUTING.md
-%{_libdir}/libwlroots-0.20.so*
-%{_libdir}/pkgconfig/wlroots-0.20.pc
+
+%files -n libwlroots-0_20
+%{_libdir}/libwlroots-0.20.so.*
+
+%files devel
 %{_includedir}/wlroots-0.20/
+%{_libdir}/pkgconfig/wlroots-0.20.pc
 
 %changelog
