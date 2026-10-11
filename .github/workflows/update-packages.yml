@@ -348,6 +348,18 @@ jobs:
                   ver_ok = (got == sv)
               if not ver_ok:
                   warns.append(f'{pkgbuild}: pkgver {got} does not track spec Version {sv}')
+              # makepkg hard-errors when a sums array is shorter than its
+              # source array (obsidian/helium 2026-10-11: stale bare
+              # sha256sums next to split source_x86_64/aarch64, 2 sources
+              # with 1 sum). Compare entry counts per array pair.
+              for arr, sarr in (('source', 'sha256sums'), ('source_x86_64', 'sha256sums_x86_64'), ('source_aarch64', 'sha256sums_aarch64')):
+                  m1 = re.search(rf'^{arr}=\((.*?)\)', ptxt, re.M | re.S)
+                  m2 = re.search(rf'^{sarr}=\((.*?)\)', ptxt, re.M | re.S)
+                  if m1 and m2:
+                      n1 = len(re.findall(r"'[^']*'|\"[^\"]*\"", m1.group(1)))
+                      n2 = len(re.findall(r"'[^']*'|\"[^\"]*\"", m2.group(1)))
+                      if n1 != n2:
+                          warns.append(f'{pkgbuild}: {sarr} has {n2} entries for {n1} {arr} entries (makepkg size-mismatch)')
           for w in warns:
               print(f'::warning::PKGBUILD check: {w}')
           print(f'PKGBUILD check: {specs} specs scanned, {len(warns)} warning(s) (soft, no run failure).')

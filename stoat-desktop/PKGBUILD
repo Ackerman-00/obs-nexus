@@ -51,7 +51,8 @@ source=(
 	"https://github.com/stoatchat/for-desktop/releases/download/v${pkgver}/Stoat-linux-x64-${pkgver}.zip"
 	"chat.stoat.StoatDesktop.svg::https://raw.githubusercontent.com/stoatchat/assets/f106946659af67ad4f008588ac51570029b2fd47/desktop/icon.svg"
 )
-sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
+sha256sums=('SKIP'
+           'SKIP') # update.sh refreshes via makepkg -g on bump
 noextract=("Stoat-linux-x64-${pkgver}.zip")
 
 package() {
