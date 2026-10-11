@@ -13,6 +13,7 @@ URL:            https://github.com/LazyVim/LazyVim
 # Generated dynamically by GitHub Actions
 Source0:        lazyvim-%{shortcommit}.tar.gz
 BuildArch:      noarch
+ExclusiveArch:  x86_64
 
 %description
 LazyVim is a Neovim setup powered by lazy.nvim to make it easy to

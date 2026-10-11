@@ -8,6 +8,7 @@ URL:            https://github.com/ful1e5/Bibata_Cursor
 Source0:        %{url}/releases/download/v%{version}/Bibata.tar.xz
 BuildRequires:  fdupes
 BuildArch:      noarch
+ExclusiveArch:  x86_64
 
 %description
 Bibata is an open source, compact, and material designed cursor set that
