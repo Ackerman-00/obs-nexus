@@ -1,4 +1,4 @@
-Source: artcraft-launcher
+Source: craft-launcher
 Section: utils
 Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
@@ -7,7 +7,7 @@ Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/storytold/craft-launcher
 
-Package: artcraft-launcher
+Package: craft-launcher
 Architecture: amd64
 # Runtime set: upstream's own DEB Depends verified correct as-is
 # (t64-era names need no adjustment for this set on Debian Testing).

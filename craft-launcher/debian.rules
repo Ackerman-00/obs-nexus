@@ -47,9 +47,9 @@ override_dh_auto_install:
 	else \
 	    echo "ERROR: unexpected data.tar compression in upstream DEB"; exit 1; \
 	fi
-	mkdir -p debian/artcraft-launcher/usr/bin debian/artcraft-launcher/usr/share
-	cp -a payload/usr/bin/* debian/artcraft-launcher/usr/bin/
-	cp -a payload/usr/share/applications debian/artcraft-launcher/usr/share/
-	cp -a payload/usr/share/icons debian/artcraft-launcher/usr/share/
-	cp -a payload/usr/share/metainfo debian/artcraft-launcher/usr/share/
-	cp -a payload/usr/share/doc debian/artcraft-launcher/usr/share/
+	mkdir -p debian/craft-launcher/usr/bin debian/craft-launcher/usr/share
+	cp -a payload/usr/bin/* debian/craft-launcher/usr/bin/
+	cp -a payload/usr/share/applications debian/craft-launcher/usr/share/
+	cp -a payload/usr/share/icons debian/craft-launcher/usr/share/
+	cp -a payload/usr/share/metainfo debian/craft-launcher/usr/share/
+	cp -a payload/usr/share/doc debian/craft-launcher/usr/share/

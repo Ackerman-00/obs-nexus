@@ -1,6 +1,6 @@
 Format: 3.0 (quilt)
-Source: artcraft-launcher
-Binary: artcraft-launcher
+Source: craft-launcher
+Binary: craft-launcher
 Architecture: amd64
 Version: 0.2.1
 Maintainer: Ackerman-00 <noreply@example.com>

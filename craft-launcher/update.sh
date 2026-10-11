@@ -4,8 +4,8 @@
 # touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
-SPEC_FILE="artcraft-launcher.spec"
-CHANGES_FILE="artcraft-launcher.changes"
+SPEC_FILE="craft-launcher.spec"
+CHANGES_FILE="craft-launcher.changes"
 GITHUB_REPO="storytold/craft-launcher"
 # NOTE: release artifacts are prefixed artcraft-launcher- (not
 # craft-launcher-); keep ART_PREFIX in sync if upstream ever renames.
@@ -63,11 +63,11 @@ build_orig_wrapper() {
     trap 'rm -rf "$tmpd"' EXIT
     curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.deb" \
         || { echo "orig .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -czf "artcraft-launcher-$ver.tar.gz" -C "$tmpd" upstream.deb
-    for old in artcraft-launcher-*.tar.gz; do
-        [ "$old" = "artcraft-launcher-$ver.tar.gz" ] || rm -f "$old"
+    tar -czf "craft-launcher-$ver.tar.gz" -C "$tmpd" upstream.deb
+    for old in craft-launcher-*.tar.gz; do
+        [ "$old" = "craft-launcher-$ver.tar.gz" ] || rm -f "$old"
     done
-    ls -l "artcraft-launcher-$ver.tar.gz"
+    ls -l "craft-launcher-$ver.tar.gz"
     trap - EXIT
     rm -rf "$tmpd"
 }
@@ -79,7 +79,7 @@ deb_url_for() {
 # Orig-tarball guard: fresh CI checkouts start without the gitignored
 # wrapper (actions/cache usually restores it). Rebuild when missing so an
 # OBS sync can never wipe the remote copy with nothing to re-upload.
-if [ ! -f "artcraft-launcher-$CURRENT_VER.tar.gz" ]; then
+if [ ! -f "craft-launcher-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VER" "$(deb_url_for "$CURRENT_VER")" || \
         echo "WARNING: orig wrapper rebuild failed; continuing version check."
@@ -109,11 +109,11 @@ sed -i "s|^Source0:.*|Source0:        https://github.com/$GITHUB_REPO/releases/d
 # Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync
 # (asset URLs verified present via the asset guard above).
 build_orig_wrapper "$NEW_VER" "$(deb_url_for "$NEW_VER")"
-DSC_FILE="artcraft-launcher.dsc"
+DSC_FILE="craft-launcher.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
-sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: artcraft-launcher-$NEW_VER.tar.gz|" "$DSC_FILE"
+sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: craft-launcher-$NEW_VER.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="artcraft-launcher ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
+DEB_ENTRY="craft-launcher ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else
@@ -121,8 +121,8 @@ else
 fi
 
 echo "Updating changelog ($CHANGES_FILE)..."
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")
-NEW_CHANGELOG_ENTRY="* $CURRENT_DATE $PACKAGER - $NEW_VER-0\n- Update artcraft-launcher to v$NEW_VER\n\n"
+CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER\n\n- Update craft-launcher to $NEW_VER\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

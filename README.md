@@ -55,7 +55,7 @@ One source tree builds for seven targets on OBS, **x86_64 only**
 | Package | Description |
 |---|---|
 | **bibata-cursor-theme** | Open source, compact, material designed cursor set
-| **artcraft-launcher** | App launcher for the Craft suite
+| **craft-launcher** | App launcher for the Craft suite
 | **concat** | Free and open source video editor
 | **concat-unstable** | Video editor main-branch snapshot (native source build)
 | **fluxer** | Free and open source messaging & VoIP platform

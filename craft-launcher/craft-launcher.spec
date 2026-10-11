@@ -1,8 +1,9 @@
 %global debug_package %{nil}
 # NOTE: upstream repo is storytold/craft-launcher but every artifact
 # (rpm/deb/AppImage name, binary, desktop file, Cargo crates) is called
-# artcraft-launcher - the package follows the artifact name.
-Name:           artcraft-launcher
+# craft-launcher - the package follows the upstream project name
+# (release artifacts stay artcraft-launcher-* prefixed, see ART_PREFIX).
+Name:           craft-launcher
 Version:        0.2.1
 Release:        0
 Summary:        App launcher for the Craft suite
@@ -30,6 +31,8 @@ Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon-x11.so.0()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 ExclusiveArch:  x86_64
+Provides:       artcraft-launcher = %{version}-%{release}
+Obsoletes:      artcraft-launcher < %{version}-%{release}
 
 %description
 ArtCraft Launcher: the app launcher for the Craft suite of clean-room
