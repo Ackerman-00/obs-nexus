@@ -43,7 +43,12 @@ override_dh_auto_test:
 	:
 
 override_dh_auto_install:
-	APPIMAGE=$$(ls Obsidian-*.AppImage | head -n1); \
+	ARCH=$$(dpkg-architecture -qDEB_HOST_ARCH); \
+	if [ "$$ARCH" = amd64 ]; then WANT=x86_64; else WANT=aarch64; fi; \
+	if [ "$$WANT" = x86_64 ]; then APPIMAGE=$$(ls Obsidian-*.AppImage | grep -v arm64 | head -n1); \
+	else APPIMAGE=$$(ls Obsidian-*-arm64.AppImage | head -n1); fi; \
+	if [ -z "$$APPIMAGE" ]; then echo "ERROR: no $$WANT AppImage in orig wrapper (found: $$(ls *.AppImage 2>/dev/null | tr \\n \\ ))"; exit 1; fi; \
+	echo "upstream payload: $$APPIMAGE for $$ARCH"; \
 	chmod +x "$$APPIMAGE" && ./"$$APPIMAGE" --appimage-extract >/dev/null && mv squashfs-root appimage-root
 	mkdir -p debian/obsidian/opt/obsidian debian/obsidian/usr/bin debian/obsidian/usr/share/applications
 	cp -ar appimage-root/* debian/obsidian/opt/obsidian/
