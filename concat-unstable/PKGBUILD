@@ -48,31 +48,12 @@ depends=('mesa' 'fontconfig' 'gtk3' 'alsa-lib' 'freetype2' 'libxkbcommon'
 sha256sums=('SKIP')
 
 prepare() {
-  local root="$srcdir/concat-$_commit"
-  # cargo-1.99 does not forward ring's cargo:rustc-link-lib into
-  # build-script link lines (its C core then stays undefined at link).
-  # Patch the VENDORED ring build script to additionally emit
-  # cargo:rustc-link-arg, which travels the dependency-scoped channel.
-  # Version-guarded: fails loudly if ring's source changes shape.
-  local ring_rs="$root/src/vendor/ring/build.rs"
-  grep -q 'println!("cargo:rustc-link-lib=static={}", lib_name);' "$ring_rs" \
-    || return 1
-  grep -q 'cargo:rustc-link-arg=-lring_core' "$ring_rs" && return 0
-  sed -i 's|println!("cargo:rustc-link-lib=static={}", lib_name);|println!("cargo:rustc-link-lib=static={}", lib_name);\n    println!("cargo:rustc-link-arg=-l{}", lib_name);|' "$ring_rs"
-  grep -q 'cargo:rustc-link-arg=-l{}' "$ring_rs" || return 1
-  # Cargo verifies vendored files against vendor/ring/.cargo-checksum.json;
-  # refresh build.rs's entry to the patched hash (standard vendor-patch
-  # workflow - same as quilt refresh after editing a tarball).
-  python3 - "$ring_rs" <<'PYEOF'
-import hashlib, json, sys
-rs = sys.argv[1]
-ck = rs.rsplit("/", 1)[0] + "/.cargo-checksum.json"
-h = hashlib.sha256(open(rs, "rb").read()).hexdigest()
-d = json.load(open(ck))
-d["files"]["build.rs"] = h
-json.dump(d, open(ck, "w"))
-print("ring build.rs patched, checksum refreshed")
-PYEOF
+  # Nothing to patch. (2026-10-11: a prepare() sed on vendored ring +
+  # checksum refresh was tried and reverted - cargo-1.99 withholds native
+  # link directives from build-script links no matter how they are
+  # emitted. The working approach is dynamic -L/-l discovery in build()
+  # below, which needs no vendor modification at all.)
+  :
 }
 
 build() {
@@ -113,15 +94,32 @@ EOF
 # ^ -fuse-ld=bfd: the Arch worker toolchain defaults to lld (flag present in
 # every OBS Arch link line, origin unknown - not in the vendor tree); bfd
 # tolerates transitive shared-undefined like TW's linker does.
-# ^ -lring_core_0_17_14 REMOVED 2026-10-11: a global -l breaks every
-# build-script link whose -L lacks ring's OUT_DIR (quote failed on it).
-# The missing native lib is a cargo-1.99 link-propagation gap (ring's own
-# cargo:rustc-link-lib never reaches build-script links); instead the
-# vendored ring build script is patched below in prepare() to ALSO emit
-# cargo:rustc-link-arg, which propagates through the proper
-# dependency-scoped channel. See prepare().
+# ^ -lring_core REMOVED 2026-10-11 (broke unrelated units) and the
+# prepare()-patch theory died with it (link-arg propagates no better than
+# link-lib on this toolchain). Phase 1 below instead: prebuild the ring
+# crate first (fast, leaf-ish), locate its static C core, and append an
+# explicit -L/-l for the real build. Fully version-agnostic: names derive
+# from Cargo.lock and the built tree, never hardcoded. (Proven necessary
+# over 7 OBS Arch builds 2026-10-11: vendor tarball reuse, sums arrays,
+# -lzstd, bfd, global -l, vendor patch + checksum. Each step verified in
+# live logs.)
 
   cd "$root/src" || return 1
+  RINGVER="$(python3 -c "import re; t=open('Cargo.lock').read(); m=re.search(r'\[\[package\]\]\nname = \"ring\"\nversion = \"([^\"]+)\"', t); print(m.group(1))")"
+  [ -n "$RINGVER" ] || return 1
+  cargo build --offline --frozen --release -p "ring@$RINGVER" || return 1
+  RINGA=""; RINGL=""
+  for d in target/release/build/ring-*/out; do
+    [ -d "$d" ] || continue
+    for a in "$d"/libring_core_*.a; do
+      [ -f "$a" ] || continue
+      [ -n "$RINGA" ] && { echo "ERROR: ambiguous ring core archives"; return 1; }
+      RINGA="$PWD/$d"; RINGL="$(basename "$a" .a)"; RINGL="${RINGL#lib}"
+    done
+  done
+  [ -n "$RINGA" ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
+  echo "ring static core: $RINGA/lib$RINGL.a"
+  export RUSTFLAGS="$RUSTFLAGS -C link-arg=-L$RINGA -C link-arg=-l$RINGL"
   cargo build --offline --frozen --release --bin concat
 }
 
