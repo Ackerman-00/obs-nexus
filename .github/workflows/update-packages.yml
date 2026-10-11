@@ -167,6 +167,11 @@ jobs:
             matugen/vendor.tar.xz
             matugen/cargo_config
           key: deb-orig-matugen-${{ hashFiles('matugen/matugen.spec', 'matugen/matugen.dsc') }}
+      - name: Cache Debian orig tarball (mangowm)
+        uses: actions/cache@v6.1.0
+        with:
+          path: mangowm/*.tar.gz
+          key: deb-orig-mangowm-${{ hashFiles('mangowm/mangowm.spec', 'mangowm/mangowm.dsc') }}
       - name: Cache Debian orig tarball (protonplus)
         uses: actions/cache@v6.1.0
         with:

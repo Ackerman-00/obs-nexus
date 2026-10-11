@@ -67,6 +67,7 @@ One source tree builds for seven targets on OBS, **x86_64 only**
 | **localsend** | Open source cross-platform alternative to AirDrop
 | **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot)
 | **lightcraft** | Photo manager - clean-room Lightroom in pure Rust
+| **mangowm** | Scrollable-tiling Wayland compositor (dwm-like, wlroots-based)
 | **matugen** | Material You color generation tool
 | **obsidian** | Knowledge base for plain-text Markdown notes
 | **openchamber** | Agentic development environment boards for issues and pull requests

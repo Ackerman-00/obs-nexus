@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# Debian build of mango + bundled wlroots 0.20.2 + scenefx 0.5.
+# The combined orig tarball holds all three trees side by side at the
+# build root (mango-0.18.0/, wlroots-0.20.2/, scenefx-0.5/). Sub-builds
+# use plain meson (explicit dirs); mango itself mirrors the RPM %meson
+# flow. Staged deps live under stage/ (never the .deb); only the two
+# runtime .so files ship, like the RPM. No network at build time.
+%:
+	dh $@
+
+override_dh_auto_clean:
+	mkdir -p debian/source; \
+	printf '%s\n' 'extend-diff-ignore = "build/.*"' 'extend-diff-ignore = "*-build/.*"' 'extend-diff-ignore = "obj-.*/.*"' > debian/source/options; \
+	dh_auto_clean
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	meson setup --prefix=/usr --libdir=lib/x86_64-linux-gnu --buildtype=release wlroots-0.20.2 wlroots-build
+	meson compile -C wlroots-build
+	DESTDIR=$(CURDIR)/stage meson install -C wlroots-build
+	PKG_CONFIG_PATH="$(CURDIR)/stage/usr/lib/x86_64-linux-gnu/pkgconfig:$$PKG_CONFIG_PATH" \
+	meson setup --prefix=/usr --libdir=lib/x86_64-linux-gnu --buildtype=release scenefx-0.5 scenefx-build
+	PKG_CONFIG_PATH="$(CURDIR)/stage/usr/lib/x86_64-linux-gnu/pkgconfig:$$PKG_CONFIG_PATH" \
+	meson compile -C scenefx-build
+	DESTDIR=$(CURDIR)/stage meson install -C scenefx-build
+	PKG_CONFIG_PATH="$(CURDIR)/stage/usr/lib/x86_64-linux-gnu/pkgconfig:$$PKG_CONFIG_PATH" \
+	meson setup --prefix=/usr --libdir=lib/x86_64-linux-gnu --buildtype=release mango-0.18.0 mango-build
+	PKG_CONFIG_PATH="$(CURDIR)/stage/usr/lib/x86_64-linux-gnu/pkgconfig:$$PKG_CONFIG_PATH" \
+	meson compile -C mango-build
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	DESTDIR=$(CURDIR)/debian/mangowm meson install -C mango-build
+	mkdir -p debian/mangowm/usr/lib/x86_64-linux-gnu
+	cp -a stage/usr/lib/x86_64-linux-gnu/libwlroots-0.20.so* stage/usr/lib/x86_64-linux-gnu/libscenefx-0.5.so* debian/mangowm/usr/lib/x86_64-linux-gnu/

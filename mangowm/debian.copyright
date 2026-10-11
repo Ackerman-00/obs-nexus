@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Source: https://github.com/mangowm/mango
+
+Files: *
+Copyright: 2025 DreamMaoMao
+License: GPL-3.0-or-later
+
+Files: debian/*
+Copyright: 2026 Ackerman-00
+License: GPL-3.0-or-later
