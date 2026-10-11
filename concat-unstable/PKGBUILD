@@ -40,7 +40,8 @@ makedepends=('rust' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
 # deps (mirrors the spec's __requires_exclude_from ^/opt/...); confirm the final
 # set with find-libdeps/namcap once the package builds.
 depends=('mesa' 'fontconfig' 'gtk3' 'alsa-lib' 'freetype2' 'libxkbcommon'
-         'libxkbcommon-x11' 'openssl' 'hicolor-icon-theme')
+         'libxkbcommon-x11' 'openssl' 'hicolor-icon-theme' 'zstd')
+# ^ zstd at runtime too: the binary now links system libzstd.so.1 directly.
 # update.sh: refresh the tarball name + real sha256 on every pin bump
 # (sha256sum the assembled unified tarball; docs/arch-packaging.md §7).
 sha256sums=('SKIP')
@@ -74,12 +75,13 @@ EOF
   export ORT_PREFER_DYNAMIC_LINK=1
   export SKIA_BINARIES_URL="file://$root/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
   export SHERPA_ONNX_ARCHIVE_DIR="$root/sherpa-cache"
-  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-lzstd"
-# ^ trailing -lzstd: zip/zstd-safe rlibs need system libzstd at final link.
-# GNU ld (TW) resolves it transitively, but this recipe links with lld
-# (-fuse-ld=lld, set by sherpa-onnx-sys), which errors on otherwise-undefined
-# ZSTD_* symbols (proven 2026-10-11: zstd installed yet symbols unresolved
-# without the explicit -l).
+  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-Wl,--no-as-needed -C link-arg=-lzstd -C link-arg=-Wl,--as-needed"
+# ^ explicit -lzstd wrapped to survive --as-needed: zip/zstd-safe rlibs need
+# system libzstd at final link. GNU ld (TW) resolves it transitively, but this
+# recipe links with lld (-fuse-ld=lld, set by sherpa-onnx-sys), which errors on
+# otherwise-undefined ZSTD_* symbols (proven 2026-10-11 over two OBS builds:
+# zstd installed, bare -lzstd present on the link line, symbols still
+# unresolved - as-needed dropped it before use).
 
   cd "$root/src" || return 1
   cargo build --offline --frozen --release --bin concat
