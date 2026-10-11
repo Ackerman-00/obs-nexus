@@ -15,8 +15,10 @@ CURRENT_VER=$(grep "^%global mango_ver" "$SPEC_FILE" | awk '{print $3}')
 echo "   Current Local: $CURRENT_VER"
 echo "   Latest Online: $NEW_VER"
 # ONE source tarball serves BOTH recipes (RPM Source0 + DEB
-# Debtransform-Tar): mango + wlroots + scenefx top dirs side by side
-# (matugen combined-orig pattern). Gitignored, rides the OBS sync.
+# Debtransform-Tar): the plain upstream mango tree. wlroots +
+# scenefx are NOT bundled - they resolve from the sibling packages
+# built in this same OBS project (spec + debian.control declare
+# them as build deps). Gitignored, rides the OBS sync.
 fetch_orig_tarball() {
     local ver="$1" tmpd
     tmpd=$(mktemp -d)

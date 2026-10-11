@@ -8,14 +8,17 @@ URL:            https://github.com/wlrfx/scenefx
 Source0:        scenefx-%{version}.tar.gz
 BuildRequires:  fdupes
 BuildRequires:  gcc-c++
-BuildRequires:  meson >= 1.0.0
+BuildRequires:  meson >= 1.3.0
 BuildRequires:  ninja
 BuildRequires:  pkgconfig
-BuildRequires:  wayland-protocols-devel
+BuildRequires:  wayland-protocols-devel >= 1.41
+BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(glesv2)
+BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(libdrm) >= 2.4.129
 BuildRequires:  pkgconfig(pixman-1) >= 0.43.0
-BuildRequires:  pkgconfig(wayland-server)
+BuildRequires:  pkgconfig(wayland-server) >= 1.24.0
 BuildRequires:  pkgconfig(wlroots-0.20) >= 0.20.0
 BuildRequires:  pkgconfig(xkbcommon) >= 1.8.0
 Requires:       Mesa-libEGL1

@@ -39,8 +39,8 @@ BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xkbcommon)
 # wlroots + scenefx from the sibling packages in this repository
-BuildRequires:  pkgconfig(scenefx-0.5)
-BuildRequires:  pkgconfig(wlroots-0.20)
+BuildRequires:  pkgconfig(scenefx-0.5) >= 0.5.0
+BuildRequires:  pkgconfig(wlroots-0.20) >= 0.20.0
 Provides:       wayland-compositor
 Requires:       Mesa-dri
 Requires:       Mesa-libEGL1

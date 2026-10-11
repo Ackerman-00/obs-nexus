@@ -3,9 +3,9 @@ Section: libs
 Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
- libwayland-dev, wayland-protocols, libdrm-dev, libxkbcommon-dev,
- libpixman-1-dev, wlroots (>= 0.20), libgbm-dev, libegl-dev,
- libgles-dev
+ libwayland-dev, libwayland-bin, wayland-protocols (>= 1.41),
+ libdrm-dev, libxkbcommon-dev, libpixman-1-dev, wlroots (>= 0.20),
+ libgbm-dev, libegl-dev, libgles-dev, liblcms2-dev
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/wlrfx/scenefx
