@@ -12,7 +12,7 @@ Source0:        https://github.com/mangowm/mango/archive/refs/tags/%{version}.ta
 # Bundled build prerequisites: no target distro ships wlroots-0.20 /
 # scenefx-0.5 at the floors mango 0.18.0 demands (X11:Wayland carries
 # wlroots 0.20.2 for TW/Slowroll but only scenefx 0.4.1 and Leap has
-# wlroots 0.19.3; Debian has neither). Built in %build, staged under
+# wlroots 0.19.3; Debian has neither). Built in %%build, staged under
 # %{_builddir} (never the buildroot), ONLY the two runtime .so files
 # ship in this package. Declared honestly below.
 Source1:        https://gitlab.freedesktop.org/wlroots/wlroots/-/archive/%{wlroots_ver}/wlroots-%{wlroots_ver}.tar.gz
@@ -72,8 +72,8 @@ because no target distro ships them at the required floors.
 %autosetup -n mango-%{version} -a1 -a2
 
 %build
-# rpm lands %build inside BUILD/mangowm-<ver>-build/mango-<ver> (multi-source
-# %autosetup layout, proven in OBS logs) - or directly in mango-<ver>.
+# rpm lands %%build inside BUILD/mangowm-<ver>-build/mango-<ver> (multi-source
+# %%autosetup layout, proven in OBS logs) - or directly in mango-<ver>.
 # Either way the next line ends in the mango tree; sibling trees (wlroots,
 # scenefx) and staging live one level up, addressed relatively so no
 # assumption about the parent dir name is needed.
@@ -89,8 +89,8 @@ meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release ../scenefx-
 meson compile -C ../scenefx-build
 DESTDIR=$STAGE meson install -C ../scenefx-build
 export PKG_CONFIG_PATH="$STAGE%{_libdir}/pkgconfig:$PKG_CONFIG_PATH"
-# 3. mango itself (plain meson: the %meson macro injects a stray
-# literal %setup line into %build on this rpm, dying with
+# 3. mango itself (plain meson: the %%meson macro injects a stray
+# literal %%setup line into %%build on this rpm, dying with
 # 'fg: no job control' - OBS log proof 2026-10-11).
 meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release . mango-build
 meson compile -C mango-build
