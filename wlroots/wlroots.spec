@@ -122,12 +122,17 @@ tar -xf %{SOURCE12} -C %{_builddir}/vendor
 VENDOR=%{_builddir}/vendor
 PRIVATE=%{_builddir}/vendor-private
 VDIR=%{_libdir}/wlroots-vendor
-# (a) wayland-protocols 1.49, data-only: real meson install to private stage
-# (1.49 needs scanner>=1.22.90 with tests off - Leap has 1.24.0; 1.49 is
-# required because wlroots 0.20.2 code uses 1.48+ XML enums such as
-# WP_COLOR_*_CHROMA_LOCATION, absent from 1.47 - OBS log proof attempt 4)
-meson setup --prefix=$PRIVATE/wp -Dtests=false $VENDOR/wayland-protocols-1.49 $VENDOR/build-wp
-meson install -C $VENDOR/build-wp
+# (a) wayland-protocols 1.49 XMLs, data-only: copied straight into the
+# private stage with a hand-written .pc (NO meson/scan step). Rationale
+# (OBS log proof, attempt 5): protocols' own meson regenerates enum
+# headers with the SYSTEM scanner 1.24 --strict, whose built-in DTD
+# rejects the 1.49 color-management XML - while wlroots' own generation
+# calls the scanner WITHOUT --strict (protocol/meson.build: plain
+# private-code/server-header/client-header), which parses the same XMLs
+# fine. Only pkgdatadir + Version are ever read from this .pc.
+mkdir -p $PRIVATE/wp/share/wayland-protocols $PRIVATE/wp/share/pkgconfig
+cp -a $VENDOR/wayland-protocols-1.49/stable $VENDOR/wayland-protocols-1.49/staging $VENDOR/wayland-protocols-1.49/unstable $PRIVATE/wp/share/wayland-protocols/
+printf '%s\n' "prefix=$PRIVATE/wp" "pkgdatadir=$VENDOR/wayland-protocols-1.49" 'Name: wayland-protocols' 'Description: Wayland protocol files (vendored XMLs for Leap baseline)' 'Version: 1.49' > $PRIVATE/wp/share/pkgconfig/wayland-protocols.pc
 # (c) pixman 0.46.4 to private stage (own demos/tests off - build input only)
 meson setup --prefix=$PRIVATE/px -Dgtk=disabled -Ddemos=disabled -Dtests=disabled $VENDOR/pixman-0.46.4 $VENDOR/build-pix
 meson compile -C $VENDOR/build-pix
