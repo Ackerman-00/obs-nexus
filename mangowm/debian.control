@@ -9,7 +9,7 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libxcb-randr0-dev, libxcb-composite0-dev, libxcb-xfixes0-dev,
  libxcb-render0-dev, libxcb-shm0-dev, libdisplay-info-dev,
  libliftoff-dev, libseat-dev, libudev-dev, libgbm-dev, libegl-dev,
- libgles-dev, libxkbcommon-dev, xwayland-protocols
+ libgles-dev
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/mangowm/mango
