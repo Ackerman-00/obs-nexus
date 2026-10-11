@@ -72,22 +72,30 @@ because no target distro ships them at the required floors.
 %autosetup -n mango-%{version} -a1 -a2
 
 %build
-STAGE=%{_builddir}/deps-pfx
+# rpm lands %build inside BUILD/mangowm-<ver>-build/mango-<ver> (multi-source
+# %autosetup layout, proven in OBS logs) - or directly in mango-<ver>.
+# Either way the next line ends in the mango tree; sibling trees (wlroots,
+# scenefx) and staging live one level up, addressed relatively so no
+# assumption about the parent dir name is needed.
+cd mango-%{version} 2>/dev/null || true
+STAGE=$PWD/../deps-pfx
 # 1. wlroots (plain meson: out-of-tree sub-build, defaults are sane)
-meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release -Dexamples=false %{_builddir}/wlroots-%{wlroots_ver} %{_builddir}/wlroots-build
-meson compile -C %{_builddir}/wlroots-build
-DESTDIR=$STAGE meson install -C %{_builddir}/wlroots-build
+meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release -Dexamples=false ../wlroots-%{wlroots_ver} ../wlroots-build
+meson compile -C ../wlroots-build
+DESTDIR=$STAGE meson install -C ../wlroots-build
 export PKG_CONFIG_PATH="$STAGE%{_libdir}/pkgconfig:$PKG_CONFIG_PATH"
 # 2. scenefx against the staged wlroots
-meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release %{_builddir}/scenefx-%{scenefx_ver} %{_builddir}/scenefx-build
-meson compile -C %{_builddir}/scenefx-build
-DESTDIR=$STAGE meson install -C %{_builddir}/scenefx-build
+meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release ../scenefx-%{scenefx_ver} ../scenefx-build
+meson compile -C ../scenefx-build
+DESTDIR=$STAGE meson install -C ../scenefx-build
 export PKG_CONFIG_PATH="$STAGE%{_libdir}/pkgconfig:$PKG_CONFIG_PATH"
 # 3. mango itself (house macros, proven by protonplus)
 %meson
 %meson_build
 
 %install
+cd mango-%{version} 2>/dev/null || true
+STAGE=$PWD/../deps-pfx
 %meson_install
 # Only the two runtime shared libs ship from the staged trees
 # (headers/.pc stay in the staging dir, which vanishes with the build).
