@@ -34,7 +34,7 @@ jobs:
 
       # Gitignored debtransform orig inputs maintained by each package's
       # update.sh (Debian recipe: <pkg>.dsc + flat debian.* + orig tarball,
-      # ONE recipe building Forky/Sid/Ubuntu 26.04). Per-package
+      # ONE recipe building Forky/Sid). Per-package
       # caches keep them across fresh checkouts so
       # multi-hundred-MB upstream downloads only happen on real version
       # changes or cache eviction; keys are per-package so one package's

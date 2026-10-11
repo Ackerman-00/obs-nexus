@@ -4,7 +4,8 @@ Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libwayland-dev, libwayland-bin, wayland-protocols (>= 1.41),
- libdrm-dev, libxkbcommon-dev, libpixman-1-dev, wlroots (>= 0.20),
+ libdrm-dev, libxkbcommon-dev, libpixman-1-dev,
+ libwlroots-0.20-dev (>= 0.20),
  libgbm-dev, libegl-dev, libgles-dev, liblcms2-dev
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
@@ -12,14 +13,16 @@ Homepage: https://github.com/wlrfx/scenefx
 
 Package: scenefx
 Architecture: amd64
-# Combined lib+dev like wlroots above: scenefx-0.5.pc Requires.private
-# (wlroots-0.20, wayland-server, libdrm, xkbcommon, pixman-1, egl, gbm,
-# glesv2, lcms2) must resolve for consumer builds; the wlroots-0.20.pc
-# closure in turn rides on the wlroots binary's own Depends.
-Depends: ${shlibs:Depends}, ${misc:Depends}, wlroots (>= 0.20),
+# Combined lib+dev: scenefx-0.5.pc Requires.private (wlroots-0.20,
+# wayland-server, libdrm, xkbcommon, pixman-1, egl, gbm, glesv2, lcms2)
+# must resolve for consumer builds; the wlroots-0.20.pc closure in turn
+# rides on the distro's libwlroots-0.20-dev package.
+# wlroots comes from the distro (libwlroots-0.20 / -dev), NOT from this
+# repo: it ships the same SONAME and would collide on libwlroots-0.20.so.
+Depends: ${shlibs:Depends}, ${misc:Depends}, libwlroots-0.20 (>= 0.20),
  libwayland-dev, libdrm-dev, libxkbcommon-dev, libpixman-1-dev,
  libegl-dev, libgbm-dev, libgles-dev, liblcms2-dev
 Description: Wayland compositor effects library (for wlroots 0.20)
  scenefx provides blur, shadow and animation effects for
- wlroots-based compositors. Built against the wlroots package
- from this same repository.
+ wlroots-based compositors. Built against the distro's wlroots
+ 0.20 (libwlroots-0.20-dev).
