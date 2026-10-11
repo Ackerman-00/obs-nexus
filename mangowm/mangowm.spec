@@ -70,7 +70,7 @@ packages from this same repository.
 desktop-file-validate %{buildroot}%{_datadir}/wayland-sessions/mango.desktop || :
 
 %files
-%license LICENSE LICENSE.dwl LICENSE.tinywl LICENSE.dwm LICENSE.sway
+%license LICENSE
 %doc README.md
 %{_bindir}/mango
 %{_bindir}/mmsg
