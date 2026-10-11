@@ -94,51 +94,34 @@ EOF
 # ^ -fuse-ld=bfd: the Arch worker toolchain defaults to lld (flag present in
 # every OBS Arch link line, origin unknown - not in the vendor tree); bfd
 # tolerates transitive shared-undefined like TW's linker does.
-# ^ -lring_core REMOVED 2026-10-11 (broke unrelated units) and the
-# prepare()-patch theory died with it (link-arg propagates no better than
-# link-lib on this toolchain). Phase 1 below instead: prebuild the ring
-# crate first (fast, leaf-ish), locate its static C core, and append an
-# explicit -L/-l for the real build. Fully version-agnostic: names derive
+# Phase 1+relink below instead of per-lib hacks (ring-only discovery proved
+# too narrow - whisper.cpp was next): build once, collect every lib*.a the
+# dependency graph compiled, relink with explicit -L/-l for each.
+# --as-needed drops the unneeded ones, so over-collecting is safe.
 # from Cargo.lock and the built tree, never hardcoded. (Proven necessary
-# over 7 OBS Arch builds 2026-10-11: vendor tarball reuse, sums arrays,
-# -lzstd, bfd, global -l, vendor patch + checksum. Each step verified in
-# live logs.)
+# over 8 OBS Arch builds 2026-10-11: vendor tarball reuse, sums arrays,
+# -lzstd, bfd, global -l, vendor patch + checksum, ring-only discovery.
+# Each step verified in live logs.)
 
   cd "$root/src" || return 1
-  RINGVER="$(python3 -c "import re; t=open('Cargo.lock').read(); m=re.search(r'\[\[package\]\]\nname = \"ring\"\nversion = \"([^\"]+)\"', t); print(m.group(1))")"
-  [ -n "$RINGVER" ] || return 1
-  cargo build --offline --frozen --release -p "ring@$RINGVER" || return 1
-  RINGVUS="${RINGVER//./_}"
-  MAP=()
-  for d in target/release/build/ring-*/out; do
-    [ -d "$d" ] || continue
-    for a in "$d"/libring_core_*.a; do
+  if ! cargo build --offline --frozen --release --bin concat; then
+    echo "phase-1 link incomplete - collecting native static libs for relink"
+    LDIRS=""; LLIBS=""
+    for a in target/release/build/*/out/lib*.a; do
       [ -f "$a" ] || continue
+      case "$a" in *__test.a) continue;; esac
       base="$(basename "$a" .a)"; base="${base#lib}"
-      MAP+=("$PWD/$d|$base")
+      d="$(dirname "$a")"
+      case " $LDIRS " in *" $d "*) ;; *) LDIRS="$LDIRS $d";; esac
+      case " $LLIBS " in *" $base "*) ;; *) LLIBS="$LLIBS $base";; esac
     done
-  done
-  [ "${#MAP[@]}" -gt 0 ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
-  RINGA=""; RINGL=""
-  if [ "${#MAP[@]}" -eq 1 ]; then
-    RINGA="${MAP[0]%%|*}"; RINGL="${MAP[0]##*|}"
-  else
-    for e in "${MAP[@]}"; do
-      b="${e##*|}"
-      # Exact version family, never the __test twin: real names are
-      # ring_core_0_17_14_ (trailing _) and ring_core_0_17_14__test.
-      case "$b" in *__test) continue;; esac
-      case "$b" in ring_core_"$RINGVUS"*)
-        [ -n "$RINGA" ] && { echo "ERROR: duplicate ring_core_$RINGVUS: ${MAP[*]}"; return 1; }
-        RINGA="${e%%|*}"; RINGL="$b" ;;
-      esac
-    done
-    [ -n "$RINGA" ] || { echo "ERROR: no ring_core_$RINGVUS among: ${MAP[*]}"; return 1; }
+    [ -n "$LLIBS" ] || { echo "ERROR: no static libs to relink with"; return 1; }
+    for d in $LDIRS; do RUSTFLAGS="$RUSTFLAGS -C link-arg=-L$PWD/$d"; done
+    for l in $LLIBS; do RUSTFLAGS="$RUSTFLAGS -C link-arg=-l$l"; done
+    export RUSTFLAGS
+    echo "relink libs:$LLIBS"
+    cargo build --offline --frozen --release --bin concat || return 1
   fi
-  [ -n "$RINGA" ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
-  echo "ring static core: $RINGA/lib$RINGL.a"
-  export RUSTFLAGS="$RUSTFLAGS -C link-arg=-L$RINGA -C link-arg=-l$RINGL"
-  cargo build --offline --frozen --release --bin concat
 }
 
 check() {
