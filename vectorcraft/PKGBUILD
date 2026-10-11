@@ -2,7 +2,7 @@
 # ELF payload NEEDED is libc/m/gcc only (Vulkan/GL are dlopened): ship the
 # binaries as released, no makepkg strip.
 pkgname=vectorcraft
-pkgver=0.8.0
+pkgver=0.9.0
 pkgrel=1
 pkgdesc="Vector editor - clean-room Illustrator in pure Rust"
 arch=('x86_64')

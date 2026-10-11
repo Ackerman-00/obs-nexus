@@ -2,7 +2,7 @@
 # X11/wayland/xkbcommon-x11 are linked (not dlopened) here: ship the
 # binaries as released, no makepkg strip.
 pkgname=photocraft
-pkgver=0.6.0
+pkgver=0.7.0
 pkgrel=1
 pkgdesc="Photo editor - clean-room Photoshop in pure Rust"
 arch=('x86_64')

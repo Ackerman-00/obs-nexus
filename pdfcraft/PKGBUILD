@@ -2,7 +2,7 @@
 # ELF payload NEEDED is libc/m/gcc only (Vulkan/GL are dlopened): ship the
 # binaries as released, no makepkg strip.
 pkgname=pdfcraft
-pkgver=0.5.0
+pkgver=0.6.0
 pkgrel=1
 pkgdesc="Document viewer/editor - clean-room Acrobat in pure Rust"
 arch=('x86_64')

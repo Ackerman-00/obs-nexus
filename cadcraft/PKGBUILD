@@ -1,20 +1,20 @@
 # Maintainer: Ackerman-00
 pkgname=cadcraft
-pkgver=0.4.0
+pkgver=0.5.0
 pkgrel=1
 pkgdesc="CAD/drafting - clean-room AutoCAD-style app in pure Rust"
 arch=('x86_64')
 url="https://github.com/storytold/cadcraft"
 license=('MIT' 'Apache-2.0')
-source=("https://github.com/storytold/cadcraft/releases/download/v0.4.0/cadcraft-0.4.0-linux-x86_64.rpm")
+source=("https://github.com/storytold/cadcraft/releases/download/v0.5.0/cadcraft-0.5.0-linux-x86_64.rpm")
 sha256sums=('SKIP') # update.sh refreshes via makepkg -g on bump
 makedepends=('cpio')
 depends=('hicolor-icon-theme' 'libglvnd' 'vulkan-icd-loader' 'libxkbcommon')
-noextract=("cadcraft-0.4.0-linux-x86_64.rpm")
+noextract=("cadcraft-0.5.0-linux-x86_64.rpm")
 
 package() {
 	cd "$srcdir"
-	bsdtar -xf "cadcraft-0.4.0-linux-x86_64.rpm"
+	bsdtar -xf "cadcraft-0.5.0-linux-x86_64.rpm"
 
 	install -Dm755 usr/bin/cadcraft "$pkgdir/usr/bin/cadcraft"
 	install -Dm755 usr/bin/cadcraft-cli "$pkgdir/usr/bin/cadcraft-cli"
