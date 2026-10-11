@@ -108,15 +108,26 @@ EOF
   RINGVER="$(python3 -c "import re; t=open('Cargo.lock').read(); m=re.search(r'\[\[package\]\]\nname = \"ring\"\nversion = \"([^\"]+)\"', t); print(m.group(1))")"
   [ -n "$RINGVER" ] || return 1
   cargo build --offline --frozen --release -p "ring@$RINGVER" || return 1
-  RINGA=""; RINGL=""
+  RINGVUS="${RINGVER//./_}"
+  MAP=""
   for d in target/release/build/ring-*/out; do
     [ -d "$d" ] || continue
     for a in "$d"/libring_core_*.a; do
       [ -f "$a" ] || continue
-      [ -n "$RINGA" ] && { echo "ERROR: ambiguous ring core archives"; return 1; }
-      RINGA="$PWD/$d"; RINGL="$(basename "$a" .a)"; RINGL="${RINGL#lib}"
+      base="$(basename "$a" .a)"; base="${base#lib}"
+      MAP="$MAP$PWD/$d|$base
+"
     done
   done
+  [ -n "$MAP" ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
+  RINGA=""; RINGL=""
+  if [ "$(printf '%s' "$MAP" | wc -l)" = 1 ]; then
+    RINGA="${MAP%%|*}"; RINGL="${MAP##*|}"
+  else
+    HIT="$(printf '%s' "$MAP" | grep "|ring_core_$RINGVUS\$" || true)"
+    [ "$(printf '%s' "$HIT" | grep -c .)" = 1 ] || { echo "ERROR: ambiguous ring core archives (want ring_core_$RINGVUS): $MAP"; return 1; }
+    RINGA="${HIT%%|*}"; RINGL="${HIT##*|}"
+  fi
   [ -n "$RINGA" ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
   echo "ring static core: $RINGA/lib$RINGL.a"
   export RUSTFLAGS="$RUSTFLAGS -C link-arg=-L$RINGA -C link-arg=-l$RINGL"
