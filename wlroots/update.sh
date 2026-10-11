@@ -15,7 +15,7 @@ if [ -z "$NEW_VER" ]; then
     echo "Error: No $SERIES.x tag found."
     exit 1
 fi
-CURRENT_VER=$(grep "^%global wl_ver" "$SPEC_FILE" | awk '{print $3}')
+CURRENT_VER=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 echo "   Current Local: $CURRENT_VER"
 echo "   Latest Online: $NEW_VER"
 fetch_tarball() {

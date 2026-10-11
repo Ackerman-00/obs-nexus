@@ -1,6 +1,5 @@
-%global scen_ver 0.5
 Name:           scenefx
-Version:        %{scen_ver}
+Version:        0.5
 Release:        0
 Summary:        Wayland compositor effects library (for wlroots 0.20)
 License:        MIT

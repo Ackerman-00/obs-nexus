@@ -1,6 +1,5 @@
-%global wl_ver 0.20.2
 Name:           wlroots
-Version:        %{wl_ver}
+Version:        0.20.2
 Release:        0
 Summary:        Modular Wayland compositor library (0.20 series)
 License:        MIT

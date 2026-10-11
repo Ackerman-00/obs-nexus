@@ -11,7 +11,7 @@ if [ -z "$LATEST_TAG" ]; then
     exit 1
 fi
 NEW_VER="$LATEST_TAG"
-CURRENT_VER=$(grep "^%global scen_ver" "$SPEC_FILE" | awk '{print $3}')
+CURRENT_VER=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 echo "   Current Local: $CURRENT_VER"
 echo "   Latest Online: $NEW_VER"
 fetch_tarball() {
