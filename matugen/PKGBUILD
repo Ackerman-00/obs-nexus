@@ -8,8 +8,11 @@ arch=('x86_64' 'aarch64')
 url="https://github.com/InioX/matugen"
 license=('GPL-2.0-or-later' 'MIT' 'Apache-2.0' 'Zlib')
 source=("https://github.com/InioX/matugen/archive/refs/tags/v${pkgver}.tar.gz")
-# gcc/make/pkgconf come from base-devel (§4.1); cargo is the only real makedepends.
-makedepends=('cargo')
+# gcc/make/pkgconf come from base-devel (§4.1); the toolchain is the only
+# real makedepends. Arch has no standalone `cargo` package (verified
+# `pacman -Si cargo` = missing; the `rust` package provides cargo) -
+# `makedepends=('cargo')` leaves the package UNRESOLVABLE on OBS Arch.
+makedepends=('rust')
 # KNOWN GAP (offline vendor): the RPM/.dsc recipes ship vendored crates
 # (vendor.tar.xz + .cargo/config, produced by _service cargo_vendor and
 # update.sh build_vendor()). The OBS Arch build root cannot reach crates.io,

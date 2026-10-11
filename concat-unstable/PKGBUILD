@@ -26,8 +26,10 @@ _commit=1ab750a339c5db249d353b21b9f3cc9ddb1a1a22
 # listed here in source=(). This PKGBUILD is best-effort structure for now.
 source=("https://github.com/jub0t/concat/archive/1ab750a339c5db249d353b21b9f3cc9ddb1a1a22.tar.gz")
 # Best-effort mapping of the spec's BuildRequires to Arch makedepends (gcc/make/
-# pkgconf come from base-devel, §4.1). clang supplies libclang for bindgen.
-makedepends=('cargo' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
+# pkgconf come from base-devel, §4.1). Arch has no standalone `cargo`
+# package (`pacman -Si cargo` = missing; `rust` provides cargo) - use rust.
+# clang supplies libclang for bindgen.
+makedepends=('rust' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
              'libxkbcommon' 'libxkbcommon-x11' 'mesa' 'gtk3' 'alsa-lib'
              'desktop-file-utils')
 # System runtime libs mirroring the spec's Requires. Bundled libav*/libonnxruntime
