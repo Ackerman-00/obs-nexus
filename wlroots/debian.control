@@ -17,7 +17,18 @@ Homepage: https://gitlab.freedesktop.org/wlroots/wlroots
 
 Package: wlroots
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}
+# The .pc ships in this same binary (combined lib+dev): its
+# Requires.private closure (see wlroots-0.20.pc) must be installable
+# for every consumer build, hence the -dev Depends alongside shlibs.
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libwayland-dev, wayland-protocols, libdrm-dev, libxkbcommon-dev,
+ libpixman-1-dev, libegl-dev, libgbm-dev, libgles-dev, libvulkan-dev,
+ liblcms2-dev, libudev-dev, libseat-dev, libdisplay-info-dev,
+ libliftoff-dev, libinput-dev, libxcb1-dev, libxcb-dri3-dev,
+ libxcb-present-dev, libxcb-render0-dev, libxcb-render-util0-dev,
+ libxcb-shm0-dev, libxcb-xfixes0-dev, libxcb-xinput-dev,
+ libxcb-composite0-dev, libxcb-ewmh-dev, libxcb-icccm4-dev,
+ libxcb-res0-dev, libxcb-errors-dev
 Description: Modular Wayland compositor library (0.20 series)
  wlroots is a modular Wayland compositor library. This package tracks
  the 0.20 series required by current compositors.

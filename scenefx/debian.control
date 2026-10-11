@@ -12,7 +12,13 @@ Homepage: https://github.com/wlrfx/scenefx
 
 Package: scenefx
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}
+# Combined lib+dev like wlroots above: scenefx-0.5.pc Requires.private
+# (wlroots-0.20, wayland-server, libdrm, xkbcommon, pixman-1, egl, gbm,
+# glesv2, lcms2) must resolve for consumer builds; the wlroots-0.20.pc
+# closure in turn rides on the wlroots binary's own Depends.
+Depends: ${shlibs:Depends}, ${misc:Depends}, wlroots (>= 0.20),
+ libwayland-dev, libdrm-dev, libxkbcommon-dev, libpixman-1-dev,
+ libegl-dev, libgbm-dev, libgles-dev, liblcms2-dev
 Description: Wayland compositor effects library (for wlroots 0.20)
  scenefx provides blur, shadow and animation effects for
  wlroots-based compositors. Built against the wlroots package
