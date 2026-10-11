@@ -4,8 +4,8 @@ SPEC_FILE="mangowm.spec"
 CHANGES_FILE="mangowm.changes"
 GITHUB_REPO="mangowm/mango"
 PACKAGER="Ackerman-00"
-WLROOTS_VER="0.20.2"
-SCEN_VER="0.5"
+WLROOTS_VER=$(grep "^%global wlroots_ver" "$SPEC_FILE" | awk '{print $3}')
+SCEN_VER=$(grep "^%global scenefx_ver" "$SPEC_FILE" | awk '{print $3}')
 echo "Checking for upstream updates on $GITHUB_REPO..."
 LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
 if [ -z "$LATEST_TAG" ]; then
@@ -33,6 +33,19 @@ if [ ! -f "mangowm-$CURRENT_VER-debian.tar.gz" ]; then
     echo "Orig missing; rebuilding..."
     build_debian_orig "$CURRENT_VER" || echo "WARNING: orig rebuild failed."
 fi
+# RPM sources are LOCAL files (download_files proved unreliable for the
+# GitLab URL): keep mango/wlroots/scenefx tarballs next to the spec so the
+# OBS sync uploads them. Same URLs the old remote Sources used.
+ensure_sources() {
+    local mver="$1"
+    local ok=1
+    [ -f "mango-$mver.tar.gz" ] || curl -fsSL --retry 3 --connect-timeout 30 "https://github.com/$GITHUB_REPO/archive/refs/tags/$mver.tar.gz" -o "mango-$mver.tar.gz" || ok=0
+    [ -f "wlroots-$WLROOTS_VER.tar.gz" ] || curl -fsSL --retry 3 --connect-timeout 30 "https://gitlab.freedesktop.org/wlroots/wlroots/-/archive/$WLROOTS_VER/wlroots-$WLROOTS_VER.tar.gz" -o "wlroots-$WLROOTS_VER.tar.gz" || ok=0
+    [ -f "scenefx-$SCEN_VER.tar.gz" ] || curl -fsSL --retry 3 --connect-timeout 30 "https://github.com/wlrfx/scenefx/archive/refs/tags/$SCEN_VER.tar.gz" -o "scenefx-$SCEN_VER.tar.gz" || ok=0
+    for old in mango-*.tar.gz; do [ "$old" = "mango-$mver.tar.gz" ] || rm -f "$old"; done
+    [ "$ok" = 1 ]
+}
+ensure_sources "$CURRENT_VER" || echo "WARNING: source ensure failed; continuing."
 if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     echo "Already up to date."
     exit 0
@@ -44,6 +57,7 @@ fi
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 sed -i "s|^%global mango_ver.*|%global mango_ver      $NEW_VER|" "$SPEC_FILE"
+ensure_sources "$NEW_VER" || { echo "Source downloads failed; aborting bump."; exit 1; }
 build_debian_orig "$NEW_VER"
 sed -i "s/^Version: .*/Version: $NEW_VER/" mangowm.dsc
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: mangowm-$NEW_VER-debian.tar.gz|" mangowm.dsc

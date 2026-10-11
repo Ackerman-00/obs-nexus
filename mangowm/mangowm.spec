@@ -8,15 +8,15 @@ Summary:        Practical and powerful Wayland compositor (dwm-like, wlroots-bas
 License:        GPL-3.0-or-later
 Group:          System/GUI/Other
 URL:            https://github.com/mangowm/mango
-Source0:        https://github.com/mangowm/mango/archive/refs/tags/%{version}.tar.gz
+Source0:        mango-%{mango_ver}.tar.gz
 # Bundled build prerequisites: no target distro ships wlroots-0.20 /
 # scenefx-0.5 at the floors mango 0.18.0 demands (X11:Wayland carries
 # wlroots 0.20.2 for TW/Slowroll but only scenefx 0.4.1 and Leap has
 # wlroots 0.19.3; Debian has neither). Built in %%build, staged under
 # %{_builddir} (never the buildroot), ONLY the two runtime .so files
 # ship in this package. Declared honestly below.
-Source1:        https://gitlab.freedesktop.org/wlroots/wlroots/-/archive/%{wlroots_ver}/wlroots-%{wlroots_ver}.tar.gz
-Source2:        https://github.com/wlrfx/scenefx/archive/refs/tags/%{scenefx_ver}.tar.gz
+Source1:        wlroots-%{wlroots_ver}.tar.gz
+Source2:        scenefx-%{scenefx_ver}.tar.gz
 BuildRequires:  fdupes
 BuildRequires:  gcc-c++
 BuildRequires:  meson >= 1.0.0
