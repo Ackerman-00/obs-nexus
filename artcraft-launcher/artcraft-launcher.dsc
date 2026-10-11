@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: artcraft-launcher
 Binary: artcraft-launcher
 Architecture: amd64
-Version: 0.2.0
+Version: 0.2.1
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -12,4 +12,4 @@ Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-u
 # Debtransform-Tar is a gzip-compressed wrapper tar holding the upstream
 # .deb; it is versioned per bump and maintained by update.sh alongside the
 # spec. debian/rules opens it with binutils ar + tar.
-Debtransform-Tar: artcraft-launcher-0.2.0.tar.gz
+Debtransform-Tar: artcraft-launcher-0.2.1.tar.gz
