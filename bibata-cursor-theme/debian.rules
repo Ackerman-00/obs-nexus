@@ -18,4 +18,4 @@ override_dh_auto_test:
 override_dh_auto_install:
 	mkdir -p debian/bibata-cursor-theme/usr/share/icons
 	mv Bibata-* debian/bibata-cursor-theme/usr/share/icons/
-	fdupes -r debian/bibata-cursor-theme/usr/share/icons
+	command -v fdupes >/dev/null && fdupes -r debian/bibata-cursor-theme/usr/share/icons || true

@@ -2,7 +2,11 @@ Source: bibata-cursor-theme
 Section: x11
 Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
-Build-Depends: debhelper-compat (= 13), fdupes
+Build-Depends: debhelper-compat (= 13), fdupes [!i386]
+# ^ fdupes is dedup-only (cosmetic, cursors install fine without it); the
+# OBS xUbuntu i386 pool does not provide it (proven 2026-10-11: bibata
+# i386 unresolvable on `nothing provides fdupes`), so it is restricted
+# off i386 and debian/rules skips it when absent.
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/ful1e5/Bibata_Cursor

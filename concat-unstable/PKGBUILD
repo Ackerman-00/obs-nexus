@@ -75,7 +75,7 @@ EOF
   export ORT_PREFER_DYNAMIC_LINK=1
   export SKIA_BINARIES_URL="file://$root/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
   export SHERPA_ONNX_ARCHIVE_DIR="$root/sherpa-cache"
-  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-Wl,--no-as-needed -C link-arg=-lzstd -C link-arg=-Wl,--as-needed"
+  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-Wl,--no-as-needed -C link-arg=-lzstd -C link-arg=-Wl,--as-needed -C link-arg=-fuse-ld=bfd"
 # ^ explicit -lzstd wrapped to survive --as-needed: zip/zstd-safe rlibs need
 # system libzstd at final link. GNU ld (TW) resolves it transitively, but this
 # recipe links with lld (-fuse-ld=lld, set by sherpa-onnx-sys), which errors on
