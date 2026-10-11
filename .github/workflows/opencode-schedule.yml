@@ -262,7 +262,12 @@ jobs:
               20261009) and lags Tumbleweed ~5-10 days: a Slowroll-only
               skew is HOLD + re-check next run (same handling as a
               Sid-only skew), never a silent waive and never a reason to
-              weaken the recipe.
+              weaken the recipe. STANDING ACCEPTED-REDS (owner decisions
+              2026-10-11, do not re-ask, do not "fix" by weakening recipes):
+              matugen + concat-unstable on Debian_13 only - Trixie's rustc
+              1.85.1 is below the image@0.25.10 floor (1.88), no recipe can
+              change a toolchain floor; the other three deb targets plus all
+              RPMs cover users (issues #11/#12).
               Install-test matrix every time: RPMs in clean Tumbleweed,
               Slowroll (TW image with repos switched, as before) and
               Leap 16.0 (`opensuse/leap:16.0`) containers via zypper; DEBs
