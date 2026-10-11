@@ -18,7 +18,6 @@ URL:            https://obsidian.md/
 # was APK-only), the release is skipped and the spec stays on the last good
 # Linux version.
 Source0:        Obsidian-%{version}.AppImage
-Source1:        Obsidian-%{version}-arm64.AppImage
 # The custom wrapper script launching the bundled Electron binary
 Source2:        obsidian.sh
 Source3:        obsidian-rpmlintrc
@@ -67,7 +66,7 @@ Requires:       libuuid.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 %description
 Obsidian is a powerful knowledge base that works on top of a local folder
@@ -78,12 +77,7 @@ idea to idea, all the time. Your second brain should work the same.
 # Unpack the arch-appropriate AppImage (bundled Electron, no system
 # electron needed). Offset via ELF section headers (same as rootapp).
 %setup -q -c -T
-%ifarch x86_64
 APPIMAGE="%{SOURCE0}"
-%endif
-%ifarch aarch64
-APPIMAGE="%{SOURCE1}"
-%endif
 OFFSET=$(LC_ALL=C readelf -h "$APPIMAGE" | awk 'NR==13{e_shoff=$5} NR==18{e_shentsize=$5} NR==19{e_shnum=$5} END{print e_shoff+e_shentsize*e_shnum}')
 unsquashfs -q -d squashfs-root -o "$OFFSET" "$APPIMAGE"
 chmod go-w squashfs-root

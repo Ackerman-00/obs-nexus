@@ -7,7 +7,6 @@ License:        MIT OR Apache-2.0
 Group:          Productivity/Multimedia/Audio
 URL:            https://github.com/storytold/soundcraft
 Source0:        https://github.com/storytold/soundcraft/releases/download/v0.5.0/soundcraft-0.5.0-linux-x86_64.rpm
-Source1:        https://github.com/storytold/soundcraft/releases/download/v0.5.0/soundcraft-0.5.0-linux-aarch64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
@@ -22,7 +21,7 @@ Requires:       libgcc_s1
 Requires:       libglvnd
 Requires:       libvulkan1
 Requires:       libxkbcommon0
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 %description
 SoundCraft: an open-source, clean-room reimplementation of Avid Pro Tools
@@ -30,13 +29,7 @@ in pure Rust. Record, edit and mix audio and MIDI.
 
 %prep
 %setup -q -c -T
-# Unpack the arch-appropriate native RPM payload
-%ifarch x86_64
 rpm2cpio %{SOURCE0} | cpio -idmv
-%endif
-%ifarch aarch64
-rpm2cpio %{SOURCE1} | cpio -idmv
-%endif
 
 %build
 # No compilation required for pre-built binaries

@@ -8,7 +8,7 @@ Rules-Requires-Root: no
 Homepage: https://github.com/InioX/matugen
 
 Package: matugen
-Architecture: any
+Architecture: amd64
 # Compiled Rust binary, fully vendored: shlibdeps resolves the linked
 # system libs (libc only, in practice).
 Depends: ${shlibs:Depends}, ${misc:Depends}

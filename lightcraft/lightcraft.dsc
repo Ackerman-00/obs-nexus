@@ -1,7 +1,7 @@
 Format: 3.0 (quilt)
 Source: lightcraft
 Binary: lightcraft
-Architecture: amd64 arm64
+Architecture: amd64
 Version: 0.6.0
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils

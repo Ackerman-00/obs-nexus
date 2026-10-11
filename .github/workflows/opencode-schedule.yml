@@ -242,7 +242,15 @@ jobs:
               targets), and Arch extra (via `PKGBUILD`; `[community]` was
               merged into `[extra]` in 2023 and the old repos were
               deleted 2025-03-01, so `[extra]` is the only target - see
-              docs/arch-packaging.md). Rules per family:
+              docs/arch-packaging.md). ARCHITECTURE SCOPE (owner decision
+              2026-10-11, binding): x86_64 ONLY for everything - every
+              `*.spec` carries `ExclusiveArch: x86_64`, every DEB recipe
+              declares `Architecture: amd64`, every `PKGBUILD` carries
+              `arch=('x86_64')` (data-only `any` tolerated: repos are
+              x86_64-only so it builds identically); OBS repos carry the
+              x86_64 arch only (i586/aarch64 removed from project meta).
+              Never add/enable/sync/test any other arch; close
+              arch-expansion requests as out-of-scope. Rules per family:
               RPMs use current Tumbleweed defaults (no Leap-only macros
               REQUIRED - Leap 16.0 (GA 2025-10-01, annual minor releases
               through 2031) needs x86-64-v2 baseline code, no
@@ -271,8 +279,7 @@ jobs:
               upstream version change and goes +1 on a recipe-only fix
               (OBS never auto-increments pkgrel), and checksums are
               refreshed with `updpkgsums`/`makepkg -g`. `arch=('x86_64')`
-              unless another value (`'any'` or `'x86_64' 'aarch64'`) is
-              proven feasible for the payload; every `source=()` entry is
+              always (data-only `any` tolerated); every `source=()` entry is
               https-only (OBS ignores local files in the package dir);
               no `.SRCINFO` and no changelog file are needed on OBS.
               PACKAGER IDENTITY rules below apply unchanged.

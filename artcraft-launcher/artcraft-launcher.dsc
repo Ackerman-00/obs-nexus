@@ -1,7 +1,7 @@
 Format: 3.0 (quilt)
 Source: artcraft-launcher
 Binary: artcraft-launcher
-Architecture: amd64 arm64
+Architecture: amd64
 Version: 0.2.0
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils

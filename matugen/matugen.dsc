@@ -1,7 +1,7 @@
 Format: 3.0 (quilt)
 Source: matugen
 Binary: matugen
-Architecture: any
+Architecture: amd64
 Version: 4.2.0
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), cargo, rustc

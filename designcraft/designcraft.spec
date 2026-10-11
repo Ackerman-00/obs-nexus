@@ -7,8 +7,6 @@ License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Editors
 URL:            https://github.com/storytold/designcraft
 Source0:        https://github.com/storytold/designcraft/releases/download/v0.6.0/designcraft-0.6.0-linux-x86_64.rpm
-# aarch64 build from the same release tag
-Source1:        https://github.com/storytold/designcraft/releases/download/v0.6.0/designcraft-0.6.0-linux-aarch64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
@@ -22,7 +20,7 @@ Requires:       libgcc_s1
 Requires:       libglvnd
 Requires:       libvulkan1
 Requires:       libxkbcommon0
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 %description
 DesignCraft: page layout and publishing - a clean-room Adobe InDesign
@@ -30,13 +28,7 @@ reimplementation in pure Rust.
 
 %prep
 %setup -q -c -T
-%ifarch x86_64
-RPM="%{SOURCE0}"
-%endif
-%ifarch aarch64
-RPM="%{SOURCE1}"
-%endif
-rpm2cpio "$RPM" | cpio -idmv
+rpm2cpio %{SOURCE0} | cpio -idmv
 
 %build
 # No compilation required for pre-built binaries

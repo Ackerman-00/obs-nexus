@@ -9,10 +9,9 @@ CHANGES_FILE="obsidian.changes"
 GITHUB_REPO="obsidianmd/obsidian-releases"
 PACKAGER="Ackerman-00"
 
-# Our packaging format: self-contained Linux AppImages (bundled Electron,
-# no system electron - see issue #9). Both arches are required.
-#   x86_64:  Obsidian-<ver>.AppImage
-#   aarch64: Obsidian-<ver>-arm64.AppImage
+# Our packaging format: self-contained Linux AppImage (bundled Electron,
+# no system electron - see issue #9). x86_64 only.
+#   x86_64: Obsidian-<ver>.AppImage
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
@@ -67,13 +66,10 @@ build_orig_wrapper() {
 if [ ! -f "obsidian-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding from release assets..."
     X86_FN="Obsidian-$CURRENT_VER.AppImage"
-    ARM_FN="Obsidian-$CURRENT_VER-arm64.AppImage"
     curl -fsSL --retry 3 --connect-timeout 20 \
         "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VER/$X86_FN" -o "$X86_FN" && \
-    curl -fsSL --retry 3 --connect-timeout 20 \
-        "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VER/$ARM_FN" -o "$ARM_FN" && \
-    build_orig_wrapper "$CURRENT_VER" "$X86_FN" "$ARM_FN" || \
-        { echo "WARNING: orig wrapper rebuild failed; continuing version check."; rm -f "$X86_FN" "$ARM_FN"; }
+    build_orig_wrapper "$CURRENT_VER" "$X86_FN" || \
+        { echo "WARNING: orig wrapper rebuild failed; continuing version check."; rm -f "$X86_FN"; }
 fi
 
 if [ "$CURRENT_VER" == "$LATEST_VER" ]; then
@@ -97,19 +93,14 @@ echo "   Release assets:"
 echo "$ASSET_NAMES" | sed 's/^/     - /'
 
 X86_APPIMAGE="Obsidian-$LATEST_VER.AppImage"
-ARM_APPIMAGE="Obsidian-$LATEST_VER-arm64.AppImage"
 
 if ! echo "$ASSET_NAMES" | grep -qx "$X86_APPIMAGE"; then
     echo "⏸️  HOLD: $LATEST_TAG has no Linux x86_64 AppImage ($X86_APPIMAGE missing - e.g. APK-only mobile release). Spec stays on $CURRENT_VER."
     exit 0
 fi
-if ! echo "$ASSET_NAMES" | grep -qx "$ARM_APPIMAGE"; then
-    echo "⏸️  HOLD: $LATEST_TAG has no Linux aarch64 AppImage ($ARM_APPIMAGE missing). Spec stays on $CURRENT_VER."
-    exit 0
-fi
-echo "✅ Both Linux AppImage assets present; proceeding."
+echo "✅ Linux x86_64 AppImage asset present; proceeding."
 
-# 0. Download and VERIFY both AppImages BEFORE touching the spec. A failed
+# 0. Download and VERIFY the AppImage BEFORE touching the spec. A failed
 #    or error-stubbed download (e.g. rate-limited HTML page) must NOT bump the
 #    version or reach OBS - otherwise the sync step uploads a stub and deletes
 #    the previous good sources, breaking the build.
@@ -117,29 +108,24 @@ echo "📦 Downloading AppImage sources..."
 rm -f Obsidian-*.AppImage
 
 X86_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$X86_APPIMAGE"
-ARM_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$ARM_APPIMAGE"
 
 curl -fsSL --retry 3 --connect-timeout 20 "$X86_URL" -o "$X86_APPIMAGE" \
     || { echo "❌ x86_64 AppImage download failed; OBS sources left untouched."; exit 1; }
-curl -fsSL --retry 3 --connect-timeout 20 "$ARM_URL" -o "$ARM_APPIMAGE" \
-    || { echo "❌ arm64 AppImage download failed; OBS sources left untouched."; exit 1; }
 
-# Verify both files are real AppImages (ELF) before use.
-for f in "$X86_APPIMAGE" "$ARM_APPIMAGE"; do
-    if ! [ -s "$f" ] || ! head -c4 "$f" | grep -q $'\x7fELF'; then
-        echo "❌ $f is missing, empty, or not an ELF AppImage; OBS sources left untouched."
-        exit 1
-    fi
-done
-echo "✅ Both AppImages verified (x86_64 $(du -h "$X86_APPIMAGE" | cut -f1), arm64 $(du -h "$ARM_APPIMAGE" | cut -f1))."
+# Verify the file is a real AppImage (ELF) before use.
+if ! [ -s "$X86_APPIMAGE" ] || ! head -c4 "$X86_APPIMAGE" | grep -q $'\x7fELF'; then
+    echo "❌ $X86_APPIMAGE is missing, empty, or not an ELF AppImage; OBS sources left untouched."
+    exit 1
+fi
+echo "✅ AppImage verified (x86_64 $(du -h "$X86_APPIMAGE" | cut -f1))."
 
 # 1. Update the spec file
 sed -i -E "s/^Version:.*/Version:        $LATEST_VER/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# 1b. Debian_Testing recipe: wrap both verified AppImages + keep
-# .dsc/changelog in sync (AppImages downloaded + verified in step 0 above).
-build_orig_wrapper "$LATEST_VER" "$X86_APPIMAGE" "$ARM_APPIMAGE"
+# 1b. Debian recipe: wrap the verified AppImage + keep
+# .dsc/changelog in sync (AppImage downloaded + verified in step 0 above).
+build_orig_wrapper "$LATEST_VER" "$X86_APPIMAGE"
 DSC_FILE="obsidian.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VER/" "$DSC_FILE"
 sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: obsidian-$LATEST_VER.tar.gz|" "$DSC_FILE"

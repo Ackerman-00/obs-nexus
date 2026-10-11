@@ -7,7 +7,6 @@ License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Editors
 URL:            https://github.com/storytold/vectorcraft
 Source0:        https://github.com/storytold/vectorcraft/releases/download/v0.9.0/vectorcraft-0.9.0-linux-x86_64.rpm
-Source1:        https://github.com/storytold/vectorcraft/releases/download/v0.9.0/vectorcraft-0.9.0-linux-aarch64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
@@ -21,7 +20,7 @@ Requires:       libgcc_s1
 Requires:       libglvnd
 Requires:       libvulkan1
 Requires:       libxkbcommon0
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 %description
 VectorCraft: a clean-room Adobe Illustrator reimplementation in pure Rust.
@@ -29,13 +28,7 @@ Resolution-independent vector illustration and design.
 
 %prep
 %setup -q -c -T
-# Unpack the arch-appropriate native RPM payload
-%ifarch x86_64
 rpm2cpio %{SOURCE0} | cpio -idmv
-%endif
-%ifarch aarch64
-rpm2cpio %{SOURCE1} | cpio -idmv
-%endif
 
 %build
 # No compilation required for pre-built binaries

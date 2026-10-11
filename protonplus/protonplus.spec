@@ -2,6 +2,7 @@
 Name:           protonplus
 Version:        0.6.8
 Release:        0
+ExclusiveArch:  x86_64
 Summary:        A Wine and Proton-based compatibility tools manager for GNOME
 License:        GPL-3.0-only
 Group:          System/GUI/Other

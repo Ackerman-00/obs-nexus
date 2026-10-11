@@ -29,9 +29,7 @@ override_dh_dwz:
 	:
 
 # Prebuilt upstream binaries are already stripped and carry no usable
-# debuginfo -- and the payload even contains foreign-arch .node files
-# that make objcopy fail (arm64 binding.node, exit 25 on all 4 deb
-# suites' aarch64 builders). Skip stripping; same pattern as
+# debuginfo. Skip stripping; same pattern as
 # openchamber/stoat-desktop/vesktop/helium-browser/fluxer rules, and
 # same class as the RPM-side debuginfo exclusion for repackaged binaries.
 override_dh_strip:
@@ -45,10 +43,7 @@ override_dh_auto_test:
 	:
 
 override_dh_auto_install:
-	ARCH=$$(dpkg-architecture -qDEB_HOST_ARCH); \
-	if [ "$$ARCH" = amd64 ]; then APPIMAGE=Obsidian-*.AppImage; APPIMAGE=$$(ls $$APPIMAGE | grep -v arm64 | head -n1); \
-	elif [ "$$ARCH" = arm64 ]; then APPIMAGE=$$(ls Obsidian-*-arm64.AppImage | head -n1); \
-	else echo "unsupported arch $$ARCH"; exit 1; fi; \
+	APPIMAGE=$$(ls Obsidian-*.AppImage | head -n1); \
 	chmod +x "$$APPIMAGE" && ./"$$APPIMAGE" --appimage-extract >/dev/null && mv squashfs-root appimage-root
 	mkdir -p debian/obsidian/opt/obsidian debian/obsidian/usr/bin debian/obsidian/usr/share/applications
 	cp -ar appimage-root/* debian/obsidian/opt/obsidian/

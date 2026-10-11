@@ -7,7 +7,6 @@ License:        MIT OR Apache-2.0
 Group:          Productivity/Office/Other
 URL:            https://github.com/storytold/pdfcraft
 Source0:        https://github.com/storytold/pdfcraft/releases/download/v0.6.0/pdfcraft-0.6.0-linux-x86_64.rpm
-Source1:        https://github.com/storytold/pdfcraft/releases/download/v0.6.0/pdfcraft-0.6.0-linux-aarch64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
@@ -21,7 +20,7 @@ Requires:       libgcc_s1
 Requires:       libglvnd
 Requires:       libvulkan1
 Requires:       libxkbcommon0
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 %description
 PDFCraft: a clean-room Adobe Acrobat reimplementation in pure Rust.
@@ -29,13 +28,7 @@ View, annotate and export PDF documents.
 
 %prep
 %setup -q -c -T
-# Unpack the arch-appropriate native RPM payload
-%ifarch x86_64
 rpm2cpio %{SOURCE0} | cpio -idmv
-%endif
-%ifarch aarch64
-rpm2cpio %{SOURCE1} | cpio -idmv
-%endif
 
 %build
 # No compilation required for pre-built binaries

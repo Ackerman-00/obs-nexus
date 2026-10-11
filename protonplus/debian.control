@@ -8,7 +8,7 @@ Rules-Requires-Root: no
 Homepage: https://github.com/vysp3r/ProtonPlus
 
 Package: protonplus
-Architecture: any
+Architecture: amd64
 # Compiled Vala/GTK4 app: shlibdeps resolves the linked system libs
 # (translations ship in-package; gsettings/desktop caches ride triggers).
 Depends: ${shlibs:Depends}, ${misc:Depends}, hicolor-icon-theme

@@ -12,7 +12,7 @@ Source2:        cargo_config
 BuildRequires:  cargo
 BuildRequires:  cargo-packaging
 BuildRequires:  gcc-c++
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 %description
 Matugen is a Material You color generation tool that supports templates.

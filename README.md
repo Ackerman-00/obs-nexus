@@ -40,12 +40,13 @@ follow the "Download package" instructions there for your release.
 
 ## Supported targets
 
-One source tree builds for eight targets on OBS:
+One source tree builds for eight targets on OBS, **x86_64 only**
+(owner decision 2026-10-11: i586/aarch64 removed from all recipes and repos):
 
 | Family | Targets | Recipe |
 |---|---|---|
-| RPM (zypper) | openSUSE Tumbleweed, Slowroll, Leap 16.0 | `*.spec` |
-| DEB (apt) | Debian 13 Trixie, Debian Testing (Forky), Debian Unstable (Sid), Ubuntu 26.04 LTS (Resolute Raccoon) | `<pkg>.dsc` + flat `debian.*` + orig tarball - ONE recipe builds all four |
+| RPM (zypper) | openSUSE Tumbleweed, Slowroll, Leap 16.0 (x86_64) | `*.spec` |
+| DEB (apt) | Debian 13 Trixie, Debian Testing (Forky), Debian Unstable (Sid), Ubuntu 26.04 LTS (Resolute Raccoon) (amd64) | `<pkg>.dsc` + flat `debian.*` + orig tarball - ONE recipe builds all four |
 | Arch (pacman) | Arch Linux `[extra]`, x86_64 | `PKGBUILD` |
 
 ---

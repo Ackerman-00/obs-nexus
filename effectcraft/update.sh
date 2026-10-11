@@ -10,10 +10,10 @@ GITHUB_REPO="storytold/effectcraft"
 PACKAGER="Ackerman-00"
 
 # Upstream layout: release tag v<ver>, native per-distro artifacts
-# <name>-<ver>-linux-{x86_64,aarch64}.rpm + <name>-<ver>-linux-{x86_64,aarch64}.deb.
-# The RPMs are repacked for Tumbleweed (x86_64 + aarch64), the DEBs for
-# Debian_Testing (amd64 + arm64); all get our own distro-correct dependency mapping
-# (upstream's RPMs carry Fedora names).
+# <name>-<ver>-linux-x86_64.{rpm,deb}. The RPM is repacked for
+# Tumbleweed, the DEB for Debian_Testing; both get our own
+# distro-correct dependency mapping (upstream's RPM carries Fedora
+# names).
 echo "Checking for upstream updates on $GITHUB_REPO..."
 
 # Get latest release data (authenticated to avoid rate limits).
@@ -48,27 +48,20 @@ echo "   Current Local: $CURRENT_VER"
 echo "   Latest Online: $NEW_VER"
 
 RPM_NAME="effectcraft-$NEW_VER-linux-x86_64.rpm"
-RPM_AARCH64_NAME="effectcraft-$NEW_VER-linux-aarch64.rpm"
 DEB_NAME="effectcraft-$NEW_VER-linux-x86_64.deb"
-DEB_AARCH64_NAME="effectcraft-$NEW_VER-linux-aarch64.deb"
 
-# Debian_Testing recipe helper: wrap both upstream arch .debs into the gzip-compressed
+# Debian_Testing recipe helper: wrap the upstream .deb into the gzip-compressed
 # debtransform orig input. The wrapper is gitignored (*.tar.gz) and rides the
 # OBS sync; per-package actions/cache in update-packages.yml keeps it
 # across fresh CI checkouts. (The RPM side needs nothing local: Source0 is
 # a versioned URL fetched server-side by download_files.)
 build_orig_wrapper() {
-    local ver="$1" tmpd
+    local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
     trap 'rm -rf "$tmpd"' EXIT
-    curl -fsSL --retry 3 --connect-timeout 30 "$(deb_url_for "$ver" x86_64)" \
-        -o "$tmpd/effectcraft-$ver-linux-x86_64.deb" \
-        || { echo "orig x86_64 .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    curl -fsSL --retry 3 --connect-timeout 30 "$(deb_url_for "$ver" aarch64)" \
-        -o "$tmpd/effectcraft-$ver-linux-aarch64.deb" \
-        || { echo "orig aarch64 .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -czf "effectcraft-$ver.tar.gz" -C "$tmpd" \
-        "effectcraft-$ver-linux-x86_64.deb" "effectcraft-$ver-linux-aarch64.deb"
+    curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.deb" \
+        || { echo "orig .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -czf "effectcraft-$ver.tar.gz" -C "$tmpd" upstream.deb
     for old in effectcraft-*.tar.gz; do
         [ "$old" = "effectcraft-$ver.tar.gz" ] || rm -f "$old"
     done
@@ -78,7 +71,7 @@ build_orig_wrapper() {
 }
 
 deb_url_for() {
-    echo "https://github.com/$GITHUB_REPO/releases/download/v$1/effectcraft-$1-linux-$2.deb"
+    echo "https://github.com/$GITHUB_REPO/releases/download/v$1/effectcraft-$1-linux-x86_64.deb"
 }
 
 # Orig-tarball guard: fresh CI checkouts start without the gitignored
@@ -86,7 +79,7 @@ deb_url_for() {
 # OBS sync can never wipe the remote copy with nothing to re-upload.
 if [ ! -f "effectcraft-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
-    build_orig_wrapper "$CURRENT_VER" || \
+    build_orig_wrapper "$CURRENT_VER" "$(deb_url_for "$CURRENT_VER")" || \
         echo "WARNING: orig wrapper rebuild failed; continuing version check."
 fi
 
@@ -95,16 +88,16 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     exit 0
 fi
 
-# Asset guard: only bump once ALL native artifacts really exist (a tag
+# Asset guard: only bump once BOTH native artifacts really exist (a tag
 # can exist before its assets finish uploading; a blind bump ships 404s).
 ASSET_NAMES=$(echo "$LATEST_JSON" | jq -r '.assets[]?.name // empty')
-for want in "$RPM_NAME" "$RPM_AARCH64_NAME" "$DEB_NAME" "$DEB_AARCH64_NAME"; do
+for want in "$RPM_NAME" "$DEB_NAME"; do
     if ! echo "$ASSET_NAMES" | grep -qx "$want"; then
         echo "HOLD: $LATEST_TAG has no $want asset. Spec stays on $CURRENT_VER."
         exit 0
     fi
 done
-echo "RPM (x86_64 + aarch64) + DEB (x86_64 + aarch64) assets present; proceeding."
+echo "RPM + DEB assets present; proceeding."
 # Payload reconciliation guard (2026-10-10: pdfcraft 0.5.0 shipped a new
 # NOTICE + usr/share/pdfcraft/models dir that spec %files / debian.rules
 # did not cover -> TW "Installed (but unpackaged) file(s)" failure).
@@ -121,7 +114,7 @@ if [ ! -f "$RECON_TOOL" ]; then
     exit 0
 fi
 if ! curl -fsSL --retry 3 --connect-timeout 30 \
-        "$(deb_url_for "$NEW_VER" x86_64)" -o "$RECON_TMP/new.deb"; then
+        "$(deb_url_for "$NEW_VER")" -o "$RECON_TMP/new.deb"; then
     echo "HOLD: new .deb download failed; cannot reconcile. Spec stays on $CURRENT_VER."
     rm -rf "$RECON_TMP"
     exit 0
@@ -137,11 +130,10 @@ echo "New version found! Updating $SPEC_FILE..."
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 sed -i "s|^Source0:.*|Source0:        https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$RPM_NAME|" "$SPEC_FILE"
-sed -i "s|^Source1:.*|Source1:        https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$RPM_AARCH64_NAME|" "$SPEC_FILE"
 
 # Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync
 # (asset URLs verified present via the asset guard above).
-build_orig_wrapper "$NEW_VER"
+build_orig_wrapper "$NEW_VER" "$(deb_url_for "$NEW_VER")"
 DSC_FILE="effectcraft.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: effectcraft-$NEW_VER.tar.gz|" "$DSC_FILE"
