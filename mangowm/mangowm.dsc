@@ -20,4 +20,4 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
 # (upstream mango + wlroots + scenefx trees side by side): extra build
 # inputs must ride inside the orig tarball so dpkg-source never diffs
 # them (matugen pattern - Files-Tar merging drops files).
-Debtransform-Tar: mangowm-0.18.0-debian.tar.gz
+Debtransform-Tar: mangowm-0.18.0.tar.gz
