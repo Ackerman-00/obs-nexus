@@ -263,7 +263,7 @@ jobs:
             echo "updates_made=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Validate recipe consistency (Debian .dsc + Arch PKGBUILD)
+      - name: Validate recipe consistency (Debian .dsc)
         # Generator guard (added 2026-10-09 after the zen-browser 1.23.2b
         # incident: spec/.dsc Version was bumped but Debtransform-Tar still
         # named the 1.23.1b tarball, failing the Debian_Testing build in
@@ -272,10 +272,6 @@ jobs:
         # versions), and Debtransform-Tar must embed that version (or the
         # spec shortcommit for snapshot recipes like lazyvim-git).
         # Fails the run BEFORE commit so a broken recipe never lands.
-        # The Arch PKGBUILD check appended below (extra target) is
-        # WARN-ONLY on this first iteration - the fleet is mid-rollout, so
-        # a missing PKGBUILD or a pkgver skew is surfaced via
-        # ::warning:: and never fails the run.
         run: |
           python3 << 'EOF'
           import re, sys
@@ -313,56 +309,6 @@ jobs:
               print('\n'.join(f'  - {b}' for b in bad))
               sys.exit(1)
           print('Debian recipes consistent.')
-          EOF
-
-          # Arch extra: PKGBUILD pkgver must track the sibling spec
-          # Version (or its base_version for macro-composed -git versions).
-          # WARN-ONLY: echo the skew, never fail the run on this iteration.
-          python3 << 'EOF'
-          import re
-          from pathlib import Path
-          warns = []
-          specs = 0
-          for spec in sorted(Path('.').glob('*/*.spec')):
-              specs += 1
-              pkgbuild = spec.parent / 'PKGBUILD'
-              if not pkgbuild.exists():
-                  warns.append(f'{spec.parent.name}: no PKGBUILD yet (Arch extra rollout in progress)')
-                  continue
-              stxt = spec.read_text(encoding='utf-8')
-              sv = re.search(r'^Version:\s*(\S+)', stxt, re.M).group(1)
-              ptxt = pkgbuild.read_text(encoding='utf-8')
-              pv = re.search(r'^pkgver=([^\s#]+)', ptxt, re.M)
-              if not pv:
-                  warns.append(f'{pkgbuild}: no pkgver= line')
-                  continue
-              got = pv.group(1).strip('\'"')
-              if '%' in sv:
-                  # macro-composed snapshot version: pkgver must embed
-                  # base_version + shortcommit (same rule as the .dsc check)
-                  m = re.search(r'%global\s+base_version\s+(\S+)', stxt)
-                  sc = re.search(r'%global\s+shortcommit\s+(\S+)', stxt)
-                  ver_ok = (got.startswith(m.group(1)) if m else False) \
-                      and (sc.group(1) in got if sc else True)
-              else:
-                  ver_ok = (got == sv)
-              if not ver_ok:
-                  warns.append(f'{pkgbuild}: pkgver {got} does not track spec Version {sv}')
-              # makepkg hard-errors when a sums array is shorter than its
-              # source array (obsidian/helium 2026-10-11: stale bare
-              # sha256sums next to split source_x86_64/aarch64, 2 sources
-              # with 1 sum). Compare entry counts per array pair.
-              for arr, sarr in (('source', 'sha256sums'), ('source_x86_64', 'sha256sums_x86_64'), ('source_aarch64', 'sha256sums_aarch64')):
-                  m1 = re.search(rf'^{arr}=\((.*?)\)', ptxt, re.M | re.S)
-                  m2 = re.search(rf'^{sarr}=\((.*?)\)', ptxt, re.M | re.S)
-                  if m1 and m2:
-                      n1 = len(re.findall(r"'[^']*'|\"[^\"]*\"", m1.group(1)))
-                      n2 = len(re.findall(r"'[^']*'|\"[^\"]*\"", m2.group(1)))
-                      if n1 != n2:
-                          warns.append(f'{pkgbuild}: {sarr} has {n2} entries for {n1} {arr} entries (makepkg size-mismatch)')
-          for w in warns:
-              print(f'::warning::PKGBUILD check: {w}')
-          print(f'PKGBUILD check: {specs} specs scanned, {len(warns)} warning(s) (soft, no run failure).')
           EOF
 
       - name: Commit and Push

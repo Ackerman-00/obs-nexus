@@ -19,12 +19,6 @@ Usage (called by the agent during its run):
        Debian release(s): testing and sid are both maintained;
        --debdist all adds debian:13 (Trixie) + ubuntu:26.04 - ONE .dsc
        recipe builds all four targets)
-  python3 tools/docker-sweep.py --overlay . --type arch --all --report arch-report.md
-      (arch type: for each package's PKGBUILD (Arch extra target) in a
-       clean archlinux:latest container: pacman -Syu, install the built
-       .pkg.tar.zst via pacman -U or build+install via makepkg, then a
-       namcap scan of the PKGBUILD and the built package)
-
 Exit 0 = all tested packages passed. Exit 1 = any failures.
 """
 import argparse
@@ -150,30 +144,6 @@ def get_deb_source_packages(root):
             pkgs.append((m_name.group(1).strip(), m_ver.group(1).strip(), spec))
     return pkgs
 
-
-def get_arch_packages(root):
-    """Packages carrying an Arch extra PKGBUILD (one per package dir, next
-    to the .spec/.dsc). Returns (name, "pkgver-pkgrel", pkgbuild_path)
-    triples. Only pkgname/pkgver/pkgrel are parsed - depends/makedepends
-    stay makepkg's job."""
-    pkgs = []
-    for pb in sorted(root.rglob("PKGBUILD")):
-        if any(x in pb.parts for x in SKIP_DIRS):
-            continue
-        try:
-            txt = pb.read_text()
-        except Exception:
-            continue
-        m_name = re.search(r"^pkgname=([^\s#]+)", txt, re.M)
-        if not m_name:
-            continue
-        name = m_name.group(1).strip().strip("'\"")
-        m_ver = re.search(r"^pkgver=([^\s#]+)", txt, re.M)
-        m_rel = re.search(r"^pkgrel=([^\s#]+)", txt, re.M)
-        ver = m_ver.group(1).strip().strip("'\"") if m_ver else "?"
-        rel = m_rel.group(1).strip().strip("'\"") if m_rel else "1"
-        pkgs.append((name, "%s-%s" % (ver, rel), pb))
-    return pkgs
 
 
 def deb_source_urls(spec_path):
@@ -429,65 +399,6 @@ def test_void_package(name, template_path, workdir):
     return result
 
 
-def test_arch_package(name, ver, pkgbuild_path, workdir):
-    """Verify the Arch extra PKGBUILD in a clean archlinux:latest
-    container: pacman -Syu into a fresh build root, install the built
-    .pkg.tar.zst (a prebuilt one next to the PKGBUILD wins, otherwise
-    makepkg -sf from the PKGBUILD as a non-root build user), then namcap
-    the recipe and the built package, then an ldd sweep over the
-    installed binary. The package dir is copied to a temp dir first so
-    makepkg never writes build artifacts into the overlay."""
-    src_dir = pkgbuild_path.parent
-    build_dir = tempfile.mkdtemp(prefix="arch-sweep-")
-    try:
-        shutil.copytree(src_dir, build_dir, dirs_exist_ok=True)
-        commands = [
-            "pacman -Syu --noconfirm --needed base-devel namcap 2>&1 | tail -3",
-            "cd /build",
-            # Build only when no prebuilt artifact ships with the recipe;
-            # makepkg refuses to run as root, so build as a plain user.
-            "if ! ls /build/*.pkg.tar.zst >/dev/null 2>&1; then "
-            "useradd -m builder 2>/dev/null || true; "
-            "chown -R builder /build; "
-            "su builder -c 'cd /build && makepkg -sf --skippgpcheck --noconfirm 2>&1 | tail -25'; "
-            "fi",
-            "for p in /build/*.pkg.tar.zst; do "
-            "pacman -U --noconfirm --overwrite '*' \"$p\" 2>&1 | tail -12; done",
-            # namcap exits non-zero on warnings - never let that mask the
-            # install result; its output is captured for the report.
-            "namcap PKGBUILD 2>&1 | tail -40 || true",
-            "for p in /build/*.pkg.tar.zst; do namcap \"$p\" 2>&1 | tail -20 || true; done",
-            "pacman -Q %s 2>&1 || true" % name,
-            "m=$(ldd \"$(which %s)\" 2>/dev/null | grep 'not found' || true); "
-            "echo ARCLDD:$m" % name,
-        ]
-        rc, out, err = docker_run(
-            "archlinux:latest", commands, timeout=600,
-            volumes=["%s:/build" % build_dir])
-    finally:
-        shutil.rmtree(build_dir, ignore_errors=True)
-    combined = out + err
-    result = {"package": name, "status": STATUS_PASS, "details": ""}
-    if "A failure occurred in build()" in combined or "Makepkg was unable to build" in combined:
-        result["status"] = STATUS_INSTALL_FAIL
-        result["details"] = "makepkg build failed: %s" % combined[-500:]
-        return result
-    if "error: failed to prepare transaction" in combined or "exists in filesystem" in combined:
-        result["status"] = STATUS_INSTALL_FAIL
-        result["details"] = "pacman -U install failed: %s" % combined[-500:]
-        return result
-    m_archldd = re.search(r"ARCLDD:\s*(\S.*)$", combined, re.M)
-    if m_archldd and m_archldd.group(1).strip():
-        result["status"] = STATUS_DEPS_MISSING
-        result["details"] = "missing libs on archlinux:latest: %s" % m_archldd.group(1)[:200]
-        return result
-    if rc != 0 and "is already installed" not in combined:
-        result["status"] = STATUS_INSTALL_FAIL
-        result["details"] = "arch sweep chain failed (rc=%d): %s" % (rc, combined[-500:])
-        return result
-    n_namcap = combined.count(" E: ")
-    result["details"] = "installed + verified on archlinux:latest (namcap errors: %d)" % n_namcap
-    return result
 
 
 # ---------------------------------------------------------------------------
@@ -530,7 +441,7 @@ def trivy_scan_image(image_tag):
 def main():
     ap = argparse.ArgumentParser(description="Docker-based package install + dependency sweep")
     ap.add_argument("--overlay", default=".", help="repo root")
-    ap.add_argument("--type", default="auto", choices=["auto", "gentoo", "fedora", "nix", "void", "opensuse", "debian", "arch"])
+    ap.add_argument("--type", default="auto", choices=["auto", "gentoo", "fedora", "nix", "void", "opensuse", "debian"])
     ap.add_argument("--packages", default="", help="space-separated package names to test")
     ap.add_argument("--all", action="store_true", help="test all packages (slow)")
     ap.add_argument("--report", default="docker-report.md", help="output report path")
@@ -556,8 +467,6 @@ def main():
         all_pkgs = get_nix_packages(root)
     elif repo_type == "void":
         all_pkgs = get_void_packages(root)
-    elif repo_type == "arch":
-        all_pkgs = get_arch_packages(root)
     else:
         all_pkgs = []
 
@@ -607,8 +516,6 @@ def main():
             r = test_nix_package(name, path, root)
         elif repo_type == "void":
             r = test_void_package(name, path, root)
-        elif repo_type == "arch":
-            r = test_arch_package(name, ver, path, root)
         else:
             r = {"package": name, "status": STATUS_SKIP, "details": "unsupported repo type"}
         results.append(r)
@@ -624,7 +531,6 @@ def main():
             "void": "voidlinux/voidlinux:latest",
             "opensuse": "registry.opensuse.org/opensuse/tumbleweed:latest",
             "debian": "debian:testing",
-            "arch": "archlinux:latest",
         }
         img = BASE_IMAGES.get(repo_type)
         if img:
