@@ -172,6 +172,13 @@ jobs:
         with:
           path: mangowm/*.tar.gz
           key: deb-orig-mangowm-${{ hashFiles('mangowm/mangowm.spec', 'mangowm/mangowm.dsc') }}
+      - name: Cache Debian orig tarball (mangowm-scenedep)
+        uses: actions/cache@v6.1.0
+        with:
+          path: |
+            wlroots/*.tar.gz
+            scenefx/*.tar.gz
+          key: deb-orig-scenedep-${{ hashFiles('wlroots/wlroots.spec', 'scenefx/scenefx.spec') }}
       - name: Cache Debian orig tarball (protonplus)
         uses: actions/cache@v6.1.0
         with:

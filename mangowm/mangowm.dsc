@@ -16,8 +16,8 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the
 # flat debian.* files into .debian.tar.gz, computes Files:/Checksums, and
 # appends the -1 Debian revision (Version here carries no revision).
-# Debtransform-Tar is the COMBINED orig tarball update.sh assembles
-# (upstream mango + wlroots + scenefx trees side by side): extra build
+# Debtransform-Tar is the upstream source archive (mango tree only;
+# wlroots + scenefx come from the sibling packages): extra build
 # inputs must ride inside the orig tarball so dpkg-source never diffs
 # them (matugen pattern - Files-Tar merging drops files).
 Debtransform-Tar: mangowm-0.18.0.tar.gz

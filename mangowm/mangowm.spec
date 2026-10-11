@@ -38,21 +38,9 @@ BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xkbcommon)
-# wlroots 0.20 itself needs these at build time
-BuildRequires:  pkgconfig(gbm)
-BuildRequires:  pkgconfig(glesv2)
-BuildRequires:  pkgconfig(egl)
-BuildRequires:  pkgconfig(libdisplay-info)
-BuildRequires:  pkgconfig(libliftoff)
-BuildRequires:  pkgconfig(libseat)
-BuildRequires:  pkgconfig(libudev)
-BuildRequires:  pkgconfig(xcb-composite)
-BuildRequires:  pkgconfig(xcb-errors)
-BuildRequires:  pkgconfig(xcb-render)
-BuildRequires:  pkgconfig(xcb-shm)
-BuildRequires:  pkgconfig(xcb-xfixes)
-Provides:       bundled(wlroots) = %{wlroots_ver}
-Provides:       bundled(scenefx) = %{scenefx_ver}
+# wlroots + scenefx from the sibling packages in this repository
+BuildRequires:  pkgconfig(scenefx-0.5)
+BuildRequires:  pkgconfig(wlroots-0.20)
 Provides:       wayland-compositor
 Requires:       Mesa-dri
 Requires:       Mesa-libEGL1
@@ -63,46 +51,20 @@ ExclusiveArch:  x86_64
 %description
 Mango is a fast, feature-rich Wayland compositor built on dwl,
 wlroots and scenefx - scrollable tiling, animations, blur/shadow
-effects, tags, scratchpad and IPC. wlroots %{wlroots_ver} and
-scenefx %{scenefx_ver} are built from source inside this package
-because no target distro ships them at the required floors.
+effects, tags, scratchpad and IPC. Links the wlroots and scenefx
+packages from this same repository.
 
 %prep
-%setup -q -c -n mangowm-%{version}
+%autosetup -n mango-%{version}
 
 %build
-# Single combined source tarball (mango + wlroots + scenefx top dirs);
-# %%setup -c -n guarantees BUILD/mangowm-<ver>/ layout - no -a flags, no
-# cwd guessing. TOP is absolute everywhere below.
-TOP=%{_builddir}/mangowm-%{version}
-STAGE=%{_builddir}/deps-pfx
-# Staged prefix is $STAGE/usr (NOT /usr + DESTDIR): the generated .pc
-# files must carry -I paths that EXIST at compile time. With prefix=/usr
-# the .pc points at /usr/include (empty until packaging), breaking
-# dependers with missing-include-dirs (OBS log proof). Staging is
-# build-local and vanishes; only the two .so files ship (see %%install).
-# 1. wlroots (plain meson: out-of-tree sub-build, defaults are sane)
-meson setup --prefix=$STAGE/usr --libdir=lib64 --buildtype=release -Dexamples=false $TOP/wlroots-%{wlroots_ver} $TOP/wlroots-build
-meson compile -C $TOP/wlroots-build
-meson install -C $TOP/wlroots-build
-export PKG_CONFIG_PATH="$STAGE/usr/lib64/pkgconfig:$PKG_CONFIG_PATH"
-# 2. scenefx against the staged wlroots
-meson setup --prefix=$STAGE/usr --libdir=lib64 --buildtype=release $TOP/scenefx-%{scenefx_ver} $TOP/scenefx-build
-meson compile -C $TOP/scenefx-build
-meson install -C $TOP/scenefx-build
-# 3. mango itself (plain meson: the %%meson macro injects a stray
-# literal %%setup line into %%build on this rpm - OBS log proof).
-meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release $TOP/mango-%{version} $TOP/mango-build
-meson compile -C $TOP/mango-build
+%meson
+%meson_build
 
 %install
-TOP=%{_builddir}/mangowm-%{version}
-STAGE=%{_builddir}/deps-pfx
-DESTDIR=%{buildroot} meson install -C $TOP/mango-build
-# Only the two runtime shared libs ship from the staged trees
-# (headers/.pc stay in the staging dir, which vanishes with the build).
-cp -a $STAGE/usr/lib64/libwlroots-0.20.so* $STAGE/usr/lib64/libscenefx-0.5.so* %{buildroot}%{_libdir}/
+%meson_install
 %fdupes %{buildroot}%{_prefix}
+
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/wayland-sessions/mango.desktop || :
@@ -123,7 +85,5 @@ desktop-file-validate %{buildroot}%{_datadir}/wayland-sessions/mango.desktop || 
 %config(noreplace) %{_sysconfdir}/mango/config.conf
 %config(noreplace) %{_sysconfdir}/mango/config.toml
 %{_userunitdir}/mango-session.target
-%{_libdir}/libwlroots-0.20.so*
-%{_libdir}/libscenefx-0.5.so*
 
 %changelog

@@ -6,10 +6,7 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libwayland-dev, wayland-protocols, libinput-dev, libxkbcommon-dev,
  libdrm-dev, libpcre2-dev, libpixman-1-dev, libcjson-dev,
  libpango1.0-dev, libcairo2-dev, libxcb1-dev, libxcb-icccm4-dev,
- libxcb-randr0-dev, libxcb-composite0-dev, libxcb-xfixes0-dev,
- libxcb-render0-dev, libxcb-shm0-dev, libdisplay-info-dev,
- libliftoff-dev, libseat-dev, libudev-dev, libgbm-dev, libegl-dev,
- libgles-dev
+ libxcb-randr0-dev, wlroots (>= 0.20), scenefx (>= 0.5)
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/mangowm/mango

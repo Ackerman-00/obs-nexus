@@ -1,0 +1,20 @@
+Source: wlroots
+Section: libs
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
+ libwayland-dev, wayland-protocols, libinput-dev, libxkbcommon-dev,
+ libdrm-dev, libpixman-1-dev, libdisplay-info-dev, libliftoff-dev,
+ libseat-dev, libudev-dev, libgbm-dev, libegl-dev, libgles-dev,
+ libxcb1-dev, libxcb-composite0-dev, libxcb-errors-dev,
+ libxcb-render0-dev, libxcb-shm0-dev, libxcb-xfixes0-dev
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://gitlab.freedesktop.org/wlroots/wlroots
+
+Package: wlroots
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Modular Wayland compositor library (0.20 series)
+ wlroots is a modular Wayland compositor library. This package tracks
+ the 0.20 series required by current compositors.

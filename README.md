@@ -76,10 +76,12 @@ One source tree builds for seven targets on OBS, **x86_64 only**
 | **photocraft** | Photo editor - clean-room Photoshop in pure Rust
 | **protonplus** | Wine and Proton-based compatibility tools manager
 | **rootapp** | Discord alternative for gaming communities and large groups
+| **scenefx** | Wayland compositor effects library (for wlroots 0.20)
 | **soundcraft** | Digital audio workstation - clean-room Pro Tools in pure Rust
 | **stoat-desktop** | Open source, user-first chat platform desktop client
 | **vectorcraft** | Vector editor - clean-room Illustrator in pure Rust
 | **vesktop** | Custom Discord client with Vencord preinstalled
+| **wlroots** | Modular Wayland compositor library (0.20 series)
 | **zen-browser** | Minimal browser focused on privacy and calm browsing
 
 ---

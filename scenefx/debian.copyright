@@ -1,0 +1,10 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Source: https://github.com/wlrfx/scenefx
+
+Files: *
+Copyright: 2017-2018 Drew DeVault, 2014 Jari Vetoniemi
+License: MIT
+
+Files: debian/*
+Copyright: 2026 Ackerman-00
+License: MIT
