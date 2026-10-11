@@ -75,7 +75,7 @@ EOF
   export ORT_PREFER_DYNAMIC_LINK=1
   export SKIA_BINARIES_URL="file://$root/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
   export SHERPA_ONNX_ARCHIVE_DIR="$root/sherpa-cache"
-  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-Wl,--no-as-needed -C link-arg=-lzstd -C link-arg=-Wl,--as-needed -C link-arg=-fuse-ld=bfd -C link-arg=-lstatic=ring_core_0_17_14"
+  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-Wl,--no-as-needed -C link-arg=-lzstd -C link-arg=-lring_core_0_17_14 -C link-arg=-Wl,--as-needed -C link-arg=-fuse-ld=bfd"
 # ^ explicit -lzstd wrapped to survive --as-needed: zip/zstd-safe rlibs need
 # system libzstd at final link. GNU ld (TW) resolves it transitively, but this
 # recipe links with lld (-fuse-ld=lld, set by sherpa-onnx-sys), which errors on
@@ -85,14 +85,14 @@ EOF
 # ^ -fuse-ld=bfd: the Arch worker toolchain defaults to lld (flag present in
 # every OBS Arch link line, origin unknown - not in the vendor tree); bfd
 # tolerates transitive shared-undefined like TW's linker does.
-# ^ -lstatic=ring_core_0_17_14: ring's build script compiles its C core into
-# OUT_DIR/libring_core_0_17_14.a and prints cargo:rustc-link-lib for it, but
-# the directive never reaches this toolchain's build-script link line
-# (cargo link-propagation scoping; TW's older cargo forwards it, Arch rust
-# 1.99 does not - proven by its absence in the OBS link line while -L
-# ring/out IS present). MAINTENANCE: version-pinned - refresh from
-# Cargo.lock (ring version) whenever update.sh advances the pin, exactly
-# like the SKIA_BINARIES_URL key above.
+# ^ -lring_core_0_17_14 (linker spelling, NOT rustc's `-l static=` form:
+# -C link-arg passes strings verbatim to the driver, and ld has no such
+# spelling - proven 2026-10-11: `-lstatic=` died with 'cannot find
+# -lstatic=ring_core_0_17_14'). Sits inside the --no-as-needed window.
+# Ring's own cargo:rustc-link-lib for this file never reaches Arch
+# rust-1.99 build-script links (TW's older cargo forwards it) while -L
+# ring/out IS present, so the name is spelled out here. MAINTENANCE:
+# version-pinned - refresh from Cargo.lock on pin bumps, like SKIA key.
 
   cd "$root/src" || return 1
   cargo build --offline --frozen --release --bin concat
