@@ -31,7 +31,8 @@ source=("concat-unstable-0.2.6+git20261010214240.1ab750a.tar.gz")
 # clang supplies libclang for bindgen.
 makedepends=('rust' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
              'libxkbcommon' 'libxkbcommon-x11' 'mesa' 'gtk3' 'alsa-lib'
-             'desktop-file-utils' 'zstd')
+             'desktop-file-utils' 'zstd' 'python')
+# ^ python refreshes the vendor checksum after the ring patch in prepare().
 # 'zstd' supplies -lzstd at link time: sherpa-onnx-sys's build script links
 # system -llzma -lbz2 -lzstd for its static lib (proven 2026-10-11: without
 # it ld.lld fails on undefined ZSTD_* symbols from zip/zstd-safe rlibs).
@@ -59,6 +60,19 @@ prepare() {
   grep -q 'cargo:rustc-link-arg=-lring_core' "$ring_rs" && return 0
   sed -i 's|println!("cargo:rustc-link-lib=static={}", lib_name);|println!("cargo:rustc-link-lib=static={}", lib_name);\n    println!("cargo:rustc-link-arg=-l{}", lib_name);|' "$ring_rs"
   grep -q 'cargo:rustc-link-arg=-l{}' "$ring_rs" || return 1
+  # Cargo verifies vendored files against vendor/ring/.cargo-checksum.json;
+  # refresh build.rs's entry to the patched hash (standard vendor-patch
+  # workflow - same as quilt refresh after editing a tarball).
+  python3 - "$ring_rs" <<'PYEOF'
+import hashlib, json, sys
+rs = sys.argv[1]
+ck = rs.rsplit("/", 1)[0] + "/.cargo-checksum.json"
+h = hashlib.sha256(open(rs, "rb").read()).hexdigest()
+d = json.load(open(ck))
+d["files"]["build.rs"] = h
+json.dump(d, open(ck, "w"))
+print("ring build.rs patched, checksum refreshed")
+PYEOF
 }
 
 build() {
