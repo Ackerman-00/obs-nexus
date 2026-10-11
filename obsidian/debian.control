@@ -8,7 +8,10 @@ Rules-Requires-Root: no
 Homepage: https://obsidian.md/
 
 Package: obsidian
-Architecture: any
+Architecture: amd64 arm64
+# Wrapper ships x86_64 + arm64 AppImages only (no i386 payload);
+# restricting here keeps i586 builders from attempting the build
+# (debian/rules has no i386 branch).
 # Runtime set: the Electron shell's DT_NEEDED set plus installable
 # bundled-helper libs (the get-fonts node module needs fontconfig; tray
 # works through the system ayatana stack). NOT included: the bundled

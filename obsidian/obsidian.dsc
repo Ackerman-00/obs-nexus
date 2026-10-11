@@ -1,7 +1,7 @@
 Format: 3.0 (quilt)
 Source: obsidian
 Binary: obsidian
-Architecture: any
+Architecture: amd64 arm64
 Version: 1.14.4
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), desktop-file-utils
