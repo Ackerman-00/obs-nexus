@@ -71,10 +71,9 @@ dropped 2026-10-12):
 | **opencode-desktop** | Open source AI coding agent
 | **protonplus** | Wine and Proton-based compatibility tools manager
 | **rootapp** | Discord alternative for gaming communities and large groups
-| **scenefx** | Wayland compositor effects library (for wlroots 0.20)
+| **scenefx** | Wayland compositor effects library (for wlroots 0.20) - RPM only; DEB builds take it from the distro's `libscenefx-0.5`
 | **stoat-desktop** | Open source, user-first chat platform desktop client
 | **vesktop** | Custom Discord client with Vencord preinstalled
-| **wlroots** | Modular Wayland compositor library (0.20 series)
 | **zen-browser** | Minimal browser focused on privacy and calm browsing
 
 ---

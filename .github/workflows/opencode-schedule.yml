@@ -271,17 +271,26 @@ jobs:
               --debdist both` covers both). A single-target pass proves
               NOTHING about the other two - full matrix for every touched
               package, rotation for the rest (see SCOPE).
-              WLROOTS IS NOT OURS (owner order 2026-10-12): Debian
-              ships libwlroots-0.20 0.20.2-1 + libwlroots-0.20-dev in both
-              sid and forky with a byte-identical wlroots-0.20.pc
-              (Version 0.20.2), so scenefx/mangowm MUST Build-Depend on
-              libwlroots-0.20-dev and Depend on libwlroots-0.20. Never
-              re-add a self-shipped `wlroots` DEB or swap headers
-              (Provides/Conflicts/Replaces vs libwlroots-0.20): it
-              collides on libwlroots-0.20.so. RPM-side: Factory ships
-              libwlroots-0_20 + wlroots-devel 0.20.2-1.2, the SAME file
-              set as ours, so never Require a self-shipped wlroots there
-              either.
+              DO NOT REPACKAGE UPSTREAM LIBS (owner order 2026-10-12):
+              the `wlroots` package is DELETED from this repo. Every
+              target already ships wlroots 0.20 with a byte-identical
+              wlroots-0.20.pc (Version 0.20.2, same Requires.private):
+              Debian sid+forky have libwlroots-0.20 + libwlroots-0.20-dev
+              0.20.2-1; Factory has libwlroots-0_20 + wlroots-devel
+              0.20.2-1.2. Never re-create it: same SONAME, so it collides
+              on libwlroots-0.20.so, and the old swap headers
+              (Provides/Conflicts/Replaces vs libwlroots-0.20) are exactly
+              the damage to avoid. scenefx is RPM-ONLY for the same
+              reason in reverse: Debian ships libscenefx-0.5 +
+              libscenefx-0.5-dev 0.5+ds-1 (so its .dsc/debian.* were
+              deleted), but Tumbleweed ships NO scenefx at all - never
+              delete scenefx's .spec, mangowm would lose
+              pkgconfig(scenefx-0.5) on that target. RULE: before adding
+              any library package, check the target's own index first
+              (deb.debian.org Packages.gz, download.opensuse.org oss
+              primary.xml) and re-check it every run - distros add these
+              packages in point releases, and a repo copy that shadows the
+              distro's is a latent collision, never a feature.
               PACKAGER IDENTITY rules below apply unchanged.
               Verified repo URLs (HTTP 200, do not guess variants):
               home:ackerman TW = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/,

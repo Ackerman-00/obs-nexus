@@ -40,15 +40,6 @@ sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 sed -i "s|^%global scen_ver.*|%global scen_ver      $NEW_VER|" "$SPEC_FILE"
 fetch_tarball "$NEW_VER" || { echo "Download failed; aborting bump."; exit 1; }
-sed -i "s/^Version: .*/Version: $NEW_VER/" scenefx.dsc
-sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: scenefx-$NEW_VER.tar.gz|" scenefx.dsc
-DEB_DATE=$(date -R -u)
-DEB_ENTRY="scenefx ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
-if [ -f "debian.changelog" ]; then
-    echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
-else
-    echo -e "$DEB_ENTRY" > debian.changelog
-fi
 CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER\n\n- Update scenefx to $NEW_VER\n\n"
 if [ -f "$CHANGES_FILE" ]; then
@@ -56,4 +47,5 @@ if [ -f "$CHANGES_FILE" ]; then
 else
     echo -e "$NEW_CHANGELOG_ENTRY" > "$CHANGES_FILE"
 fi
-echo "Success! scenefx updated to $NEW_VER. Ready for OBS sync."
+echo "Success! scenefx updated to $NEW_VER (RPM only - DEB comes from
+the distro's libscenefx-0.5/-dev). Ready for OBS sync."

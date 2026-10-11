@@ -1,8 +1,0 @@
--------------------------------------------------------------------
-* Mon Oct 12 2026 Ackerman-00 - 0.20.2-0
-- Drop the Leap 16.0-only vendored floors (protocols/libdrm/
-  pixman); that target is gone, the remaining RPM target (Tumbleweed)
-  meets every upstream floor from its own baseline
--------------------------------------------------------------------
-* Sun Oct 11 2026 Ackerman-00 - 0.20.2-0
-- New package wlroots 0.20.2 (0.20 series for mangowm/scenefx)
