@@ -143,7 +143,11 @@ mkdir -p %{buildroot}$VDIR
 cp -a $PRIVATE/drm/. %{buildroot}$VDIR/
 sed -i "s|^prefix=.*|prefix=$VDIR|" %{buildroot}$VDIR/%{_lib}/pkgconfig/*.pc
 grep -H '^prefix=' %{buildroot}$VDIR/%{_lib}/pkgconfig/*.pc
-export PKG_CONFIG_PATH="%{buildroot}$VDIR/%{_lib}/pkgconfig:%{buildroot}$VDIR/share/pkgconfig:$PRIVATE/drm/%{_lib}/pkgconfig:$PRIVATE/wp/share/pkgconfig:$PRIVATE/wp/%{_lib}/pkgconfig:$PRIVATE/px/share/pkgconfig:$PRIVATE/px/%{_lib}/pkgconfig:$PKG_CONFIG_PATH"
+# NOTE: wlroots' OWN build uses ONLY the private stages below. The shipped
+# tree (rewritten final prefix) is for the scenefx cascade, NOT for this
+# compile - listing it first makes pkg-config emit -I paths that exist
+# only under %{buildroot} (OBS log proof, attempt 3).
+export PKG_CONFIG_PATH="$PRIVATE/drm/%{_lib}/pkgconfig:$PRIVATE/wp/share/pkgconfig:$PRIVATE/wp/%{_lib}/pkgconfig:$PRIVATE/px/share/pkgconfig:$PRIVATE/px/%{_lib}/pkgconfig:$PKG_CONFIG_PATH"
 %endif
 %meson -Dexamples=false
 %meson_build
