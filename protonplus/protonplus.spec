@@ -37,7 +37,14 @@ ProtonPlus is a Proton version manager for installing and managing Proton
 versions. It works with Steam, Lutris, Heroic Games Launcher and Bottles. It
 uses GTK4.
 
-%lang_package
+%package lang
+Summary:        Translations for package %{name}
+Group:          System/Localization
+Requires:       %{name} = %{version}-%{release}
+BuildArch:      noarch
+
+%description lang
+Provides translations for the "%{name}" package.
 
 %prep
 %autosetup -n ProtonPlus-%{version}

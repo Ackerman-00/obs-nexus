@@ -240,10 +240,11 @@ def test_fedora_package(name, nvra, spec_path, workdir):
 
 def test_opensuse_package(name, nvra, spec_path, workdir):
     commands = [
+        "rpm --import https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/repodata/repomd.xml.key 2>&1 | tail -3",
         "zypper --non-interactive --gpg-auto-import-keys addrepo --refresh "
         "https://download.opensuse.org/tumbleweed/repo/oss/ oss 2>&1 | tail -3",
-        "zypper --non-interactive --gpg-auto-import-keys addrepo --refresh "
-        "https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus 2>&1 | tail -3",
+        "zypper --non-interactive addrepo --refresh "
+        "https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/ nexus 2>&1 | tail -3",
         "zypper --non-interactive refresh 2>&1 | tail -3",
         "zypper --non-interactive install --no-recommends -y %s 2>&1 | tail -30" % name,
         "rpm -V %s 2>&1 | head -20" % name,

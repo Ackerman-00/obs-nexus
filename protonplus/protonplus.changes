@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Oct 11 21:00:00 UTC 2026 - Ackerman-00
+
+- Fix lang subpackage: replace %lang_package macro with explicit
+  %package lang + %files lang -f %{appid}.lang to match upstream
+  appid (com.vysp3r.ProtonPlus) instead of package name
+
+-------------------------------------------------------------------
 Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
