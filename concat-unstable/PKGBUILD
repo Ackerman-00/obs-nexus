@@ -9,22 +9,22 @@ arch=('x86_64')
 url="https://github.com/jub0t/concat"
 license=('AGPL-3.0-or-later')
 # Pinned snapshot; update.sh advances base_version/gitdate/shortcommit + pkgver
-# together. Like lazyvim-git the commit SHA is duplicated: literal in source=
-# (OBS does not expand shell vars in source URLs, §7), _commit drives the
-# unpacked concat-<sha> top dir.
+# + _commit together (same bump that refreshes the unified tarball below).
 _commit=1ab750a339c5db249d353b21b9f3cc9ddb1a1a22
 #
-# HONEST GAP: the RPM/.dsc recipes use ONE unified snapshot tarball that bundles
-# the upstream tree PLUS (a) vendored crates + .cargo/config and four sidecars:
-#   FFmpeg (BtbN 8.1): https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.1-latest-linux64-gpl-shared-8.1.tar.xz
-#   ONNX Runtime:     https://github.com/microsoft/onnxruntime/releases/download/v1.28.0/onnxruntime-linux-x64-1.28.0.tgz
-#   Skia cache:       https://github.com/rust-skia/skia-binaries/releases/download/0.153.3/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz
-#   sherpa-onnx:      https://github.com/k2-fsa/sherpa-onnx/releases/download/v<VER>/sherpa-onnx-v<VER>-linux-x64-static-lib.tar.bz2 (<VER> = vendored sherpa-onnx-sys CARGO_PKG_VERSION from Cargo.lock)
-# The Arch recipe below fetches ONLY the bare upstream main archive, so
-# `cargo build --offline --frozen` cannot succeed until update.sh grows a vendor
-# step that materialises the vendored crates + the four sidecars into a tarball
-# listed here in source=(). This PKGBUILD is best-effort structure for now.
-source=("https://github.com/jub0t/concat/archive/1ab750a339c5db249d353b21b9f3cc9ddb1a1a22.tar.gz")
+# UNIFIED TARBALL REUSE (no vendor step needed): source=() names the SAME
+# update.sh-assembled snapshot tarball the RPM/.dsc recipes build from
+# (upstream tree at $_commit + vendored crates + .cargo/config + the four
+# x86_64 sidecars: BtbN FFmpeg 8.1, onnxruntime 1.28.0, Skia binary cache,
+# sherpa-onnx statics; top dir concat-<commit>/). The file rides the OBS
+# package sources (uploaded for the RPM side), so makepkg unpacks it from
+# the build root instead of fetching a URL - no network at build time.
+# Bare filename is intentional: OBS ignores local files for *scheduling*
+# but still ships package sources into the Arch build root.
+# update.sh maintenance on every bump: refresh the tarball, rename this
+# entry to the new concat-unstable-<ver>.tar.gz, keep pkgver/_commit in
+# sync, and fill the real sha256 (makepkg -g on the assembled tarball).
+source=("concat-unstable-0.2.6+git20261010214240.1ab750a.tar.gz")
 # Best-effort mapping of the spec's BuildRequires to Arch makedepends (gcc/make/
 # pkgconf come from base-devel, §4.1). Arch has no standalone `cargo`
 # package (`pacman -Si cargo` = missing; `rust` provides cargo) - use rust.
@@ -38,8 +38,9 @@ makedepends=('rust' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
 # set with find-libdeps/namcap once the package builds.
 depends=('mesa' 'fontconfig' 'gtk3' 'alsa-lib' 'freetype2' 'libxkbcommon'
          'libxkbcommon-x11' 'openssl' 'hicolor-icon-theme')
-# update.sh: run `updpkgsums` on every pin bump (docs/arch-packaging.md §7).
-sha256sums=('1254cadccb6cd3bd48d6e8b02ea6617cd785c0915f006496cf19ee094c4963ca')
+# update.sh: refresh the tarball name + real sha256 on every pin bump
+# (sha256sum the assembled unified tarball; docs/arch-packaging.md §7).
+sha256sums=('SKIP')
 
 build() {
   local root="$srcdir/concat-$_commit"
