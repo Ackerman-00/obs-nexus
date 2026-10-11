@@ -16,7 +16,15 @@ BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(lcms2)
+%if 0%{?suse_version} == 1600
+# Leap: system libdrm-devel (2.4.124) below the >= 2.4.129 floor; the
+# vendored .pc inside wlroots-devel (shipped by this repo's wlroots Leap
+# build, PKG_CONFIG_PATH below) satisfies the version. Runtime safety:
+# every linked libdrm symbol exists in Leap's system libdrm (nm audit).
+BuildRequires:  pkgconfig(libdrm)
+%else
 BuildRequires:  pkgconfig(libdrm) >= 2.4.129
+%endif
 BuildRequires:  pkgconfig(pixman-1) >= 0.43.0
 BuildRequires:  pkgconfig(wayland-server) >= 1.24.0
 BuildRequires:  pkgconfig(wlroots-0.20) >= 0.20.0
@@ -49,6 +57,12 @@ Headers and pkgconfig files for building against scenefx 0.5.
 %autosetup -n scenefx-%{version}
 
 %build
+%if 0%{?suse_version} == 1600
+# Leap cascade: resolve libdrm>=2.4.129 from the vendor tree shipped in
+# this repo's wlroots-devel (built by the FIX-IT recipe above). All other
+# floors are satisfied by the Leap baseline itself.
+export PKG_CONFIG_PATH="%{_libdir}/wlroots-vendor/%{_lib}/pkgconfig:%{_libdir}/wlroots-vendor/share/pkgconfig:$PKG_CONFIG_PATH"
+%endif
 %meson -Dexamples=false
 %meson_build
 
