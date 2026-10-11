@@ -528,26 +528,3 @@ jobs:
             fi
             sync_files "$pkg"
           done
-
-      # Prune OBS packages that no longer exist in the repo. The sync above
-      # only walks local directories, so a package deleted from git (e.g.
-      # wlroots, dropped 2026-10-12 because every target ships wlroots 0.20
-      # itself) would linger in OBS and keep publishing a colliding
-      # libwlroots-0.20.so. Only prune when the remote package is absent
-      # from the local tree AND still exists remotely.
-      - name: Prune removed packages from OBS
-        if: always()
-        run: |
-          set -uo pipefail
-          OBS_ALL_PKGS=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman" | grep -oP '(?<=<entry name=")[^"]+' || true)
-          for pkg in $OBS_ALL_PKGS; do
-            if [ -f "$pkg"/*.spec ] 2>/dev/null; then
-              continue
-            fi
-            echo " -> $pkg: in OBS but gone from the repo, removing"
-            osc rdelete -m "removed from obs-nexus repo" "home:ackerman" "$pkg" \
-              || echo " -> WARN: could not remove $pkg (leaving it in place)"
-          done
-        env:
-          OBS_USER: ${{ secrets.OBS_USER }}
-          OBS_PASS: ${{ secrets.OBS_PASS }}
