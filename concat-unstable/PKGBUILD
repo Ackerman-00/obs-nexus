@@ -109,24 +109,27 @@ EOF
   [ -n "$RINGVER" ] || return 1
   cargo build --offline --frozen --release -p "ring@$RINGVER" || return 1
   RINGVUS="${RINGVER//./_}"
-  MAP=""
+  MAP=()
   for d in target/release/build/ring-*/out; do
     [ -d "$d" ] || continue
     for a in "$d"/libring_core_*.a; do
       [ -f "$a" ] || continue
       base="$(basename "$a" .a)"; base="${base#lib}"
-      MAP="$MAP$PWD/$d|$base
-"
+      MAP+=("$PWD/$d|$base")
     done
   done
-  [ -n "$MAP" ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
+  [ "${#MAP[@]}" -gt 0 ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
   RINGA=""; RINGL=""
-  if [ "$(printf '%s' "$MAP" | wc -l)" = 1 ]; then
-    RINGA="${MAP%%|*}"; RINGL="${MAP##*|}"
+  if [ "${#MAP[@]}" -eq 1 ]; then
+    RINGA="${MAP[0]%%|*}"; RINGL="${MAP[0]##*|}"
   else
-    HIT="$(printf '%s' "$MAP" | grep "|ring_core_$RINGVUS\$" || true)"
-    [ "$(printf '%s' "$HIT" | grep -c .)" = 1 ] || { echo "ERROR: ambiguous ring core archives (want ring_core_$RINGVUS): $MAP"; return 1; }
-    RINGA="${HIT%%|*}"; RINGL="${HIT##*|}"
+    for e in "${MAP[@]}"; do
+      if [ "${e##*|}" = "ring_core_$RINGVUS" ]; then
+        [ -n "$RINGA" ] && { echo "ERROR: duplicate ring_core_$RINGVUS: ${MAP[*]}"; return 1; }
+        RINGA="${e%%|*}"; RINGL="${e##*|}"
+      fi
+    done
+    [ -n "$RINGA" ] || { echo "ERROR: no ring_core_$RINGVUS among: ${MAP[*]}"; return 1; }
   fi
   [ -n "$RINGA" ] || { echo "ERROR: no libring_core_*.a after ring prebuild"; return 1; }
   echo "ring static core: $RINGA/lib$RINGL.a"
