@@ -265,40 +265,35 @@ jobs:
               1.85.1 is below the image@0.25.10 floor (1.88), no recipe can
               change a toolchain floor; the other three deb targets plus all
               RPMs cover users (issues #11/#12).
-              STANDING FIX-IT (issue #15, owner order 2026-10-11: FIX, do
-              not HOLD, do not wait for the human): wlroots + scenefx +
-              mangowm fail ONLY on Leap 16.0 + Debian_13 because four
-              upstream meson floors exceed those distros' baselines
-              (wayland-protocols>=1.47 needs color-management-v2 XMLs;
-              libdrm>=2.4.129 needed for new pixel formats; pixman>=0.46
-              needed for a16b16g16r16/region64f HDR paths; libwayland>=1.24
-              on Trixie only). TW/Slowroll/deb-green targets stay on
-              system deps - touch NOTHING where green. On Leap+Trixie
-              ONLY, vendor the missing floors inside the wlroots recipe
-              (they cascade to scenefx+mangowm automatically):
-              (a) wayland-protocols>=1.47 XML tarball, data-only, zero
-              risk, point meson at it (trixie-backports HAS 1.47 but OBS
-              build roots cannot consume backports - vendoring is
-              deterministic, do that instead);
-              (b) libdrm>=2.4.129 from source (meson; verify libpciaccess
-              present on Leap/Trixie first);
-              (c) pixman>=0.46 from source (meson, trivial deps);
-              (d) libwayland>=1.24 on Trixie ONLY after grepping the three
-              sources for actual 1.24 API use (wl_fixes, dispatch_timeout,
-              shm_ref, get_interface, post_error_vargs): if unused, vendor
-              it (runtime keeps system .so safely); if USED, HOLD Trixie
-              for that package with log evidence (accepted-red class, do
-              not ship a core IPC lib replacement).
-              Rules: per-distro conditionals (Leap/Trixie vendored path,
-              everywhere-else system path), bundled() Provides markers,
-              update.sh pins for every vendored tarball, NO feature drops
-              to fake green, NO weakening of upstream floors. Each run
-              re-checks whether Leap/Trixie baselines lifted past the
-              floors (then REMOVE the vendoring - system libs always win
-              per Bundled policy). Bar: OBS Leap + Trixie green + runtime
-              smoke + ldd clean + relay evidence lines. If a vendored
-              build fails twice with logs, record HOLD (do not loop).
-              Never touch other packages' deps for this.
+              STANDING FIX-IT (issue #15, owner order: FIX, do not
+              HOLD, do not wait for the human - and NEVER hardcode
+              versions, URLs, or floors in this directive or in recipes
+              to satisfy it): wlroots + scenefx + mangowm fail ONLY on
+              Leap 16.0 + Debian_13. DERIVE everything live every run:
+              (1) read each failing recipe's meson.build dependency()
+              floors AND the failing OBS build log's missing-version
+              lines; (2) query the actual distro baselines inside clean
+              containers (Leap: `zypper info --provides`,
+              Debian: `apt-cache policy`) - never trust memory or old
+              relay notes for versions; (3) vendor ONLY the delta that
+              still fails, inside the wlroots recipe so it cascades to
+              scenefx+mangowm: protocol XML tarballs (data-only, zero
+              risk) straightforwardly; C libraries from source ONLY after
+              proving their own build deps exist on that distro; a core
+              IPC lib (libwayland) ONLY after grepping the three sources
+              proves its new APIs unused (runtime keeps system .so),
+              else HOLD that cell with log evidence (accepted-red class).
+              TW/Slowroll/deb-green targets stay on system deps - touch
+              NOTHING where green. Per-distro conditionals (Leap/Trixie
+              vendored path, system path elsewhere), bundled() Provides
+              markers, update.sh pins for every vendored tarball, NO
+              feature drops to fake green, NO weakening of upstream
+              floors. Each run re-checks whether baselines lifted past
+              the floors (then REMOVE the vendoring - system libs always
+              win per Bundled policy). Bar: OBS Leap + Trixie green +
+              runtime smoke + ldd clean + relay evidence lines. If a
+              vendored build fails twice with logs, record HOLD (do not
+              loop). Never touch other packages' deps for this.
               Install-test matrix every time: RPMs in clean Tumbleweed,
               Slowroll (TW image with repos switched, as before) and
               Leap 16.0 (`opensuse/leap:16.0`) containers via zypper; DEBs
