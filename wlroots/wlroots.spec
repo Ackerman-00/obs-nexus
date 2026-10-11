@@ -12,7 +12,7 @@ Source0:        wlroots-%{version}.tar.gz
 # satisfy the floors (conditionals off). Pinned in update.sh (WP_VER etc.),
 # fetched like Source0 (gitignored, ride the OBS sync).
 %if 0%{?suse_version} == 1600
-Source10:       wayland-protocols-1.47.tar.xz
+Source10:       wayland-protocols-1.49.tar.xz
 Source11:       libdrm-2.4.134.tar.xz
 Source12:       pixman-0.46.4.tar.gz
 %endif
@@ -96,7 +96,7 @@ Requires:       libwlroots-0_20 = %{version}
 %if 0%{?suse_version} == 1600
 # Leap-only: staged newer floors for the scenefx cascade (libdrm tree;
 # protocols+pixman stay private to this build). See %build.
-Provides:       bundled(wayland-protocols) = 1.47
+Provides:       bundled(wayland-protocols) = 1.49
 Provides:       bundled(libdrm) = 2.4.134
 Provides:       bundled(pixman) = 0.46.4
 %endif
@@ -122,9 +122,11 @@ tar -xf %{SOURCE12} -C %{_builddir}/vendor
 VENDOR=%{_builddir}/vendor
 PRIVATE=%{_builddir}/vendor-private
 VDIR=%{_libdir}/wlroots-vendor
-# (a) wayland-protocols 1.47, data-only: real meson install to private stage
-# (1.47's own scanner need is >= 1.20, satisfied by Leap's 1.24.0)
-meson setup --prefix=$PRIVATE/wp -Dtests=false $VENDOR/wayland-protocols-1.47 $VENDOR/build-wp
+# (a) wayland-protocols 1.49, data-only: real meson install to private stage
+# (1.49 needs scanner>=1.22.90 with tests off - Leap has 1.24.0; 1.49 is
+# required because wlroots 0.20.2 code uses 1.48+ XML enums such as
+# WP_COLOR_*_CHROMA_LOCATION, absent from 1.47 - OBS log proof attempt 4)
+meson setup --prefix=$PRIVATE/wp -Dtests=false $VENDOR/wayland-protocols-1.49 $VENDOR/build-wp
 meson install -C $VENDOR/build-wp
 # (c) pixman 0.46.4 to private stage (own demos/tests off - build input only)
 meson setup --prefix=$PRIVATE/px -Dgtk=disabled -Ddemos=disabled -Dtests=disabled $VENDOR/pixman-0.46.4 $VENDOR/build-pix
