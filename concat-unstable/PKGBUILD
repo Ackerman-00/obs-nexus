@@ -124,10 +124,14 @@ EOF
     RINGA="${MAP[0]%%|*}"; RINGL="${MAP[0]##*|}"
   else
     for e in "${MAP[@]}"; do
-      if [ "${e##*|}" = "ring_core_$RINGVUS" ]; then
+      b="${e##*|}"
+      # Exact version family, never the __test twin: real names are
+      # ring_core_0_17_14_ (trailing _) and ring_core_0_17_14__test.
+      case "$b" in *__test) continue;; esac
+      case "$b" in ring_core_"$RINGVUS"*)
         [ -n "$RINGA" ] && { echo "ERROR: duplicate ring_core_$RINGVUS: ${MAP[*]}"; return 1; }
-        RINGA="${e%%|*}"; RINGL="${e##*|}"
-      fi
+        RINGA="${e%%|*}"; RINGL="$b" ;;
+      esac
     done
     [ -n "$RINGA" ] || { echo "ERROR: no ring_core_$RINGVUS among: ${MAP[*]}"; return 1; }
   fi
