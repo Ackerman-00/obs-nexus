@@ -68,6 +68,6 @@ distro ships an older series.
 %doc README.md CONTRIBUTING.md
 %{_libdir}/libwlroots-0.20.so*
 %{_libdir}/pkgconfig/wlroots-0.20.pc
-%{_includedir}/wlr/
+%{_includedir}/wlroots-0.20/
 
 %changelog

@@ -44,6 +44,6 @@ Built against the wlroots package from this same repository.
 %license LICENSE
 %{_libdir}/libscenefx-0.5.so*
 %{_libdir}/pkgconfig/scenefx-0.5.pc
-%{_includedir}/scenefx/
+%{_includedir}/scenefx-0.5/
 
 %changelog
