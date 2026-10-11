@@ -45,7 +45,8 @@ source=(
 	"https://github.com/imputnet/helium-linux/releases/download/${pkgver}/helium-${pkgver}-x86_64_linux.tar.xz"
 	"https://raw.githubusercontent.com/imputnet/helium-linux/${pkgver}/package/net.imput.helium.metainfo.xml"
 )
-sha256sums=('SKIP')
+sha256sums=('SKIP'
+           'SKIP')
 
 package() {
 	cd "${srcdir}/helium-${pkgver}-x86_64_linux" || return 1

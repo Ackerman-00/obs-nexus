@@ -48,7 +48,6 @@ options=('!strip')
 source=()
 source_x86_64=("https://github.com/obsidianmd/obsidian-releases/releases/download/v${pkgver}/Obsidian-${pkgver}.AppImage")
 source_aarch64=("https://github.com/obsidianmd/obsidian-releases/releases/download/v${pkgver}/Obsidian-${pkgver}-arm64.AppImage")
-sha256sums=('SKIP')
 sha256sums_x86_64=('SKIP')
 sha256sums_aarch64=('SKIP')
 
