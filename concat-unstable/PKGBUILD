@@ -94,18 +94,25 @@ EOF
 # ^ -fuse-ld=bfd: the Arch worker toolchain defaults to lld (flag present in
 # every OBS Arch link line, origin unknown - not in the vendor tree); bfd
 # tolerates transitive shared-undefined like TW's linker does.
-# Phase 1+relink below instead of per-lib hacks (ring-only discovery proved
-# too narrow - whisper.cpp was next): build once, collect every lib*.a the
-# dependency graph compiled, relink with explicit -L/-l for each.
-# --as-needed drops the unneeded ones, so over-collecting is safe.
-# from Cargo.lock and the built tree, never hardcoded. (Proven necessary
-# over 8 OBS Arch builds 2026-10-11: vendor tarball reuse, sums arrays,
-# -lzstd, bfd, global -l, vendor patch + checksum, ring-only discovery.
-# Each step verified in live logs.)
+# Phase loop (max 3 rounds): native static libs appear over the course of
+# the build (ring early, whisper near the end), so one collect pass cannot
+# see them all. build, collect every lib*.a except test twins, relink with
+# explicit -L/-l for each; --as-needed drops the unneeded ones, so
+# over-collecting is safe. Fully version-agnostic.
+# Proven necessary over 9 OBS Arch builds 2026-10-11 (vendor tarball
+# reuse, sums arrays, -lzstd, bfd, global -l, vendor patch + checksum,
+# ring-only discovery, single relink pass). Each step verified live.
 
   cd "$root/src" || return 1
-  if ! cargo build --offline --frozen --release --bin concat; then
-    echo "phase-1 link incomplete - collecting native static libs for relink"
+  # Phase loop (max 3): native static libs appear over the course of the
+  # build (ring early, whisper near the end), so one collect pass cannot
+  # see them all. Each failed round recollects; stop when a round adds
+  # nothing new (real error, not a missing lib).
+  PREV=""; n=0
+  while :; do
+    if cargo build --offline --frozen --release --bin concat; then break; fi
+    n=$((n + 1)); [ "$n" -ge 3 ] && return 1
+    echo "relink round $n - collecting native static libs"
     LDIRS=""; LLIBS=""
     for a in target/release/build/*/out/lib*.a; do
       [ -f "$a" ] || continue
@@ -116,12 +123,13 @@ EOF
       case " $LLIBS " in *" $base "*) ;; *) LLIBS="$LLIBS $base";; esac
     done
     [ -n "$LLIBS" ] || { echo "ERROR: no static libs to relink with"; return 1; }
+    [ "$LLIBS" != "$PREV" ] || { echo "ERROR: relink adds nothing new ($LLIBS)"; return 1; }
+    PREV="$LLIBS"
     for d in $LDIRS; do RUSTFLAGS="$RUSTFLAGS -C link-arg=-L$PWD/$d"; done
     for l in $LLIBS; do RUSTFLAGS="$RUSTFLAGS -C link-arg=-l$l"; done
     export RUSTFLAGS
     echo "relink libs:$LLIBS"
-    cargo build --offline --frozen --release --bin concat || return 1
-  fi
+  done
 }
 
 check() {
