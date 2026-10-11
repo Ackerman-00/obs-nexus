@@ -17,6 +17,12 @@ Homepage: https://gitlab.freedesktop.org/wlroots/wlroots
 
 Package: wlroots
 Architecture: amd64
+# Same SONAME paths as Debian's own libwlroots-0.20 (identical upstream
+# 0.20.2 ABI): declare the swap explicitly so apt replaces instead of
+# colliding on libwlroots-0.20.so (OBS log proof 2026-10-11).
+Provides: libwlroots-0.20
+Conflicts: libwlroots-0.20
+Replaces: libwlroots-0.20
 # The .pc ships in this same binary (combined lib+dev): its
 # Requires.private closure (see wlroots-0.20.pc) must be installable
 # for every consumer build, hence the -dev Depends alongside shlibs.
