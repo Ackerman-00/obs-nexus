@@ -25,4 +25,8 @@ package() {
 	cp -a usr/share/metainfo "$pkgdir/usr/share/"
 	cp -a usr/share/mime "$pkgdir/usr/share/"
 	cp -a usr/share/doc "$pkgdir/usr/share/"
+
+	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+	install -m644 usr/share/doc/effectcraft/LICENSE-APACHE \
+		usr/share/doc/effectcraft/LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/"
 }

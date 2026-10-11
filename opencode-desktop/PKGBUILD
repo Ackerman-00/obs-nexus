@@ -61,6 +61,13 @@ package() {
 	install -dm755 "$pkgdir/opt/OpenCode"
 	cp -a opt/OpenCode/. "$pkgdir/opt/OpenCode/"
 
+	# MIT is not in Arch's common SPDX set (/usr/share/licenses/spdx):
+	# ship the Electron/Chromium license texts (obsidian pattern).
+	install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+	install -m644 "$pkgdir/opt/OpenCode/LICENSE.electron.txt" \
+		"$pkgdir/opt/OpenCode/LICENSES.chromium.html" \
+		"$pkgdir/usr/share/licenses/$pkgname/"
+
 	rm -rf "$pkgdir/opt/OpenCode/resources/apparmor-profile"
 	rm -f "$pkgdir/opt/OpenCode/resources/app-update.yml"
 	rm -f "$pkgdir/opt/OpenCode/resources/app.asar.unpacked/node_modules/@msgpackr-extract/msgpackr-extract-linux-x64/"*.musl.node
