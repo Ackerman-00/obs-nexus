@@ -74,6 +74,13 @@ the newest commit show in the package version.
 # If skia-bindings bumps, refresh the key per update.sh's procedure.
 export CARGO_NET_OFFLINE=true
 export ORT_SKIP_DOWNLOAD=1
+# Leap 16.0's libclang (19.x) does not search the GCC include dir by
+# default, so bindgen (ffmpeg-sys-the-third) dies with "'stddef.h' file
+# not found" while TW's newer libclang works unaided (proven: clean Leap
+# 16.0 container repro with bindgen 0.72.1 fails, passes with this -I).
+# gcc -print-file-name keeps it distro-agnostic (gcc13 on Leap, gcc16 on
+# TW); harmless extra -I where libclang already searches it.
+export BINDGEN_EXTRA_CLANG_ARGS="-I$(gcc -print-file-name=include)"
 # NOTE (2026-10-09): %%autosetup -n concat-%%{commit} unpacks to
 # %%{_builddir}/concat-%%{commit}, NOT %%{_builddir}/%%{name}-%%{version} -
 # the env dirs must use the real top dir (wrong path broke the first
