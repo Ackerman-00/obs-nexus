@@ -26,7 +26,7 @@ ExclusiveArch:  x86_64
 %description
 scenefx is a Wayland compositor effects library (blur, shadows,
 animations) for wlroots 0.20, used by compositors such as mangowm.
-Built against the wlroots package from this same repository.
+Built against the official Tumbleweed wlroots-devel package.
 
 %package -n libscenefx-0_5
 Summary:        Wayland compositor effects library (for wlroots 0.20)

@@ -14,7 +14,12 @@ Homepage: https://github.com/mangowm/mango
 
 Package: mangowm
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}
+# wlroots + scenefx come from the OFFICIAL Debian packages in both
+# supported suites (libwlroots-0.20 + libwlroots-0.20-dev,
+# libscenefx-0.5 + libscenefx-0.5-dev, 0.20.2-1 / 0.5+ds-1). Stated
+# explicitly so the mapping never depends on shlibs inference alone.
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libwlroots-0.20 (>= 0.20), libscenefx-0.5 (>= 0.5)
 Description: Practical and powerful Wayland compositor (dwm-like)
  Mango is a fast, feature-rich Wayland compositor built on dwl,
  wlroots and scenefx: scrollable tiling, tags, animations, effects.

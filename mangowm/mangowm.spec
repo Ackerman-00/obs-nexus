@@ -9,10 +9,10 @@ License:        GPL-3.0-or-later
 Group:          System/GUI/Other
 URL:            https://github.com/mangowm/mango
 Source0:        mangowm-%{version}.tar.gz
-# Upstream mango tarball only: wlroots 0.20 and scenefx 0.5 are NOT
-# shipped by any maintained target, so they come from the wlroots/scenefx
-# packages of THIS repo (pkgconfig(wlroots-0.20)/pkgconfig(scenefx-0.5)
-# below). Nothing is vendored or stubbed.
+# Upstream mango tarball only. wlroots 0.20 comes from the OFFICIAL
+# Tumbleweed package (wlroots-devel / libwlroots-0_20); scenefx 0.5 is
+# not in Tumbleweed at all, so it is built by this repo's scenefx
+# package. Nothing is vendored or stubbed.
 BuildRequires:  fdupes
 BuildRequires:  gcc-c++
 BuildRequires:  meson >= 1.0.0
@@ -35,9 +35,10 @@ BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xkbcommon)
-# wlroots + scenefx from the sibling packages in this repository
-BuildRequires:  pkgconfig(scenefx-0.5) >= 0.5.0
+# wlroots: official Tumbleweed wlroots-devel. scenefx: this repo's
+# scenefx-devel (no Tumbleweed equivalent exists).
 BuildRequires:  pkgconfig(wlroots-0.20) >= 0.20.0
+BuildRequires:  pkgconfig(scenefx-0.5) >= 0.5.0
 Provides:       wayland-compositor
 Requires:       Mesa-dri
 Requires:       Mesa-libEGL1
