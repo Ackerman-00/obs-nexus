@@ -2,11 +2,14 @@ Source: obsidian
 Section: editors
 Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
-Build-Depends: debhelper-compat (= 13), desktop-file-utils, zlib1g
-# ^ zlib1g: the arm64 AppImage runtime links libz.so.1 and is EXECUTED
-# at build time (--appimage-extract); the aarch64 buildroot does not
-# carry it transitively (Debian_13/Testing/Unstable/xUbuntu aarch64
-# failed 2026-10-11 with `libz.so: cannot open shared object file`).
+Build-Depends: debhelper-compat (= 13), desktop-file-utils, zlib1g, zlib1g-dev
+# ^ zlib1g(-dev): the AppImages are EXECUTED at build time
+# (--appimage-extract). The arm64 runtime's DT_NEEDED is literally
+# `libz.so` (readelf-proven 2026-10-11; the amd64 runtime needs only
+# libz.so.1), so the -dev symlink package is required -- the aarch64
+# buildroot does not carry it transitively (all 4 deb suites failed
+# aarch64 2026-10-11 with `libz.so: cannot open shared object file`;
+# zlib1g-dev verified shipping /usr/lib/*/libz.so on Trixie).
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://obsidian.md/
