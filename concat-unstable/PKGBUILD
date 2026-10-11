@@ -3,7 +3,9 @@
 # only: upstream ships prebuilt FFmpeg/ONNX/Skia/sherpa sidecars for x86_64.
 pkgname=concat-unstable
 pkgver=0.2.6+git20261010214240.1ab750a
-pkgrel=1
+pkgrel=2
+# ^ pkgrel 2 (2026-10-11): recipe-only fix - nested out/lib collect +
+# trailing --no-as-needed so -lwhisper survives (no upstream change).
 pkgdesc="Free and open source video editor (main-branch snapshot)"
 arch=('x86_64')
 url="https://github.com/jub0t/concat"
@@ -84,13 +86,19 @@ EOF
   export ORT_PREFER_DYNAMIC_LINK=1
   export SKIA_BINARIES_URL="file://$root/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
   export SHERPA_ONNX_ARCHIVE_DIR="$root/sherpa-cache"
-  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-Wl,--no-as-needed -C link-arg=-lzstd -C link-arg=-Wl,--as-needed -C link-arg=-fuse-ld=bfd"
-# ^ explicit -lzstd wrapped to survive --as-needed: zip/zstd-safe rlibs need
+  export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C link-arg=-Wl,--no-as-needed -C link-arg=-lzstd -C link-arg=-fuse-ld=bfd"
+# ^ explicit -lzstd under --no-as-needed: zip/zstd-safe rlibs need
 # system libzstd at final link. GNU ld (TW) resolves it transitively, but this
 # recipe links with lld (-fuse-ld=lld, set by sherpa-onnx-sys), which errors on
 # otherwise-undefined ZSTD_* symbols (proven 2026-10-11 over two OBS builds:
 # zstd installed, bare -lzstd present on the link line, symbols still
 # unresolved - as-needed dropped it before use).
+# ^ NO trailing --as-needed re-enable (2026-10-11, whisper link failure):
+# rustc emits -C link-arg flags ahead of the objects that reference them, so
+# a trailing --as-needed drops build-script -l flags (libwhisper from
+# whisper-rs-sys) before use -> `undefined reference to
+# whisper_full_with_state`. Ending in --no-as-needed keeps every manual -l
+# (over-collecting stays safe); single final binary, no overlink cost.
 # ^ -fuse-ld=bfd: the Arch worker toolchain defaults to lld (flag present in
 # every OBS Arch link line, origin unknown - not in the vendor tree); bfd
 # tolerates transitive shared-undefined like TW's linker does.
@@ -114,14 +122,17 @@ EOF
     n=$((n + 1)); [ "$n" -ge 3 ] && return 1
     echo "relink round $n - collecting native static libs"
     LDIRS=""; LLIBS=""
-    for a in target/release/build/*/out/lib*.a; do
-      [ -f "$a" ] || continue
+    # find (not a fixed-depth glob): whisper-rs-sys's cmake build drops
+    # libwhisper.a under out/lib/, which a `build/*/out/lib*.a' glob never
+    # sees (proven 2026-10-11: round 1 collected only ring_core + zstd while
+    # the link error named whisper_full_with_state).
+    while IFS= read -r a; do
       case "$a" in *__test.a) continue;; esac
       base="$(basename "$a" .a)"; base="${base#lib}"
       d="$(dirname "$a")"
       case " $LDIRS " in *" $d "*) ;; *) LDIRS="$LDIRS $d";; esac
       case " $LLIBS " in *" $base "*) ;; *) LLIBS="$LLIBS $base";; esac
-    done
+    done < <(find target/release/build -name 'lib*.a' 2>/dev/null)
     [ -n "$LLIBS" ] || { echo "ERROR: no static libs to relink with"; return 1; }
     [ "$LLIBS" != "$PREV" ] || { echo "ERROR: relink adds nothing new ($LLIBS)"; return 1; }
     PREV="$LLIBS"
