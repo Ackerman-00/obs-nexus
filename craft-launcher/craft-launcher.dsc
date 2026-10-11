@@ -12,4 +12,4 @@ Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-u
 # Debtransform-Tar is a gzip-compressed wrapper tar holding the upstream
 # .deb; it is versioned per bump and maintained by update.sh alongside the
 # spec. debian/rules opens it with binutils ar + tar.
-Debtransform-Tar: artcraft-launcher-0.2.1.tar.gz
+Debtransform-Tar: craft-launcher-0.2.1.tar.gz
