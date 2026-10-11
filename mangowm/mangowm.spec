@@ -89,14 +89,16 @@ meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release ../scenefx-
 meson compile -C ../scenefx-build
 DESTDIR=$STAGE meson install -C ../scenefx-build
 export PKG_CONFIG_PATH="$STAGE%{_libdir}/pkgconfig:$PKG_CONFIG_PATH"
-# 3. mango itself (house macros, proven by protonplus)
-%meson
-%meson_build
+# 3. mango itself (plain meson: the %meson macro injects a stray
+# literal %setup line into %build on this rpm, dying with
+# 'fg: no job control' - OBS log proof 2026-10-11).
+meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release . mango-build
+meson compile -C mango-build
 
 %install
 cd mango-%{version} 2>/dev/null || true
 STAGE=$PWD/../deps-pfx
-%meson_install
+DESTDIR=%{buildroot} meson install -C mango-build
 # Only the two runtime shared libs ship from the staged trees
 # (headers/.pc stay in the staging dir, which vanishes with the build).
 cp -a $STAGE%{_libdir}/libwlroots-0.20.so* $STAGE%{_libdir}/libscenefx-0.5.so* %{buildroot}%{_libdir}/
