@@ -124,19 +124,26 @@ PRIVATE=%{_builddir}/vendor-private
 VDIR=%{_libdir}/wlroots-vendor
 # (a) wayland-protocols 1.47, data-only: real meson install to private stage
 # (1.47's own scanner need is >= 1.20, satisfied by Leap's 1.24.0)
-meson setup --prefix=$PRIVATE -Dtests=false $VENDOR/wayland-protocols-1.47 $VENDOR/build-wp
+meson setup --prefix=$PRIVATE/wp -Dtests=false $VENDOR/wayland-protocols-1.47 $VENDOR/build-wp
 meson install -C $VENDOR/build-wp
 # (c) pixman 0.46.4 to private stage (own demos/tests off - build input only)
-meson setup --prefix=$PRIVATE -Dgtk=disabled -Ddemos=disabled -Dtests=disabled $VENDOR/pixman-0.46.4 $VENDOR/build-pix
+meson setup --prefix=$PRIVATE/px -Dgtk=disabled -Ddemos=disabled -Dtests=disabled $VENDOR/pixman-0.46.4 $VENDOR/build-pix
 meson compile -C $VENDOR/build-pix
 meson install -C $VENDOR/build-pix
-# (b) libdrm 2.4.134: final prefix = shipped vendor dir (scenefx cascade),
-# installed via DESTDIR so .pc prefixes are already correct for consumers.
-# Own tests/docs off - build input only (drivers stay default/auto).
-meson setup --prefix=$VDIR --libdir=%{_lib} -Dtests=false -Dcairo-tests=disabled -Dvalgrind=disabled -Dman-pages=disabled $VENDOR/libdrm-2.4.134 $VENDOR/build-drm
+# (b) libdrm 2.4.134 to a private stage, then relocate ONLY its tree under
+# the shipped vendor dir by rewriting the prefix line of its .pc files
+# (same binaries; libdir/includedir stay ${prefix}-relative so they follow
+# the new prefix - verified by the grep below). A direct final-prefix
+# configure bakes absolute paths that do not exist at wlroots compile time
+# (OBS log proof, attempt 2).
+meson setup --prefix=$PRIVATE/drm --libdir=%{_lib} -Dtests=false -Dcairo-tests=disabled -Dvalgrind=disabled -Dman-pages=disabled $VENDOR/libdrm-2.4.134 $VENDOR/build-drm
 meson compile -C $VENDOR/build-drm
-DESTDIR=%{buildroot} meson install -C $VENDOR/build-drm
-export PKG_CONFIG_PATH="%{buildroot}$VDIR/%{_lib}/pkgconfig:%{buildroot}$VDIR/share/pkgconfig:$PRIVATE/%{_lib}/pkgconfig:$PRIVATE/share/pkgconfig:$PKG_CONFIG_PATH"
+meson install -C $VENDOR/build-drm
+mkdir -p %{buildroot}$VDIR
+cp -a $PRIVATE/drm/. %{buildroot}$VDIR/
+sed -i "s|^prefix=.*|prefix=$VDIR|" %{buildroot}$VDIR/%{_lib}/pkgconfig/*.pc
+grep -H '^prefix=' %{buildroot}$VDIR/%{_lib}/pkgconfig/*.pc
+export PKG_CONFIG_PATH="%{buildroot}$VDIR/%{_lib}/pkgconfig:%{buildroot}$VDIR/share/pkgconfig:$PRIVATE/drm/%{_lib}/pkgconfig:$PRIVATE/wp/share/pkgconfig:$PRIVATE/wp/%{_lib}/pkgconfig:$PRIVATE/px/share/pkgconfig:$PRIVATE/px/%{_lib}/pkgconfig:$PKG_CONFIG_PATH"
 %endif
 %meson -Dexamples=false
 %meson_build
