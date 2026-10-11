@@ -76,16 +76,20 @@ because no target distro ships them at the required floors.
 # cwd guessing. TOP is absolute everywhere below.
 TOP=%{_builddir}/mangowm-%{version}
 STAGE=%{_builddir}/deps-pfx
+# Staged prefix is $STAGE/usr (NOT /usr + DESTDIR): the generated .pc
+# files must carry -I paths that EXIST at compile time. With prefix=/usr
+# the .pc points at /usr/include (empty until packaging), breaking
+# dependers with missing-include-dirs (OBS log proof). Staging is
+# build-local and vanishes; only the two .so files ship (see %%install).
 # 1. wlroots (plain meson: out-of-tree sub-build, defaults are sane)
-meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release -Dexamples=false $TOP/wlroots-%{wlroots_ver} $TOP/wlroots-build
+meson setup --prefix=$STAGE/usr --libdir=lib64 --buildtype=release -Dexamples=false $TOP/wlroots-%{wlroots_ver} $TOP/wlroots-build
 meson compile -C $TOP/wlroots-build
-DESTDIR=$STAGE meson install -C $TOP/wlroots-build
-export PKG_CONFIG_PATH="$STAGE%{_libdir}/pkgconfig:$PKG_CONFIG_PATH"
+meson install -C $TOP/wlroots-build
+export PKG_CONFIG_PATH="$STAGE/usr/lib64/pkgconfig:$PKG_CONFIG_PATH"
 # 2. scenefx against the staged wlroots
-meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release $TOP/scenefx-%{scenefx_ver} $TOP/scenefx-build
+meson setup --prefix=$STAGE/usr --libdir=lib64 --buildtype=release $TOP/scenefx-%{scenefx_ver} $TOP/scenefx-build
 meson compile -C $TOP/scenefx-build
-DESTDIR=$STAGE meson install -C $TOP/scenefx-build
-export PKG_CONFIG_PATH="$STAGE%{_libdir}/pkgconfig:$PKG_CONFIG_PATH"
+meson install -C $TOP/scenefx-build
 # 3. mango itself (plain meson: the %%meson macro injects a stray
 # literal %%setup line into %%build on this rpm - OBS log proof).
 meson setup --prefix=%{_prefix} --libdir=%{_lib} --buildtype=release $TOP/mango-%{version} $TOP/mango-build
@@ -97,7 +101,7 @@ STAGE=%{_builddir}/deps-pfx
 DESTDIR=%{buildroot} meson install -C $TOP/mango-build
 # Only the two runtime shared libs ship from the staged trees
 # (headers/.pc stay in the staging dir, which vanishes with the build).
-cp -a $STAGE%{_libdir}/libwlroots-0.20.so* $STAGE%{_libdir}/libscenefx-0.5.so* %{buildroot}%{_libdir}/
+cp -a $STAGE/usr/lib64/libwlroots-0.20.so* $STAGE/usr/lib64/libscenefx-0.5.so* %{buildroot}%{_libdir}/
 %fdupes %{buildroot}%{_prefix}
 
 %check
