@@ -388,19 +388,26 @@ jobs:
                  `git fetch origin && git pull --rebase origin main` and push with
                  `git push --force-with-lease origin main`. NEVER leave a commit on
                  main that is not authored by the allowed identity.
-              PACKAGER IDENTITY (MANDATORY - owner decision, no email anywhere).
+              PACKAGER IDENTITY (MANDATORY - owner decision, no real email anywhere).
               The repo owner's packager identity is the bare GitHub username
-              `Ackerman-00` - NO email address, in NO file, EVER. This covers
-              update.sh `PACKAGER=` vars, generated `.changes` entries,
-              `debian.changelog` trailers, and `Maintainer:` fields in
-              `<pkg>.dsc`/`debian.control`. NEVER write any email address
-              next to the owner's name, NEVER invent one, and NEVER
-              "restore" an email into these fields. If you find an email
-              address attached to the owner's name anywhere, delete it
-              (leaving the bare username) in the same commit as your other
-              fixes. WHY: past runs stamped the owner's private email across
-              130+ files; it was purged repo-wide on 2026-10-10 and must
-              never come back.
+              `Ackerman-00` - NO real email address, in NO file, EVER. This covers
+              update.sh `PACKAGER=` vars, generated `.changes` entries and
+              `debian.changelog` trailers (always bare `-- Ackerman-00 <date>`).
+              ONE EXCEPTION (owner-approved 2026-10-11, issue #11): the
+              `Maintainer:` fields in `<pkg>.dsc`/`debian.control` MUST read
+              exactly `Maintainer: Ackerman-00 <noreply@example.com>`.
+              dpkg >= 1.23 hard-errors on a bare username (`cannot parse
+              Maintainer field`), and `noreply@example.com` is RFC-2606
+              reserved (never a real mailbox) - it is a format placeholder,
+              not the owner's address. NEVER replace it with any other
+              address, NEVER "restore" a real email anywhere, and NEVER
+              purge this placeholder (a purge re-breaks all 26 Debian
+              builds). If you find a REAL email attached to the owner's
+              name anywhere, delete it (leaving the bare username, or the
+              exact placeholder in Maintainer fields) in the same commit as
+              your other fixes. WHY: past runs stamped the owner's private
+              email across 130+ files; it was purged repo-wide on 2026-10-10
+              and must never come back.
 
             First, read this repository thoroughly: list every package directory, study
             the spec files, .changes files, _service files and update.sh scripts

@@ -1,7 +1,7 @@
 Source: vectorcraft
 Section: graphics
 Priority: optional
-Maintainer: Ackerman-00
+Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
 Standards-Version: 4.7.0
 Rules-Requires-Root: no

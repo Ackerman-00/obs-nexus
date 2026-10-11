@@ -3,7 +3,7 @@ Source: obsidian
 Binary: obsidian
 Architecture: any
 Version: 1.14.4
-Maintainer: Ackerman-00
+Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the

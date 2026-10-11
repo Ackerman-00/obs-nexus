@@ -3,7 +3,7 @@ Source: opencode-desktop
 Binary: opencode-desktop
 Architecture: amd64
 Version: 2.0.26
-Maintainer: Ackerman-00
+Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
 # renames Debtransform-Tar to <source>_<upstream-ver>.orig.tar.gz, bundles the
