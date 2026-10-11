@@ -302,6 +302,8 @@ jobs:
                   ver_ok = (v == sv)
               sc = re.search(r'%global\s+shortcommit\s+(\S+)', stxt)
               tar_ok = (v in t) or (sc and sc.group(1) in t)
+              if not t.endswith(('.tar.gz', '.tar.xz', '.tar.bz2', '.tar.zst')):
+                  bad.append(f'{dsc}: Debtransform-Tar {t} is not a compressed tarball (debian transforming fails on plain .tar)')
               if not ver_ok:
                   bad.append(f'{dsc}: dsc Version {v} != spec Version {sv}')
               if not tar_ok:
@@ -329,7 +331,8 @@ jobs:
                   continue
               stxt = spec.read_text(encoding='utf-8')
               sv = re.search(r'^Version:\s*(\S+)', stxt, re.M).group(1)
-              pv = re.search(r'^pkgver=([^\s#]+)', txt, re.M)
+              ptxt = pkgbuild.read_text(encoding='utf-8')
+              pv = re.search(r'^pkgver=([^\s#]+)', ptxt, re.M)
               if not pv:
                   warns.append(f'{pkgbuild}: no pkgver= line')
                   continue

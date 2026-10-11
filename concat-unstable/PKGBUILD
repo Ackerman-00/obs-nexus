@@ -2,7 +2,7 @@
 # Arch recipe mirroring concat-unstable.spec (Rust main-branch snapshot). x86_64
 # only: upstream ships prebuilt FFmpeg/ONNX/Skia/sherpa sidecars for x86_64.
 pkgname=concat-unstable
-pkgver=0.2.6+git20261010035213.7223d64
+pkgver=0.2.6+git20261010214240.1ab750a
 pkgrel=1
 pkgdesc="Free and open source video editor (main-branch snapshot)"
 arch=('x86_64')
@@ -12,7 +12,7 @@ license=('AGPL-3.0-or-later')
 # together. Like lazyvim-git the commit SHA is duplicated: literal in source=
 # (OBS does not expand shell vars in source URLs, §7), _commit drives the
 # unpacked concat-<sha> top dir.
-_commit=7223d64a4243af8aaa0f2a9b80170556e534f7ee
+_commit=1ab750a339c5db249d353b21b9f3cc9ddb1a1a22
 #
 # HONEST GAP: the RPM/.dsc recipes use ONE unified snapshot tarball that bundles
 # the upstream tree PLUS (a) vendored crates + .cargo/config and four sidecars:
@@ -24,7 +24,7 @@ _commit=7223d64a4243af8aaa0f2a9b80170556e534f7ee
 # `cargo build --offline --frozen` cannot succeed until update.sh grows a vendor
 # step that materialises the vendored crates + the four sidecars into a tarball
 # listed here in source=(). This PKGBUILD is best-effort structure for now.
-source=("https://github.com/jub0t/concat/archive/7223d64a4243af8aaa0f2a9b80170556e534f7ee.tar.gz")
+source=("https://github.com/jub0t/concat/archive/1ab750a339c5db249d353b21b9f3cc9ddb1a1a22.tar.gz")
 # Best-effort mapping of the spec's BuildRequires to Arch makedepends (gcc/make/
 # pkgconf come from base-devel, §4.1). clang supplies libclang for bindgen.
 makedepends=('cargo' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
@@ -37,7 +37,7 @@ makedepends=('cargo' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
 depends=('mesa' 'fontconfig' 'gtk3' 'alsa-lib' 'freetype2' 'libxkbcommon'
          'libxkbcommon-x11' 'openssl' 'hicolor-icon-theme')
 # update.sh: run `updpkgsums` on every pin bump (docs/arch-packaging.md §7).
-sha256sums=('SKIP')
+sha256sums=('1254cadccb6cd3bd48d6e8b02ea6617cd785c0915f006496cf19ee094c4963ca')
 
 build() {
   local root="$srcdir/concat-$_commit"
