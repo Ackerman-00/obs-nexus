@@ -8,7 +8,7 @@ Rules-Requires-Root: no
 Homepage: https://github.com/storytold/filmcraft
 
 Package: filmcraft
-Architecture: amd64
+Architecture: amd64 arm64
 # Runtime set: upstream's own DEB Depends (libc6/libgcc-s1/libxkbcommon0 +
 # vulkan-or-EGL loaders + libasound2) corrected for Debian Testing
 # (libasound2 -> libasound2t64; EGL/GL both listed explicitly).

@@ -7,6 +7,8 @@ License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/CAD
 URL:            https://github.com/storytold/cadcraft
 Source0:        https://github.com/storytold/cadcraft/releases/download/v0.5.0/cadcraft-0.5.0-linux-x86_64.rpm
+# aarch64 build from the same release tag
+Source1:        https://github.com/storytold/cadcraft/releases/download/v0.5.0/cadcraft-0.5.0-linux-aarch64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
@@ -19,7 +21,7 @@ Requires:       libgcc_s1
 Requires:       libglvnd
 Requires:       libvulkan1
 Requires:       libxkbcommon0
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 aarch64
 
 %description
 CADCraft: computer-aided design and drafting - an open-source, clean-room
@@ -28,7 +30,13 @@ open DXF and DWG files.
 
 %prep
 %setup -q -c -T
-rpm2cpio %{SOURCE0} | cpio -idmv
+%ifarch x86_64
+RPM="%{SOURCE0}"
+%endif
+%ifarch aarch64
+RPM="%{SOURCE1}"
+%endif
+rpm2cpio "$RPM" | cpio -idmv
 
 %build
 # No compilation required for pre-built binaries

@@ -3,7 +3,7 @@
 # same file policy as the RPM spec: /usr hierarchy installed verbatim -
 # upstream already ships correct FHS layout with PATH-based Exec).
 # Upstream's own Depends verified correct, no remapping needed. No network
-# at build time: the orig tarball holds the upstream .deb, opened here
+# at build time: the orig tarball holds both arch .debs, opened here
 # with binutils ar + tar (data.tar may be .gz/.xz/.zst).
 %:
 	dh $@
@@ -29,7 +29,11 @@ override_dh_shlibdeps:
 
 override_dh_auto_install:
 	mkdir -p payload
-	cd payload && ar x "$$(ls ../*.deb)" 2>/dev/null; cd ..
+	ARCH=$$(dpkg-architecture -qDEB_HOST_ARCH); \
+	if [ "$$ARCH" = amd64 ]; then UPDEB=$$(ls ../*-linux-x86_64.deb | head -n1); \
+	elif [ "$$ARCH" = arm64 ]; then UPDEB=$$(ls ../*-linux-aarch64.deb | head -n1); \
+	else echo "ERROR: unsupported DEB_HOST_ARCH $$ARCH (expected amd64 or arm64)"; exit 1; fi; \
+	cd payload && ar x "../$$UPDEB" 2>/dev/null; cd ..
 	if [ -f payload/data.tar.gz ]; then \
 	    tar -xzf payload/data.tar.gz -C payload; \
 	elif [ -f payload/data.tar.xz ]; then \

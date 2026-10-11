@@ -10,6 +10,7 @@ License:        MIT OR Apache-2.0
 Group:          System/Packages
 URL:            https://github.com/storytold/craft-launcher
 Source0:        https://github.com/storytold/craft-launcher/releases/download/v0.2.0/artcraft-launcher-0.2.0-linux-x86_64.rpm
+Source1:        https://github.com/storytold/craft-launcher/releases/download/v0.2.0/artcraft-launcher-0.2.0-linux-aarch64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
@@ -29,7 +30,7 @@ Requires:       libwayland-client.so.0()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon-x11.so.0()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 aarch64
 
 %description
 ArtCraft Launcher: the app launcher for the Craft suite of clean-room
@@ -37,7 +38,13 @@ creative tools (CAD, audio, video, photo, vector, PDF, design).
 
 %prep
 %setup -q -c -T
+# Unpack the arch-appropriate native RPM payload
+%ifarch x86_64
 rpm2cpio %{SOURCE0} | cpio -idmv
+%endif
+%ifarch aarch64
+rpm2cpio %{SOURCE1} | cpio -idmv
+%endif
 
 %build
 # No compilation required for pre-built binaries

@@ -7,6 +7,7 @@ License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Editors
 URL:            https://github.com/storytold/photocraft
 Source0:        https://github.com/storytold/photocraft/releases/download/v0.7.0/photocraft-0.7.0-linux-x86_64.rpm
+Source1:        https://github.com/storytold/photocraft/releases/download/v0.7.0/photocraft-0.7.0-linux-aarch64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
@@ -27,7 +28,7 @@ Requires:       libwayland-client.so.0()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon-x11.so.0()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 aarch64
 
 %description
 PhotoCraft: a clean-room Adobe Photoshop reimplementation in pure Rust.
@@ -35,7 +36,13 @@ Layer-based photo editing and digital painting.
 
 %prep
 %setup -q -c -T
+# Unpack the arch-appropriate native RPM payload
+%ifarch x86_64
 rpm2cpio %{SOURCE0} | cpio -idmv
+%endif
+%ifarch aarch64
+rpm2cpio %{SOURCE1} | cpio -idmv
+%endif
 
 %build
 # No compilation required for pre-built binaries

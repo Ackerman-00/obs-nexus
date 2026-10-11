@@ -1,7 +1,7 @@
 Format: 3.0 (quilt)
 Source: vectorcraft
 Binary: vectorcraft
-Architecture: amd64
+Architecture: amd64 arm64
 Version: 0.9.0
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
