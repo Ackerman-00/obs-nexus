@@ -31,16 +31,12 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	mkdir -p payload
-	ARCH=$$(dpkg-architecture -qDEB_HOST_ARCH); \
-	if [ "$$ARCH" = amd64 ]; then WANT=x86_64; DEBARCH=amd64; \
-	elif [ "$$ARCH" = arm64 ]; then WANT=aarch64; DEBARCH=arm64; \
-	else echo "ERROR: unsupported DEB_HOST_ARCH $$ARCH (expected amd64 or arm64)"; exit 1; fi; \
-	UPDEB=$$(ls *-linux-$$WANT.deb 2>/dev/null | head -n1); \
+	UPDEB=$$(ls *-linux-x86_64.deb 2>/dev/null | head -n1); \
 	if [ -z "$$UPDEB" ] && [ "$$(ls *.deb 2>/dev/null | wc -l)" = 1 ]; then UPDEB=$$(ls *.deb); fi; \
-	if [ -z "$$UPDEB" ]; then echo "ERROR: no $$WANT upstream .deb in orig wrapper (found: $$(ls *.deb 2>/dev/null | tr \n \ ))"; exit 1; fi; \
-	echo "upstream payload: $$UPDEB for $$ARCH"; \
+	if [ -z "$$UPDEB" ]; then echo "ERROR: no x86_64 upstream .deb in orig wrapper (found: $$(ls *.deb 2>/dev/null | tr \n \ ))"; exit 1; fi; \
+	echo "upstream payload: $$UPDEB"; \
 	HAVE=$$(dpkg-deb -f "$$UPDEB" Architecture 2>/dev/null); \
-	if [ "$$HAVE" != "$$DEBARCH" ] && [ "$$HAVE" != "all" ]; then echo "ERROR: payload arch $$HAVE != build arch $$DEBARCH ($$UPDEB)"; exit 1; fi; \
+	if [ "$$HAVE" != "amd64" ] && [ "$$HAVE" != "all" ]; then echo "ERROR: payload arch $$HAVE != amd64 ($$UPDEB)"; exit 1; fi; \
 	cd payload && ar x "../$$UPDEB" 2>/dev/null; cd ..
 	if [ -f payload/data.tar.gz ]; then \
 	    tar -xzf payload/data.tar.gz -C payload; \
