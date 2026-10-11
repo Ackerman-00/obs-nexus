@@ -60,7 +60,7 @@ else
     echo -e "$DEB_ENTRY" > debian.changelog
 fi
 CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")
-NEW_CHANGELOG_ENTRY="* $CURRENT_DATE $PACKAGER - $NEW_VER-0\n- Update mangowm to $NEW_VER\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER\n\n- Update mangowm to $NEW_VER\n\n"
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"
 else
