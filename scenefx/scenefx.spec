@@ -63,7 +63,7 @@ Headers and pkgconfig files for building against scenefx 0.5.
 %license LICENSE
 
 %files -n libscenefx-0_5
-%{_libdir}/libscenefx-0.5.so.*
+%{_libdir}/libscenefx-0.5.so*
 
 %files devel
 %{_includedir}/scenefx-0.5/

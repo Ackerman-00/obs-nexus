@@ -87,7 +87,7 @@ Headers and pkgconfig files for building against wlroots 0.20.
 %doc README.md CONTRIBUTING.md
 
 %files -n libwlroots-0_20
-%{_libdir}/libwlroots-0.20.so.*
+%{_libdir}/libwlroots-0.20.so*
 
 %files devel
 %{_includedir}/wlroots-0.20/
