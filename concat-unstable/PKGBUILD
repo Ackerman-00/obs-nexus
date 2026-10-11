@@ -31,7 +31,10 @@ source=("concat-unstable-0.2.6+git20261010214240.1ab750a.tar.gz")
 # clang supplies libclang for bindgen.
 makedepends=('rust' 'cmake' 'clang' 'openssl' 'fontconfig' 'freetype2'
              'libxkbcommon' 'libxkbcommon-x11' 'mesa' 'gtk3' 'alsa-lib'
-             'desktop-file-utils')
+             'desktop-file-utils' 'zstd')
+# 'zstd' supplies -lzstd at link time: sherpa-onnx-sys's build script links
+# system -llzma -lbz2 -lzstd for its static lib (proven 2026-10-11: without
+# it ld.lld fails on undefined ZSTD_* symbols from zip/zstd-safe rlibs).
 # System runtime libs mirroring the spec's Requires. Bundled libav*/libonnxruntime
 # land under /opt/concat-unstable/lib and are deliberately NOT turned into system
 # deps (mirrors the spec's __requires_exclude_from ^/opt/...); confirm the final
