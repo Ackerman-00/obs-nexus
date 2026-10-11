@@ -34,7 +34,7 @@ fi
 # Vendored Leap floors (owner directive #15 FIX-IT): pinned versions ride
 # the OBS sync like Source0 (gitignored). Bump pins manually when upstream
 # floors rise; the spec's Source10-12 + bundled() markers must match.
-WP_VER="1.49"
+WP_VER="1.47"
 LIBDRM_VER="2.4.134"
 PIXMAN_VER="0.46.4"
 fetch_vendor() {
