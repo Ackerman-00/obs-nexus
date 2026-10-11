@@ -1,3 +1,7 @@
 -------------------------------------------------------------------
+* Mon Oct 12 2026 Ackerman-00 - 0.5-0
+- Drop the Leap 16.0-only libdrm vendor cascade; that target is
+  gone, Tumbleweed meets the >= 2.4.129 floor natively
+-------------------------------------------------------------------
 * Sun Oct 11 2026 Ackerman-00 - 0.5-0
 - New package scenefx 0.5 (effects library for wlroots 0.20)

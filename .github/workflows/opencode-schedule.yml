@@ -233,75 +233,44 @@ jobs:
               bumping spec versions and committing to main directly, then syncs changed
               packages to OBS via its API (using OBS_USER/OBS_PASS) and triggers a
               rebuild.
-            - The repo serves users on SEVEN targets from one source tree:
-              openSUSE Tumbleweed + Slowroll + Leap 16.0 (RPMs via
-              `*.spec`), Debian 13 Trixie + Testing/Forky + Unstable/Sid
-              + Ubuntu 26.04 Resolute Raccoon LTS (GA 2026-04-23, point
-              .1 2026-08; DEBs via `<pkg>.dsc` + flat
-              `debian.*` + orig tarball - ONE recipe builds all four deb
-              targets). (Arch support removed 2026-10-11 by owner order:
-              AUR covers Arch - no PKGBUILDs, no Arch repo, no pacman/
-              namcap anywhere.) ARCHITECTURE SCOPE (owner decision
-              2026-10-11, binding): x86_64 ONLY for everything - every
-              `*.spec` carries `ExclusiveArch: x86_64`, every DEB recipe
-              declares `Architecture: amd64`; OBS repos carry the
-              x86_64 arch only (i586/aarch64 removed from project meta).
-              Never add/enable/sync/test any other arch or distro;
+            - The repo serves users on FOUR targets from one source tree:
+              openSUSE Tumbleweed (RPMs via `*.spec`) plus Debian
+              Testing/Forky + Unstable/Sid + Ubuntu 26.04 Resolute Raccoon
+              LTS (GA 2026-04-23, point .1 2026-08; DEBs via `<pkg>.dsc` +
+              flat `debian.*` + orig tarball - ONE recipe builds all three
+              deb targets). (Arch support removed 2026-10-11 by owner
+              order: AUR covers Arch - no PKGBUILDs, no Arch repo, no
+              pacman/namcap anywhere.) SUPPORTED TARGETS (owner decision
+              2026-10-11, binding): exactly those four. openSUSE Leap 16.0,
+              openSUSE Slowroll and Debian 13 Trixie are GONE - their repos
+              were deleted from OBS project meta. Never resurrect them: no
+              repo re-creation, no per-distro conditionals, no vendored
+              floors, and no Leap/Slowroll/Trixie reference anywhere (specs,
+              dsc/control/rules, tools, docs, tables). ARCHITECTURE SCOPE
+              (owner decision 2026-10-11, binding): x86_64 ONLY for
+              everything - every `*.spec` carries `ExclusiveArch: x86_64`,
+              every DEB recipe declares `Architecture: amd64`; OBS repos
+              carry the x86_64 arch only (i586/aarch64 removed from project
+              meta). Never add/enable/sync/test any other arch or distro;
               close expansion requests as out-of-scope. Rules per family:
-              RPMs use current Tumbleweed defaults (no Leap-only macros
-              REQUIRED - Leap 16.0 (GA 2025-10-01, annual minor releases
-              through 2031) needs x86-64-v2 baseline code, no
-              -march beyond v2, and SELinux-clean file layouts, so keep
-              the spec baseline-compatible); DEB Depends stay t64-correct
-              (valid on Trixie, Forky, Sid AND Ubuntu 26.04 - all post-t64);
-              Arch follows the Arch packaging standards (no AUR helpers).
-              Slowroll is ACTIVE (re-added to OBS, current snapshot
-              20261009) and lags Tumbleweed ~5-10 days: a Slowroll-only
-              skew is HOLD + re-check next run (same handling as a
-              Sid-only skew), never a silent waive and never a reason to
-              weaken the recipe. STANDING ACCEPTED-REDS (owner decisions
-              2026-10-11, do not re-ask, do not "fix" by weakening recipes):
-              matugen + concat-unstable on Debian_13 only - Trixie's rustc
-              1.85.1 is below the image@0.25.10 floor (1.88), no recipe can
-              change a toolchain floor; the other three deb targets plus all
-              RPMs cover users (issues #11/#12).
-              STANDING FIX-IT (issue #15, owner order: FIX, do not
-              HOLD, do not wait for the human - and NEVER hardcode
-              versions, URLs, or floors in this directive or in recipes
-              to satisfy it): wlroots + scenefx + mangowm fail ONLY on
-              Leap 16.0 + Debian_13. DERIVE everything live every run:
-              (1) read each failing recipe's meson.build dependency()
-              floors AND the failing OBS build log's missing-version
-              lines; (2) query the actual distro baselines inside clean
-              containers (Leap: `zypper info --provides`,
-              Debian: `apt-cache policy`) - never trust memory or old
-              relay notes for versions; (3) vendor ONLY the delta that
-              still fails, inside the wlroots recipe so it cascades to
-              scenefx+mangowm: protocol XML tarballs (data-only, zero
-              risk) straightforwardly; C libraries from source ONLY after
-              proving their own build deps exist on that distro; a core
-              IPC lib (libwayland) ONLY after grepping the three sources
-              proves its new APIs unused (runtime keeps system .so),
-              else HOLD that cell with log evidence (accepted-red class).
-              TW/Slowroll/deb-green targets stay on system deps - touch
-              NOTHING where green. Per-distro conditionals (Leap/Trixie
-              vendored path, system path elsewhere), bundled() Provides
-              markers, update.sh pins for every vendored tarball, NO
-              feature drops to fake green, NO weakening of upstream
-              floors. Each run re-checks whether baselines lifted past
-              the floors (then REMOVE the vendoring - system libs always
-              win per Bundled policy). Bar: OBS Leap + Trixie green +
-              runtime smoke + ldd clean + relay evidence lines. If a
-              vendored build fails twice with logs, record HOLD (do not
-              loop). Never touch other packages' deps for this.
-              Install-test matrix every time: RPMs in clean Tumbleweed,
-              Slowroll (TW image with repos switched, as before) and
-              Leap 16.0 (`opensuse/leap:16.0`) containers via zypper; DEBs
-              in clean debian:testing, debian:sid, debian:13 and
-              ubuntu:26.04 containers via apt (`tools/docker-sweep.py
-              --type debian --debdist all` covers all four). A TW-only
-              pass proves NOTHING about the other six - full matrix for
-              every touched package, rotation for the rest (see SCOPE).
+              RPMs use current Tumbleweed defaults; DEB Depends stay
+              t64-correct (valid on Forky, Sid AND Ubuntu 26.04 - all
+              post-t64). A Sid-only skew is HOLD + re-check next run, never
+              a silent waive and never a reason to weaken the recipe.
+              STANDING ACCEPTED-REDS: the old Debian_13 reds (matugen +
+              concat-unstable vs Trixie rustc, issue #12) are MOOT - the
+              target no longer exists, so they are neither red nor "fixed",
+              just gone. Issue #15 (wlroots/scenefx/mangowm dependency
+              floors) is likewise CLOSED: all four remaining targets meet
+              upstream floors from their own baselines, so there is nothing
+              to vendor, nothing to HOLD, no special-casing anywhere.
+              Install-test matrix every time: RPMs in a clean
+              Tumbleweed container (`opensuse/tumbleweed`) via zypper; DEBs
+              in clean debian:testing, debian:sid and ubuntu:26.04
+              containers via apt (`tools/docker-sweep.py --type debian
+              --debdist all` covers all three). A single-target pass proves
+              NOTHING about the other three - full matrix for every touched
+              package, rotation for the rest (see SCOPE).
               PACKAGER IDENTITY rules below apply unchanged.
               Verified repo URLs (HTTP 200, do not guess variants):
               home:ackerman TW = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/,
@@ -740,36 +709,35 @@ jobs:
                      ldd "$(which <pkg>)"
                    '
                  Then the SAME package's DEB on the full DEB family -
-                 Debian_Testing, Debian_Unstable, Debian 13 Trixie and
-                 Ubuntu 26.04 (all four are mandatory targets - this is
-                 the test that catches uninstallable/unresolvable DEBs):
-                 use the repo's own tooling, which resolves each spec's
-                 upstream payload:
+                  Debian_Testing, Debian_Unstable and Ubuntu 26.04 (all
+                  three are mandatory targets - this is the test that
+                  catches uninstallable/unresolvable DEBs): use the
+                  repo's own tooling, which resolves each spec's
+                  upstream payload:
                  python3 tools/docker-sweep.py --overlay . --type debian
                  --debdist all --packages "<pkg>" --report deb-<pkg>.md
-                 (runs clean debian:testing, debian:sid, debian:13 AND
-                 ubuntu:26.04 containers: apt/dpkg install of the payload
-                 + ldd missing-lib scan).
+                 (runs clean debian:testing, debian:sid AND
+                  ubuntu:26.04 containers: apt/dpkg install of the payload
+                  + ldd missing-lib scan).
                  Once OBS publishes built DEBs, additionally install the
-                 actual published .deb in clean debian:testing,
-                 debian:sid, debian:13 and ubuntu:26.04 containers
-                 (derive each OBS repository name - Debian_Testing,
-                 Debian_Unstable and the Trixie/Ubuntu repo names - from
-                 the OBS _result XML, do not guess them):
+                  actual published .deb in clean debian:testing,
+                  debian:sid and ubuntu:26.04 containers
+                  (derive each OBS repository name - Debian_Testing,
+                  Debian_Unstable and the Ubuntu repo name - from
+                  the OBS _result XML, do not guess them):
                  docker run --rm debian:testing bash -lc '
                    echo "deb https://download.opensuse.org/repositories/home:ackerman/Debian_Testing/ /" > /etc/apt/sources.list.d/nexus.list
                    apt-get update -qq && apt-get install -y <pkg>
                    dpkg -l <pkg>
                  '
                  (and the same for sid + .../Debian_Unstable/, plus the
-                 Trixie and Ubuntu 26.04 repos and containers).
-                 A Testing-only, Sid-only, Trixie-only or Ubuntu-only
-                 failure is a real failure, not a
-                 waivable quirk (Sid gets in-place library transitions; a
-                 skew there is HOLD + re-check, same as the Slowroll
-                 rule). Record per-distro results in separate table columns
-                 (zypper TW/Slowroll/Leap columns + deb Testing/Sid/
-                 Trixie/Ubuntu columns + an Arch column).
+                  Ubuntu 26.04 repo and container).
+                  A Testing-only, Sid-only or Ubuntu-only
+                  failure is a real failure, not a
+                  waivable quirk (Sid gets in-place library transitions; a
+                  skew there is HOLD + re-check). Record per-distro results
+                  in separate table columns (zypper TW column + deb
+                  Testing/Sid/Ubuntu columns).
                  If zypper errors with "nothing provides 'X'" - the install
                  test FAILED and the package is NOT done, no matter what OBS
                  says. If docker is unavailable, fall back to
@@ -803,8 +771,8 @@ jobs:
                   touched or re-uploaded this run; every package whose binary
                   changed since its last successful install test; then the
                    oldest still-uncovered packages until your time budget is
-                   used up. Record the Tumbleweed/Slowroll/Leap snapshot AND
-                   the Debian_Testing/Forky/Sid/Trixie + Ubuntu 26.04
+                   used up. Record the Tumbleweed snapshot AND
+                   the Debian_Testing/Forky/Sid + Ubuntu 26.04
                    state tested in every table row and the ledger (every
                    target you ran, every tested package - a row missing a
                    ran target's result is an incomplete test). Update the coverage ledger in .opencode-relay.md
@@ -816,31 +784,30 @@ jobs:
                   recorded.
               f. MANDATORY DELIVERABLE - install-test table in your final
                  summary, one row per package tested:
-                  | package | repo/snapshot | OBS build | zypper install test (TW) | zypper install test (Slowroll) | zypper install test (Leap 16.0) | deb install test (Testing) | deb install test (Sid) | deb install test (Trixie) | deb install test (Ubuntu 26.04) | smoke test | status |
+                  | package | repo/snapshot | OBS build | zypper install test (TW) | deb install test (Testing) | deb install test (Sid) | deb install test (Ubuntu 26.04) | smoke test | status |
                  where status is one of: installable / fixed / broken-(dep)
                  / blocked-(reason). Any package you changed but did not
                  install-test is an unfinished package. Use carried-(target)
                  only for unchanged binaries on a target covered by a prior
                  run, and name the target you actually ran.
-                 DEBIAN FAMILY - FOUR TARGETS, ONE RECIPE (all packages
-                 carry Debian recipes): OBS enables the Debian_Testing,
-                 Debian_Unstable, Debian 13 Trixie and Ubuntu 26.04
-                 repositories. The same .dsc recipe builds for all four;
-                 compat 13 is supported on each (all four are post-t64).
+                 DEBIAN FAMILY - THREE TARGETS, ONE RECIPE (all packages
+                  carry Debian recipes): OBS enables the Debian_Testing,
+                  Debian_Unstable and Ubuntu 26.04
+                  repositories. The same .dsc recipe builds for all three;
+                  compat 13 is supported on each (all three are post-t64).
                  For each package, run
                  `python3 tools/docker-sweep.py --overlay . --type debian
                  --debdist all --packages "<name>"` (clean debian:testing,
-                 debian:sid, debian:13 AND ubuntu:26.04 containers:
+                  debian:sid AND ubuntu:26.04 containers:
                  apt/dpkg install + ldd of the
                  upstream .deb payload) and record the results in the
                  matching `deb install test (...)` table columns. A .deb
                  that fails to install or shows missing
-                 libs on any of the four is a real failure: fix the spec dep mapping
+                 libs on any of the three is a real failure: fix the spec dep mapping
                  (or HOLD + issue with evidence), same bar as a TW-only
                  failure. Sid takes in-place library transitions, so a
                  Sid-only skew is HOLD + re-check next run, never silently
-                 waived and never fixed by weakening the recipe; a
-                 Slowroll-only skew gets the same treatment.
+                 waived and never fixed by weakening the recipe.
                  All prebuilt/binary packages (deb/rpm/AppImage/zip/tarball
                  Source0) additionally carry a Debian_Testing BUILD recipe
                  (`<pkg>.dsc` + flat `debian.*` + orig tarball, all maintained
@@ -858,10 +825,10 @@ jobs:
                  Debian_Testing (or TW) is a bug: fix the mapping,
                  rebuild, retest. Record per recipe one line:
                  `deb-deps: <pkg> <ver> | upstream sonames: <n> |
-                 unmapped: <list/none> | testing+sid+trixie+ubuntu-resolves: yes/no`.
+                 unmapped: <list/none> | testing+sid+ubuntu-resolves: yes/no`.
               g. DOCKER BATTLE TEST + ALL CONTENT (MANDATORY - every binary + repo itself in a clean Tumbleweed container, not just OBS "succeeded"). This is not optional:
-                 1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install in the TW container per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run, oldest-uncovered first, plus every touched) AND test every built .deb in clean debian:testing, debian:sid, debian:13 and ubuntu:26.04 containers per the DEBIAN FAMILY clause above + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
-                 2. ALL CONTENT: `ls -R`/`find . -type f | sort` -- every `*/*.spec`, `*/*.changes`, `*/_service`, `*/update.sh`, `.github/workflows/*.yml` (`yaml.safe_load` valid), `README.md` install (`zypper addrepo` URL must match Docker path or fix README; the 7-target table must match the CONTEXT matrix) must be checked; any file not checked = gap.
+                 1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install in the TW container per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run, oldest-uncovered first, plus every touched) AND test every built .deb in clean debian:testing, debian:sid and ubuntu:26.04 containers per the DEBIAN FAMILY clause above + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
+                 2. ALL CONTENT: `ls -R`/`find . -type f | sort` -- every `*/*.spec`, `*/*.changes`, `*/_service`, `*/update.sh`, `.github/workflows/*.yml` (`yaml.safe_load` valid), `README.md` install (`zypper addrepo` URL must match Docker path or fix README; the 4-target table must match the CONTEXT matrix) must be checked; any file not checked = gap.
                  3. REPO ITSELF: inside clean `opensuse/tumbleweed` container, `zypper addrepo https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo` + `zypper refresh` + `zypper se --repo home_akerman` must list every package (count via `ls -d */`, never hardcode); `osc` `co`/`build` dry-run if available. Think like new openSUSE user who just added the repo -- if they would hit it, you must hit it first.
 
             OPTIMIZATION DISCIPLINE (MANDATORY for every source-built
@@ -884,7 +851,7 @@ jobs:
                  explaining why (and try to fix the code instead).
               c. NO -march=native / -mtune=native / -march=<cpu> beyond the
                  distro baseline. Binaries must run on ANY x86-64 machine
-                 (generic baseline; Leap 16.0's x86-64-v2 is the floor, never below it).
+                 (generic baseline; x86-64-v2 is the floor, never below it).
               d. -O3 / -Ofast ONLY for numeric/HPC-style workloads where
                  upstream documents the benefit; for general code it is a
                  size/stability regression risk - the default -O2 stands.
@@ -997,18 +964,15 @@ jobs:
              third run cannot trip on it. Record every pattern-fix in the relay.
 
             CURRENT RELEASES - DISCOVER EVERY RUN. This repo serves
-            SEVEN targets: openSUSE Tumbleweed + Slowroll + Leap 16.0
-            (RPMs), Debian 13 Trixie + Testing/Forky + Unstable/Sid +
-            Ubuntu 26.04 (DEBs, ONE .dsc recipe for all four). Slowroll is ACTIVE (re-added to OBS
-            2026-10-09, current snapshot 20261009) and Leap 16.0 is
-            ACTIVE (GA 2025-10-01, x86-64-v2 baseline, SELinux-clean,
-            annual minor releases through 2031) - both are first-class
-            targets, never optional. Each run:
+            FOUR targets: openSUSE Tumbleweed (RPMs) and Debian
+            Testing/Forky + Unstable/Sid + Ubuntu 26.04 (DEBs, ONE .dsc
+            recipe for all three). openSUSE Leap 16.0, openSUSE Slowroll
+            and Debian 13 Trixie were DROPPED 2026-10-11 (owner order) -
+            never re-add them. Each run:
               a. WEB-SEARCH the current Tumbleweed snapshot number
-                 (news.opensuse.org Tumbleweed monthly updates announce
-                 the current snapshot), the current Slowroll snapshot
-                 (it lags Tumbleweed ~5-10 days) and the current Leap
-                 16.0 point release.
+                  (news.opensuse.org Tumbleweed monthly updates announce
+                  the current snapshot), the current Ubuntu 26.04 LTS
+                  point release and the current Forky/Sid cycle.
               b. Verify packages build with the CURRENT Tumbleweed
                  toolchain: GCC 16 is the default compiler (GCC 16.1 since
                  mid-2026) and Tumbleweed periodically does full rebuild
@@ -1018,9 +982,8 @@ jobs:
                  new toolchain - never downgrade the repo or disable the
                  package to dodge it.
               c. Keep .changes entries accurate for the current snapshot,
-                 and keep every spec Leap 16.0-baseline-compatible
-                 (x86-64-v2 minimum, no -march beyond v2, SELinux-clean
-                 file layouts) so the Leap 16.0 build stays green.
+                  and keep every spec x86-64-v2 baseline-compatible
+                  (no -march beyond v2, SELinux-clean file layouts).
 
             Then work autonomously, in this priority order:
 
@@ -1102,9 +1065,9 @@ jobs:
                UNRESOLVABLE-STATE RULE: an "unresolvable" OBS state means a
                dependency does not exist under the declared name in that
                distro's repos. REPRODUCE IT IN DOCKER FIRST - run the
-               install test from the INSTALL-VERIFICATION SWEEP (TW/
-               Slowroll/Leap 16.0 containers for RPMs, debian:testing,
-               debian:sid, debian:13 and ubuntu:26.04 containers for
+               install test from the INSTALL-VERIFICATION SWEEP (TW
+               container for RPMs, debian:testing,
+               debian:sid and ubuntu:26.04 containers for
                DEBs, OBS repos enabled)
                and watch the installer fail with the same missing provider.
                The fix is a spec/recipe dep rename to the real provider

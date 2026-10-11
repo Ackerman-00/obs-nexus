@@ -3,7 +3,7 @@
 [![OBS](https://img.shields.io/badge/OBS-home:ackerman-73BA25?style=for-the-badge&logo=opensuse)](https://build.opensuse.org/project/show/home:ackerman)
 [![Build](https://img.shields.io/badge/build-status-73BA25?style=for-the-badge&logo=opensuse)](https://build.opensuse.org/project/show/home:ackerman)
 
-**Bleeding-edge Wayland packages for openSUSE Tumbleweed / Slowroll / Leap 16.0, Debian 13 Trixie / Forky / Sid and Ubuntu 26.04 LTS**
+**Bleeding-edge Wayland packages for openSUSE Tumbleweed, Debian Forky / Sid and Ubuntu 26.04 LTS**
 
 Curated packages optimized for minimal Wayland packages. Recipes live in [obs-nexus](https://github.com/Ackerman-00/obs-nexus) and are built on the [openSUSE Build Service](https://build.opensuse.org/project/show/home:ackerman).
 
@@ -40,13 +40,14 @@ follow the "Download package" instructions there for your release.
 
 ## Supported targets
 
-One source tree builds for seven targets on OBS, **x86_64 only**
-(owner decision 2026-10-11: i586/aarch64 removed from all recipes and repos):
+One source tree builds for four targets on OBS, **x86_64 only**
+(owner decision 2026-10-11: i586/aarch64 removed from all recipes and repos;
+Leap 16.0, Slowroll and Debian 13 Trixie dropped the same day):
 
 | Family | Targets | Recipe |
 |---|---|---|
-| RPM (zypper) | openSUSE Tumbleweed, Slowroll, Leap 16.0 (x86_64) | `*.spec` |
-| DEB (apt) | Debian 13 Trixie, Debian Testing (Forky), Debian Unstable (Sid), Ubuntu 26.04 LTS (Resolute Raccoon) (amd64) | `<pkg>.dsc` + flat `debian.*` + orig tarball - ONE recipe builds all four |
+| RPM (zypper) | openSUSE Tumbleweed (x86_64) | `*.spec` |
+| DEB (apt) | Debian Testing (Forky), Debian Unstable (Sid), Ubuntu 26.04 LTS (Resolute Raccoon) (amd64) | `<pkg>.dsc` + flat `debian.*` + orig tarball - ONE recipe builds all three |
 
 ---
 

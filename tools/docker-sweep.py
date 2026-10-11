@@ -17,8 +17,8 @@ Usage (called by the agent during its run):
       (debian type: verifies each spec's upstream .deb in a debian:testing
        container via apt/dpkg + ldd; --debdist testing|sid|both selects the
        Debian release(s): testing and sid are both maintained;
-       --debdist all adds debian:13 (Trixie) + ubuntu:26.04 - ONE .dsc
-       recipe builds all four targets)
+       --debdist all adds ubuntu:26.04 - ONE .dsc recipe builds all three
+       maintained deb targets)
 Exit 0 = all tested packages passed. Exit 1 = any failures.
 """
 import argparse
@@ -447,8 +447,8 @@ def main():
     ap.add_argument("--report", default="docker-report.md", help="output report path")
     ap.add_argument("--timeout", type=int, default=300, help="per-package Docker timeout")
     ap.add_argument("--scan-images", action="store_true", help="Trivy-scan base images for CVEs")
-    ap.add_argument("--debdist", default="testing", choices=["testing", "sid", "trixie", "ubuntu2604", "both", "all"],
-                    help="Debian release(s) for --type debian (default: testing; both=testing+sid; all adds trixie+ubuntu2604)")
+    ap.add_argument("--debdist", default="testing", choices=["testing", "sid", "ubuntu2604", "both", "all"],
+                    help="Debian release(s) for --type debian (default: testing; both=testing+sid; all adds ubuntu2604)")
     args = ap.parse_args()
 
     root = Path(args.overlay)
@@ -490,12 +490,10 @@ def main():
             deb_images = ["debian:sid"]
         elif args.debdist == "both":
             deb_images = ["debian:testing", "debian:sid"]
-        elif args.debdist == "trixie":
-            deb_images = ["debian:13"]
         elif args.debdist == "ubuntu2604":
             deb_images = ["ubuntu:26.04"]
         elif args.debdist == "all":
-            deb_images = ["debian:testing", "debian:sid", "debian:13", "ubuntu:26.04"]
+            deb_images = ["debian:testing", "debian:sid", "ubuntu:26.04"]
         log("Debian release(s): %s" % ", ".join(deb_images))
     results = []
     for name, ver, path in pkgs:

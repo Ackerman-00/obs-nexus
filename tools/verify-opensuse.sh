@@ -68,12 +68,12 @@ for spec in */*.spec; do
 done
 if [[ "$bad" -gt 0 ]]; then echo "FAIL: $bad specs malformed"; FAIL=1; fi
 
-# ---- 7-target matrix soft checks (WARN only - never FAIL, never block) ----
-for tgt in "Tumbleweed" "Slowroll" "Leap" "Trixie" "Forky" "Sid" "Ubuntu"; do
+# ---- 4-target matrix soft checks (WARN only - never FAIL, never block) ----
+for tgt in "Tumbleweed" "Forky" "Sid" "Ubuntu"; do
   if grep -qi "$tgt" "$RELAY" 2>/dev/null; then
     echo "PASS: relay mentions target $tgt"
   else
-    echo "WARN: relay has no $tgt install evidence yet (7-target matrix - soft)"
+    echo "WARN: relay has no $tgt install evidence yet (4-target matrix - soft)"
   fi
 done
 

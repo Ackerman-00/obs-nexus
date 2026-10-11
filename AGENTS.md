@@ -36,20 +36,19 @@ FAIL/MISMATCH/STALE/UNVERIFIED → CI opens an issue.
 
 ### Layer 1b: Docker battle test + dependency sweep (`tools/docker-sweep.py`) — MANDATORY
 
-Runs INSIDE the agent, clean containers for the SEVEN-target matrix every
-run (`opensuse/tumbleweed`, the Slowroll repo-switched TW image and
-`opensuse/leap:16.0`; `debian:testing`, `debian:sid`, `debian:13`,
+Runs INSIDE the agent, clean containers for the FOUR-target matrix every
+run (`opensuse/tumbleweed`; `debian:testing`, `debian:sid`,
 `ubuntu:26.04`):
-1. Downloads EVERY .rpm from OBS home:ackerman (TW + Slowroll + Leap 16.0 repos) + reindexes
+1. Downloads EVERY .rpm from OBS home:ackerman (TW repo) + reindexes
 2. `zypper --no-gpg-checks in` + `ldd` + `--version` for each binary (5+ per run)
 3. Battle-tests `ls -R` (all `*.spec`/`*.changes`/`_service`/`update.sh`) + `yaml` workflows + README `zypper addrepo` path
 4. Reports `| package | zypper install | ldd | status |` — any fail = fix spec/README
 5. DEB family (`--type debian --debdist all`; `debian:testing`,
-   `debian:sid`, `debian:13` and `ubuntu:26.04` images): for specs whose
+   `debian:sid` and `ubuntu:26.04` images): for specs whose
    Source0 is an upstream .deb (derived via `grep -l '\.deb' */*.spec`),
-   apt/dpkg-install the payload + ldd on ALL FOUR — Debian 13 Trixie
-   (stable) + Forky (testing) + Sid + Ubuntu 26.04 LTS; ONE `.dsc` recipe
-   builds all four (all post-t64, no per-distro forks)
+   apt/dpkg-install the payload + ldd on ALL THREE — Forky (testing) +
+   Sid + Ubuntu 26.04 LTS; ONE `.dsc` recipe
+   builds all three (all post-t64, no per-distro forks)
 6. Debian BUILD recipes: every prebuilt/binary package (deb/rpm/AppImage/
    zip/tarball Source0) carries `<pkg>.dsc` + flat `debian.*` + orig tarball
    (debtransform input, assembled at build time). update.sh maintains all

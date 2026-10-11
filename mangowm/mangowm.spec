@@ -9,13 +9,10 @@ License:        GPL-3.0-or-later
 Group:          System/GUI/Other
 URL:            https://github.com/mangowm/mango
 Source0:        mangowm-%{version}.tar.gz
-# ONE combined source tarball (mango + wlroots + scenefx top dirs,
-# assembled by update.sh): no target distro ships wlroots-0.20 /
-# scenefx-0.5 at the floors mango 0.18.0 demands (X11:Wayland carries
-# wlroots 0.20.2 for TW/Slowroll but only scenefx 0.4.1 and Leap has
-# wlroots 0.19.3; Debian has neither). Built in %%build, staged under
-# the build dir (never the buildroot), ONLY the two runtime .so files
-# ship in this package. Declared honestly below.
+# Upstream mango tarball only: wlroots 0.20 and scenefx 0.5 are NOT
+# shipped by any maintained target, so they come from the wlroots/scenefx
+# packages of THIS repo (pkgconfig(wlroots-0.20)/pkgconfig(scenefx-0.5)
+# below). Nothing is vendored or stubbed.
 BuildRequires:  fdupes
 BuildRequires:  gcc-c++
 BuildRequires:  meson >= 1.0.0
