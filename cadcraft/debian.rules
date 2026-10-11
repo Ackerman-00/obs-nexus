@@ -22,9 +22,11 @@ override_dh_auto_test:
 override_dh_auto_install:
 	mkdir -p payload
 	ARCH=$$(dpkg-architecture -qDEB_HOST_ARCH); \
-	if [ "$$ARCH" = amd64 ]; then UPDEB=$$(ls ../*-linux-x86_64.deb | head -n1); \
-	elif [ "$$ARCH" = arm64 ]; then UPDEB=$$(ls ../*-linux-aarch64.deb | head -n1); \
+	if [ "$$ARCH" = amd64 ]; then UPDEB=$$(ls ../*-linux-x86_64.deb 2>/dev/null | head -n1); \
+	elif [ "$$ARCH" = arm64 ]; then UPDEB=$$(ls ../*-linux-aarch64.deb 2>/dev/null | head -n1); \
 	else echo "ERROR: unsupported DEB_HOST_ARCH $$ARCH (expected amd64 or arm64)"; exit 1; fi; \
+	if [ -z "$$UPDEB" ]; then UPDEB=$$(ls ../*.deb 2>/dev/null | head -n1); fi; \
+	if [ -z "$$UPDEB" ]; then echo "ERROR: no upstream .deb in orig wrapper"; exit 1; fi; \
 	cd payload && ar x "../$$UPDEB" 2>/dev/null; cd ..
 	if [ -f payload/data.tar.gz ]; then \
 	    tar -xzf payload/data.tar.gz -C payload; \
