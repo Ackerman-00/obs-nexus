@@ -31,6 +31,22 @@ if [ ! -f "wlroots-$CURRENT_VER.tar.gz" ]; then
     echo "Tarball missing locally; fetching..."
     fetch_tarball "$CURRENT_VER" || echo "WARNING: fetch failed; continuing."
 fi
+# Vendored Leap floors (owner directive #15 FIX-IT): pinned versions ride
+# the OBS sync like Source0 (gitignored). Bump pins manually when upstream
+# floors rise; the spec's Source10-12 + bundled() markers must match.
+WP_VER="1.49"
+LIBDRM_VER="2.4.134"
+PIXMAN_VER="0.46.4"
+fetch_vendor() {
+    local file="$1" url="$2"
+    [ -f "$file" ] && return 0
+    echo "Vendor tarball missing locally; fetching $file..."
+    curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$file" || { echo "WARNING: vendor fetch failed; continuing."; return 0; }
+    tar -tf "$file" > /dev/null || { echo "WARNING: $file is corrupt; removing."; rm -f "$file"; }
+}
+fetch_vendor "wayland-protocols-$WP_VER.tar.xz" "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/$WP_VER/downloads/wayland-protocols-$WP_VER.tar.xz"
+fetch_vendor "libdrm-$LIBDRM_VER.tar.xz" "https://dri.freedesktop.org/libdrm/libdrm-$LIBDRM_VER.tar.xz"
+fetch_vendor "pixman-$PIXMAN_VER.tar.gz" "https://cairographics.org/releases/pixman-$PIXMAN_VER.tar.gz"
 if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     echo "Package is already up to date."
     exit 0
