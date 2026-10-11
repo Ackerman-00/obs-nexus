@@ -144,7 +144,7 @@ DSC_FILE="obsidian.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VER/" "$DSC_FILE"
 sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: obsidian-$LATEST_VER.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="obsidian ($LATEST_VER-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VER.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+DEB_ENTRY="obsidian ($LATEST_VER-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VER.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else

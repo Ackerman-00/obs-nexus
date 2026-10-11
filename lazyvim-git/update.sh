@@ -90,7 +90,7 @@ DSC_VER="${LATEST_BASE}+git${LATEST_DATE}.${SHORT_COMMIT}"
 sed -i -E "s/^Version: .*/Version: $DSC_VER/" "$DSC_FILE"
 sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: lazyvim-$SHORT_COMMIT.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="lazyvim-git ($DSC_VER-1) unstable; urgency=medium\n\n  * New upstream snapshot $SHORT_COMMIT (base $LATEST_BASE).\n\n -- $PACKAGER  $DEB_DATE\n\n"
+DEB_ENTRY="lazyvim-git ($DSC_VER-1) unstable; urgency=medium\n\n  * New upstream snapshot $SHORT_COMMIT (base $LATEST_BASE).\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else

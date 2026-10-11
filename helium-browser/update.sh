@@ -84,7 +84,7 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     sed -i "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
     sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: helium-browser-$LATEST_VERSION.tar.xz|" "$DSC_FILE"
     DEB_DATE=$(date -R -u)
-    DEB_ENTRY="helium-browser ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+    DEB_ENTRY="helium-browser ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
     if [ -f "debian.changelog" ]; then
         echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
     else

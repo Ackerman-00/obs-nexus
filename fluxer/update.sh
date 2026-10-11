@@ -90,7 +90,7 @@ DSC_FILE="fluxer.dsc"
 sed -i "s/^Version: .*/Version: $VERSION/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: fluxer-$VERSION.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="fluxer ($VERSION-1) unstable; urgency=medium\n\n  * New upstream release $VERSION.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+DEB_ENTRY="fluxer ($VERSION-1) unstable; urgency=medium\n\n  * New upstream release $VERSION.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else

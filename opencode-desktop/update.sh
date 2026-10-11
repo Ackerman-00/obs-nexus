@@ -143,7 +143,7 @@ sed -i "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 sed -i "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: opencode-desktop-$LATEST_VERSION.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="opencode-desktop ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION (stable channel repack).\n\n -- $PACKAGER  $DEB_DATE\n\n"
+DEB_ENTRY="opencode-desktop ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION (stable channel repack).\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "$DEB_CHANGELOG" ]; then
     echo -e "${DEB_ENTRY}$(cat $DEB_CHANGELOG)" > "$DEB_CHANGELOG"
 else

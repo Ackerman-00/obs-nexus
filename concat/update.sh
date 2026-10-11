@@ -114,7 +114,7 @@ DSC_FILE="concat.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: concat-$NEW_VER.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="concat ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER  $DEB_DATE\n\n"
+DEB_ENTRY="concat ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else

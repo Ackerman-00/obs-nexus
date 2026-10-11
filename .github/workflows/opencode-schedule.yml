@@ -391,11 +391,13 @@ jobs:
               PACKAGER IDENTITY (MANDATORY - owner decision, no real email anywhere).
               The repo owner's packager identity is the bare GitHub username
               `Ackerman-00` - NO real email address, in NO file, EVER. This covers
-              update.sh `PACKAGER=` vars, generated `.changes` entries and
-              `debian.changelog` trailers (always bare `-- Ackerman-00 <date>`).
-              ONE EXCEPTION (owner-approved 2026-10-11, issue #11): the
-              `Maintainer:` fields in `<pkg>.dsc`/`debian.control` MUST read
-              exactly `Maintainer: Ackerman-00 <noreply@example.com>`.
+              update.sh `PACKAGER=` vars and generated `.changes` entries
+              (always bare `Ackerman-00`, never an address).
+              TWO EXCEPTIONS (owner-approved, issues #11/#12, 2026-10-11):
+              (a) the `Maintainer:` fields in `<pkg>.dsc`/`debian.control`
+              and (b) the `debian.changelog` trailers MUST read exactly
+              `Ackerman-00 <noreply@example.com>` (trailer form:
+              `-- Ackerman-00 <noreply@example.com>  <date>`).
               dpkg >= 1.23 hard-errors on a bare username (`cannot parse
               Maintainer field`), and `noreply@example.com` is RFC-2606
               reserved (never a real mailbox) - it is a format placeholder,

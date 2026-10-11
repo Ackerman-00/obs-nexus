@@ -191,7 +191,7 @@ DSC_VER="${BASE_VER}+git${GITDATE}.${SHORT}"
 sed -i -E "s/^Version: .*/Version: $DSC_VER/" "$DSC_FILE"
 sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: concat-unstable-$DSC_VER.tar.gz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="concat-unstable ($DSC_VER-1) unstable; urgency=medium\n\n  * New upstream snapshot $SHORT (base $BASE_VER).\n\n -- $PACKAGER  $DEB_DATE\n\n"
+DEB_ENTRY="concat-unstable ($DSC_VER-1) unstable; urgency=medium\n\n  * New upstream snapshot $SHORT (base $BASE_VER).\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else
