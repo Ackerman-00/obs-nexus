@@ -12,4 +12,11 @@ Build-Depends: debhelper-compat (= 13)
 # Debtransform-Tar is the git-snapshot tarball update.sh already generates
 # for the RPM flow (lazyvim-<shortcommit>.tar.gz); no extra download. The
 # template Version mirrors the spec and is maintained by update.sh per bump.
+# OBS appends an autoincremented build number to the DEB version
+# (DEBTRANSFORM-RELEASE: 1). Without it every rebuild reuses the SAME
+# filename - mangowm_0.18.0-1_amd64.deb - and openSUSE's mirror/CDN
+# caches serve the first build's bytes forever, so apt fails with
+# 'File has unexpected size' against a stale mirror (MirrorCache
+# issue #600). Unique filenames per build fix it permanently.
+DEBTRANSFORM-RELEASE: 1
 Debtransform-Tar: lazyvim-9997009.tar.gz
