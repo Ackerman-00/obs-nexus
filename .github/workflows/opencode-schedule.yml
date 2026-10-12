@@ -250,7 +250,11 @@ jobs:
               dsc/control/rules, tools, docs, tables). ARCHITECTURE SCOPE
               (owner decision 2026-10-11, binding): x86_64 ONLY for
               everything - every `*.spec` carries `ExclusiveArch: x86_64`,
-              every DEB recipe declares `Architecture: amd64`; OBS repos
+              every DEB recipe declares `Architecture: amd64` EXCEPT
+              arch-independent data-only packages (icon themes, shell/editor
+              config snapshots), which correctly declare `Architecture: all`
+              (bibata-cursor-theme, lazyvim-git) - never "fix" those to
+              amd64, that is a regression; OBS repos
               carry the x86_64 arch only (i586/aarch64 removed from project
               meta). Never add/enable/sync/test any other arch or distro;
               close expansion requests as out-of-scope. Rules per family:
