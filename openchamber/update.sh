@@ -8,6 +8,10 @@ SPEC_FILE="openchamber.spec"
 CHANGES_FILE="openchamber.changes"
 GITHUB_REPO="openchamber/openchamber"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 # Upstream layout: release tag v<ver>, Linux asset
 # OpenChamber-<ver>-linux-x86_64.AppImage (note: version WITHOUT v prefix
@@ -124,8 +128,8 @@ else
 fi
 
 echo "Updating changelog ($CHANGES_FILE)..."
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")
-NEW_CHANGELOG_ENTRY="* $CURRENT_DATE $PACKAGER - $NEW_VER-0\n- Update openchamber to v$NEW_VER\n\n"
+CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $NEW_VER-0\n- Update openchamber to v$NEW_VER\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

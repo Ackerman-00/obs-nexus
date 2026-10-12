@@ -4,6 +4,10 @@ SPEC_FILE="scenefx.spec"
 CHANGES_FILE="scenefx.changes"
 GITHUB_REPO="wlrfx/scenefx"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 echo "Checking for upstream updates on $GITHUB_REPO..."
 LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+\.[0-9]+$' | sort -V | tail -1)
 if [ -z "$LATEST_TAG" ]; then
@@ -41,7 +45,7 @@ sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 sed -i "s|^%global scen_ver.*|%global scen_ver      $NEW_VER|" "$SPEC_FILE"
 fetch_tarball "$NEW_VER" || { echo "Download failed; aborting bump."; exit 1; }
 CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
-NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER\n\n- Update scenefx to $NEW_VER\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- Update scenefx to $NEW_VER\n\n"
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"
 else

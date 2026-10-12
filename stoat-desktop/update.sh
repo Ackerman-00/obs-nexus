@@ -9,6 +9,10 @@ SPEC_FILE="stoat-desktop.spec"
 CHANGES_FILE="stoat-desktop.changes"
 GITHUB_REPO="stoatchat/for-desktop"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
@@ -97,7 +101,7 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
 
     # 2. Prepend an entry to the OBS changes file
     DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
-    NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$DATE - $PACKAGER\n\n- Update to upstream release $LATEST_VERSION\n\n"
+    NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$DATE - $PACKAGER_ADDR\n\n- Update to upstream release $LATEST_VERSION\n\n"
 
     if [ -f "$CHANGES_FILE" ]; then
         echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

@@ -18,6 +18,10 @@ SPEC_FILE="concat-unstable.spec"
 CHANGES_FILE="concat-unstable.changes"
 GITHUB_REPO="jub0t/concat"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 FFMPEG_RELEASE="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
 FFMPEG_VERSION="8.1"
 FFMPEG_FILE="ffmpeg-n8.1-latest-linux64-gpl-shared-8.1.tar.xz"
@@ -198,8 +202,8 @@ else
     echo -e "$DEB_ENTRY" > debian.changelog
 fi
 
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")
-NEW_CHANGELOG_ENTRY="* $CURRENT_DATE $PACKAGER - $DSC_VER-0\n- Update concat-unstable to base $BASE_VER + main $SHORT\n\n"
+CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $DSC_VER-0\n- Update concat-unstable to base $BASE_VER + main $SHORT\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

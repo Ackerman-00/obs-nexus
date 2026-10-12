@@ -8,6 +8,10 @@ SPEC_FILE="lazyvim-git.spec"
 CHANGES_FILE="lazyvim-git.changes"
 GITHUB_REPO="LazyVim/LazyVim"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 VERSION_FILE="lua/lazyvim/config/init.lua"
 
 echo "Checking for upstream updates on $GITHUB_REPO..."
@@ -104,7 +108,7 @@ if [ "$CURRENT_BASE" != "$LATEST_BASE" ]; then
 else
     ENTRY_NOTE="- Nightly sync with upstream main branch (Commit: $SHORT_COMMIT)"
 fi
-NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER\n\n$ENTRY_NOTE\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER_ADDR\n\n$ENTRY_NOTE\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

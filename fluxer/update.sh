@@ -7,6 +7,10 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="fluxer.spec"
 CHANGES_FILE="fluxer.changes"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 API_URL="https://api.fluxer.app/dl/desktop/stable/linux/x64/latest/rpm"
 RPM_FILE="fluxer.rpm"
 
@@ -97,8 +101,8 @@ else
     echo -e "$DEB_ENTRY" > debian.changelog
 fi
 
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %Y")
-NEW_CHANGELOG_ENTRY="* $CURRENT_DATE $PACKAGER - $VERSION-0\n- Update fluxer to v$VERSION\n\n"
+CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $VERSION-0\n- Update fluxer to v$VERSION\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

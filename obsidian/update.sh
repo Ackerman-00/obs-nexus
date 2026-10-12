@@ -8,6 +8,10 @@ SPEC_FILE="obsidian.spec"
 CHANGES_FILE="obsidian.changes"
 GITHUB_REPO="obsidianmd/obsidian-releases"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 # Our packaging format: self-contained Linux AppImage (bundled Electron,
 # no system electron - see issue #9). x86_64 only.
@@ -140,7 +144,7 @@ fi
 # 2. Generate OBS Changes File
 echo "📝 Generating OBS changes file..."
 FORMATTED_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
-NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER\n\n- Update to upstream version $LATEST_VER (bundled Electron AppImage)\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER_ADDR\n\n- Update to upstream version $LATEST_VER (bundled Electron AppImage)\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

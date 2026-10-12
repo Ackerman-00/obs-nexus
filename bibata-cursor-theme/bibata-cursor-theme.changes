@@ -1,19 +1,21 @@
 -------------------------------------------------------------------
-Sun Oct 11 19:02:00 UTC 2026 - Ackerman-00
+Sun Oct 11 19:02:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
 
 - Add ExclusiveArch: x86_64 (owner scope decision 2026-10-11:
   x86_64-only fleet-wide)
 
 -------------------------------------------------------------------
-Fri Oct 09 12:00:00 UTC 2026 - Ackerman-00
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
 
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
   maintained by update.sh; debtransform at build time)
 
 -------------------------------------------------------------------
-Sat Aug 23 2026 Ackerman-00
+Sat Aug 23 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
 
 - 2.0.7
 - Deduplicate identical cursor files with %%fdupes (rpmlint files-duplicated-waste, ~150 MB waste)
-* Sun Aug 02 2026 Ackerman-00 - 2.0.7-0
+Sun Aug  2 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+
+- version 2.0.7-0
 - Import bibata-cursor-theme from fedora-nexus (version 2.0.7)

@@ -11,6 +11,10 @@ GITHUB_REPO="storytold/craft-launcher"
 # craft-launcher-); keep ART_PREFIX in sync if upstream ever renames.
 ART_PREFIX="artcraft-launcher"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 # Upstream layout: release tag v<ver>, native per-distro artifacts
 # <prefix>-<ver>-linux-x86_64.{rpm,deb}. The RPM is repacked for
@@ -122,7 +126,7 @@ fi
 
 echo "Updating changelog ($CHANGES_FILE)..."
 CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
-NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER\n\n- Update craft-launcher to $NEW_VER\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- Update craft-launcher to $NEW_VER\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

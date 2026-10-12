@@ -8,6 +8,10 @@ SPEC_FILE="matugen.spec"
 CHANGES_FILE="matugen.changes"
 REPO="InioX/matugen"
 PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for updates..."
 
@@ -158,7 +162,7 @@ fi
 
 echo "📝 Updating changelog..."
 FORMATTED_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
-NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER\n\n- Update matugen to v$NEW_VER\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER_ADDR\n\n- Update matugen to v$NEW_VER\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"
