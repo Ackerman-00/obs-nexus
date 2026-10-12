@@ -1,38 +1,38 @@
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.2b-0
 - Update to 1.23.2b (upstream bugfix release: library/session fixes)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Exclude dpkg .pc metadata from the payload copy; use cp -t form
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Fix debian/rules for dpkg-source top-dir stripping (copy BUILD
   root except debian/ instead of a nonexistent zen/ dir)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
@@ -40,58 +40,58 @@ Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
 - Validate the static debian sidecar desktop in %check phase
   (was validating the not-yet-installed path)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Add Debian_Testing build recipe (.dsc + debian.* + orig tarball
   maintained by update.sh; debtransform at build time)
 
-Wed Oct  7 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Wed Oct  7 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.1b-0
 - Update zen-browser to v1.23.1b
 
-Sat Oct  3 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sat Oct  3 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23b-0
 - Update zen-browser to v1.23b
 
-Wed Sep 23 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Wed Sep 23 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.22.3b-0
 - Update zen-browser to v1.22.3b
 
-Wed Sep 16 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Wed Sep 16 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.22.2b-0
 - Update zen-browser to v1.22.2b
 
-Sat Sep 12 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sat Sep 12 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.22.1b-0
 - Update zen-browser to v1.22.1b
 
-Wed Sep  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Wed Sep  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.22b-0
 - Exclude Firefox-private bundled SONAMEs from Requires (libgkcodecs etc. unresolvable after Provides guard; proven via rpm -q --whatprovides)
 
-Wed Sep  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Wed Sep  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.22b-0
 - Add __provides_exclude_from for bundled Firefox/NSS libs: leaked Provides hijacked other packages soname deps (helium libnspr4 co-install breakage)
 
-Sat Sep  5 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sat Sep  5 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.22b-0
 - Update zen-browser to v1.22b
 
-Sun Aug 30 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sun Aug 30 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.16b-0
 - Update zen-browser to v1.21.16b
 
-Thu Aug 20 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Thu Aug 20 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.15b-0
 
@@ -100,13 +100,8 @@ Thu Aug 20 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
   make the package itself provide libnspr4/plc4/plds4, which conflicts
   with mozilla-nspr as the provider for mozilla-nss-certs' dependencies.
 
-Wed Aug 19 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
-
-- version 1.21.15b-0
-- Update zen-browser to v1.21.15b
-
 -------------------------------------------------------------------
-Wed Aug 19 19:06 UTC 2026 - Ackerman-00
+Wed Aug 19 19:06 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix install failure on v1.21.15b: keep the bundled NSS stack.
   libxul.so references the NSS_3.126 versioned symbol which the system
@@ -116,122 +111,127 @@ Wed Aug 19 19:06 UTC 2026 - Ackerman-00
   symlink only the root CA certs module (libnssckbi.so) from
   mozilla-nss-certs.
 
-Thu Aug 13 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Wed Aug 19 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.21.15b-0
+- Update zen-browser to v1.21.15b
+
+Thu Aug 13 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.14b-0
 - Update zen-browser to v1.21.14b
 
-Mon Aug 10 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Mon Aug 10 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.13b-0
 - Update zen-browser to v1.21.13b
 
-Sun Aug  9 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sun Aug  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.12b-0
 - Update zen-browser to v1.21.12b
 
-Sun Aug  9 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sun Aug  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.13b-0
 - Update zen-browser to v1.21.13b
 
-Fri Aug  7 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Fri Aug  7 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.12b-0
 - Update zen-browser to v1.21.12b
 
-Fri Aug  7 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Fri Aug  7 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.11b-0
 - Update zen-browser to v1.21.11b
 
-Fri Jul 31 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Fri Jul 31 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.10b-0
 - Update zen-browser to v1.21.10b
 
-Sun Jul 26 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sun Jul 26 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.9b-0
 - Update zen-browser to v1.21.9b
 
-Fri Jul 17 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Fri Jul 17 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.8b-0
 - Update zen-browser to v1.21.8b
 
-Wed Jul 15 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Wed Jul 15 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.7b-0
 - Update zen-browser to v1.21.7b
 
-Fri Jul 10 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Fri Jul 10 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.6b-0
 - Update zen-browser to v1.21.6b
 
-Fri Jul  3 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Fri Jul  3 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.5b-0
 - Update zen-browser to v1.21.5b
 
-Sat Jun 27 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sat Jun 27 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.4b-0
 - Update zen-browser to v1.21.4b
 
-Thu Jun 18 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Thu Jun 18 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.3b-0
 - Update zen-browser to v1.21.3b
 
-Wed Jun 17 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Wed Jun 17 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.2b-0
 - Update zen-browser to v1.21.2b
 
-Sat Jun 13 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sat Jun 13 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21.1b-0
 - Update zen-browser to v1.21.1b
 
-Thu Jun 11 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Thu Jun 11 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.21b-0
 - Update zen-browser to v1.21b
 
-Mon Jun  8 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Mon Jun  8 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.20.2b-0
 - Update zen-browser to v1.20.2b
 
-Thu Jun  4 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Thu Jun  4 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.20.2b-0
 - Update zen-browser to v1.20.2b
 
-Wed May 27 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Wed May 27 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.20.1b-0
 - Update zen-browser to v1.20.1b
 
-Sun May 24 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sun May 24 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.20b-0
 - Update zen-browser to v1.20b
 
-Thu May 14 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Thu May 14 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.19.13b-0
 - Update zen-browser to v1.19.13b
 
-Sat May  9 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sat May  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.19.12b-0
 - Update zen-browser to v1.19.12b
 
-Sun May  3 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sun May  3 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.19.11b-0
 - Update zen-browser to v1.19.11b

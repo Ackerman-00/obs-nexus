@@ -1,56 +1,56 @@
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0
 - Skip dh_shlibdeps (binary repack with manually maintained Depends;
   the analysis cannot run without the runtime libs in the buildroot)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0
 - Skip dh_dwz (prebuilt upstream binaries carry no debuginfo; dwz
   aborts on them)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0
 - Complete the Debian Depends from the live payload's ELF DT_NEEDED
   union (the RPM spec relies on auto-deps; a .deb has no auto-deps)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0
 - Fix Debian_Testing recipe: gzip the debtransform orig wrapper
   (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar)
 
-Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0
 - Add Debian_Testing build recipe (.dsc + debian.* + orig wrapper
   maintained by update.sh; debtransform at build time)
 
-Mon Sep 21 12:00:00 UTC 2026 - opencode-agent[bot] Ackerman-00 <noreply@example.com>
+Mon Sep 21 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0
 - Drop unversioned runtime Requires: hicolor-icon-theme (tripped rpmlint
   E: branding-requires-unversioned on the built RPM); own the icon dirs
   via %dir entries instead, same pattern as fluxer/helium-browser
 
-Tue Aug 18 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Tue Aug 18 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0
 - Update vesktop to v1.6.7
 
-Mon Aug 17 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Mon Aug 17 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.6-0
 - Update vesktop to v1.6.6
 
-Sun Aug  2 12:00:00 UTC 2026 - Ackerman-00 Ackerman-00 <noreply@example.com>
+Sun Aug  2 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.5-0
 - Add missing runtime dependencies for the bundled Electron runtime (NSS, NSPr, libgbm, libasound, etc.) so the app launches
 
-Sun May  3 12:00:00 UTC 2026 - GitHub Actions Ackerman-00 <noreply@example.com>
+Sun May  3 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.5-0
 - Update vesktop to v1.6.5
