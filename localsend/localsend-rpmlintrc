@@ -4,3 +4,13 @@ addFilter("missing-hash-section")
 addFilter("shared-library-not-executable")
 # Prebuilt Flutter bundle installs under /opt by design (same class as helium-browser /opt).
 addFilter("filelist-forbidden-opt /opt/localsend_app")
+
+# unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
+# "This error should actually never show up in the build service. The build
+# script automatically strips binaries according to global project
+# settings" and "Please do not strip binaries manually as that will break
+# debuginfo creation"; Packaging_guidelines confirms the sanctioned remedy
+# is to suppress a false positive. rpmlint.opensuse.org reports this same
+# warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
+# here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
+addFilter("unstripped-binary-or-object")

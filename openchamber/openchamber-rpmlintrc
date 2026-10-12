@@ -18,3 +18,13 @@ addFilter("devel-file-in-non-devel-package")
 # hicolor-icon-theme is intentionally unversioned (repo convention,
 # same as every other spec in this repo).
 addFilter("branding-requires-unversioned")
+
+# unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
+# "This error should actually never show up in the build service. The build
+# script automatically strips binaries according to global project
+# settings" and "Please do not strip binaries manually as that will break
+# debuginfo creation"; Packaging_guidelines confirms the sanctioned remedy
+# is to suppress a false positive. rpmlint.opensuse.org reports this same
+# warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
+# here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
+addFilter("unstripped-binary-or-object")

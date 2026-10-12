@@ -411,8 +411,8 @@ jobs:
               PACKAGER IDENTITY (MANDATORY - owner decision, no real email anywhere).
               The repo owner's packager identity is the bare GitHub username
               `Ackerman-00` - NO real email address, in NO file, EVER. This covers
-              update.sh `PACKAGER=` vars and generated `.changes` entries
-              (always bare `Ackerman-00`, never an address).
+              update.sh `PACKAGER=` vars (always bare `Ackerman-00`, never an
+              address) - EXCEPT the `.changes` heading, see (c) below.
               TWO EXCEPTIONS (owner-approved, issues #11/#12, 2026-10-11):
               (a) the `Maintainer:` fields in `<pkg>.dsc`/`debian.control`
               and (b) the `debian.changelog` trailers MUST read exactly
@@ -430,6 +430,36 @@ jobs:
               your other fixes. WHY: past runs stamped the owner's private
               email across 130+ files; it was purged repo-wide on 2026-10-10
               and must never come back.
+              (c) THIRD EXCEPTION, owner-approved 2026-10-12 (issue #17):
+              the `.changes` heading line MUST also carry the same
+              placeholder. OBS `changelog2spec` detects the suse format with
+              `/^(?:\* )?([A-Za-z]+\s+[A-Za-z]+\s+[0-9][^-]*?[0-9][0-9][0-9][0-9])(.*\@.*$)/`
+              - an addr-spec is REQUIRED or it dies `unknown changelog
+              format`, the spec's `%changelog` stays empty and every RPM
+              trips `E: no-changelogname-tag` and loses SOURCE_DATE_EPOCH.
+              So the heading is `<date> - Ackerman-00 <noreply@example.com>`.
+              Shape is canonical openSUSE: no EVR on the heading line (put
+              it on a `- version X-Y` bullet), and no dash between the day
+              and the year. `update.sh` keeps `PACKAGER` bare and a separate
+              `PACKAGER_ADDR` for the heading; never merge them or the
+              `debian.changelog` trailer ends up with two addresses.
+              Verify with the real parser, not by eye:
+              `perl /usr/lib/build/changelog2spec --target rpm --file $PWD/<pkg>/<pkg>`
+              must print nothing on stderr.
+              RPMLINT: `unstripped-binary-or-object` is SUPPRESSED per
+              package via `<pkg>-rpmlintrc` (all 13 that trip it already
+              have one). NEVER fix it with a manual `strip`:
+              openSUSE:Packaging_checks says verbatim "Please do not strip
+              binaries manually as that will break debuginfo creation",
+              Packaging_guidelines confirms suppressing a false positive is
+              the sanctioned remedy, and rpmlint.opensuse.org shows the same
+              warning on 239 openSUSE:Factory packages - it is systemic, not
+              a defect. Same for upstream Electron/Chromium payloads: never
+              rewrite those bytes. When adding a filter to an EXISTING
+              `<pkg>-rpmlintrc`, APPEND with a one-line reason - never
+              rewrite the file, the existing entries are load-bearing
+              (a clobbering rewrite silently re-enabled dozens of
+              previously-suppressed findings once already).
 
             First, read this repository thoroughly: list every package directory, study
             the spec files, .changes files, _service files and update.sh scripts
