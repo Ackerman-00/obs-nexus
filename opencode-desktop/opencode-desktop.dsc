@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: opencode-desktop
 Binary: opencode-desktop
 Architecture: amd64
-Version: 2.0.26
+Version: 2.0.27
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -12,4 +12,4 @@ Build-Depends: debhelper-compat (= 13), binutils, xz-utils
 # Debtransform-Tar is a gzip-compressed wrapper tar holding the upstream
 # .deb (dpkg-source 3.0 (quilt) rejects an uncompressed .orig.tar); it is versioned per bump and maintained by update.sh alongside the
 # spec. debian/rules opens it with binutils ar + tar (same as the RPM %prep).
-Debtransform-Tar: opencode-desktop-2.0.26.tar.gz
+Debtransform-Tar: opencode-desktop-2.0.27.tar.gz
