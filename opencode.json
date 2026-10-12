@@ -25,9 +25,9 @@
           "maxTokens": 8192,
           "contextWindow": 131072
         },
-        "muse-spark-1.2-contributor-free": {
-          "name": "Muse Spark 1.2 Free",
-          "model": "opencode/muse-spark-1.2-contributor-free",
+        "jev-1.13-free": {
+          "name": "Jev 1.13 Free",
+          "model": "opencode/jev-1.13-free",
           "maxTokens": 8192,
           "contextWindow": 131072
         },
