@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: concat
 Binary: concat
 Architecture: amd64
-Version: 0.2.6
+Version: 0.2.7
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -21,4 +21,4 @@ Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-u
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: concat-0.2.6.tar.gz
+Debtransform-Tar: concat-0.2.7.tar.gz

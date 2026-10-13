@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: craft-launcher
 Binary: craft-launcher
 Architecture: amd64
-Version: 0.4.0
+Version: 0.4.1
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -20,4 +20,4 @@ Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-u
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: craft-launcher-0.4.0.tar.gz
+Debtransform-Tar: craft-launcher-0.4.1.tar.gz
