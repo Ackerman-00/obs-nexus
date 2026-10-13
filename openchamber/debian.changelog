@@ -1,3 +1,9 @@
+openchamber (2.3.1-1) unstable; urgency=medium
+
+  * New upstream release 2.3.1.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 13 Oct 2026 13:44:26 +0000
+
 openchamber (2.3.0-1) unstable; urgency=medium
 
   * New upstream release 2.3.0.

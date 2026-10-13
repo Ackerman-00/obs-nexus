@@ -3,7 +3,7 @@
 %global __requires_exclude_from ^/opt/OpenCode/.*$
 %global __provides_exclude_from ^/opt/OpenCode/.*$
 Name:           opencode-desktop
-Version:        2.0.27
+Version:        2.0.28
 Release:        0
 Summary:        Open source AI coding agent
 License:        MIT
