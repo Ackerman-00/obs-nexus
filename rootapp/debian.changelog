@@ -1,3 +1,9 @@
+rootapp (0.9.148-1) unstable; urgency=medium
+
+  * New upstream release 0.9.148.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 13 Oct 2026 22:25:29 +0000
+
 rootapp (0.9.147-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream AppImage).
