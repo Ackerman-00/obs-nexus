@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: openchamber
 Binary: openchamber
 Architecture: amd64
-Version: 2.2.0
+Version: 2.3.0
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -21,4 +21,4 @@ Build-Depends: debhelper-compat (= 13), desktop-file-utils
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: openchamber-2.2.0.tar.gz
+Debtransform-Tar: openchamber-2.3.0.tar.gz
