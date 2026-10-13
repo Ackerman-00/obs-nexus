@@ -863,7 +863,7 @@ jobs:
                  All prebuilt/binary packages (deb/rpm/AppImage/zip/tarball
                  Source0) additionally carry a Debian_Testing BUILD recipe
                  (`<pkg>.dsc` + flat `debian.*` + orig tarball, all maintained
-                 by update.sh with per-package actions/cache): when you touch
+                 by update.sh): when you touch
                  one, keep .dsc Version/Tar and the debian.changelog head in
                  sync with the spec Version and verify recipe consistency
                  (Binary == control Package, exactly one orig tar).

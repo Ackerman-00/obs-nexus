@@ -37,8 +37,7 @@ CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 # Debian_Testing recipe helper: wrap an upstream .deb into the gzip-compressed
 # debtransform orig input (dpkg-source 3.0 (quilt) rejects an uncompressed
 # .orig.tar, so the wrapper MUST stay compressed). The wrapper is gitignored
-# (*.tar.gz) and rides the OBS sync; per-package actions/cache in
-# update-packages.yml keeps it across fresh CI checkouts.
+# (*.tar.gz) and rides the OBS sync.
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
@@ -60,9 +59,9 @@ deb_url_for() {
     echo "https://github.com/$GITHUB_REPO/releases/download/$1/koharu_$1_amd64.deb"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# wrapper (actions/cache usually restores it). Rebuild when missing so an
-# OBS sync can never wipe the remote copy with nothing to re-upload.
+# Orig-tarball guard: fresh checkouts start without the gitignored wrapper.
+# Rebuild when missing so an OBS sync can never wipe the remote copy with
+# nothing to re-upload.
 if [ ! -f "koharu-$CURRENT_VERSION.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VERSION" "$(deb_url_for "$CURRENT_VERSION")" || \
