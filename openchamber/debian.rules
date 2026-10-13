@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 # Debian repack of the upstream openchamber AppImage (binary
 # re-distributor, same payload policy as the RPM spec: /opt/openchamber
-# install, APPDIR wrapper through AppRun, repointed desktop entry, SVG
+# install, APPDIR wrapper through AppRun, repointed desktop entry, PNG
 # icon, 0755 chrome-sandbox). No network at build time: the orig tarball
 # holds the upstream AppImage, extracted with --appimage-extract (no FUSE).
 %:
@@ -28,7 +28,7 @@ override_dh_auto_install:
 	chmod 0755 debian/openchamber/usr/bin/openchamber
 	sed -e 's|^Exec=.*|Exec=/usr/bin/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
 	    appimage-root/openchamber.desktop > debian/openchamber/usr/share/applications/openchamber.desktop
-	install -Dm644 appimage-root/openchamber.svg debian/openchamber/usr/share/icons/hicolor/scalable/apps/openchamber.svg
+	install -Dm644 appimage-root/openchamber.png debian/openchamber/usr/share/icons/hicolor/256x256/apps/openchamber.png
 
 # Binary repack: the payload is prebuilt upstream, so automatic
 # shlibdeps analysis cannot run (bundled Electron/Chromium tree) and its

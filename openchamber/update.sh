@@ -113,6 +113,19 @@ if ! [ -s "$X86_APPIMAGE" ] || ! head -c4 "$X86_APPIMAGE" | grep -q $'\x7fELF'; 
     exit 1
 fi
 
+# Payload Guard
+ICON_TMP=$(mktemp -d)
+APPIMG="$PWD/$X86_APPIMAGE"
+(cd "$ICON_TMP" && "$APPIMG" --appimage-extract >/dev/null) || \
+    { echo "AppImage extraction failed; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
+for ref in $(grep -ho -E '(squashfs-root|appimage-root)/[A-Za-z0-9._-]+' "$SPEC_FILE" debian.rules | sort -u); do
+    [ -e "$ICON_TMP/$ref" ] || \
+        { echo "HOLD: recipe references $ref but the $NEW_VER payload lacks it; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
+done
+[ -f "$ICON_TMP/squashfs-root/AppRun" ] || \
+    { echo "HOLD: $NEW_VER payload lacks AppRun; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
+rm -rf "$ICON_TMP"
+
 # Debian_Testing recipe: wrap the verified AppImage + keep .dsc/changelog
 # in sync.
 build_orig_wrapper "$NEW_VER" "$X86_APPIMAGE"

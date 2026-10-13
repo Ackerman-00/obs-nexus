@@ -950,7 +950,8 @@ jobs:
               c. Prebuilt packages: diff the zip/tarball contents against
                  %files - every shipped file must be installed or explicitly
                  accounted for (documented exclusion, e.g. unneeded
-                 lang-packs or updater binaries).
+                 lang-packs or updater binaries). Payload paths named in
+                 recipes must exist in the artifact.
                d. Extend the dependency audit table with a completeness
                   column: | artifacts: complete | missing-<X> |
                   blocked-(reason). A package with a missing artifact is not

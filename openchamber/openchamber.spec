@@ -4,7 +4,7 @@
 %global __provides_exclude_from ^/opt/openchamber/.*$
 Name:           openchamber
 Version:        2.3.1
-Release:        0
+Release:        1
 Summary:        Agentic development environment boards for issues and pull requests
 License:        MIT
 URL:            https://github.com/openchamber/openchamber
@@ -91,8 +91,8 @@ install -dm755 %{buildroot}%{_datadir}/applications/
 sed -e 's|^Exec=.*|Exec=%{_bindir}/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
     squashfs-root/openchamber.desktop > %{buildroot}%{_datadir}/applications/openchamber.desktop
 
-# Upstream ships an SVG icon only.
-install -Dm644 squashfs-root/openchamber.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/openchamber.svg
+# Payload Icon
+install -Dm644 squashfs-root/openchamber.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/openchamber.png
 
 %fdupes %{buildroot}/opt/openchamber
 
@@ -104,7 +104,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/openchamber.desktop
 %doc /opt/openchamber/LICENSES.chromium.html
 %{_bindir}/openchamber
 %{_datadir}/applications/openchamber.desktop
-%{_datadir}/icons/hicolor/scalable/apps/openchamber.svg
+%{_datadir}/icons/hicolor/256x256/apps/openchamber.png
 %exclude /opt/openchamber/LICENSE.electron.txt
 %exclude /opt/openchamber/LICENSES.chromium.html
 # AppRun is the electron-builder runtime loader the /usr/bin/openchamber

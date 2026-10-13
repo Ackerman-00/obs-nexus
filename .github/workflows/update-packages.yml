@@ -271,6 +271,46 @@ jobs:
           print('Debian recipes consistent.')
           EOF
 
+      - name: Validate payload file references (AppImage repacks)
+        # Payload Reference Guard
+        run: |
+          python3 << 'EOF'
+          import glob, os, re, subprocess, sys, tempfile
+          from pathlib import Path
+          missing, skipped = [], []
+          for spec in sorted(Path('.').glob('*/*.spec')):
+              pkgdir = spec.parent
+              rules = pkgdir / 'debian.rules'
+              if not rules.exists():
+                  continue
+              refs = set(re.findall(r'(?:squashfs-root|appimage-root)/[A-Za-z0-9._-]+',
+                                    spec.read_text(encoding='utf-8') + rules.read_text(encoding='utf-8')))
+              if not refs:
+                  continue
+              imgs = sorted(pkgdir.glob('*.AppImage'))
+              if not imgs:
+                  skipped.append(pkgdir.name)
+                  continue
+              with tempfile.TemporaryDirectory() as td:
+                  img = str(imgs[0].resolve())
+                  os.chmod(img, 0o755)
+                  r = subprocess.run([img, '--appimage-extract'], cwd=td, capture_output=True)
+                  if r.returncode != 0:
+                      missing.append(f'{pkgdir.name}: AppImage extraction failed')
+                      continue
+                  for ref in sorted(refs):
+                      rel = 'squashfs-root/' + ref.split('/', 1)[1]
+                      if not (Path(td) / rel).exists():
+                          missing.append(f'{pkgdir.name}: {ref} not in payload')
+          if skipped:
+              print('payload-ref SKIP (no local AppImage): ' + ', '.join(skipped))
+          if missing:
+              print('PAYLOAD REF MISMATCH:')
+              print('\n'.join(f'  - {b}' for b in missing))
+              sys.exit(1)
+          print('Payload file references consistent.')
+          EOF
+
       - name: Commit and Push
         if: steps.updater.outputs.updates_made == 'true'
         run: |
