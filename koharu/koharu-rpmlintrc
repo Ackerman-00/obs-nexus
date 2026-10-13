@@ -1,7 +1,8 @@
 addFilter("binary-or-shlib-defines-rpath")
 addFilter("invalid-desktopfile")
-addFilter("missing-hash-section")
-addFilter("shared-library-not-executable")
-# Prebuilt CEF bundle installs under /usr/share by design (upstream layout,
+# Prebuilt CEF bundle installs under /opt by design (upstream layout,
 # shipped byte-for-byte); rewriting it would alter the shipped artifact.
+addFilter("filelist-forbidden-opt")
+# Same /opt repack as vesktop/obsidian/helium: every payload file trips dir-or-file-outside-snapshot.
+addFilter("dir-or-file-outside-snapshot")
 addFilter("unstripped-binary-or-object")

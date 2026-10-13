@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Tue Oct 13 18:30:08 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Move CEF bundle from /usr/share/koharu to /opt/koharu (repo convention
+  for prebuilt Electron/CEF apps): ELFs under /usr/share trip rpmlint
+  E: arch-dependent-file-in-usr-share and aborted the TW build (badness
+  3542). Launcher is now a /usr/bin/koharu symlink to /opt/koharu/koharu.
+- Ship upstream LICENSE-MIT/LICENSE-APACHE as %license.
+- rpmlintrc: drop unused missing-hash-section/shared-library-not-executable
+  filters (E: unused-rpmlintrc-filter), add filelist-forbidden-opt.
+
+-------------------------------------------------------------------
 Tue Oct 13 23:55:35 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.83.5-0

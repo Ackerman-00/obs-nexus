@@ -1,7 +1,9 @@
 %global debug_package %{nil}
-# Prevent RPM from trying to auto-generate dependencies from the bundled CEF libraries
-%global __requires_exclude_from ^%{_datadir}/koharu/.*$
-%global __provides_exclude_from ^%{_datadir}/koharu/.*$
+# Bundled prebuilt CEF runtime under /opt/koharu is immutable upstream
+# binaries - exclude its private libs from auto-deps (repo convention,
+# same as vesktop/obsidian/stoat-desktop).
+%global __requires_exclude_from ^/opt/koharu/.*$
+%global __provides_exclude_from ^/opt/koharu/.*$
 Name:           koharu
 Version:        0.83.5
 Release:        0
@@ -14,6 +16,8 @@ Source0:        %{url}/releases/download/0.83.5/koharu_0.83.5_amd64.deb
 Source1:        koharu-rpmlintrc
 # Required to unpack the upstream DEB natively
 BuildRequires:  binutils
+BuildRequires:  fdupes
+BuildRequires:  hicolor-icon-theme
 BuildRequires:  tar
 # Explicit dependencies mapped from the payload's ELF DT_NEEDED union
 # (koharu binary wants gtk4/graphene/openssl; libcef.so wants the usual
@@ -75,23 +79,42 @@ fi
 
 %install
 
-# Install the application payload and standard desktop entries byte-for-byte
-# (upstream ships /usr/bin/koharu as a symlink to ../share/koharu/koharu)
+# Install the CEF application bundle under /opt (repo convention for
+# prebuilt Electron/CEF apps: vesktop/obsidian/stoat-desktop). /usr/share
+# is reserved for arch-independent files - ELFs there trip rpmlint
+# E: arch-dependent-file-in-usr-share and abort the OBS build (badness).
+# The whole directory moves together, so the binary's relative resource
+# lookup (locales, .pak, libcef.so) keeps working.
+install -d -m 0755 %{buildroot}/opt/koharu
+cp -a usr/share/koharu/* %{buildroot}/opt/koharu/
+# Upstream stashes the license texts under usr/lib/koharu/_up_; keep them
+# with the bundle and mark them %license below.
+cp -a usr/lib/koharu/_up_/_up_/LICENSE-MIT usr/lib/koharu/_up_/_up_/LICENSE-APACHE %{buildroot}/opt/koharu/
+# Launcher symlink (replaces upstream's usr/bin/koharu -> ../share/... link,
+# which no longer resolves after the move to /opt).
 install -d -m 0755 %{buildroot}%{_bindir}
+ln -s ../../opt/koharu/koharu %{buildroot}%{_bindir}/koharu
+# Desktop entry + icons, byte-for-byte from the payload.
 install -d -m 0755 %{buildroot}%{_datadir}
-cp -a usr/bin/* %{buildroot}%{_bindir}/
-cp -a usr/share/* %{buildroot}%{_datadir}/
+cp -a usr/share/applications %{buildroot}%{_datadir}/
+cp -a usr/share/icons %{buildroot}%{_datadir}/
+# Deduplicate the near-identical en-US_*.pak locale files.
+%fdupes %{buildroot}/opt/koharu
 
 %files
+%license /opt/koharu/LICENSE-MIT
+%license /opt/koharu/LICENSE-APACHE
 %{_bindir}/koharu
 %{_datadir}/applications/koharu.desktop
 %dir %{_datadir}/icons/hicolor
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/koharu.png
-%dir %{_datadir}/koharu
-%exclude %{_datadir}/koharu/chrome-sandbox
-%{_datadir}/koharu/*
-%attr(4755, root, root) %{_datadir}/koharu/chrome-sandbox
+%dir /opt/koharu
+%exclude /opt/koharu/chrome-sandbox
+%exclude /opt/koharu/LICENSE-MIT
+%exclude /opt/koharu/LICENSE-APACHE
+/opt/koharu/*
+%attr(4755, root, root) /opt/koharu/chrome-sandbox
 
 %changelog
