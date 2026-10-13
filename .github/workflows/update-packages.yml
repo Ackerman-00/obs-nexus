@@ -49,6 +49,11 @@ jobs:
         with:
           path: helium-browser/*.tar.xz
           key: deb-orig-helium-${{ hashFiles('helium-browser/helium-browser.spec', 'helium-browser/helium-browser.dsc') }}
+      - name: Cache Debian orig tarball (koharu)
+        uses: actions/cache@v6.1.0
+        with:
+          path: koharu/*.tar.gz
+          key: deb-orig-koharu-${{ hashFiles('koharu/koharu.spec', 'koharu/koharu.dsc') }}
       - name: Cache Debian orig tarball (localsend)
         uses: actions/cache@v6.1.0
         with:

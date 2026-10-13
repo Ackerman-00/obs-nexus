@@ -1,0 +1,5 @@
+koharu (0.83.5-1) unstable; urgency=medium
+
+  * Initial Debian_Testing recipe (repack of the upstream .deb).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 13 Oct 2026 17:55:35 +0000

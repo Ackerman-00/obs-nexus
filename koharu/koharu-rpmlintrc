@@ -1,0 +1,7 @@
+addFilter("binary-or-shlib-defines-rpath")
+addFilter("invalid-desktopfile")
+addFilter("missing-hash-section")
+addFilter("shared-library-not-executable")
+# Prebuilt CEF bundle installs under /usr/share by design (upstream layout,
+# shipped byte-for-byte); rewriting it would alter the shipped artifact.
+addFilter("unstripped-binary-or-object")

@@ -1,0 +1,43 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream koharu .deb (binary re-distributor, same
+# payload policy as the RPM spec: usr/bin symlink + usr/share payload,
+# copied byte-for-byte, no launcher wrapper needed).
+# No network at build time: the orig tarball holds the upstream .deb,
+# opened here with binutils ar + tar (Tauri bundler ships data.tar.gz,
+# same as the RPM %prep).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+# Prebuilt upstream binaries are already stripped and carry no
+# usable debuginfo -- dwz aborts on them (exit 25). Skip it; same
+# class as the RPM-side debuginfo exclusion for repackaged binaries.
+# Binary repack: the payload is prebuilt upstream, so automatic
+# shlibdeps analysis cannot run (buildroot holds none of the
+# runtime libs) and its ${shlib:Depends} output is unused -- the
+# manually maintained Depends above (derived from the payload's
+# ELF DT_NEEDED union) IS the dependency declaration.
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && ar x "$$(ls ../*.deb)" data.tar.gz 2>/dev/null; cd ..
+	if [ -f payload/data.tar.gz ]; then \
+	    tar -xzf payload/data.tar.gz -C payload; \
+	else \
+	    echo "ERROR: unexpected data.tar compression in upstream DEB"; exit 1; \
+	fi
+	mkdir -p debian/koharu/usr
+	cp -a payload/usr/* debian/koharu/usr/

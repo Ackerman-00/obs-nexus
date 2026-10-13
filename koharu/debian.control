@@ -1,0 +1,23 @@
+Source: koharu
+Section: graphics
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/koharu-rs/koharu
+
+Package: koharu
+Architecture: amd64
+# Runtime set: the payload's ELF DT_NEEDED union (koharu binary wants
+# gtk4/graphene/openssl; libcef.so wants the usual Chromium set).
+# Upstream's own Depends names only libgtk-3-0, which under-specifies
+# the payload and targets the wrong toolkit major. libssl3t64 and
+# libatspi2.0-0t64 use t64 names: the unrenamed packages have no
+# candidate left on Debian Testing. libdbusmenu/ayatana are absent:
+# nothing in the payload needs them.
+# t64 names target Debian Testing.
+Depends: ${misc:Depends}, hicolor-icon-theme, libasound2t64, libatk1.0-0t64, libatk-bridge2.0-0t64, libatspi2.0-0t64, libcairo2, libcups2t64, libdbus-1-3, libexpat1, libfontconfig1, libgbm1, libgdk-pixbuf-2.0-0, libglib2.0-0t64, libgraphene-1.0-0, libgtk-4-1, libnspr4, libnss3, libpango-1.0-0, libssl3t64, libudev1, libx11-6, libxcb1, libxcomposite1, libxdamage1, libxext6, libxfixes3, libxkbcommon0, libxrandr2, xdg-utils
+Description: Local-first ML-powered manga translator
+ Koharu detects speech bubbles, runs OCR and inpainting, and translates
+ manga with local ML models plus LLM translation, as a desktop app.
