@@ -70,6 +70,7 @@ dropped 2026-10-12):
 | **concat-unstable** | Video editor main-branch snapshot (native source build)
 | **fluxer** | Free and open source messaging & VoIP platform
 | **helium-browser** | Private, fast, and honest Chromium-based browser
+| **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher
 | **koharu** | Local-first ML-powered manga translator
 | **localsend** | Open source cross-platform alternative to AirDrop
 | **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot)

@@ -1,0 +1,17 @@
+Source: heroic-games-launcher
+Section: games
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher
+
+Package: heroic
+Architecture: amd64
+# Runtime set: payload ELF DT_NEEDED union plus the upstream .deb's own
+# Depends (tray/notification set + xdg-utils); t64 names target Debian Testing.
+Depends: ${misc:Depends}, hicolor-icon-theme, libasound2t64, libatk1.0-0t64, libatk-bridge2.0-0t64, libatspi2.0-0, libcairo2, libcups2t64, libdbus-1-3, libexpat1, libgbm1, libglib2.0-0t64, libgtk-3-0t64, libnotify4, libnspr4, libnss3, libsecret-1-0, libuuid1, libx11-6, libxcb1, libxcomposite1, libxdamage1, libxext6, libxfixes3, libxkbcommon0, libxrandr2, libxss1, libxtst6, xdg-utils
+Description: Open source GOG, Epic and Amazon games launcher
+ Heroic is a free, open-source game launcher for GOG, Epic and Amazon
+ Games.

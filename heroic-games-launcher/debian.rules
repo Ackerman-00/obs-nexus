@@ -1,0 +1,52 @@
+#!/usr/bin/make -f
+# Debian repack of the upstream heroic .deb (binary re-distributor, same
+# payload policy as the RPM spec: usr/share copy, /opt/Heroic payload,
+# Wayland-aware launcher wrapper, desktop entry repointed at it).
+# No network at build time: the orig tarball holds the upstream .deb,
+# opened here with binutils ar + tar (data.tar may be .xz or .zst).
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+# Prebuilt upstream binaries are already stripped and carry no
+# usable debuginfo -- dwz aborts on them (exit 25). Skip it; same
+# class as the RPM-side debuginfo exclusion for repackaged binaries.
+# Binary repack: the payload is prebuilt upstream, so automatic
+# shlibdeps analysis cannot run and its ${shlib:Depends} output is
+# unused -- the manually maintained Depends above (derived from the
+# payload's ELF DT_NEEDED union) IS the dependency declaration.
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_strip:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && ar x "$$(ls ../*.deb)" data.tar.xz data.tar.zst 2>/dev/null; cd ..
+	if [ -f payload/data.tar.xz ]; then \
+	    tar -xf payload/data.tar.xz -C payload; \
+	elif [ -f payload/data.tar.zst ]; then \
+	    tar --zstd -xf payload/data.tar.zst -C payload; \
+	else \
+	    echo "ERROR: unexpected data.tar compression in upstream DEB"; exit 1; \
+	fi
+	mkdir -p debian/heroic/usr/bin debian/heroic/usr/share debian/heroic/opt
+	cp -a payload/usr/share/* debian/heroic/usr/share/
+	cp -a payload/opt/Heroic debian/heroic/opt/
+	chmod 0755 debian/heroic/opt/Heroic/chrome-sandbox
+	printf '#!/bin/sh\n# Automatically force native Wayland rendering if detected\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="auto"\nfi\nexec /opt/Heroic/heroic "$$@"\n' > debian/heroic/usr/bin/heroic
+	chmod 0755 debian/heroic/usr/bin/heroic
+	sed -e 's|^Exec=.*|Exec=/usr/bin/heroic %U|' \
+	    payload/usr/share/applications/heroic.desktop > debian/heroic/usr/share/applications/heroic.desktop

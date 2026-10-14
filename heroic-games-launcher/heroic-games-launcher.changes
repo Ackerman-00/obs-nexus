@@ -1,0 +1,5 @@
+-------------------------------------------------------------------
+Wed Oct 14 21:27:46 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.22.3-0
+- Initial package (repack of the upstream Heroic 2.22.3 RPM + .deb)
