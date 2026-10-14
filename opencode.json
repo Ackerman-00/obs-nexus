@@ -24,12 +24,6 @@
           "maxTokens": 8192,
           "contextWindow": 131072
         },
-        "ling-3.1-flash-free": {
-          "name": "Ling 3.1 Flash Free",
-          "model": "opencode/ling-3.1-flash-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
         "jev-1.13-free": {
           "name": "Jev 1.13 Free",
           "model": "opencode/jev-1.13-free",
