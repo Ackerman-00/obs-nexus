@@ -98,12 +98,11 @@ if ! echo "$ASSET_NAMES" | grep -qx "$X86_APPIMAGE"; then
 fi
 echo "Linux x86_64 AppImage asset present; proceeding."
 
-echo "New version found! Updating $SPEC_FILE..."
-sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
-sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
+echo "New version found! Downloading $X86_APPIMAGE for verification..."
 
 # Download + verify the AppImage BEFORE touching anything else (a failed
-# or error-stubbed download must NOT bump or reach OBS).
+# or error-stubbed download must NOT bump or reach OBS - the spec sed
+# below runs only after every guard passes).
 X86_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$X86_APPIMAGE"
 curl -fsSL --retry 3 --connect-timeout 60 "$X86_URL" -o "$X86_APPIMAGE" \
     || { echo "AppImage download failed; spec left untouched."; exit 1; }
@@ -113,18 +112,36 @@ if ! [ -s "$X86_APPIMAGE" ] || ! head -c4 "$X86_APPIMAGE" | grep -q $'\x7fELF'; 
     exit 1
 fi
 
+# A curl-written file is mode 644; --appimage-extract EXECUTES the
+# payload, so without this every fresh download dies "Permission denied"
+# (auto-updater failure 2026-10-14: spec got bumped below nothing -
+# recipe mismatch 2.3.2 vs 2.3.1 killed the whole pipeline run).
+chmod +x "$X86_APPIMAGE"
+
 # Payload Guard
 ICON_TMP=$(mktemp -d)
 APPIMG="$PWD/$X86_APPIMAGE"
 (cd "$ICON_TMP" && "$APPIMG" --appimage-extract >/dev/null) || \
     { echo "AppImage extraction failed; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
 for ref in $(grep -ho -E '(squashfs-root|appimage-root)/[A-Za-z0-9._-]+' "$SPEC_FILE" debian.rules | sort -u); do
-    [ -e "$ICON_TMP/$ref" ] || \
+    # debian.rules renames squashfs-root -> appimage-root AFTER extraction,
+    # so its refs carry the appimage-root/ prefix while this tree only ever
+    # has squashfs-root/. Compare the bare relative path (2026-10-14: the
+    # literal check false-HOLDed 2.3.2 on appimage-root/openchamber.desktop
+    # although squashfs-root/openchamber.desktop was present).
+    rel="${ref#*/}"
+    [ -e "$ICON_TMP/squashfs-root/$rel" ] || \
         { echo "HOLD: recipe references $ref but the $NEW_VER payload lacks it; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
 done
 [ -f "$ICON_TMP/squashfs-root/AppRun" ] || \
     { echo "HOLD: $NEW_VER payload lacks AppRun; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
 rm -rf "$ICON_TMP"
+
+# All guards passed - NOW bump the spec (never before: a guard failure
+# above must leave the tree byte-identical).
+echo "All guards passed; updating $SPEC_FILE..."
+sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
+sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 
 # Debian_Testing recipe: wrap the verified AppImage + keep .dsc/changelog
 # in sync.

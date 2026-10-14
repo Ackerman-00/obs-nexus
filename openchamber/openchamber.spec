@@ -3,8 +3,8 @@
 %global __requires_exclude_from ^/opt/openchamber/.*$
 %global __provides_exclude_from ^/opt/openchamber/.*$
 Name:           openchamber
-Version:        2.3.1
-Release:        1
+Version:        2.3.2
+Release:        0
 Summary:        Agentic development environment boards for issues and pull requests
 License:        MIT
 URL:            https://github.com/openchamber/openchamber

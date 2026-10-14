@@ -1,3 +1,9 @@
+openchamber (2.3.2-1) unstable; urgency=medium
+
+  * New upstream release 2.3.2.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 14 Oct 2026 04:52:17 +0000
+
 openchamber (2.3.1-2) unstable; urgency=medium
 
   * Fix build failure: install the PNG icon the 2.3.1 AppImage ships
