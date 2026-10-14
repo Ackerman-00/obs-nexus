@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 14 18:15:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.5-0
+- rpmlint: suppress the no-binary false positive on the intentionally
+  license-only base package (shared library ships in libscenefx-0_5,
+  headers/pkgconfig in scenefx-devel)
+-------------------------------------------------------------------
 Mon Oct 12 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.5-0

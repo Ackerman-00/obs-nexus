@@ -7,3 +7,9 @@
 # warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
 # here. No -debuginfo subpackage is produced for this package (none appears in the build result), so a manual strip would feed nothing and is what the guidance above warns against.
 addFilter("unstripped-binary-or-object")
+# no-binary: the base scenefx package is intentionally license-only - the
+# shared library ships in libscenefx-0_5 and headers/pkgconfig in
+# scenefx-devel. This standard license/meta base shape trips rpmlint's
+# no-binary check as a false positive; suppressing it with a reason is the
+# sanctioned remedy (same precedent as the unstripped filter above).
+addFilter("no-binary")

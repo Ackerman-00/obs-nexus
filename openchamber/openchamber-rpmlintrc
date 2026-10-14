@@ -13,8 +13,12 @@ addFilter("library-without-ldconfig-postin")
 addFilter("library-without-ldconfig-postun")
 # Upstream data files inside the bundled app.asar node_modules tree
 # (bun-pty .bun-tag, msgpackr index.js) and node-pty win headers.
-addFilter("zero-length")
 addFilter("devel-file-in-non-devel-package")
+# zero-length filter DROPPED 2026-10-14: rpmlint E: unused-rpmlintrc-filter
+# (the 2.3.2 payload ships no zero-length files anymore - verified by
+# rpm2cpio + find -size 0 over the built 2.3.2-26.1 TW RPM: none). Unused
+# filters are themselves errors; re-add only if a future payload brings
+# zero-length files back.
 # hicolor-icon-theme is intentionally unversioned (repo convention,
 # same as every other spec in this repo).
 addFilter("branding-requires-unversioned")
