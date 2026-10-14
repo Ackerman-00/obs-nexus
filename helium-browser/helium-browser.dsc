@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: helium-browser
 Binary: helium-browser
 Architecture: amd64
-Version: 0.19.2.1
+Version: 0.19.3.1
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -20,4 +20,4 @@ Build-Depends: debhelper-compat (= 13), desktop-file-utils
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: helium-browser-0.19.2.1.tar.xz
+Debtransform-Tar: helium-browser-0.19.3.1.tar.xz

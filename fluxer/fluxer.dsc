@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: fluxer
 Binary: fluxer
 Architecture: amd64
-Version: 2026.1014.161544
+Version: 2026.1014.200615
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), python3
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -22,4 +22,4 @@ Build-Depends: debhelper-compat (= 13), python3
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: fluxer-2026.1014.161544.tar.gz
+Debtransform-Tar: fluxer-2026.1014.200615.tar.gz

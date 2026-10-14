@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Oct 14 21:20:57 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 0.19.3.1
+
+-------------------------------------------------------------------
 Fri Oct  9 17:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix payload copy: pre-create opt/helium and use cp -t (the old
