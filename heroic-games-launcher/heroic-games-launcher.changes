@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Oct 14 15:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlint: drop 3 unused filters (invalid-desktopfile,
+  missing-hash-section, shared-library-not-executable tripped nothing
+  on the 2.22.3 payload), filter branding-requires-unversioned
+  (runtime hicolor-icon-theme Requires is intentional, obsidian shape)
+- debian/control Depends: add libpango-1.0-0 + libudev1 (direct
+  DT_NEEDED of the payload, same mapping as fluxer/stoat-desktop)
+
+-------------------------------------------------------------------
 Wed Oct 14 21:27:46 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.22.3-0

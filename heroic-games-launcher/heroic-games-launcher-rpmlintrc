@@ -1,7 +1,4 @@
 addFilter("binary-or-shlib-defines-rpath")
-addFilter("invalid-desktopfile")
-addFilter("missing-hash-section")
-addFilter("shared-library-not-executable")
 # Prebuilt Electron bundle installs under /opt by design (same class as localsend /opt).
 addFilter("filelist-forbidden-opt /opt/Heroic")
 
@@ -14,3 +11,6 @@ addFilter("filelist-forbidden-opt /opt/Heroic")
 # warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
 # here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
 addFilter("unstripped-binary-or-object")
+# Runtime Requires: hicolor-icon-theme is intentionally unversioned (theme
+# infrastructure, same shape as obsidian) - rpmlint branding policy flags it.
+addFilter("branding-requires-unversioned")
