@@ -73,7 +73,7 @@ install -dm755 %{buildroot}/opt/openchamber
 cp -ar squashfs-root/* %{buildroot}/opt/openchamber/
 
 # Upstream ships chrome-sandbox 0755 (userns path, same policy as
-# opencode-desktop); normalize in case a future build flips it setuid.
+# stoat-desktop); normalize in case a future build flips it setuid.
 chmod 0755 %{buildroot}/opt/openchamber/chrome-sandbox
 
 # Launcher wrapper through AppRun (electron-builder env setup), same shape

@@ -69,7 +69,6 @@ dropped 2026-10-12):
 | **matugen** | Material You color generation tool
 | **obsidian** | Knowledge base for plain-text Markdown notes
 | **openchamber** | Agentic development environment boards for issues and pull requests
-| **opencode-desktop** | Open source AI coding agent
 | **protonplus** | Wine and Proton-based compatibility tools manager
 | **rootapp** | Discord alternative for gaming communities and large groups
 | **scenefx** | Wayland compositor effects library (for wlroots 0.20) - RPM only; DEB builds take it from the distro's `libscenefx-0.5`

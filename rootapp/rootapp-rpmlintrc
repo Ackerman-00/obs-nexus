@@ -12,7 +12,7 @@ addFilter("rootapp.*: E: statically-linked-binary /opt/rootapp")
 # Upstream payload, not a packaging bug.
 addFilter("rootapp.*: E: zero-length /opt/rootapp")
 # Prebuilt repack installs the upstream tree verbatim under /opt,
-# same as helium-browser/opencode-desktop. Not FHS-violating by choice.
+# same as helium-browser. Not FHS-violating by choice.
 addFilter("rootapp.*: E: filelist-forbidden-opt /opt/rootapp")
 # hicolor-icon-theme is intentionally unversioned (repo convention,
 # same as every other spec in this repo).

@@ -83,7 +83,7 @@ chmod 0755 %{buildroot}%{_bindir}/stoat-desktop
 # and third-party drop-ins can never join the central permissions
 # whitelist, so a setuid sandbox can never be E-clean here. The sandbox
 # still works via unprivileged user namespaces (default on Tumbleweed;
-# same pattern as opencode-desktop in this repo).
+# same pattern as openchamber in this repo).
 chmod 0755 %{buildroot}/opt/Stoat/chrome-sandbox
 
 %check

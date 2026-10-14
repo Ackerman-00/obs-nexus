@@ -1044,11 +1044,11 @@ jobs:
                for upstream changes EVERY run (git ls-remote HEAD for
                -git packages, releases/tags for versioned ones, artifact
                internals for prebuilt binaries - real change only, per
-               NO-CHURN). The eight named below simply go FIRST and get
+               NO-CHURN). The seven named below simply go FIRST and get
                the DEEPEST treatment each run because they move fast and
                break silently - zen-browser, helium-browser, lazyvim-git,
-               opencode-desktop, protonplus, fluxer, obsidian, vesktop.
-               The delta/carry-over logic does NOT apply to the eight:
+               protonplus, fluxer, obsidian, vesktop.
+               The delta/carry-over logic does NOT apply to the seven:
                a. EVERY run, FIRST: check each against upstream HEAD
                   (`git ls-remote` default branch + `gh api
                   releases/latest` where applicable, authenticated and
@@ -1066,10 +1066,10 @@ jobs:
                   test. Record per-package PASS/FAIL with command output
                   in the relay; a failure here outranks all other
                   non-build-failure work.
-               c. Never mark these eight done based on a previous run's
+               c. Never mark these seven done based on a previous run's
                   result. "Unchanged since last run" is not verification
                   for these packages - re-verify every time.
-               d. SIBLING CROSS-REFERENCE (MANDATORY for all eight, every
+               d. SIBLING CROSS-REFERENCE (MANDATORY for all seven, every
                   run). For each priority package, fetch the fedora-nexus
                   counterpart spec (same upstream stack - concrete wins
                   already proven there that must NOT regress here: helium
@@ -1093,7 +1093,7 @@ jobs:
                   delta: ahead/behind/in-sync | kept-improvements: <list>`.
                e. UNIVERSAL UPSTREAM CHECK (all remaining packages, EVERY
                   run - priority 2 is the full implementation, this is the
-                  non-skippable minimum): for EVERY non-eight package,
+                  non-skippable minimum): for EVERY non-seven package,
                   run the same HEAD/release/artifact check as (a) plus a
                   sibling-reference check where one exists (fedora-nexus
                   counterpart, openSUSE Factory, repology/AUR as

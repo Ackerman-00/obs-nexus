@@ -120,8 +120,7 @@ def get_void_packages(root):
 
 def get_deb_source_packages(root):
     """Packages whose upstream .deb payload is verifiable on Debian testing:
-    specs repacking an upstream .deb directly (e.g. localsend,
-    opencode-desktop), plus any spec with a sibling Debian recipe
+    specs repacking an upstream .deb directly (e.g. localsend), plus any spec with a sibling Debian recipe
     (<pkg>.dsc) whose update.sh carries an upstream .deb URL (e.g. the
     storytold/*craft repacks, whose Source0 is the upstream .rpm).
     Returns (name, version, spec_path) triples. The upstream .deb must
