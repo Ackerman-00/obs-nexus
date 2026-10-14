@@ -24,10 +24,18 @@ Curated packages optimized for minimal Wayland packages. Recipes live in [obs-ne
 
 ```sh
 sudo zypper addrepo --refresh \
-  https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo
+  https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ home:ackerman
 sudo zypper refresh
 sudo zypper install <package>
 ```
+
+> [!NOTE]
+> Use the repository baseurl form above. The older
+> `.../home:ackerman.repo` file-URL form no longer works: current zypper
+> no longer parses a remote `.repo` file at `addrepo` time and stores the
+> file URL itself as the baseurl, so `zypper refresh` fails with
+> "Repository type can't be determined" (verified in a clean
+> `opensuse/tumbleweed` container, 2026-10-14).
 
 The base distribution packages come from the standard Tumbleweed OSS
 repository (`https://download.opensuse.org/tumbleweed/repo/oss/`).
