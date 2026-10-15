@@ -68,6 +68,7 @@ dropped 2026-10-12):
 | **craft-launcher** | App launcher for the Craft suite
 | **concat** | Free and open source video editor
 | **concat-unstable** | Video editor main-branch snapshot (native source build)
+| **faugus-launcher** | Lightweight app for running Windows games using UMU-Launcher
 | **fluxer** | Free and open source messaging & VoIP platform
 | **helium-browser** | Private, fast, and honest Chromium-based browser
 | **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher
