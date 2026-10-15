@@ -12,6 +12,7 @@ tools/__pycache__/
 *.tar.gz
 *.tar.xz
 *.tar.bz2
+*.tar.zst
 *.tar
 *.AppImage
 *.keyring

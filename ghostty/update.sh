@@ -1,0 +1,146 @@
+#!/bin/bash
+# Always operate in this script's own directory (the workflow pushds here,
+# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
+# touch the wrong files).
+cd "$(dirname "$0")" || exit 1
+# update.sh for Ghostty (Zig source build + vendored dep cache, OBS edition)
+
+SPEC_FILE="ghostty.spec"
+CHANGES_FILE="ghostty.changes"
+GITHUB_REPO="ghostty-org/ghostty"
+ZIG_VER="0.15.2"
+PACKAGER="Ackerman-00"
+# changelog heading needs an addr-spec: OBS changelog2spec
+# refuses a bare name, and without it every RPM builds with an
+# empty %changelog (rpmlint E: no-changelogname-tag).
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
+
+echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
+
+# Ghostty GitHub tags are v-prefixed (v1.3.1); the release tarball path
+# and spec Version are bare (1.3.1).
+LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+
+if [ -z "$LATEST_TAG" ]; then
+    echo "  -> ❌ [ERROR] Failed to fetch latest tag."
+    exit 1
+fi
+
+LATEST_VERSION="${LATEST_TAG#v}"
+
+# Read current version from the spec file
+CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
+
+# Zig dep-cache helper: OBS builds run offline, so the exact-URL vendor
+# cache (build.zig.zon.txt from the release tarball) must be regenerated
+# with the pinned official Zig static binary on EVERY bump. The cache is
+# gitignored (vendor.tar.zst) and rides the OBS sync. This is
+# self-contained (no CI zig install needed) but downloads ~100MB.
+fetch_vendor_cache() {
+    local ver="$1" tmpd
+    tmpd=$(mktemp -d)
+    trap 'rm -rf "$tmpd"' EXIT
+    curl -fsSL --retry 3 --connect-timeout 30 \
+        "https://release.files.ghostty.org/$ver/ghostty-$ver.tar.gz" \
+        -o "$tmpd/upstream.tar.gz" \
+        || { echo "source tarball download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -xzf "$tmpd/upstream.tar.gz" -C "$tmpd" \
+        || { echo "source tarball corrupt."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    curl -fsSL --retry 3 --connect-timeout 30 \
+        "https://ziglang.org/download/$ZIG_VER/zig-x86_64-linux-$ZIG_VER.tar.xz" \
+        -o "$tmpd/zig.tar.xz" \
+        || { echo "zig download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -xJf "$tmpd/zig.tar.xz" -C "$tmpd" \
+        || { echo "zig tarball corrupt."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    local srcdir="$tmpd/ghostty-$ver"
+    [ -f "$srcdir/build.zig.zon.txt" ] \
+        || { echo "build.zig.zon.txt missing in $ver tarball."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    mkdir -p "$srcdir/vendor/zig"
+    export ZIG_GLOBAL_CACHE_DIR="$srcdir/vendor/zig"
+    while IFS= read -r url; do
+        [ -z "$url" ] && continue
+        "$tmpd/zig-x86_64-linux-$ZIG_VER/zig" fetch "$url" >/dev/null 2>&1 \
+            || { echo "zig fetch failed: $url"; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    done < "$srcdir/build.zig.zon.txt"
+    unset ZIG_GLOBAL_CACHE_DIR
+    find "$srcdir/vendor/zig" -type d -iname test -print0 | xargs -r0 rm -rf
+    tar --zstd -cf "vendor.tar.zst" -C "$srcdir" vendor/zig \
+        || { echo "vendor pack failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    ls -l "vendor.tar.zst"
+    trap - EXIT
+    rm -rf "$tmpd"
+}
+
+# Source-tarball guard: fresh CI checkouts start without the gitignored
+# tarball. Rebuild when missing so an OBS sync can never wipe the remote
+# copy with nothing to re-upload. (The tarball name is the release
+# artifact name; Source0 points at the same URL.)
+if [ ! -f "ghostty-$CURRENT_VERSION.tar.gz" ]; then
+    echo "  -> Source tarball missing locally; rebuilding..."
+    curl -fsSL --retry 3 \
+        "https://release.files.ghostty.org/$CURRENT_VERSION/ghostty-$CURRENT_VERSION.tar.gz" \
+        -o "ghostty-$CURRENT_VERSION.tar.gz" || \
+        echo "  -> WARNING: source tarball rebuild failed; continuing version check."
+fi
+
+# Vendor-cache guard: same reasoning as above. Regeneration needs the
+# pinned Zig and ~100MB of downloads; failure here warns but does not
+# block the version check (the OBS build would fail without it, so a
+# missing vendor cache on a version bump is fatal below).
+if [ ! -f "vendor.tar.zst" ]; then
+    echo "  -> Vendor cache missing locally; rebuilding..."
+    fetch_vendor_cache "$CURRENT_VERSION" || \
+        echo "  -> WARNING: vendor cache rebuild failed; continuing version check."
+fi
+
+# Compare and update
+if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+    echo "  -> 🚀 [UPDATE] New version detected: $LATEST_VERSION (Current: $CURRENT_VERSION)"
+
+    # Only bump once the release tarball really exists
+    ARCHIVE_URL="https://release.files.ghostty.org/$LATEST_VERSION/ghostty-$LATEST_VERSION.tar.gz"
+    echo "  -> [CHECK] Verifying $ARCHIVE_URL"
+    if ! curl --output /dev/null --silent --location --head --fail "$ARCHIVE_URL"; then
+        echo "  -> ❌ [ERROR] Release tarball for $LATEST_VERSION is not yet available. Skipping update."
+        exit 1
+    fi
+
+    # The vendor cache MUST regenerate for the new tree (pinned Zig dep
+    # URLs change per release). A bump without a fresh vendor cache
+    # breaks the offline OBS build, so failure here aborts the bump.
+    fetch_vendor_cache "$LATEST_VERSION" || {
+        echo "  -> ❌ [ERROR] Vendor cache rebuild failed; refusing to bump without it."
+        exit 1
+    }
+
+    # Refresh the local source tarball to match the new version
+    curl -fsSL --retry 3 "$ARCHIVE_URL" -o "ghostty-$LATEST_VERSION.tar.gz" || {
+        echo "  -> ❌ [ERROR] Source tarball download failed."
+        exit 1
+    }
+    rm -f "ghostty-$CURRENT_VERSION.tar.gz"
+    # Refresh the minisig provenance file (Source2)
+    curl -fsSL --retry 3 \
+        "https://release.files.ghostty.org/$LATEST_VERSION/ghostty-$LATEST_VERSION.tar.gz.minisig" \
+        -o "ghostty-$LATEST_VERSION.tar.gz.minisig" || \
+        echo "  -> WARNING: minisig download failed; continuing."
+    rm -f "ghostty-$CURRENT_VERSION.tar.gz.minisig"
+
+    # 1. Update the Version and Release fields
+    sed -i "s/^Version:\s*.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
+    sed -i "s/^Release:\s*.*/Release:        0/" "$SPEC_FILE"
+
+    # 2. Prepend an entry to the OBS changes file
+    DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+    NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$DATE - $PACKAGER_ADDR\n\n- Update to upstream release $LATEST_VERSION\n\n"
+
+    if [ -f "$CHANGES_FILE" ]; then
+        echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"
+    else
+        echo -e "$NEW_CHANGELOG_ENTRY" > "$CHANGES_FILE"
+    fi
+
+    echo "  -> ✅ [DONE] $SPEC_FILE is ready for OBS sync."
+else
+    echo "  -> ✅ [OK] Ghostty is already on latest ($CURRENT_VERSION)."
+fi

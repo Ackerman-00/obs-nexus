@@ -70,6 +70,7 @@ dropped 2026-10-12):
 | **concat-unstable** | Video editor main-branch snapshot (native source build)
 | **faugus-launcher** | Lightweight app for running Windows games using UMU-Launcher
 | **fluxer** | Free and open source messaging & VoIP platform
+| **ghostty** | Cross-platform terminal emulator (RPM-only; Debian ships no Zig compiler)
 | **helium-browser** | Private, fast, and honest Chromium-based browser
 | **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher
 | **koharu** | Local-first ML-powered manga translator
