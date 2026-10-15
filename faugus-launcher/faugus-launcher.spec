@@ -77,7 +77,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/io.github.Faugus.faug
 %{_datadir}/icons/hicolor/scalable/apps/faugus-launcher.svg
 %{_datadir}/icons/hicolor/scalable/apps/faugus-mono.svg
 %{_datadir}/icons/hicolor/scalable/apps/io.github.Faugus.faugus-launcher.svg
-%{_datadir}/licenses/%{name}/LICENSE
 %{_datadir}/metainfo/io.github.Faugus.faugus-launcher.metainfo.xml
 
 %files lang -f faugus-launcher.lang
