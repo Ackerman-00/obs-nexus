@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 15 03:34:23 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.22.4-0
+- Update heroic-games-launcher to v2.22.4
+
+-------------------------------------------------------------------
 Wed Oct 14 15:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlint: drop 3 unused filters (invalid-desktopfile,

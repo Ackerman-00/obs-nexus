@@ -1,3 +1,9 @@
+heroic-games-launcher (2.22.4-1) unstable; urgency=medium
+
+  * New upstream release 2.22.4.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 03:34:23 +0000
+
 heroic-games-launcher (2.22.3-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream .deb).

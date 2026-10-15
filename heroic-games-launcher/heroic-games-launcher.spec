@@ -3,13 +3,13 @@
 %global __requires_exclude_from ^/opt/Heroic/.*$
 %global __provides_exclude_from ^/opt/Heroic/.*$
 Name:           heroic-games-launcher
-Version:        2.22.3
+Version:        2.22.4
 Release:        0
 Summary:        Open source GOG, Epic and Amazon games launcher
 License:        GPL-3.0-only
 URL:            https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher
 # Use the upstream RPM as our raw source payload
-Source0:        %{url}/releases/download/v2.22.3/Heroic-2.22.3-linux-x86_64.rpm
+Source0:        %{url}/releases/download/v2.22.4/Heroic-2.22.4-linux-x86_64.rpm
 Source1:        heroic-games-launcher-rpmlintrc
 # Required to unpack the upstream RPM natively
 BuildRequires:  cpio
