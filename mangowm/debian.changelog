@@ -1,3 +1,9 @@
+mangowm (0.18.1-1) unstable; urgency=medium
+
+  * New upstream release 0.18.1.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 08:23:42 +0000
+
 mangowm (0.18.0-1) unstable; urgency=medium
 
   * New upstream release 0.18.0.

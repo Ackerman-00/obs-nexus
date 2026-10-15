@@ -1,8 +1,8 @@
-%global mango_ver      0.18.0
+%global mango_ver      0.18.1
 %global wlroots_ver    0.20.2
 %global scenefx_ver    0.5
 Name:           mangowm
-Version:        0.18.0
+Version:        0.18.1
 Release:        0
 Summary:        Practical and powerful Wayland compositor (dwm-like, wlroots-based)
 License:        GPL-3.0-or-later
