@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 15 21:03:02 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 2.5.0
+
+-------------------------------------------------------------------
 Thu Oct 15 14:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Initial package of Faugus 2.4.4 for openSUSE (meson source build,

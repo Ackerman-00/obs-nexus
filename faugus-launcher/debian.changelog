@@ -1,3 +1,9 @@
+faugus-launcher (2.5.0-1) unstable; urgency=medium
+
+  * New upstream release 2.5.0.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 21:03:02 +0000
+
 faugus-launcher (2.4.4-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (meson source build).
