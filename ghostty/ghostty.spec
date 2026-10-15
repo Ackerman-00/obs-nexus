@@ -127,6 +127,11 @@ chmod 0644 \
 %{_datadir}/ghostty/shell-integration/nushell/
 %{_datadir}/ghostty/shell-integration/zsh/
 %{_datadir}/ghostty/themes/
+%dir %{_datadir}/ghostty/doc
+%{_datadir}/ghostty/doc/ghostty.1.html
+%{_datadir}/ghostty/doc/ghostty.1.md
+%{_datadir}/ghostty/doc/ghostty.5.html
+%{_datadir}/ghostty/doc/ghostty.5.md
 %dir %{_datadir}/bat
 %dir %{_datadir}/bat/syntaxes
 %{_datadir}/bat/syntaxes/ghostty.sublime-syntax
