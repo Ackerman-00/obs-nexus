@@ -5,6 +5,10 @@ Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
   import anywhere in the 2.5.0 tree; all D-Bus use is via Gio inside
   python3-gobject) and BuildRequires appstream-glib (no consumer in
   the spec); debian.control Depends drops python3-dbus to match.
+- Fix rpmlint E: (from the 2.5.0 file modes): normalize stray upstream
+  +x bits in %install (modules run via sys.executable -m, svgs are
+  data) and drop the unversioned hicolor-icon-theme Requires
+  (E: branding-requires-unversioned).
 
 -------------------------------------------------------------------
 Thu Oct 15 21:03:02 UTC 2026 - Ackerman-00 <noreply@example.com>

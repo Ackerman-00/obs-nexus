@@ -24,7 +24,8 @@ BuildRequires:  python3
 # (Gio.DBusConnection/DBusProxy in launcher/tray/runner/utils), which
 # ships inside python3-gobject - no separate dbus module is imported
 # anywhere in the 2.5.0 tree, so no dbus Requires is shipped either.
-Requires:       hicolor-icon-theme
+# (No runtime Requires: hicolor-icon-theme either: the unversioned dep
+# trips rpmlint E: branding-requires-unversioned, same as fluxer documents.)
 Requires:       python3-gobject
 Requires:       python3-requests
 Requires:       python3-Pillow
@@ -58,6 +59,16 @@ Provides translations for the "%{name}" package.
 
 %install
 %meson_install
+# Upstream 2.5.0 tarball carries stray +x bits that trip rpmlint E:
+# script-without-shebang (backup.py/proton_downloader.py have no shebang
+# and run via sys.executable -m; the two app svgs are data), while
+# launcher.py carries a shebang but ships 644 (E: non-executable-script).
+# Normalize modes only - no content changes.
+chmod -x %{buildroot}%{python3_sitelib}/faugus/backup.py \
+         %{buildroot}%{python3_sitelib}/faugus/proton_downloader.py \
+         %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/faugus-*.svg \
+         %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/io.github.Faugus.faugus-launcher.svg
+chmod +x %{buildroot}%{python3_sitelib}/faugus/launcher.py
 %find_lang faugus-launcher
 %fdupes %{buildroot}
 
