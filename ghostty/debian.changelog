@@ -1,0 +1,6 @@
+ghostty (1.3.1-1) unstable; urgency=medium
+
+  * Initial Debian_Testing recipe (zig source build with bundled
+    pinned compiler + vendored dep cache wrapper).
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 19:30:00 +0000

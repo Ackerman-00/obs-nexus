@@ -1,24 +1,19 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
+# Script dir guard
 cd "$(dirname "$0")" || exit 1
-# update.sh for Ghostty (Zig source build + vendored dep cache, OBS edition)
+# Ghostty updater (Zig + wrapper orig)
 
 SPEC_FILE="ghostty.spec"
 CHANGES_FILE="ghostty.changes"
 GITHUB_REPO="ghostty-org/ghostty"
 ZIG_VER="0.15.2"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
+# Addr-spec heading (changelog2spec format)
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
-# Ghostty GitHub tags are v-prefixed (v1.3.1); the release tarball path
-# and spec Version are bare (1.3.1).
+# Bare-version tags (v1.3.1 -> 1.3.1)
 LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
 
 if [ -z "$LATEST_TAG" ]; then
@@ -28,14 +23,10 @@ fi
 
 LATEST_VERSION="${LATEST_TAG#v}"
 
-# Read current version from the spec file
+# Spec version
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Zig dep-cache helper: OBS builds run offline, so the exact-URL vendor
-# cache (build.zig.zon.txt from the release tarball) must be regenerated
-# with the pinned official Zig static binary on EVERY bump. The cache is
-# gitignored (vendor.tar.zst) and rides the OBS sync. This is
-# self-contained (no CI zig install needed) but downloads ~100MB.
+# Vendor cache fetch (~100MB, pinned Zig)
 fetch_vendor_cache() {
     local ver="$1" tmpd
     tmpd=$(mktemp -d)
@@ -71,10 +62,42 @@ fetch_vendor_cache() {
     rm -rf "$tmpd"
 }
 
-# Source-tarball guard: fresh CI checkouts start without the gitignored
-# tarball. Rebuild when missing so an OBS sync can never wipe the remote
-# copy with nothing to re-upload. (The tarball name is the release
-# artifact name; Source0 points at the same URL.)
+# Wrapper orig assembly (src + vendor cache + pinned Zig)
+assemble_wrapper() {
+    local ver="$1" tmpd
+    tmpd=$(mktemp -d)
+    trap 'rm -rf "$tmpd"' EXIT
+    for f in "ghostty-$ver.tar.gz" "vendor.tar.zst" "zig-x86_64-linux-$ZIG_VER.tar.xz"; do
+        [ -f "$f" ] || { echo "wrapper input missing: $f"; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    done
+    mkdir -p "$tmpd/stage/ghostty-$ver"
+    tar -xzf "ghostty-$ver.tar.gz" -C "$tmpd/stage/ghostty-$ver" --strip-components=1 \
+        || { echo "source extract failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    mkdir -p "$tmpd/stage/ghostty-$ver/vendor"
+    tar --zstd -xf "vendor.tar.zst" -C "$tmpd/stage/ghostty-$ver/vendor" --strip-components=1 \
+        || { echo "vendor extract failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    mkdir -p "$tmpd/stage/ghostty-$ver/zig"
+    tar -xJf "zig-x86_64-linux-$ZIG_VER.tar.xz" -C "$tmpd/stage/ghostty-$ver/zig" --strip-components=1 \
+        || { echo "zig extract failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    [ -x "$tmpd/stage/ghostty-$ver/zig/zig" ] && [ -f "$tmpd/stage/ghostty-$ver/src/build.zig" ] \
+        || { echo "wrapper layout broken."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -czf "ghostty-$ver-debian.tar.gz" -C "$tmpd/stage" "ghostty-$ver" \
+        || { echo "wrapper pack failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    ls -l "ghostty-$ver-debian.tar.gz"
+    trap - EXIT
+    rm -rf "$tmpd"
+}
+
+# Zig blob guard
+if [ ! -f "zig-x86_64-linux-$ZIG_VER.tar.xz" ]; then
+    echo "  -> Zig compiler blob missing locally; rebuilding..."
+    curl -fsSL --retry 3 \
+        "https://ziglang.org/download/$ZIG_VER/zig-x86_64-linux-$ZIG_VER.tar.xz" \
+        -o "zig-x86_64-linux-$ZIG_VER.tar.xz" || \
+        echo "  -> WARNING: zig download failed; continuing version check."
+fi
+
+# Source-tarball guard
 if [ ! -f "ghostty-$CURRENT_VERSION.tar.gz" ]; then
     echo "  -> Source tarball missing locally; rebuilding..."
     curl -fsSL --retry 3 \
@@ -83,14 +106,18 @@ if [ ! -f "ghostty-$CURRENT_VERSION.tar.gz" ]; then
         echo "  -> WARNING: source tarball rebuild failed; continuing version check."
 fi
 
-# Vendor-cache guard: same reasoning as above. Regeneration needs the
-# pinned Zig and ~100MB of downloads; failure here warns but does not
-# block the version check (the OBS build would fail without it, so a
-# missing vendor cache on a version bump is fatal below).
+# Vendor-cache guard
 if [ ! -f "vendor.tar.zst" ]; then
     echo "  -> Vendor cache missing locally; rebuilding..."
     fetch_vendor_cache "$CURRENT_VERSION" || \
         echo "  -> WARNING: vendor cache rebuild failed; continuing version check."
+fi
+
+# Wrapper orig guard
+if [ ! -f "ghostty-$CURRENT_VERSION-debian.tar.gz" ]; then
+    echo "  -> Wrapper orig missing locally; rebuilding..."
+    assemble_wrapper "$CURRENT_VERSION" || \
+        echo "  -> WARNING: wrapper rebuild failed; continuing version check."
 fi
 
 # Compare and update
@@ -105,9 +132,7 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         exit 1
     fi
 
-    # The vendor cache MUST regenerate for the new tree (pinned Zig dep
-    # URLs change per release). A bump without a fresh vendor cache
-    # breaks the offline OBS build, so failure here aborts the bump.
+    # Fresh vendor cache is fatal without (offline OBS build)
     fetch_vendor_cache "$LATEST_VERSION" || {
         echo "  -> ❌ [ERROR] Vendor cache rebuild failed; refusing to bump without it."
         exit 1
@@ -119,7 +144,20 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         exit 1
     }
     rm -f "ghostty-$CURRENT_VERSION.tar.gz"
-    # Refresh the minisig provenance file (Source2)
+    # Zig blob refresh (keep single pinned copy)
+    curl -fsSL --retry 3 \
+        "https://ziglang.org/download/$ZIG_VER/zig-x86_64-linux-$ZIG_VER.tar.xz" \
+        -o "zig-x86_64-linux-$ZIG_VER.tar.xz" || {
+        echo "  -> ❌ [ERROR] Zig download failed."
+        exit 1
+    }
+    # Wrapper orig refresh (fatal without: Debian builds need it)
+    assemble_wrapper "$LATEST_VERSION" || {
+        echo "  -> ❌ [ERROR] Wrapper assembly failed; refusing to bump without it."
+        exit 1
+    }
+    rm -f "ghostty-$CURRENT_VERSION-debian.tar.gz"
+    # Minisig provenance refresh (Source2)
     curl -fsSL --retry 3 \
         "https://release.files.ghostty.org/$LATEST_VERSION/ghostty-$LATEST_VERSION.tar.gz.minisig" \
         -o "ghostty-$LATEST_VERSION.tar.gz.minisig" || \
@@ -129,6 +167,18 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     # 1. Update the Version and Release fields
     sed -i "s/^Version:\s*.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
     sed -i "s/^Release:\s*.*/Release:        0/" "$SPEC_FILE"
+
+    # 1b. Debian recipe sync (.dsc + changelog head)
+    DSC_FILE="ghostty.dsc"
+    sed -i "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
+    sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: ghostty-$LATEST_VERSION-debian.tar.gz|" "$DSC_FILE"
+    DEB_DATE=$(date -R -u)
+    DEB_ENTRY="ghostty ($LATEST_VERSION-1) unstable; urgency=medium\n\n  * New upstream release $LATEST_VERSION.\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"
+    if [ -f "debian.changelog" ]; then
+        echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
+    else
+        echo -e "$DEB_ENTRY" > debian.changelog
+    fi
 
     # 2. Prepend an entry to the OBS changes file
     DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
