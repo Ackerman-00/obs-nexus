@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- debian.control: rename libpipewire-0.3-0 to libpipewire-0.3-0t64
+  (post-t64 name on Testing and Sid; the old name resolves on
+  neither, leaving the DEB unresolvable).
+
+-------------------------------------------------------------------
 Fri Oct  9 17:45:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Ship chrome-sandbox 0755 instead of setuid (rpmlint SUID tags are

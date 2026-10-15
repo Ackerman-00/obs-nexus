@@ -1,3 +1,9 @@
+protonplus (0.6.8-2) unstable; urgency=medium
+
+  * Drop cmake from Build-Depends (no CMakeLists upstream).
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 21:39:56 +0000
+
 protonplus (0.6.8-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (meson source build).

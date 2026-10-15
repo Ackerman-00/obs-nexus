@@ -8,7 +8,6 @@ Group:          System/GUI/Other
 URL:            https://github.com/Faugus/faugus-launcher
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
 BuildArch:      noarch
-BuildRequires:  appstream-glib
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
 BuildRequires:  gettext-runtime
@@ -20,17 +19,17 @@ BuildRequires:  python3-rpm-macros
 # byte-compile at install time needs the interpreter only.
 BuildRequires:  python3
 # Upstream runtime set (packaging/fedora/faugus-launcher.spec Requires +
-# README Dependencies): pygobject/requests/pillow/vdf/psutil/dbus-python/
-# icoextract/gtk4/libadwaita/libmanette. dbus maps to python3-dbus-python
-# on Tumbleweed (python3-dbus is NOT-PROVIDED, proven via OSS primary.xml);
-# GI imports need the typelib split packages, not the source names.
+# README Dependencies): pygobject/requests/pillow/vdf/psutil/
+# icoextract/gtk4/libadwaita/libmanette. All D-Bus use is via Gio
+# (Gio.DBusConnection/DBusProxy in launcher/tray/runner/utils), which
+# ships inside python3-gobject - no separate dbus module is imported
+# anywhere in the 2.5.0 tree, so no dbus Requires is shipped either.
 Requires:       hicolor-icon-theme
 Requires:       python3-gobject
 Requires:       python3-requests
 Requires:       python3-Pillow
 Requires:       python3-vdf
 Requires:       python3-psutil
-Requires:       python3-dbus-python
 Requires:       python3-icoextract
 Requires:       typelib-1_0-Gtk-4_0
 Requires:       typelib-1_0-Adw-1

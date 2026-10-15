@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add dlopen-only runtime Requires: libsecret-1.so.0 (OS-keyring),
+  libpipewire-0.3.so.0 (screen/audio capture), libpulse.so.0 (audio).
+  Proven by strings hits in the 2026.1015.145325 binary and by
+  upstream's own fluxer.rpm Requires; debian.control gains the
+  matching libsecret-1-0 + libpulse0 and renames libpipewire-0.3-0 to
+  the post-t64 libpipewire-0.3-0t64 (the old name resolves nowhere on
+  Testing or Sid).
+
+-------------------------------------------------------------------
 Thu Oct 15 18:10:43 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.1015.145325-0

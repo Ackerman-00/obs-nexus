@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Drop unproven BuildRequires: cmake (no CMakeLists or cmake reference
+  anywhere in the 0.6.8 tree) and git-core (no vcs_tag, git describe,
+  or git use in meson.build/scripts); debian.control Build-Depends
+  drops cmake to match.
+
+-------------------------------------------------------------------
 Sun Oct 11 21:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix lang subpackage: replace %lang_package macro with explicit

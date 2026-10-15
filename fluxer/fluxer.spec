@@ -45,6 +45,15 @@ Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
+# dlopen-only at runtime (not DT_NEEDED, so invisible to auto-deps):
+# libsecret for OS-keyring credential storage, libpipewire for
+# screen/audio capture, libpulse for audio playback. Proven by strings
+# (libsecret-1.so.0 / libpipewire-0.3.so.0 / libpulse.so.0 hits in the
+# 2026.1015.145325 binary, identical to obsidian) and by upstream's own
+# fluxer.rpm Requires (libsecret, pipewire-libs, pulseaudio-libs).
+Requires:       libpipewire-0.3.so.0()(64bit)
+Requires:       libpulse.so.0()(64bit)
+Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libudev.so.1()(64bit)
 Requires:       libuuid.so.1()(64bit)

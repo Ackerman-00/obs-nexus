@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Drop unproven deps: Requires python3-dbus-python (no dbus-module
+  import anywhere in the 2.5.0 tree; all D-Bus use is via Gio inside
+  python3-gobject) and BuildRequires appstream-glib (no consumer in
+  the spec); debian.control Depends drops python3-dbus to match.
+
+-------------------------------------------------------------------
 Thu Oct 15 21:03:02 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 2.5.0

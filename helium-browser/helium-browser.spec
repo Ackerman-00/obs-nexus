@@ -18,13 +18,37 @@ Source2:        helium-browser-rpmlintrc
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
 # Runtime dependencies for the bundled Chromium binary (auto-requires for
-# /opt/helium are excluded above, so list them explicitly)
+# /opt/helium are excluded above, so list them explicitly - the full
+# DT_NEEDED closure of the helium binary, read from the 0.19.3.1 tarball
+# via readelf (2026-10-15 audit). Only listing a subset silently relies
+# on coincidental providers (e.g. the gtk3-tools posttrans chain), so
+# every system soname is listed here, mirroring debian.control Depends.
 Requires:       libasound.so.2()(64bit)
+Requires:       libatk-1.0.so.0()(64bit)
+Requires:       libatk-bridge-2.0.so.0()(64bit)
+Requires:       libatspi.so.0()(64bit)
+Requires:       libcairo.so.2()(64bit)
+Requires:       libcups.so.2()(64bit)
+Requires:       libdbus-1.so.3()(64bit)
+Requires:       libexpat.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
+Requires:       libgio-2.0.so.0()(64bit)
+Requires:       libglib-2.0.so.0()(64bit)
+Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
+Requires:       libpango-1.0.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
+Requires:       libudev.so.1()(64bit)
+Requires:       libX11.so.6()(64bit)
+Requires:       libXcomposite.so.1()(64bit)
+Requires:       libXdamage.so.1()(64bit)
+Requires:       libXext.so.6()(64bit)
+Requires:       libXfixes.so.3()(64bit)
+Requires:       libXrandr.so.2()(64bit)
+Requires:       libxcb.so.1()(64bit)
+Requires:       libxkbcommon.so.0()(64bit)
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools

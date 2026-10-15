@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Complete the runtime closure: list all 20 remaining DT_NEEDED system
+  sonames (glib/gio/atk/dbus/cups/gtk-deps/X11 set) as Requires. The
+  __requires_exclude_from for /opt/helium suppresses all auto-Requires,
+  so the previous 6-soname list relied on coincidental providers (e.g.
+  the gtk3-tools posttrans chain); every soname the helium binary links
+  is now explicit, mirroring debian.control and the fedora-nexus twin's
+  auto-generated set.
+
+-------------------------------------------------------------------
 Wed Oct 14 21:20:57 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 0.19.3.1

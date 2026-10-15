@@ -9,11 +9,9 @@ Group:          System/GUI/Other
 URL:            https://github.com/vysp3r/ProtonPlus
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 BuildRequires:  appstream-glib
-BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
 BuildRequires:  gettext-runtime
-BuildRequires:  git-core
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  ninja
 BuildRequires:  pkgconf

@@ -1,3 +1,10 @@
+stoat-desktop (1.5.4-2) unstable; urgency=medium
+
+  * Fix Depends: rename libpipewire-0.3-0 to libpipewire-0.3-0t64
+    (post-t64 name; old name unresolvable on Testing/Sid).
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 21:39:56 +0000
+
 stoat-desktop (1.5.4-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream .zip).
