@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Oct 16 16:14:15 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 0.19.4.1
+
+-------------------------------------------------------------------
 Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Complete the runtime closure: list all 20 remaining DT_NEEDED system
