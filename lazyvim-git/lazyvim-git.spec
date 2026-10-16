@@ -14,6 +14,10 @@ URL:            https://github.com/LazyVim/LazyVim
 Source0:        lazyvim-%{shortcommit}.tar.gz
 BuildArch:      noarch
 ExclusiveArch:  x86_64
+# Hard runtime requirements per upstream README (Requirements section):
+# Neovim >= 0.11.2, Git >= 2.19.0 (Nerd Font / C compiler are optional).
+Requires:       git >= 2.19.0
+Requires:       neovim >= 0.11.2
 
 %description
 LazyVim is a Neovim setup powered by lazy.nvim to make it easy to
