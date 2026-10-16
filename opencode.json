@@ -60,9 +60,9 @@
           "maxTokens": 8192,
           "contextWindow": 131072
         },
-        "step-5-preview-free": {
-          "name": "Step 5 Preview Free",
-          "model": "opencode/step-5-preview-free",
+        "glm-5.3-flash-free": {
+          "name": "GLM 5.3 Flash Free",
+          "model": "opencode/glm-5.3-flash-free",
           "maxTokens": 8192,
           "contextWindow": 131072
         }
