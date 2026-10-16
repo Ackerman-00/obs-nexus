@@ -48,9 +48,9 @@
           "maxTokens": 8192,
           "contextWindow": 131072
         },
-        "cat-jam-free": {
-          "name": "Cat Jam Free",
-          "model": "opencode/cat-jam-free",
+        "deepseek-v4.1-flash-free": {
+          "name": "DeepSeek V4.1 Flash Free",
+          "model": "opencode/deepseek-v4.1-flash-free",
           "maxTokens": 8192,
           "contextWindow": 131072
         },
