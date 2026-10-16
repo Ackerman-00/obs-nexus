@@ -85,6 +85,16 @@ curl -fsSL --retry 3 --connect-timeout 30 "https://github.com/$GITHUB_REPO/archi
     || { echo "Source download failed; spec left untouched."; exit 1; }
 tar -xzf "$TMPD/main.tar.gz" -C "$TMPD" \
     || { echo "Source tarball corrupt; spec left untouched."; exit 1; }
+# Upstream renamed the repo jub0t/concat -> jub0t/Concat (2026-10-16), so the
+# archive top dir is now Concat-<sha> (GitHub uses the repo name verbatim).
+# Normalize to the canonical lowercase dir so the unified tarball layout and
+# the spec's %autosetup -n concat-%{commit} keep working regardless of case.
+TOPD=$(tar -tzf "$TMPD/main.tar.gz" | head -1 | cut -d/ -f1)
+if [ "$TOPD" != "concat-$HEAD_SHA" ]; then
+    echo "Note: archive top dir is $TOPD, normalizing to concat-$HEAD_SHA."
+    mv "$TMPD/$TOPD" "$TMPD/concat-$HEAD_SHA" \
+        || { echo "Top-dir rename failed; spec left untouched."; exit 1; }
+fi
 SRC="$TMPD/concat-$HEAD_SHA"
 [ -d "$SRC/src" ] || { echo "Unexpected source layout (no src/); spec left untouched."; exit 1; }
 
