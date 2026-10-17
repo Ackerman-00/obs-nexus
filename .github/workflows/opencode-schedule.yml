@@ -124,7 +124,7 @@ jobs:
           # free-model gateways over (AI_APICallError: socket closed). Cheap
           # insurance inside a 355-min job.
           sleep $((RANDOM % 180))
-          for model in "opencode/muse-spark-1.3-contributor-free" "opencode/mimo-v2.6-flash-free" "opencode/jev-1.13-free" "opencode/muse-spark-1.2-contributor-free" "opencode/longcat-2.5-preview-free" "opencode/nemotron-3.5-lightning-free" "opencode/big-pickle" "opencode/deepseek-v4.1-flash-free" "opencode/space-bunny-free" "opencode/glm-5.3-flash-free"; do
+          for model in "opencode/mimo-v2.6-flash-free" "opencode/jev-1.13-free" "opencode/longcat-2.5-preview-free" "opencode/nemotron-3.5-lightning-free" "opencode/big-pickle" "opencode/deepseek-v4.1-flash-free" "opencode/space-bunny-free" "opencode/glm-5.3-flash-free" "opencode/nemotron-3.5-super-vl-free" "opencode/beam-free"; do
             echo "=== opencode run attempt with $model ==="
             exit_code=0
             # Per-model retries with backoff: free-tier gateways drop sockets under
@@ -165,7 +165,7 @@ jobs:
           done
           exit 1
         env:
-          MODEL: opencode/muse-spark-1.3-contributor-free
+          MODEL: opencode/mimo-v2.6-flash-free
           OPENCODE_CONFIG_CONTENT: '{"small_model":"opencode/mimo-v2.6-flash-free"}'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -1375,11 +1375,13 @@ jobs:
                in this workflow's model cascade plus opencode.json is still
                listed. Any ID returning 401/404/delisted (past casualties:
                x-preview-f-free, hy3-free, deepseek-v4-flash-free,
-               mimo-v2.5-free, ling-3.1-flash-free) is removed THAT run:
+               mimo-v2.5-free, ling-3.1-flash-free,
+               muse-spark-1.3-contributor-free,
+               muse-spark-1.2-contributor-free) is removed THAT run:
                patch the cascade(s)
                and opencode.json to live equivalents, keeping the order
-               muse-spark-1.3-contributor-free first, mimo-v2.6-flash-free
-               second, then the remaining verified *-free IDs. Same pass:
+               mimo-v2.6-flash-free first, then the remaining verified
+               *-free IDs. Same pass:
                `python3 -m py_compile tools/*.py`, `bash -n` on
                tools/verify-opensuse.sh, and confirm the pinned action
                versions in .github/workflows/* are still the latest majors
