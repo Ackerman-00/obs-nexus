@@ -1,5 +1,22 @@
 -------------------------------------------------------------------
-Sat Oct 17 03:22:04 UTC 2026 - 
+Sat Oct 17 05:01:25 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.23.3b-0
+- Fix install failure: soname-exclude zen's OWN bundled NSS/NSPr stack
+  (libnss3/nssutil3/ssl3/smime3/nspr4/plc4/plds4) from auto-Requires.
+  libxul.so imports versioned NSS symbols up to NSSUTIL_3.130/NSS_3.126
+  that the system mozilla-nss does not provide, so the 1.23.3b build
+  emitted an unresolvable "nothing provides
+  libnssutil3.so(NSSUTIL_3.130)(64bit)" and every zypper install broke.
+  zen resolves these from its bundled copies via $ORIGIN, same rationale
+  as the already-excluded moz* libs; libnssckbi.so still comes from the
+  system (mozilla-nss-certs Requires + symlink). Verified: 1.23.3b RPM
+  install failed before, installs clean after in a fresh TW container.
+- Define PACKAGER_ADDR in update.sh (was referenced but unset, which wrote
+  an empty .changes heading).
+
+-------------------------------------------------------------------
+Sat Oct 17 03:22:04 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.3b-0
 - Update zen-browser to v1.23.3b

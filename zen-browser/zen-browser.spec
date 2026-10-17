@@ -12,8 +12,16 @@ Release:        0
 # the distro provides them (proven 2026-09-09 via rpm -q --whatprovides in a
 # clean TW container) and they resolve at runtime from zen's own directory
 # via $ORIGIN (zen-bin runs in place).
+# 2026-10-17 (1.23.3b): the bundled NSS/NSPr stack (libnss3/nssutil3/ssl3/
+# smime3/nspr4/plc4/plds4) must ALSO be soname-excluded. libxul.so imports
+# versioned NSS symbols up to NSSUTIL_3.130/NSS_3.126 that the system
+# mozilla-nss does NOT provide, so the auto-Requires emitted an unresolvable
+# "nothing provides libnssutil3.so(NSSUTIL_3.130)(64bit)" and every install
+# broke. zen uses its OWN bundled NSS via $ORIGIN - the system copy is
+# irrelevant, same rationale as the moz* libs. Only libnssckbi.so (root CA
+# module) comes from the system: explicit mozilla-nss-certs Requires + symlink.
 %global __provides_exclude_from ^/usr/lib64/zen-browser/.*$
-%global __requires_exclude ^lib(gkcodecs|lgpllibs|mozavcodec|mozavutil|mozgtk|mozsandbox|mozsqlite3|mozwayland|clearkey|freeblpriv3)\.so.*$
+%global __requires_exclude ^lib(gkcodecs|lgpllibs|mozavcodec|mozavutil|mozgtk|mozsandbox|mozsqlite3|mozwayland|clearkey|freeblpriv3|nss3|nssutil3|ssl3|smime3|nspr4|plc4|plds4)\.so.*$
 Summary:        Minimal browser focused on privacy and calm browsing
 License:        MPL-2.0
 URL:            https://github.com/zen-browser/desktop

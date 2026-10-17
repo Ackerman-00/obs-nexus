@@ -11,6 +11,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="zen-browser.spec"
 CHANGES_FILE="zen-browser.changes"
 REPO="zen-browser/desktop"
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for updates..."
 

@@ -7,6 +7,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="vesktop.spec"
 CHANGES_FILE="vesktop.changes"
 REPO="Vencord/Vesktop"
+PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for updates..."
 
