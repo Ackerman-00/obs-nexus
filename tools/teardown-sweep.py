@@ -100,12 +100,20 @@ def latest_channel_version_header(url, timeout=60):
     'latest'-channel artifact URL (e.g. X-Fluxer-Version: 2026.820.194906).
     Such a header is authoritative upstream declaration of what the URL
     currently serves - even when the artifact's internal version tag uses a
-    different scheme."""
+    different scheme.
+
+    Infrastructure protocol-version headers are NOT upstream declarations and
+    are skipped: x-ms-version is set by Microsoft Azure Blob Storage (which
+    backs GitHub release assets via release-assets.githubusercontent.com) and
+    always carries the frozen REST API constant (e.g. 2018-11-09) - observed
+    false-positive 2026-10-17 on the localsend .deb URL."""
+    PROTOCOL_VERSION_HEADERS = {"x-ms-version"}
     try:
         req = urllib.request.Request(url, method="HEAD", headers=UA)
         with urllib.request.urlopen(req, timeout=timeout) as r:
             for k, v in r.headers.items():
-                if "version" in k.lower() and v.strip():
+                if ("version" in k.lower() and v.strip()
+                        and k.lower() not in PROTOCOL_VERSION_HEADERS):
                     return k, v.strip()
     except Exception:
         pass
@@ -144,6 +152,25 @@ def versions_match(pv, internal):
     if len(pc) > len(ic) and pc[len(pc) - len(ic):] == ic:
         return True
     return False
+
+
+def version_newer(a, b):
+    """True when version a is strictly newer than version b, compared on
+    numeric dotted components (non-numeric tails compared lexically).
+    Unparseable/empty input -> False (never claim newer without evidence)."""
+    na, nb = normalize(a), normalize(b)
+    if not na or not nb:
+        return False
+    pa, pb = na.split("."), nb.split(".")
+    try:
+        ta = [(1, int(x), "") if x.isdigit() else (0, 0, x) for x in pa]
+        tb = [(1, int(x), "") if x.isdigit() else (0, 0, x) for x in pb]
+    except (ValueError, TypeError):
+        return False
+    n = max(len(ta), len(tb))
+    ta += [(0, 0, "")] * (n - len(ta))
+    tb += [(0, 0, "")] * (n - len(tb))
+    return ta > tb
 
 
 TEMPLATE_VERSION_RE = re.compile(r"%\{|%\(|\$\{|\$\(|\$[A-Z]|#\{short|git%|\.git\d|snapshot|branch=|commit=")
@@ -229,11 +256,25 @@ def repology_dep_info(pkg):
                     newest = p
                     break
         if newest:
+            # Cross-check: the chosen entry may be an OLD sibling package;
+            # compute the true max version across every repo entry so a
+            # genuinely newer upstream can never hide behind it (false-
+            # negative guard, mirrors the false-positive guard at the call
+            # site). Only well-formed comparable versions participate.
+            max_ver, max_repo = None, None
+            for p in data:
+                v = p.get("version")
+                if not v or is_template_version(v):
+                    continue
+                if max_ver is None or version_newer(v, max_ver):
+                    max_ver, max_repo = v, p.get("repo")
             return {
                 "upstream_version": newest.get("version"),
                 "repo": newest.get("repo"),
                 "status": newest.get("status"),
                 "summary": newest.get("summary"),
+                "max_version": max_ver,
+                "max_repo": max_repo,
             }
     except Exception:
         pass
@@ -2334,13 +2375,40 @@ def check_vulns_and_deps(pkgs, repo_type):
         if info:
             upstream = info.get("upstream_version", "?")
             status = info.get("status", "?")
-            if status == "outdated" and upstream:
+            # NB: never promote info['max_version'] (true max across repos)
+            # into 'upstream'. Repology marks the authoritative newest entry
+            # with status='newest' (already preferred by repology_dep_info);
+            # when no such entry exists the project is version-ambiguous
+            # (2026-10-17 rootapp: AUR rootapp 1.0.0 is an unverified
+            # SKIP-checksum relabel of the SAME URL our live-artifact check
+            # proved serves internal 0.9.148 == pinned). In ambiguous cases
+            # the deterministic teardown verdict is the final authority and
+            # max_version promotion would re-import the sibling false
+            # positive. max_version is computed for the audit trail only.
+            if (status == "outdated" and upstream and version_newer(upstream, clean_pv)
+                    and not versions_match(clean_pv, upstream)):
                 total_outdated += 1
                 tool = AUTO_UPDATE_TOOLS.get(repo_type, "manual")
                 log("[OUTDATED] %s: pinned %s, upstream %s -> use %s"
                     % (pkg, clean_pv, upstream, tool))
                 rows.append((pkg, pkg, clean_pv, upstream, "OUTDATED",
                              "upstream %s available, use %s" % (upstream, tool)))
+            elif status == "outdated":
+                # Repology 'outdated' is PER-REPO and can fire on a sibling
+                # packaging whose version EQUALS or is OLDER than our pin
+                # (observed 2026-10-17: project rootapp -> AUR rootapp-bin
+                # 0.9.148 'outdated' vs AUR rootapp 1.0.0, an unverified
+                # SKIP-checksum relabel of the SAME upstream URL; our
+                # live-artifact teardown already proved the served AppImage
+                # reports internal 0.9.148 == pinned). OUTDATED now requires
+                # a strictly newer comparable upstream version; anything
+                # else is counted FRESH with the evidence in the log line,
+                # not silently swallowed.
+                total_fresh += 1
+                log("[FRESH] %s@%s (repology status=%s on a sibling packaging,"
+                    " but upstream version %s is not newer than pinned;"
+                    " false positive guarded)"
+                    % (pkg, clean_pv, status, upstream))
             elif status == "newest":
                 total_fresh += 1
                 log("[FRESH] %s@%s" % (pkg, clean_pv))
