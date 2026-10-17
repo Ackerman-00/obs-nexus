@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Oct 17 22:55:18 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add missing runtime Requires: hicolor-icon-theme (icons install into
+  the hicolor tree; matches the fedora-nexus sibling and our own
+  debian.control Depends)
+
+-------------------------------------------------------------------
 Thu Oct 15 21:39:56 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Drop unproven BuildRequires: cmake (no CMakeLists or cmake reference

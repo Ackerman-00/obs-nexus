@@ -102,9 +102,24 @@ install -dm755 %{buildroot}%{_datadir}/applications
 sed -e 's|^Exec=.*|Exec=%{_bindir}/obsidian %U|' -e 's|^Icon=.*|Icon=%{app_id}|' \
     squashfs-root/%{app_id}.desktop > %{buildroot}%{_datadir}/applications/%{app_id}.desktop
 
-# 4. Icon from the AppImage
-install -Dm644 squashfs-root/obsidian.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{app_id}.png
+# 4. Icons from the AppImage's own hicolor tree, keeping each size's REAL
+# dimensions (the old single file was the 512px bitmap faked into the
+# 256x256 slot - a hicolor metadata lie; sizes 16..512 now all ship).
+for sizedir in squashfs-root/%{_datadir}/icons/hicolor/[0-9]*x[0-9]*/apps; do
+    [ -f "$sizedir/obsidian.png" ] || continue
+    sz=$(basename "$(dirname "$sizedir")")
+    install -Dm644 "$sizedir/obsidian.png" \
+        "%{buildroot}%{_datadir}/icons/hicolor/$sz/apps/%{app_id}.png"
+done
 install -Dm644 squashfs-root/obsidian.png %{buildroot}%{_datadir}/pixmaps/%{app_id}.png
+
+# 5. MIME definitions from the AppImage: the desktop entry registers
+# MimeType=x-scheme-handler/obsidian (obsidian:// URL handler) plus
+# x-obsidian-canvas/x-obsidian-base, so without this file the scheme and
+# type associations never register. shared-mime-info's rpm filetrigger
+# runs update-mime-database automatically on TW (verified 2026-10-17).
+install -Dm644 squashfs-root/%{_datadir}/mime/packages/obsidian.xml \
+    %{buildroot}%{_datadir}/mime/packages/obsidian.xml
 
 # OpenSUSE optimization: hardlink duplicate files
 %fdupes %{buildroot}/opt/obsidian
@@ -117,8 +132,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
 %doc /opt/obsidian/LICENSES.chromium.html
 %{_bindir}/%{name}
 %{_datadir}/applications/%{app_id}.desktop
-%{_datadir}/icons/hicolor/256x256/apps/%{app_id}.png
+%{_datadir}/icons/hicolor/*/apps/%{app_id}.png
 %{_datadir}/pixmaps/%{app_id}.png
+%{_datadir}/mime/packages/obsidian.xml
 %exclude /opt/obsidian/LICENSE.electron.txt
 %exclude /opt/obsidian/LICENSES.chromium.html
 # Unused AppImage runtime loader (we launch /opt/obsidian/obsidian

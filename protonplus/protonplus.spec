@@ -29,6 +29,9 @@ BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libnotify)
 BuildRequires:  pkgconfig(libsoup-3.0)
 BuildRequires:  pkgconfig(sdl3) >= 3.2.0
+# Runtime: icons install into the hicolor tree, so the theme owns the
+# directory skeleton (matches fedora-nexus sibling + our debian.control).
+Requires:       hicolor-icon-theme
 
 %description
 ProtonPlus is a Proton version manager for installing and managing Proton

@@ -58,3 +58,14 @@ override_dh_auto_install:
 	    appimage-root/md.obsidian.Obsidian.desktop > debian/obsidian/usr/share/applications/md.obsidian.Obsidian.desktop
 	install -Dm644 appimage-root/obsidian.png debian/obsidian/usr/share/icons/hicolor/256x256/apps/md.obsidian.Obsidian.png
 	install -Dm644 appimage-root/obsidian.png debian/obsidian/usr/share/pixmaps/md.obsidian.Obsidian.png
+	# Real-size hicolor tree from the payload (16..512): the single file
+	# above is the 512px bitmap; installing every size keeps hicolor
+	# metadata honest, same fix as the RPM side (2026-10-17).
+	for sizedir in appimage-root/usr/share/icons/hicolor/[0-9]*x[0-9]*/apps; do \
+	    [ -f "$$sizedir/obsidian.png" ] || continue; \
+	    sz=$$(basename "$$(dirname "$$sizedir")"); \
+	    install -Dm644 "$$sizedir/obsidian.png" "debian/obsidian/usr/share/icons/hicolor/$$sz/apps/md.obsidian.Obsidian.png"; \
+	done
+	# MIME definitions (x-scheme-handler/obsidian + x-obsidian-* types):
+	# the desktop entry registers them, so the xml must ship system-wide.
+	install -Dm644 appimage-root/usr/share/mime/packages/obsidian.xml debian/obsidian/usr/share/mime/packages/obsidian.xml

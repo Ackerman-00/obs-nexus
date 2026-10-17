@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Sat Oct 17 22:55:18 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Ship the AppImage's real-size hicolor icon tree (16..512) instead of
+  the 512px bitmap faked into the 256x256 slot, and install the payload's
+  MIME definitions to /usr/share/mime/packages (obsidian.xml): the desktop
+  entry registers x-scheme-handler/obsidian plus x-obsidian-canvas/base,
+  which never registered while the xml stayed buried under /opt;
+  debian.rules gets the identical fix
+
+-------------------------------------------------------------------
 Fri Oct  9 16:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Prune 5 stale rpmlintrc filters (unused on the current payload;
