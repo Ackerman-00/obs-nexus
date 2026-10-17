@@ -126,6 +126,11 @@ def normalize(v):
     v = re.sub(r"\^.*$", "", v)
     v = re.sub(r"~.*$", "", v)
     v = re.sub(r"-([0-9]+)$", "", v)
+    # Debian-style build/DFSG suffixes (e.g. upstream deb control declaring
+    # '1.18.2+64' for release tag v1.18.2) are packaging metadata, not part
+    # of the upstream version. Observed false-positive 2026-10-17 on the
+    # localsend deb: pinned 1.18.2 vs internal 1.18.2+64.
+    v = re.sub(r"\+([0-9]+|dfsg[0-9]*)$", "", v)
     return v.lower()
 
 
