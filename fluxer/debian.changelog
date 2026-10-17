@@ -1,3 +1,9 @@
+fluxer (2026.1017.133957-1) unstable; urgency=medium
+
+  * New upstream release 2026.1017.133957.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 17 Oct 2026 15:08:19 +0000
+
 fluxer (2026.1015.145325-2) unstable; urgency=medium
 
   * Fix Depends: rename libpipewire-0.3-0 to libpipewire-0.3-0t64
