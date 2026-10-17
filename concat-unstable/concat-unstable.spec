@@ -20,24 +20,25 @@ URL:            https://github.com/jub0t/concat
 # 1.28.0 libs (top dir concat-<commit>/). Single source keeps %prep and
 # the Debian orig trivially in sync (cf. lazyvim-git generated tarballs).
 Source0:        %{name}-%{version}.tar.gz
+BuildRequires:  Mesa-libGL-devel
+BuildRequires:  alsa-devel
 BuildRequires:  cargo
 # NOTE: no `rustc` BuildRequires - no such package exists on Tumbleweed
 # (verified `zypper se --match-exact rustc` = 0 hits); `cargo` requires
 # the Rust toolchain, so the compiler is always present.
-BuildRequires:  pkgconfig(openssl)
-BuildRequires:  gcc-c++
-BuildRequires:  make
 BuildRequires:  cmake
-BuildRequires:  pkgconf
-BuildRequires:  libclang13
+BuildRequires:  desktop-file-utils
 BuildRequires:  fontconfig-devel
 BuildRequires:  freetype2-devel
-BuildRequires:  libxkbcommon-devel
-BuildRequires:  Mesa-libGL-devel
+BuildRequires:  gcc-c++
 BuildRequires:  gtk3-devel
-BuildRequires:  alsa-devel
-BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
+BuildRequires:  libclang13
+BuildRequires:  libxkbcommon-devel
+BuildRequires:  make
+BuildRequires:  pkgconf
+BuildRequires:  pkgconfig
+BuildRequires:  pkgconfig(openssl)
 # Runtime set mirrors the stable repack (same GUI stack; NEEDED-derived
 # system libs additionally auto-resolve since only /opt paths are
 # excluded). Bundled libav*/libonnxruntime resolve via $ORIGIN/lib.
