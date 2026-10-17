@@ -315,19 +315,72 @@ def expand_deb_url(spec_path, ver):
     return ""
 
 
+def parse_debian_control_depends(name, spec_path):
+    """Extract our shipped runtime Depends for `name` from the package's
+    flat debian.control (the debtransform input OBS uses at build time).
+    Upstream's own .deb control frequently under-declares its payload
+    (e.g. koharu ships libcef + gtk4 but declares only libgtk-3-0); our
+    debian.control carries the corrected set, so the container must
+    install THAT set - testing only upstream's control would measure
+    the wrong artifact. Returns a list of apt package names."""
+    ctrl = Path(spec_path).parent / "debian.control"
+    if not ctrl.exists():
+        return []
+    try:
+        text = ctrl.read_text()
+    except Exception:
+        return []
+    # Join control continuation lines (lines starting with whitespace)
+    fields, cur = [], ""
+    for line in text.splitlines():
+        if line[:1] in (" ", "\t"):
+            cur += " " + line.strip()
+        else:
+            if cur:
+                fields.append(cur)
+            cur = line
+    if cur:
+        fields.append(cur)
+    deps = []
+    for f in fields:
+        if not f.startswith("Depends:"):
+            continue
+        for tok in f[len("Depends:"):].split(","):
+            tok = tok.strip()
+            if not tok or "${" in tok:
+                continue  # ${misc:Depends} is dpkg's own, not installable
+            tok = re.sub(r'\(.*?\)', "", tok).strip()   # version constraints
+            tok = re.sub(r'\[.*?\]', "", tok).strip()   # arch restrictions
+            tok = tok.split("|")[0].strip()             # first alternative
+            if re.fullmatch(r'[a-z0-9][a-z0-9+.-]+', tok):
+                deps.append(tok)
+    return sorted(set(deps))
+
+
 def test_debian_package(name, ver, spec_path, workdir, image="debian:testing"):
     """Verify the upstream .deb repacked by this spec installs on Debian
-    (debian:testing image): download the .deb from the spec's
+    (debian:testing/sid image): download the .deb from the spec's
     Source0 URL, check control Version, install with apt (dpkg fallback),
-    then ldd + binary probe. RPM-spec parsing stays the source of truth —
-    this only exercises the .deb payload Debian users would touch."""
+    then ldd + binary probe. Our debian.control Depends are installed
+    too (OBS applies them at build time, so they are part of what the
+    shipped package provides). RPM-spec parsing stays the source of
+    truth — this only exercises the .deb payload Debian users would touch."""
     deb_url = expand_deb_url(spec_path, ver)
     if not deb_url or "'" in deb_url:
         return {"package": name, "status": STATUS_SKIP,
                 "details": "no resolvable upstream .deb URL in spec"}
+    our_depends = parse_debian_control_depends(name, spec_path)
+    dep_install = ""
+    if our_depends:
+        dep_install = (
+            "for p in %s; do apt-get install -y -qq \"$p\" >/dev/null 2>&1 "
+            "|| echo DEP-SKIP \"$p\"; done" % " ".join(our_depends))
     commands = [
         "apt-get update -qq 2>&1 | tail -3",
         "apt-get install -y -qq curl binutils file 2>&1 | tail -3",
+        # Install our debian.control runtime set first (what the OBS-built
+        # package declares); DEP-SKIP lines name anything absent in this dist
+        dep_install or "true",
         "curl -fsSL '%s' -o /tmp/pkg.deb && ls -l /tmp/pkg.deb || echo NO-DEB-URL" % deb_url,
         "dpkg-deb -f /tmp/pkg.deb Version 2>&1 || echo NO-DEB-FILE",
         # Install: apt handles deps, dpkg -i + apt -f fallback covers odd control files
