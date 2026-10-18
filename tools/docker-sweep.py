@@ -302,6 +302,12 @@ def expand_deb_url(spec_path, ver):
         return ""
     m_repo = re.search(r'^GITHUB_REPO="([^"]+)"', shtxt, re.M)
     repo = m_repo.group(1).strip() if m_repo else ""
+    # Generic literal shell assignments (ART_PREFIX="artcraft-launcher"
+    # etc.): any $UPPER_SNAKE var with a plain quoted assignment in
+    # update.sh is expanded, so wrapper-repack recipes whose .deb URL is
+    # built from such vars resolve instead of being skipped.
+    assigns = dict(re.findall(r'^([A-Z][A-Z0-9_]*)="([^"$%{}]*)"\s*$',
+                              shtxt, re.M))
     for m in re.finditer(r"https?://\S+\.deb", shtxt):
         u = m.group(0).strip('"\'')
         for pat in ("%{version}", "%{ver}", "$1", "${1}", "$NEW_VER",
@@ -310,6 +316,8 @@ def expand_deb_url(spec_path, ver):
         u = u.replace("$LATEST_TAG", "v" + ver)
         if repo:
             u = u.replace("$GITHUB_REPO", repo)
+        for var, val in assigns.items():
+            u = u.replace("$" + var, val).replace("${" + var + "}", val)
         if u.startswith(("http://", "https://")) and "$" not in u and "%" not in u:
             return u
     return ""
