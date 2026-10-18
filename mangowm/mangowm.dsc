@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: mangowm
 Binary: mangowm
 Architecture: amd64
-Version: 0.18.1
+Version: 0.18.2
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libwayland-dev, libwayland-bin, wayland-protocols, libinput-dev,
@@ -28,4 +28,4 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: mangowm-0.18.1.tar.gz
+Debtransform-Tar: mangowm-0.18.2.tar.gz
