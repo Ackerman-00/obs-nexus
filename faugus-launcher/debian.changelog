@@ -1,3 +1,9 @@
+faugus-launcher (2.5.0.1-1) unstable; urgency=medium
+
+  * New upstream release 2.5.0.1.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 18 Oct 2026 20:48:57 +0000
+
 faugus-launcher (2.5.0-2) unstable; urgency=medium
 
   * Drop python3-dbus from Depends (all D-Bus use is via Gio).

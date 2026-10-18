@@ -16,8 +16,12 @@ PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
-# Faugus tags are BARE versions (2.4.4, no v prefix).
-LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+# Faugus tags are BARE versions (2.4.4, no v prefix). The regex must accept
+# ANY 3+-component version (2.5.0.1 shipped 2026-10-17): the old strict
+# ^[0-9]+\.[0-9]+\.[0-9]+$ matched only 3 components, so the updater was
+# structurally blind to the 4-component 2.5.0.1 and missed it for a run.
+# Still excludes the historical v-prefixed / -N-suffixed tags (v1.1-24 ...).
+LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+(\.[0-9]+)+$' | sort -V | tail -1)
 
 if [ -z "$LATEST_TAG" ]; then
     echo "  -> ❌ [ERROR] Failed to fetch latest tag."
