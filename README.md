@@ -46,6 +46,23 @@ repository (`https://download.opensuse.org/tumbleweed/repo/oss/`).
 [OBS project page](https://build.opensuse.org/project/show/home:ackerman);
 follow the "Download package" instructions there for your release.
 
+The repository is signed - a bare `deb` line without the signing key fails
+`apt-get update` with `Missing key A281D9E0...` on current Debian
+(verified in clean `debian:testing` and `debian:sid` containers,
+2026-10-18). Add the key once, then the source line:
+
+```sh
+sudo apt-get install ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.opensuse.org/repositories/home:ackerman/Debian_Testing/Release.key \
+  | gpg --dearmor | sudo tee /etc/apt/keyrings/obs-nexus.gpg > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/obs-nexus.gpg] https://download.opensuse.org/repositories/home:ackerman/Debian_Testing/ /" \
+  | sudo tee /etc/apt/sources.list.d/nexus.list
+sudo apt-get update && sudo apt-get install <package>
+```
+
+Use `.../Debian_Unstable/Release.key` for the Sid repository.
+
 ## Supported targets
 
 One source tree builds for three targets on OBS, **x86_64 only**

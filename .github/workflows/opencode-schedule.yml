@@ -299,16 +299,20 @@ jobs:
               home:ackerman TW = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/,
               Tumbleweed OSS = https://download.opensuse.org/tumbleweed/repo/oss/.
               README.md Installation section is the single source of truth for
-              these URLs (including the `home:ackerman.repo` file form) - if
-              they ever differ, README wins: follow README and correct this
-              prompt text to match.
+              these URLs - if they ever differ, README wins: follow README and
+              correct this prompt text to match. NOTE (README, verified
+              2026-10-14): the `.../home:ackerman.repo` file-URL form no
+              longer works with current zypper - use the baseurl form
+              `zypper addrepo --refresh <dir-url> home:ackerman`.
               Verified repo URLs (HTTP 200, do not guess variants):
               home:ackerman TW = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/,
               Tumbleweed OSS = https://download.opensuse.org/tumbleweed/repo/oss/.
               README.md Installation section is the single source of truth for
-              these URLs (including the `home:ackerman.repo` file form) - if
-              they ever differ, README wins: follow README and correct this
-              prompt text to match.
+              these URLs - if they ever differ, README wins: follow README and
+              correct this prompt text to match. NOTE (README, verified
+              2026-10-14): the `.../home:ackerman.repo` file-URL form no
+              longer works with current zypper - use the baseurl form
+              `zypper addrepo --refresh <dir-url> home:ackerman`.
             - Builds happen in OBS (project home:ackerman), triggered per-package when
               files are uploaded (cmd=runservice) or when a rebuild is requested
               (cmd=rebuild, valid on /source/<pkg> and /build/<project>).
@@ -881,7 +885,7 @@ jobs:
               g. DOCKER BATTLE TEST + ALL CONTENT (MANDATORY - every binary + repo itself in a clean Tumbleweed container, not just OBS "succeeded"). This is not optional:
                  1. FOR EVERY .rpm in OBS home:ackerman (all of them - derive the count via `ls */*.spec`, never hardcode): download via `osc getbinaries` or `zypper --plus-content` + resolve AND install in the TW container per the INSTALL-VERIFICATION SWEEP above (`zypper in` for at least 5 diverse per run, oldest-uncovered first, plus every touched) AND test every built .deb in clean debian:testing and debian:sid containers per the DEBIAN FAMILY clause above + FLEET REBUILD ROTATION per UPSTREAM INTELLIGENCE SWEEP above (rebuild oldest slice from CURRENT specs, full fleet within 3 runs). No manual `rpm -qp --requires` fallback is a battle test.
                  2. ALL CONTENT: `ls -R`/`find . -type f | sort` -- every `*/*.spec`, `*/*.changes`, `*/_service`, `*/update.sh`, `.github/workflows/*.yml` (`yaml.safe_load` valid), `README.md` install (`zypper addrepo` URL must match Docker path or fix README; the 3-target table must match the CONTEXT matrix) must be checked; any file not checked = gap.
-                 3. REPO ITSELF: inside clean `opensuse/tumbleweed` container, `zypper addrepo https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/home:ackerman.repo` + `zypper refresh` + `zypper se --repo home_akerman` must list every package (count via `ls -d */`, never hardcode); `osc` `co`/`build` dry-run if available. Think like new openSUSE user who just added the repo -- if they would hit it, you must hit it first.
+                 3. REPO ITSELF: inside clean `opensuse/tumbleweed` container, `zypper addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ home:ackerman` (baseurl form per README - the old `home:ackerman.repo` file-URL form no longer works) + `zypper refresh` + `zypper se --repo home_ackerman` must list every package (count via `ls -d */`, never hardcode); `osc` `co`/`build` dry-run if available. Think like new openSUSE user who just added the repo -- if they would hit it, you must hit it first.
 
             OPTIMIZATION DISCIPLINE (MANDATORY for every source-built
             package you touch; skip only for prebuilt/repackaged binaries,
