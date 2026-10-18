@@ -52,6 +52,11 @@ Requires:       libxkbcommon.so.0()(64bit)
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
+# Qt portal file-dialog shims (bundled libqt5_shim.so/libqt6_shim.so) are
+# dlopen-optional with a GTK fallback; Recommends mirrors the Debian recipe's
+# libqt5widgets5t64/libqt6widgets6 exactly (weak dep, install never blocked).
+Recommends:     libQt5Widgets5
+Recommends:     libQt6Widgets6
 Recommends:     liberation-fonts
 Recommends:     vulkan-loader
 # www-browser convention shared by openSUSE's firefox/chromium packages

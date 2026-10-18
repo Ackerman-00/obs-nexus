@@ -30,6 +30,11 @@ Requires:       libXrandr2
 Requires:       libasound2
 Requires:       libcups2
 Requires:       libgbm1
+# Explicit because of %%__requires_exclude_from ^/opt/Stoat/ above: the
+# bundled node-pipewire index.node hard-NEEDED libpipewire-0.3.so.0 is
+# auto-excluded like the rest of /opt, so RPM auto-deps never see it
+# (Debian recipe Depends pipewire; mirror for parity).
+Requires:       libpipewire-0_3-0
 Requires:       libsecret-1-0
 Requires:       libsystemd0
 Requires:       libxcb1
@@ -112,6 +117,5 @@ esac
 %{_datadir}/icons/hicolor/256x256/apps/chat.stoat.StoatDesktop.png
 %{_datadir}/metainfo/chat.stoat.StoatDesktop.metainfo.xml
 /opt/Stoat/
-%{_bindir}/stoat-desktop
 
 %changelog

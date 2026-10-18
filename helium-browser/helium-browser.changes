@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Sun Oct 18 11:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommends: libQt5Widgets5 libQt6Widgets6 - the bundled Qt portal
+  file-dialog shims (libqt5_shim.so/libqt6_shim.so) NEED those sonames;
+  Debian recipe already Recommends libqt5widgets5t64/libqt6widgets6,
+  RPM side had nothing (dlopen-optional, GTK fallback unaffected).
+
+-------------------------------------------------------------------
 Fri Oct 16 16:14:15 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 0.19.4.1
