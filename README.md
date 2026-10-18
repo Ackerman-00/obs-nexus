@@ -65,10 +65,10 @@ Use `.../Debian_Unstable/Release.key` for the Sid repository.
 
 ## Supported targets
 
-One source tree builds for three targets on OBS, **x86_64 only**
-(owner decision 2026-10-11: i586/aarch64 removed from all recipes and repos;
-Leap 16.0, Slowroll and Debian 13 Trixie dropped the same day, Ubuntu 26.04
-dropped 2026-10-12):
+One source tree builds for exactly three targets on OBS, **x86_64/amd64
+only** (owner decision 2026-10-11: i586/aarch64 removed from all recipes and
+repos; every other previously-listed target was dropped by owner order and is
+out of scope):
 
 | Family | Targets | Recipe |
 |---|---|---|
