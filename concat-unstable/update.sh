@@ -220,6 +220,6 @@ if [ -f "$CHANGES_FILE" ]; then
 else
     echo -e "$NEW_CHANGELOG_ENTRY" > "$CHANGES_FILE"
 fi
-fi
 
 echo "Success! concat-unstable at base $BASE_VER + $SHORT. Ready for OBS sync."
+fi
