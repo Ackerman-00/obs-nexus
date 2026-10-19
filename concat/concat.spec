@@ -9,7 +9,7 @@ Version:        0.2.7
 Release:        0
 Summary:        Free and open source video editor
 License:        AGPL-3.0-or-later
-Group:          Productivity/Graphics/Video
+Group:          Productivity/Multimedia/Video/Editors and Convertors
 URL:            https://github.com/jub0t/concat
 Source0:        https://github.com/jub0t/concat/releases/download/v0.2.7/Concat-0.2.7-linux-x86_64.rpm
 BuildRequires:  cpio

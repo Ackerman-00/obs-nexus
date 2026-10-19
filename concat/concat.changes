@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Oct 19 12:22:23 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix invalid Group tag: Productivity/Graphics/Video is not in the
+  openSUSE package group taxonomy; use
+  Productivity/Multimedia/Video/Editors and Convertors
+  (spec-cleaner "use correct group" FIXME gone)
+
+-------------------------------------------------------------------
 Tue Oct 13 18:39:52 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.7-0
