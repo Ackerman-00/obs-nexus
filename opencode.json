@@ -60,6 +60,12 @@
           "maxTokens": 8192,
           "contextWindow": 131072
         },
+        "nemotron-3-ultra-free": {
+          "name": "Nemotron 3 Ultra Free",
+          "model": "opencode/nemotron-3-ultra-free",
+          "maxTokens": 8192,
+          "contextWindow": 131072
+        },
         "beam-free": {
           "name": "Beam Free",
           "model": "opencode/beam-free",
@@ -67,6 +73,16 @@
           "contextWindow": 131072
         }
       }
+    }
+  },
+  "agents": {
+    "general": {
+      "mode": "subagent",
+      "model": "opencode/glm-5.3-flash-free"
+    },
+    "explore": {
+      "mode": "subagent",
+      "model": "opencode/space-bunny-free"
     }
   }
 }

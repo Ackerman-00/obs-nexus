@@ -65,10 +65,13 @@ def _github_headers():
     return headers
 
 
-def fetch(url, timeout=120):
-    """fetch(url) -> bytes. Uses GITHUB_TOKEN for GitHub API calls."""
-    headers = _github_headers() if "api.github.com" in url or "github.com" in url else UA
-    req = urllib.request.Request(url, headers=headers)
+def fetch(url, timeout=120, data=None):
+    """fetch(url) -> bytes. Uses GITHUB_TOKEN for GitHub API calls.
+    Sends a POST with a JSON body when `data` is given, GET otherwise."""
+    headers = dict(_github_headers() if ("api.github.com" in url or "github.com" in url) else UA)
+    if data is not None:
+        headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, headers=headers)
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read()
 
@@ -214,8 +217,11 @@ def repology_newest(project_name):
 
 
 ECOSYSTEM_MAP = {
-    "gentoo": "Gentoo",
-    "fedora": "Fedora",
+    # Only names OSV accepts. Verified live 2026-10-19: "Gentoo" and "Fedora"
+    # return HTTP 400 (not OSV ecosystems), so they map to None and fall
+    # through to an unscoped query - which the API accepts and answers.
+    "gentoo": None,
+    "fedora": None,
     "opensuse": "openSUSE",
     "void": None,
     "nix": None,
@@ -236,7 +242,11 @@ def osv_query(pkg, version, ecosystem=None):
             timeout=15).decode())
         vulns = data.get("vulns", [])
         return [v.get("id", "?") for v in vulns]
-    except Exception:
+    except Exception as exc:
+        # Never swallow this silently again: an empty list must mean "queried
+        # upstream, clean", not "the query never ran".
+        log("  OSV query failed for %s-%s (eco=%s): %s: %s"
+            % (pkg, version, ecosystem, type(exc).__name__, exc))
         return []
 
 

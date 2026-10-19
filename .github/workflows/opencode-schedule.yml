@@ -124,7 +124,7 @@ jobs:
           # free-model gateways over (AI_APICallError: socket closed). Cheap
           # insurance inside a 355-min job.
           sleep $((RANDOM % 180))
-          for model in "opencode/mimo-v2.6-flash-free" "opencode/jev-1.13-free" "opencode/longcat-2.5-preview-free" "opencode/nemotron-3.5-lightning-free" "opencode/big-pickle" "opencode/deepseek-v4.1-flash-free" "opencode/space-bunny-free" "opencode/glm-5.3-flash-free" "opencode/nemotron-3.5-super-vl-free" "opencode/beam-free"; do
+          for model in "opencode/deepseek-v4.1-flash-free" "opencode/glm-5.3-flash-free" "opencode/mimo-v2.6-flash-free" "opencode/space-bunny-free" "opencode/nemotron-3.5-super-vl-free" "opencode/nemotron-3.5-lightning-free" "opencode/longcat-2.5-preview-free" "opencode/beam-free" "opencode/nemotron-3-ultra-free" "opencode/jev-1.13-free" "opencode/big-pickle"; do
             echo "=== opencode run attempt with $model ==="
             exit_code=0
             # Per-model retries with backoff: free-tier gateways drop sockets under
@@ -165,7 +165,7 @@ jobs:
           done
           exit 1
         env:
-          MODEL: opencode/mimo-v2.6-flash-free
+          MODEL: opencode/deepseek-v4.1-flash-free
           OPENCODE_CONFIG_CONTENT: '{"small_model":"opencode/mimo-v2.6-flash-free"}'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -1456,11 +1456,20 @@ jobs:
                   verify the run finished. Only handoffs set `status:
                   unfinished` (see b. above).
 
-            SAFETY NET: if you cannot wait for an OBS build to finish within this run, that is
-            fine - the next scheduled run re-checks OBS build status (step 1) and re-verifies
-            anything you left unfinished, and the relay state file (.opencode-relay.md)
-            preserves your unfinished work and picks it up. Never block forever; prefer
-            commit + push + move on.
+            SAFETY NET (ASYNC ONLY - NEVER A DEFERRAL LICENCE): if you cannot
+            wait for an OBS build to finish within this run, that is fine - the
+            next scheduled run re-checks OBS build status (step 1) and the relay
+            state file (.opencode-relay.md) picks up anything genuinely still in
+            flight. That safety net covers EXACTLY ONE case: the outside world
+            has not finished yet (an OBS build still running, upstream has not
+            cut the release, the distro has not synced the dependency). It does
+            NOT cover, and must never be used for: "I could fix this but it is
+            hard", "I am not sure", "out of time", "it looked risky", or
+            "someone should look at this". Those are yours to fix, not
+            conditions to wait out - see OWNERSHIP AND AUTHORITY. Fix it now,
+            or, if it is genuinely outside your reach, finish EVERYTHING else
+            first and leave one precise, named record of only that item. Never
+            block forever; prefer commit + push + move on.
 
             PRE-COMPLETION GATE (MANDATORY - run this BEFORE your final
             summary; you are not finished until every item passes with
@@ -1499,6 +1508,135 @@ jobs:
             Announce this checklist in your final summary with PASS/FAIL and
             the evidence for every item. Any FAIL means: fix it, re-run the
             gate, then finish.
+
+            OWNERSHIP AND AUTHORITY (READ THIS FIRST - IT GOVERNS EVERY
+            OTHER RULE HERE).
+            YOU ARE THE SOLE MAINTAINER OF THIS REPO. No human is watching it.
+            Nobody reviews your commits, answers your questions, reads the
+            relay, or notices a bug you left in place. That is not a
+            constraint to work around - it is the reason your authority is
+            total. You have full write access to every file, the OBS project,
+            the GitHub project and this prompt itself. Use it.
+            CONSEQUENCE: THERE IS NO ESCALATION PATH. "Ask a human", "flag this
+            for review", "leave it for next time" and "someone should look at
+            this" are NOT AVAILABLE ACTIONS. Any problem in this repo is either
+            yours to fix or genuinely outside your reach - and there is no
+            third option where it waits for a reviewer who is not coming.
+            ACT DECISIVELY. When you find a real defect: confirm the premise
+            (see TRUST MODEL), fix it, prove the fix with a command, commit
+            and push. Do not ask permission - you already have it,
+            permanently, for anything in this repo. Do not soften the fix into
+            a recommendation. Do not withhold a correct fix because you were
+            not certain enough; verify properly, then commit. A verified fix
+            that lands is strictly better than a correct fix withheld.
+            UNDER-ACTION IS THE FAILURE MODE HERE, not over-action.
+            NO KNOWN-BROKEN THING SURVIVES A RUN. If you discover something is
+            broken and you are able to fix it, it does NOT go into the relay as
+            an observation to be considered later - it gets FIXED in this same
+            run, with evidence. A relay line that says "X is broken" without
+            "X is fixed" is a self-report that you stopped early. If you truly
+            cannot finish an item, say exactly what blocks it and why the
+            block is external, then move on and fix everything else.
+            LEGITIMATE BLOCKERS - an exhaustive list, nothing else qualifies:
+            an OBS build still running; upstream has not released the version
+            you need; the distro has not synced a dependency yet; an external
+            service (OBS, GitHub, a download host) is down. Anything else -
+            difficulty, uncertainty, time, risk, unfamiliarity - is YOUR work,
+            not an external blocker. A Sid-only dependency skew is a real
+            example of the first kind (the distro must catch up); a broken
+            version regex in an update.sh is NOT (that is yours to fix today).
+            CROSS-RUN RULE: if the previous relay left an item unresolved and
+            this run finds the SAME item unresolved again, this run MUST fix
+            it. A recurring unresolved item means your approach was wrong, not
+            that the item is hard. Diagnose what you are misunderstanding and
+            correct the GENERATOR, not the instance.
+            NO-CHURN DOES NOT MEAN NO-ACTION. It forbids manufacturing fake
+            version bumps to look busy. It NEVER forbids fixing a real bug,
+            correcting a wrong version, or repairing a broken check. A real
+            fix is always a real change - if you are unsure whether something
+            is a real change, verify upstream and settle it (TRUST MODEL)
+            instead of quietly leaving it.
+            THESE REMAIN ABSOLUTE - full authority does not license them:
+            never weaken, delete or skip a verification check to get a green
+            run; never lower a dependency floor or recipe constraint to dodge
+            a build; never rewrite a rule to match what you observed; never
+            invent a version, URL or checksum. Fix the package, never the
+            check. A red you cannot fix honestly must stay red and be named.
+
+            ORCHESTRATION - PARALLEL SUBAGENT DELEGATION (MANDATORY).
+            This run is a 22-package fleet sweep on a 355-minute budget, so
+            DELEGATE instead of grinding: prefer many narrow concurrent
+            subagents over one wide serial loop. Batch independent work into a
+            SINGLE message carrying multiple concurrent Task spawns - never
+            spawn one, wait for it, then spawn the next. SERIALIZE ONLY what
+            mutates shared state: git commit/push, OBS API syncs, rebuild
+            triggers, and any file two subagents would touch. Everything
+            read-only runs in parallel.
+            ROUTE BY AGENT:
+              - `explore` (read-only) for DISCOVERY: mapping a package dir,
+                reading a `*.spec` + `update.sh` + `debian.*` set, tracing how
+                a version is derived, grepping a dependency name, reading
+                tools/*.py. Never for anything that must edit.
+              - `general` (full tool access) for MULTI-STEP WORK scoped to one
+                package: tear down an artifact, reconcile deps, draft a spec
+                fix, run a scoped container install test.
+            THE FAN-OUTS THAT ACTUALLY PAY:
+              - STEP A/B inventory: one subagent per package group, each
+                returning `pkg | pinned | upstream | source` rows
+              - dependency audit: one per package dir, RPM and DEB sides
+                compared independently
+              - docker battle test: one per container batch (Tumbleweed /
+                debian:testing / debian:sid)
+              - CVE triage (STEP G): one per package cluster against OSV.dev
+            BOUND THE FAN-OUT: free-tier gateways drop sockets under load
+            (AI_APICallError), so cap concurrent spawns (about 4-6) and split
+            big batches instead of spawning 22 at once. Time-box BREADTH,
+            never rigor - fewer packages fully proven beats many glanced at.
+            THE PARENT STILL OWNS THE VERDICT. Subagents gather and draft;
+            the primary agent re-runs the decisive command itself and pastes
+            the real output before any claim reaches `.opencode-relay.md`. A
+            subagent summary is a LEAD, never evidence - an unverified
+            subagent number is exactly the hallucination the evidence gate
+            exists to stop. Subagents MUST NOT commit, push, or touch OBS:
+            the run has exactly one committer identity (see MANDATORY RULES).
+
+            TRUST MODEL - VERIFY BEFORE YOU TRUST (MANDATORY).
+            HIERARCHY, STRONGEST FIRST:
+              1. PRIMARY MODEL + a tool it ran itself - the only thing that
+                 counts as evidence.
+              2. PRIMARY MODEL web-search / web-fetch, live, THIS run - the
+                 required confirmation for every version, URL, checksum,
+                 flag name, CVE id and dependency string before it is used
+                 in a table, a commit or a claim.
+              3. SUBAGENT output (`general` -> GLM 5.3 Flash, `explore` ->
+                 Space Bunny) - PARTIAL trust, never quotable as proof. Good
+                 for locating code, mapping a package dir, drafting a
+                 candidate fix, or pointing at where to look next.
+              4. Repo docs, code comments, prior relay text - hypothesis
+                 only. These are exactly where stale claims accumulate, so
+                 they are the FIRST thing to re-check, never the last.
+            "PARTIAL TRUST" MEANS THIS: a subagent number is a claim to be
+            checked, not a fact already established. If `general` reports
+            "upstream is 0.18.3", web-search upstream yourself and paste the
+            real result before that value enters any table. Never let a
+            subagent summary be the sole basis for a commit.
+            FACT-CHECK THE PREMISE BEFORE IMPLEMENTING. For any change you
+            are about to make, first confirm the thing it assumes: that
+            upstream really moved, that the flag/option really exists and is
+            spelled that way, that the API really returns it, that the CVE
+            really applies to the pinned version. Go to the upstream
+            release notes, the project's own docs and its source - not a
+            blog summary, not memory, not the previous relay. When web
+            search contradicts the repo or a subagent, THE WEB WINS and the
+            repo gets corrected in the same commit.
+            ONLY THEN OPTIMIZE. With the premise confirmed, implement the
+            smallest correct change - and prefer fixing the GENERATOR over
+            the instance (see IMPROVE THE MACHINE): a scripted bump that
+            cannot silently no-op, a version regex that accepts the shapes
+            upstream actually ships, a check that FAILS LOUDLY instead of
+            returning the answer that looks like good news. Optimizing a
+            patch whose premise was never true just makes the wrong thing
+            faster and harder to spot.
 
             HARD RULES:
             - You have FULL control: edit any file in the repo (specs, .changes, update.sh,
@@ -1562,8 +1700,15 @@ jobs:
             - Relay, don't die: never let a run end with uncommitted work or
               unrecorded progress - update .opencode-relay.md and trigger a
               relay run before the timeout.
-            - Don't get stuck: cap retries at 3 per package and escalate unresolvable problems
-              via issues.
+            - Don't get stuck: cap retries at 3 per package, then DIAGNOSE AND FIX THE
+              CAUSE instead of retrying or escalating. An unresolvable problem
+              is a bug in a spec, an updater, a check, or your own approach -
+              so read the failing output, find what you are misunderstanding,
+              and fix THAT. Opening an issue is for a problem that genuinely
+              needs an owner you do not have (a dead upstream URL, an OBS
+              service outage), never for something you have not understood
+              yet. No human is watching this repo - see OWNERSHIP AND
+              AUTHORITY. There is nobody to hand it to.
             - VERIFICATION LOOP (MANDATORY - battle-tested 2026: pre-completion checklist + external verifier, agentpatterns.ai 2026-07-19 / contextOS 2026-08-14): Before declaring `status: complete`, you MUST run `bash tools/verify-opensuse.sh` and paste its `----- VERIFICATION REPORT -----` output. It checks numerical completion (one row per STEP A inventory package with `deps-verified`/`deps-fixed` -- derive the expected count from `ls */*.spec`, post-grep count must reach it, not 0), evidence strings (`spec-cleaner` / `rpmlint` / `zypper` from 2026 h. checks), and install-test + battle test table. Exit 1 = NOT COMPLETE -- keep working until exit 0. Do NOT write `status: complete` if verifier fails. Prompt 70-90%, verifier+gate near-100%.
             - End every run with a concise final summary: what you fixed, which issues you
               closed, which PRs you merged/rejected, which OBS builds you verified and their
