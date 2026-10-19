@@ -82,7 +82,7 @@
     },
     "explore": {
       "mode": "subagent",
-      "model": "opencode/space-bunny-free"
+      "model": "opencode/deepseek-v4.1-flash-free"
     }
   }
 }

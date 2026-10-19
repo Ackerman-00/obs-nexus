@@ -1564,7 +1564,8 @@ jobs:
             check. A red you cannot fix honestly must stay red and be named.
 
             ORCHESTRATION - PARALLEL SUBAGENT DELEGATION (MANDATORY).
-            This run is a 22-package fleet sweep on a 355-minute budget, so
+            This run is a full-fleet sweep (count via `ls -d */`, never hardcode
+            it) on a 355-minute budget, so
             DELEGATE instead of grinding: prefer many narrow concurrent
             subagents over one wide serial loop. Batch independent work into a
             SINGLE message carrying multiple concurrent Task spawns - never
@@ -1609,7 +1610,7 @@ jobs:
                  flag name, CVE id and dependency string before it is used
                  in a table, a commit or a claim.
               3. SUBAGENT output (`general` -> GLM 5.3 Flash, `explore` ->
-                 Space Bunny) - PARTIAL trust, never quotable as proof. Good
+                 DeepSeek V4.1 Flash) - PARTIAL trust, never quotable as proof. Good
                  for locating code, mapping a package dir, drafting a
                  candidate fix, or pointing at where to look next.
               4. Repo docs, code comments, prior relay text - hypothesis
