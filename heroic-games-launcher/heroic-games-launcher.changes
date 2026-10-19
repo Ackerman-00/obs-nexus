@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 19 14:10:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add missing libz.so.1 runtime requirement: the bundled Proton helper
+  (nile) links it directly, and /opt/Heroic is excluded from automatic
+  dependency generation, so the soname must be declared explicitly.
+
+-------------------------------------------------------------------
 Thu Oct 15 03:34:23 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.22.4-0

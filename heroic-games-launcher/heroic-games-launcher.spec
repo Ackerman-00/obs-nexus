@@ -51,6 +51,10 @@ Requires:       libudev.so.1()(64bit)
 Requires:       libuuid.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
+# direct DT_NEEDED of the bundled Proton helper
+# (resources/app.asar.unpacked/build/bin/x64/linux/nile); auto-Requires
+# are disabled for /opt/Heroic via __requires_exclude_from above.
+Requires:       libz.so.1()(64bit)
 Requires:       xdg-utils
 ExclusiveArch:  x86_64
 
