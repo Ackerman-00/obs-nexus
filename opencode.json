@@ -42,12 +42,6 @@
           "maxTokens": 8192,
           "contextWindow": 131072
         },
-        "space-bunny-free": {
-          "name": "Space Bunny Free",
-          "model": "opencode/space-bunny-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
         "glm-5.3-flash-free": {
           "name": "GLM 5.3 Flash Free",
           "model": "opencode/glm-5.3-flash-free",
@@ -63,6 +57,12 @@
         "beam-free": {
           "name": "Beam Free",
           "model": "opencode/beam-free",
+          "maxTokens": 8192,
+          "contextWindow": 131072
+        },
+        "minimax-m3.1-flash-free": {
+          "name": "MiniMax M3.1 Flash Free",
+          "model": "opencode/minimax-m3.1-flash-free",
           "maxTokens": 8192,
           "contextWindow": 131072
         }

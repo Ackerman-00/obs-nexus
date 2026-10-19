@@ -18,8 +18,12 @@ permissions:
   actions: write
   id-token: write
 
+# Shared with update-packages.yml: both workflows write the same OBS
+# project (home:ackerman). The updater once overwrote the agent's fresh
+# uploads from a stale checkout, so the two must never run concurrently.
+# Never cancel an in-progress agent run (6h budget) - queue instead.
 concurrency:
-  group: opencode-schedule
+  group: obs-source-writer
   cancel-in-progress: false
 
 jobs:
@@ -124,7 +128,7 @@ jobs:
           # free-model gateways over (AI_APICallError: socket closed). Cheap
           # insurance inside a 355-min job.
           sleep $((RANDOM % 180))
-          for model in "opencode/deepseek-v4.1-flash-free" "opencode/glm-5.3-flash-free" "opencode/mimo-v2.6-flash-free" "opencode/space-bunny-free" "opencode/nemotron-3.5-super-vl-free" "opencode/nemotron-3.5-lightning-free" "opencode/longcat-2.5-preview-free" "opencode/beam-free" "opencode/jev-1.13-free" "opencode/big-pickle"; do
+          for model in "opencode/mimo-v2.6-flash-free" "opencode/deepseek-v4.1-flash-free" "opencode/glm-5.3-flash-free" "opencode/nemotron-3.5-super-vl-free" "opencode/nemotron-3.5-lightning-free" "opencode/longcat-2.5-preview-free" "opencode/beam-free" "opencode/jev-1.13-free" "opencode/minimax-m3.1-flash-free" "opencode/big-pickle"; do
             echo "=== opencode run attempt with $model ==="
             exit_code=0
             # Per-model retries with backoff: free-tier gateways drop sockets under

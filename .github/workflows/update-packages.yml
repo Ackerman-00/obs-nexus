@@ -5,9 +5,14 @@ on:
     - cron: '0 */6 * * *'   # Every 6 hours
   workflow_dispatch:
 
+# Serialize with opencode-schedule.yml: both workflows mutate the SAME OBS
+# source tree (home:ackerman). Separate groups allowed a stale checkout in
+# this workflow to silently overwrite the agent's fresh OBS uploads
+# (2026-10-19 incident: agent revs 112-114 reverted by workflow rev 115+).
+# A shared group makes that interleaving structurally impossible.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: obs-source-writer
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -217,6 +222,11 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "auto-update: sync spec files to latest upstream versions"
+          # Defense-in-depth on top of the shared concurrency group: never
+          # push from a stale base (a manual/agent commit can land between
+          # checkout and this step).
+          git fetch origin
+          git pull --rebase origin main
           git push
 
       - name: Check OBS Build Status
