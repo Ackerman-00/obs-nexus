@@ -39,13 +39,26 @@ CURRENT_VERSION=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 # ensure it exists locally so the OBS sync step can upload it; if OBS ever
 # loses the RPM while the version is unchanged, this prevents a rebuild
 # failure. The version guard above stays a pure version comparison.
+# Integrity: a cached RPM must match the spec's `# sha256:` pin (rootapp
+# pattern); mismatch => fall through and re-download instead of trusting
+# the cache. A missing pin on a version-matched cache is adopted once.
 if [ -f "$RPM_FILE" ] && [ "$CURRENT_VERSION" = "$VERSION" ]; then
-    echo "Package is already at $VERSION. No update needed."
-    # Keep the Debian orig wrapper in step (no download needed here).
-    if [ ! -f "fluxer-$VERSION.tar.gz" ]; then
-        tar -czf "fluxer-$VERSION.tar.gz" "$RPM_FILE"
+    CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
+    CACHED_SHA=$(sha256sum "$RPM_FILE" | awk '{print $1}')
+    if [ -n "$CURRENT_SHA" ] && [ "$CACHED_SHA" != "$CURRENT_SHA" ]; then
+        echo "Cached fluxer.rpm sha256 ($CACHED_SHA) != spec pin ($CURRENT_SHA); re-downloading."
+    else
+        if [ -z "$CURRENT_SHA" ]; then
+            echo "Adopting sha256 pin for cached RPM: $CACHED_SHA"
+            sed -i "/^Source0:/a # sha256:  $CACHED_SHA" "$SPEC_FILE"
+        fi
+        echo "Package is already at $VERSION (sha256: $CACHED_SHA). No update needed."
+        # Keep the Debian orig wrapper in step (no download needed here).
+        if [ ! -f "fluxer-$VERSION.tar.gz" ]; then
+            tar -czf "fluxer-$VERSION.tar.gz" "$RPM_FILE"
+        fi
+        exit 0
     fi
-    exit 0
 fi
 
 echo "Downloading RPM..."
@@ -78,6 +91,15 @@ tar -czf "fluxer-$VERSION.tar.gz" "$RPM_FILE"
 for old in fluxer-*.tar fluxer-*.tar.gz; do
     [ "$old" = "fluxer-$VERSION.tar.gz" ] || rm -f "$old"
 done
+
+# Refresh the spec's sha256 pin BEFORE the same-version early return, so a
+# same-version upstream respin also re-pins (and OBS re-syncs) the payload.
+NEW_SHA=$(sha256sum "$RPM_FILE" | awk '{print $1}')
+if grep -q "^# sha256:" "$SPEC_FILE"; then
+    sed -i "s/^# sha256:.*/# sha256:  $NEW_SHA/" "$SPEC_FILE"
+else
+    sed -i "/^Source0:/a # sha256:  $NEW_SHA" "$SPEC_FILE"
+fi
 
 if [ "$CURRENT_VERSION" = "$VERSION" ]; then
     echo "Version unchanged but RPM refreshed; only the artifact needs re-syncing to OBS."

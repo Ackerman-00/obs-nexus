@@ -276,6 +276,39 @@ jobs:
             echo "$PKGS" | tr ' ' '\n' | sort -u
           }
 
+          # EVERY mutating OBS call goes through obs_mutate (2026-10-19
+          # incident): OBS returns HTTP 500 ("Web application could not be
+          # started") during API restarts, and a bare curl -s exits 0 without
+          # writing anything - every PUT 500'd, concat-unstable's old tarball
+          # was deleted while no new file landed, all 3 builds failed, yet the
+          # workflow reported success. obs_mutate retries with an explicit
+          # HTTP-code check and returns nonzero if OBS never accepts; callers
+          # fail the job so the run goes RED instead of silently
+          # half-syncing. The next scheduled run's drift detection re-syncs.
+          obs_mutate() {
+            local method="$1" url="$2"; shift 2
+            local code="" attempt
+            for attempt in 1 2 3 4 5; do
+              code=$(curl -sS -X "$method" -o /tmp/obs_mutate_resp.$$ -w "%{http_code}" \
+                -u "$OBS_USER:$OBS_PASS" "$@" "$url" || :)
+              # DELETE of an already-gone file is success (idempotent).
+              if [ "$method" = "DELETE" ] && [ "$code" = "404" ]; then
+                rm -f /tmp/obs_mutate_resp.$$
+                return 0
+              fi
+              case "$code" in
+                2??) rm -f /tmp/obs_mutate_resp.$$; return 0 ;;
+              esac
+              echo "    OBS $method -> HTTP ${code:-000} (attempt $attempt)"
+              sleep 15
+            done
+            echo "    ERROR: OBS $method $url failed after 5 attempts (last HTTP ${code:-000}). Response:"
+            head -c 400 /tmp/obs_mutate_resp.$$ 2>/dev/null || true
+            echo
+            rm -f /tmp/obs_mutate_resp.$$
+            return 1
+          }
+
           # Create the package in OBS first, otherwise PUT uploads fail with
           # "<status code="unknown_package">". PUT of the _meta file creates
           # the package if it does not exist yet (idempotent).
@@ -284,9 +317,10 @@ jobs:
             if curl -s -u "$OBS_USER:$OBS_PASS" \
                  "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -q 'unknown_package'; then
               echo " -> Creating package $pkg in OBS..."
-              curl -s -X PUT -u "$OBS_USER:$OBS_PASS" -H "Content-Type: application/xml" \
+              obs_mutate PUT "https://api.opensuse.org/source/home:ackerman/$pkg/_meta" \
+                -H "Content-Type: application/xml" \
                 --data-binary "<package name=\"$pkg\" project=\"home:ackerman\"><title>$pkg</title><description>Automatically synced from opensuse-nexus.</description></package>" \
-                "https://api.opensuse.org/source/home:ackerman/$pkg/_meta"
+                || { echo "ERROR: could not create package $pkg in OBS"; exit 1; }
             fi
           }
 
@@ -296,12 +330,12 @@ jobs:
             local pkg="$1"
             if [ -f "$pkg/_service" ]; then
               echo " -> Running services for: $pkg"
-              curl -s -X POST -u "$OBS_USER:$OBS_PASS" \
-                "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=runservice"
+              obs_mutate POST "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=runservice" \
+                || { echo "ERROR: runservice failed for $pkg"; exit 1; }
             else
               echo " -> Triggering rebuild for: $pkg"
-              curl -s -X POST -u "$OBS_USER:$OBS_PASS" \
-                "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=rebuild"
+              obs_mutate POST "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=rebuild" \
+                || { echo "ERROR: rebuild trigger failed for $pkg"; exit 1; }
             fi
           }
 
@@ -311,6 +345,44 @@ jobs:
 
             OBS_FILES=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oP '(?<=<entry name=")[^"]+' || true)
 
+            # ---- 1) UPLOADS FIRST, .spec LAST, before any delete ----------
+            # Order keeps OBS green at every prefix of a partial sync:
+            #  a) Source payloads (tarballs/rpm/AppImage/deb): versioned names
+            #     coexist with the old ones, so the OLD spec keeps building;
+            #  b) everything else (.changes/.dsc/debian.*/rpmlintrc...): never
+            #     referenced by the build;
+            #  c) the .spec LAST: the commit point that switches the build to
+            #     the just-uploaded payload.
+            # Only after ALL uploads succeed are obsolete files deleted, so a
+            # failed upload can never leave a new spec pointing at a missing
+            # tarball (the 2026-10-19 concat-unstable failure mode).
+            local filepath filename phase
+            for phase in payload other spec; do
+              while IFS= read -r filepath; do
+                filename=$(basename "$filepath")
+                case "$phase" in
+                  payload)
+                    case "$filename" in
+                      *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|*.rpm|*.AppImage|*.deb|cargo_config|vendor*) ;;
+                      *) continue ;;
+                    esac ;;
+                  other)
+                    case "$filename" in
+                      *.spec|*.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|*.rpm|*.AppImage|*.deb|cargo_config|vendor*) continue ;;
+                    esac ;;
+                  spec)
+                    case "$filename" in
+                      *.spec) ;;
+                      *) continue ;;
+                    esac ;;
+                esac
+                echo "    Uploading $filename to OBS..."
+                obs_mutate PUT "https://api.opensuse.org/source/home:ackerman/$pkg/$filename" -T "$filepath" \
+                  || { echo "ERROR: upload of $pkg/$filename failed; OBS left as-is, next run's drift sync retries (job red on purpose)."; exit 1; }
+              done < <(find "$pkg" -maxdepth 1 -type f ! -name "update.sh" ! -name ".*")
+            done
+
+            # ---- 2) DELETE obsolete remote files (only after all uploads) --
             for remote_file in $OBS_FILES; do
               # NEVER delete gitignored source artifacts (tarballs, vendor,
               # cargo_config, repacked RPMs/AppImages/...) when the local tree
@@ -342,17 +414,12 @@ jobs:
               fi
               if [ ! -f "$pkg/$remote_file" ] || [ "$remote_file" == "update.sh" ]; then
                 echo "    Deleting obsolete file from OBS: $remote_file"
-                curl -s -X DELETE -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file"
+                obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
+                  || { echo "ERROR: delete of $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
               fi
             done
 
-            find "$pkg" -maxdepth 1 -type f ! -name "update.sh" ! -name ".*" | while read filepath; do
-              filename=$(basename "$filepath")
-              echo "    Uploading $filename to OBS..."
-              curl -s -X PUT -u "$OBS_USER:$OBS_PASS" -T "$filepath" \
-              "https://api.opensuse.org/source/home:ackerman/$pkg/$filename"
-            done
-
+            # ---- 3) trigger the build only from a fully-synced source ------
             trigger_build "$pkg"
           }
 

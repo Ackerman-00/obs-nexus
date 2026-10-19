@@ -11,6 +11,7 @@ License:        AGPL-3.0-or-later AND BSD
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://fluxer.app
 Source0:        fluxer.rpm
+# sha256:  de3c4e3c0b4f543beb59aa57b92b3a7395b6f56b5ac34f379d22c12b46001e37
 Source1:        fluxer-rpmlintrc
 BuildRequires:  cpio
 BuildRequires:  hicolor-icon-theme
