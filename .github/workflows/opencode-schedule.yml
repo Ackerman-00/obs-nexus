@@ -124,7 +124,7 @@ jobs:
           # free-model gateways over (AI_APICallError: socket closed). Cheap
           # insurance inside a 355-min job.
           sleep $((RANDOM % 180))
-          for model in "opencode/deepseek-v4.1-flash-free" "opencode/glm-5.3-flash-free" "opencode/mimo-v2.6-flash-free" "opencode/space-bunny-free" "opencode/nemotron-3.5-super-vl-free" "opencode/nemotron-3.5-lightning-free" "opencode/longcat-2.5-preview-free" "opencode/beam-free" "opencode/nemotron-3-ultra-free" "opencode/jev-1.13-free" "opencode/big-pickle"; do
+          for model in "opencode/deepseek-v4.1-flash-free" "opencode/glm-5.3-flash-free" "opencode/mimo-v2.6-flash-free" "opencode/space-bunny-free" "opencode/nemotron-3.5-super-vl-free" "opencode/nemotron-3.5-lightning-free" "opencode/longcat-2.5-preview-free" "opencode/beam-free" "opencode/jev-1.13-free" "opencode/big-pickle"; do
             echo "=== opencode run attempt with $model ==="
             exit_code=0
             # Per-model retries with backoff: free-tier gateways drop sockets under
