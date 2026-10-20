@@ -1,0 +1,5 @@
+# branding-requires-unversioned hicolor-icon-theme: hicolor-icon-theme is
+# intentionally unversioned (repo convention, same as every other spec in
+# this repo - see openchamber-rpmlintrc); no versioned alternative exists
+# on Tumbleweed to require instead.
+addFilter("branding-requires-unversioned")

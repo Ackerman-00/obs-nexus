@@ -55,8 +55,20 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python-nautilus-common-files
 BuildRequires:  python3-gobject
 Requires:       hicolor-icon-theme
-# System terminfo (upstream dir removed at install, Factory parity)
+# System terminfo base + the distro's terminfo-ghostty (Tumbleweed ships
+# 1.3.1-2.2 from Factory): ncurses-term has NO xterm-ghostty/ghostty
+# entries (verified via infocmp in a clean TW container), and upstream's
+# own terminfo dir is removed below - without terminfo-ghostty users get
+# no ghostty terminfo at all. Never ship our own copy: the distro package
+# exists (owner no-repackage-a-distro-package rule, checked 2026-10-20).
 Requires:       terminfo
+Requires:       terminfo-ghostty
+# NOTE: libghostty-vt.so.0.1.0 + headers + pc are deliberately NOT
+# shipped: /usr/bin/ghostty does not link them (readelf NEEDED: no
+# libghostty-vt; no dlopen string either) and Tumbleweed already ships
+# libghostty-vt0/ghostty-devel 1.3.1-2.2 - our copy would shadow the
+# distro's on the same SONAME (the wlroots lesson). Debian has no
+# ghostty/libghostty package, so the .dsc recipe keeps bundling them.
 
 %description
 Ghostty is a fast, feature-rich, and cross-platform terminal
@@ -94,6 +106,17 @@ mv %{buildroot}%{_datadir}/pkgconfig/ %{buildroot}%{_libdir}
 
 chmod 0644 \
     %{buildroot}%{_datadir}/kio/servicemenus/com.mitchellh.ghostty.desktop
+
+# See the Requires note: drop the VT library, its headers and the pkgconfig
+# file (Tumbleweed ships libghostty-vt0/ghostty-devel already). The mv put
+# the only .pc file under libdir/pkgconfig; remove the file and the
+# directory so nothing unpackaged remains.
+rm -f %{buildroot}%{_libdir}/libghostty-vt.so \
+      %{buildroot}%{_libdir}/libghostty-vt.so.0 \
+      %{buildroot}%{_libdir}/libghostty-vt.so.0.1.0 \
+      %{buildroot}%{_libdir}/pkgconfig/libghostty-vt.pc
+rm -rf %{buildroot}%{_libdir}/pkgconfig
+rm -rf %{buildroot}%{_includedir}/ghostty
 
 %files
 %license LICENSE src/font/res/OFL.txt
@@ -169,11 +192,8 @@ chmod 0644 \
 %{site_runtimepath}/ftplugin/ghostty.vim
 %{site_runtimepath}/syntax/ghostty.vim
 %{site_runtimepath}/compiler/ghostty.vim
-%{_libdir}/libghostty-vt.so.*
-%{_libdir}/libghostty-vt.so
-%{_libdir}/pkgconfig/libghostty-vt.pc
-%dir %{_includedir}/ghostty
-%{_includedir}/ghostty/*
+# libghostty-vt / headers / pc intentionally not packaged: see the Requires
+# block note (Tumbleweed ships libghostty-vt0 + ghostty-devel natively).
 
 %files lang -f com.mitchellh.ghostty.lang
 
