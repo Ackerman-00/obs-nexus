@@ -7,7 +7,7 @@ Name:           fluxer
 Version:        2026.1018.223338
 Release:        0
 Summary:        Free and open source instant messaging and VoIP platform
-License:        AGPL-3.0-or-later AND BSD
+License:        AGPL-3.0-or-later AND BSD-3-Clause
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://fluxer.app
 Source0:        fluxer.rpm
@@ -18,7 +18,7 @@ BuildRequires:  hicolor-icon-theme
 # Runtime dependencies for the bundled Electron/Chromium runtime
 # (no runtime Requires: hicolor-icon-theme: unversioned branding dep trips
 # rpmlint branding-requires-unversioned; icon dirs are created by our own
-# %dir entries, same pattern as helium-browser which is rpmlint-clean)
+# directory entries, same pattern as helium-browser which is rpmlint-clean)
 Requires:       at-spi2-core
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)

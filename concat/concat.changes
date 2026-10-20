@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: suppress unstripped-binary-or-object for the bundled
+  ggml/whisper/ONNX libs shipped byte-for-byte in upstream's RPM; the
+  repo rule forbids manual stripping (breaks debuginfo) and all sibling
+  prebuilt packages already carry this filter. OBS rpmlint.log drops from
+  83 warnings to 0 (0 errors either way).
+
+-------------------------------------------------------------------
 Tue Oct 20 11:03:23 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.8-0

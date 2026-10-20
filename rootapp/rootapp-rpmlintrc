@@ -27,3 +27,10 @@ addFilter("rootapp.*: E: branding-requires-unversioned")
 # warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
 # here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
 addFilter("unstripped-binary-or-object")
+
+# dir-or-file-outside-snapshot: this package installs its immutable upstream
+# payload under /opt (the only sane location for a repacked AppImage/Electron
+# tree). rpmlint flags every such file as "outside the snapshot"; that is
+# expected for /opt layouts and is already filtered by obsidian, koharu,
+# stoat-desktop, vesktop and helium-browser in this repo.
+addFilter("dir-or-file-outside-snapshot")

@@ -14,3 +14,10 @@ addFilter("unstripped-binary-or-object")
 # Runtime Requires: hicolor-icon-theme is intentionally unversioned (theme
 # infrastructure, same shape as obsidian) - rpmlint branding policy flags it.
 addFilter("branding-requires-unversioned")
+
+# dir-or-file-outside-snapshot: this package installs its immutable upstream
+# payload under /opt (the only sane location for a repacked AppImage/Electron
+# tree). rpmlint flags every such file as "outside the snapshot"; that is
+# expected for /opt layouts and is already filtered by obsidian, koharu,
+# stoat-desktop, vesktop and helium-browser in this repo.
+addFilter("dir-or-file-outside-snapshot")

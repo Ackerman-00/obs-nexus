@@ -1,3 +1,12 @@
+-------------------------------------------------------------------
+Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- License: Proprietary is not a valid openSUSE license tag (rpmlint
+  E/W: invalid-license). Use SUSE-Freeware, the tag openSUSE:Factory:NonFree
+  uses for redistributable freeware (steam).
+- rpmlintrc: suppress dir-or-file-outside-snapshot for the intended
+  /opt/rootapp payload layout (same filter as obsidian/koharu/vesktop).
+
 Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare libgcc_s.so.1 + libstdc++.so.6 (DT_NEEDED of the shipped

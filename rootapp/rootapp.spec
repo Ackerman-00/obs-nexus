@@ -6,7 +6,7 @@ Name:           rootapp
 Version:        0.9.148
 Release:        0
 Summary:        Discord alternative for gaming communities and large groups
-License:        Proprietary
+License:        SUSE-Freeware
 URL:            https://www.rootapp.com
 Source0:        https://installer.rootapp.com/installer/Linux/X64/Root.AppImage
 BuildRequires:  binutils

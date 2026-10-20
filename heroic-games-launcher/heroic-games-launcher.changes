@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: suppress dir-or-file-outside-snapshot for the intended
+  /opt/Heroic payload layout (same filter as obsidian/koharu/vesktop).
+
+-------------------------------------------------------------------
 Mon Oct 19 14:10:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add missing libz.so.1 runtime requirement: the bundled Proton helper

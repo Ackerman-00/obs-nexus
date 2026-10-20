@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: suppress dir-or-file-outside-snapshot for the intended
+  /opt/concat-unstable payload layout (already filtered by obsidian,
+  koharu, stoat-desktop, vesktop, helium-browser).
+
+-------------------------------------------------------------------
 Tue Oct 20 17:59:25 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.8+git20261020164738.9f465da-0

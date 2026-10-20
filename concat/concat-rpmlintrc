@@ -19,3 +19,11 @@ addFilter("explicit-lib-dependency")
 # hicolor-icon-theme is intentionally unversioned (repo convention,
 # same as every other spec in this repo).
 addFilter("branding-requires-unversioned")
+
+# unstripped-binary-or-object: openSUSE:Packaging_checks explicitly says not to
+# strip binaries manually (it breaks debuginfo creation) and Packaging_guidelines
+# sanctions suppressing this false positive; rpmlint.opensuse.org reports it on
+# 239 openSUSE:Factory packages. The flagged ELFs are upstream's bundled
+# ggml/whisper/ONNX libs shipped byte-for-byte inside the upstream RPM, which we
+# repackage unmodified (same reason concat-unstable already carries this filter).
+addFilter("unstripped-binary-or-object")

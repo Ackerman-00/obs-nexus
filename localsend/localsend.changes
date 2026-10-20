@@ -1,3 +1,10 @@
+-------------------------------------------------------------------
+Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: suppress dir-or-file-outside-snapshot for the intended
+  /opt/localsend_app payload layout (same filter as the other /opt
+  repacks in this repo).
+
 Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare libgcc_s.so.1 + libstdc++.so.6: all 12 shipped Flutter GTK

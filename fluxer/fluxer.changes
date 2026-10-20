@@ -1,3 +1,13 @@
+-------------------------------------------------------------------
+Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- License: BSD is not a valid SPDX identifier (rpmlint: invalid-license);
+  the bundled components flagged by the payload are Zstandard and libwebp,
+  both BSD-3-Clause, and upstream LICENSE (fetched 2026-10-20) is
+  AGPL-3.0-or-later. Tag is now AGPL-3.0-or-later AND BSD-3-Clause.
+- Drop a macro-looking literal from a spec comment (rpmlint
+  macro-in-comment).
+
 Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare libgcc_s.so.1 + libstdc++.so.6: DT_NEEDED of the shipped .node
