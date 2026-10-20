@@ -63,6 +63,12 @@ sudo apt-get update && sudo apt-get install <package>
 
 Use `.../Debian_Unstable/Release.key` for the Sid repository.
 
+Package names are the source names in the table below, with one exception:
+`heroic-games-launcher` installs under its binary name **`heroic`**
+(verified in clean `debian:testing` + `debian:sid` containers,
+2026-10-20: `apt-get install heroic` → `dpkg -V` clean; the
+`heroic-games-launcher` name is not a valid Debian package name).
+
 ## Supported targets
 
 One source tree builds for exactly three targets on OBS, **x86_64/amd64
@@ -89,7 +95,7 @@ out of scope):
 | **fluxer** | Free and open source messaging & VoIP platform
 | **ghostty** | Cross-platform terminal emulator |
 | **helium-browser** | Private, fast, and honest Chromium-based browser
-| **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher
+| **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher (Debian binary package name is `heroic`; install with `apt-get install heroic`)
 | **koharu** | Local-first ML-powered manga translator
 | **localsend** | Open source cross-platform alternative to AirDrop
 | **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot)
