@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Oct 20 00:33:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlint: suppress statically-linked-binary E for the bundled ripgrep
+  (/opt/openchamber/resources/ripgrep/rg): upstream ships it static-pie
+  musl by design and invokes it from that fixed path; identical BuildID
+  in the 2.4.0 and 2.5.0 AppImages (extracted and file(1)-verified
+  2026-10-20). Same upstream-payload class as the existing filters.
+
+-------------------------------------------------------------------
 Mon Oct 19 23:52:30 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.5.0-0

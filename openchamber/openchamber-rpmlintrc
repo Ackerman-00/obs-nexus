@@ -14,6 +14,15 @@ addFilter("library-without-ldconfig-postun")
 # Upstream data files inside the bundled app.asar node_modules tree
 # (bun-pty .bun-tag, msgpackr index.js) and node-pty win headers.
 addFilter("devel-file-in-non-devel-package")
+# Upstream bundles ripgrep (rg) as a static-pie musl binary at
+# /opt/openchamber/resources/ripgrep/rg and invokes it from that fixed
+# path - identical BuildID (2b383d94...) in the 2.4.0 and 2.5.0
+# AppImages (both extracted and file(1)-verified 2026-10-20), i.e.
+# upstream's own file, not a packaging mistake. Official ripgrep
+# releases are static musl by design; swapping in the distro rg would
+# change which binary the app executes. Same upstream-payload class as
+# the filters above (obsidian/vesktop precedent).
+addFilter("statically-linked-binary")
 # zero-length filter DROPPED 2026-10-14: rpmlint E: unused-rpmlintrc-filter
 # (the 2.3.2 payload ships no zero-length files anymore - verified by
 # rpm2cpio + find -size 0 over the built 2.3.2-26.1 TW RPM: none). Unused
