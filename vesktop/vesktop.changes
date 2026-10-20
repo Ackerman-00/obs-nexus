@@ -1,3 +1,9 @@
+-------------------------------------------------------------------
+Tue Oct 20 21:00:48 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: filter binary-or-shlib-calls-gethostbyname for the bundled
+  Electron runtime (immutable upstream bytes, same as stoat-desktop).
+
 Tue Oct 20 01:23:41 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declared dlopen-only libsecret-1.so.0 / libpulse.so.0 /

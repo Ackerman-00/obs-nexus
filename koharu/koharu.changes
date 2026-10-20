@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 20 21:00:48 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix macro-in-comment: reword the %license mention in the %install
+  comment so rpmlint no longer expands it.
+
+-------------------------------------------------------------------
 Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare libgcc_s.so.1 + libstdc++.so.6: the payload is installed under

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 20 21:14:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix macro-in-comment warnings: reword the prep/build notes so no bare
+  macro tokens remain in comments (they expand at parse time).
+- rpmlintrc: filter binary-or-shlib-calls-gethostbyname for the bundled
+  upstream ggml/FFmpeg/ONNX objects.
+
+-------------------------------------------------------------------
 Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: suppress dir-or-file-outside-snapshot for the intended

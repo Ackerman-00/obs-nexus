@@ -35,3 +35,7 @@ addFilter("unstripped-binary-or-object")
 # expected for /opt layouts and is already filtered by obsidian, koharu,
 # stoat-desktop, vesktop and helium-browser in this repo.
 addFilter("dir-or-file-outside-snapshot")
+
+# Bundled upstream ggml/FFmpeg/ONNX shared objects use the legacy resolver
+# entry point. Immutable upstream bytes, same filter as concat.
+addFilter("binary-or-shlib-calls-gethostbyname")

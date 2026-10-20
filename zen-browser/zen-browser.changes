@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 20 21:00:48 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add zen-browser-rpmlintrc filtering binary-or-shlib-calls-
+  gethostbyname for the bundled libnspr4.so (upstream NSPR copy).
+
+-------------------------------------------------------------------
 Sat Oct 17 05:01:25 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.3b-0

@@ -3,3 +3,9 @@
 # this repo - see openchamber-rpmlintrc); no versioned alternative exists
 # on Tumbleweed to require instead.
 addFilter("branding-requires-unversioned")
+
+# Upstream install layout, shipped verbatim: the zsh shell-integration helper
+# is a hidden file by design, and the vim/nvim ftplugin+ftdetect+syntax copies
+# are byte-identical because upstream installs them into both runtime trees.
+addFilter("hidden-file-or-dir")
+addFilter("files-duplicate")

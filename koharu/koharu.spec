@@ -90,7 +90,7 @@ fi
 install -d -m 0755 %{buildroot}/opt/koharu
 cp -a usr/share/koharu/* %{buildroot}/opt/koharu/
 # Upstream stashes the license texts under usr/lib/koharu/_up_; keep them
-# with the bundle and mark them %license below.
+# with the bundle and mark them as license files below.
 cp -a usr/lib/koharu/_up_/_up_/LICENSE-MIT usr/lib/koharu/_up_/_up_/LICENSE-APACHE %{buildroot}/opt/koharu/
 # Launcher symlink (replaces upstream's usr/bin/koharu -> ../share/... link,
 # which no longer resolves after the move to /opt).

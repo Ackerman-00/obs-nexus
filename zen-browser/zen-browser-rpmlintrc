@@ -1,0 +1,7 @@
+# rpmlint filters for the repackaged upstream Firefox fork.
+#
+# libnspr4.so is upstream's bundled NSPR copy. Its resolver stub trips
+# binary-or-shlib-calls-gethostbyname, which is a known false positive for
+# browsers (obsidian/vesktop/stoat-desktop filter the same class in this repo).
+# We do not patch or strip upstream browser payloads.
+addFilter("binary-or-shlib-calls-gethostbyname")

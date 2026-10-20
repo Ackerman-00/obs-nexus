@@ -15,3 +15,8 @@ addFilter("dir-or-file-outside-snapshot")
 # warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
 # here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
 addFilter("unstripped-binary-or-object")
+
+# Upstream Electron/Chromium runtime: the bundled browser binary uses its own
+# resolver stub. Immutable upstream bytes, same filter as stoat-desktop,
+# heroic-games-launcher and fluxer in this repo.
+addFilter("binary-or-shlib-calls-gethostbyname")
