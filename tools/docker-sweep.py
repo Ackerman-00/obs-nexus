@@ -180,7 +180,14 @@ def docker_run(image, commands, timeout=600, volumes=None):
             "-v", "/var/run/docker.sock:/var/run/docker.sock"]
     for vol in volumes or []:
         args += ["-v", vol]
-    cmd_script = " && ".join(commands)
+    # Prefer IPv4 for getaddrinfo: download.opensuse.org's AAAA record is
+    # served first, and the runner's IPv6 path intermittently black-holes
+    # (2026-10-20: zypper TIMEOUT-after-600s flakes on faugus/fluxer/
+    # heroic/concat-unstable while isolated curl -4 succeeded; the same
+    # packages passed in clean re-runs). Appending a precedence rule is
+    # read by glibc from every container; harmless where IPv4 already wins.
+    gai = "echo 'precedence ::ffff:0:0/96 100' >> /etc/gai.conf"
+    cmd_script = gai + " && " + " && ".join(commands)
     try:
         res = subprocess.run(
             args + [image, "bash", "-c", cmd_script],
@@ -250,8 +257,16 @@ def test_opensuse_package(name, nvra, spec_path, workdir):
         "https://download.opensuse.org/tumbleweed/repo/oss/ oss 2>&1 | tail -3",
         "zypper --non-interactive addrepo --refresh "
         "https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/ nexus 2>&1 | tail -3",
-        "zypper --non-interactive refresh 2>&1 | tail -3",
-        "zypper --non-interactive install --no-recommends -y %s 2>&1 | tail -30" % name,
+        # Refresh/install with one retry: the trailing `[ $rc -eq 0 ]`
+        # preserves zypper's real exit code (a `| tail` pipeline would
+        # mask it as tail's 0), so a persistent failure still breaks the
+        # && chain and surfaces as INSTALL-FAIL with trimmed output.
+        "{ zypper --non-interactive refresh > /tmp/z1.out 2>&1 || "
+        "{ sleep 10; zypper --non-interactive refresh > /tmp/z1.out 2>&1; }; "
+        "rc=$?; tail -3 /tmp/z1.out; [ $rc -eq 0 ]; }",
+        "{ zypper --non-interactive install --no-recommends -y %s > /tmp/z2.out 2>&1 || "
+        "{ sleep 10; zypper --non-interactive install --no-recommends -y %s > /tmp/z2.out 2>&1; }; "
+        "rc=$?; tail -30 /tmp/z2.out; [ $rc -eq 0 ]; }" % (name, name),
         "rpm -V %s 2>&1 | head -20" % name,
         "which %s 2>/dev/null && ldd $(which %s) 2>/dev/null | grep 'not found' || true" % (name, name),
     ]
