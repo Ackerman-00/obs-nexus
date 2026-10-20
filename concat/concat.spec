@@ -5,13 +5,13 @@
 %global __requires_exclude_from ^/opt/concat/.*$
 %global __provides_exclude_from ^/opt/concat/.*$
 Name:           concat
-Version:        0.2.7
+Version:        0.2.8
 Release:        0
 Summary:        Free and open source video editor
 License:        AGPL-3.0-or-later
 Group:          Productivity/Multimedia/Video/Editors and Convertors
 URL:            https://github.com/jub0t/concat
-Source0:        https://github.com/jub0t/concat/releases/download/v0.2.7/Concat-0.2.7-linux-x86_64.rpm
+Source0:        https://github.com/jub0t/concat/releases/download/v0.2.8/Concat-0.2.8-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
