@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: concat-unstable
 Binary: concat-unstable
 Architecture: amd64
-Version: 0.2.8+git20261020112719.d8b024f
+Version: 0.2.8+git20261020164738.9f465da
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), cargo, rustc, gcc, g++, cmake, make, pkgconf, libclang-dev, libfontconfig1-dev, libfreetype6-dev, libxkbcommon-dev, libgl1-mesa-dev, libgtk-3-dev, libasound2-dev, libssl-dev, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -21,4 +21,4 @@ Build-Depends: debhelper-compat (= 13), cargo, rustc, gcc, g++, cmake, make, pkg
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: concat-unstable-0.2.8+git20261020112719.d8b024f.tar.gz
+Debtransform-Tar: concat-unstable-0.2.8+git20261020164738.9f465da.tar.gz
