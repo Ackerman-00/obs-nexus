@@ -1,6 +1,9 @@
 addFilter("filelist-forbidden-opt")
 addFilter("binary-or-shlib-defines-rpath")
-addFilter("explicit-lib-dependency")
+# explicit-lib-dependency filter removed 2026-10-20: its only triggers were
+# the package-form Requires libXtst6/libuuid1, dropped in the 1.6.7 dep
+# cleanup (zero payload references); OBS now flags the filter itself as
+# unused-rpmlintrc-filter, so the dead filter had to go.
 addFilter("dir-or-file-outside-snapshot")
 
 # unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
