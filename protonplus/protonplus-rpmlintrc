@@ -7,3 +7,9 @@
 # warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
 # here. No -debuginfo subpackage is produced for this package (none appears in the build result), so a manual strip would feed nothing and is what the guidance above warns against.
 addFilter("unstripped-binary-or-object")
+
+# branding-requires-unversioned hicolor-icon-theme: hicolor-icon-theme is
+# intentionally unversioned (repo convention, same as every other spec in
+# this repo - see openchamber-rpmlintrc); rpmlint wants a versioned branding
+# dep but TW has no matching versioned (appstream) alternative to require.
+addFilter("branding-requires-unversioned")

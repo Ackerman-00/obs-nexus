@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 20 00:13:12 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlint: suppress branding-requires-unversioned for hicolor-icon-theme
+  (unversioned by repo convention, no versioned alternative on TW; the
+  built RPM's rpmlint.log showed E: branding-requires-unversioned).
+  Appended filter with reason - existing unstripped filter untouched.
+
+-------------------------------------------------------------------
 Sat Oct 17 22:55:18 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add missing runtime Requires: hicolor-icon-theme (icons install into
