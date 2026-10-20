@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 20 22:44:53 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1: the bundled upstream Electron binary NEEDs it,
+  but auto-requires are disabled for the /opt payload
+  (__requires_exclude_from), so it was silently unlisted. Same fix the
+  other Electron repacks already carry.
+
+-------------------------------------------------------------------
 Tue Oct 20 22:38:19 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Drop the deprecated suse_update_desktop_file macro (rpmlint:
