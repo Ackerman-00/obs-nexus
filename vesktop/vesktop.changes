@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 20 22:38:19 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Drop the deprecated suse_update_desktop_file macro (rpmlint:
+  suse-update-desktop-file-deprecated) and validate the shipped desktop
+  file in a new %check section with desktop-file-validate
+  (BuildRequires: desktop-file-utils replaces update-desktop-files).
+
+-------------------------------------------------------------------
 Tue Oct 20 21:00:48 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: filter binary-or-shlib-calls-gethostbyname for the bundled

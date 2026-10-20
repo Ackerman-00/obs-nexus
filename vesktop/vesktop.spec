@@ -13,9 +13,8 @@ Source0:        https://github.com/Vencord/Vesktop/releases/download/v1.6.7/vesk
 # Source1 is the filter file to bypass the "Badness" check
 Source1:        vesktop-rpmlintrc
 BuildRequires:  cpio
+BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
-# Required for desktop file validation
-BuildRequires:  update-desktop-files
 # Runtime dependencies for the bundled Electron/Chromium runtime
 Requires:       at-spi2-core
 Requires:       libX11.so.6()(64bit)
@@ -93,8 +92,11 @@ exec /opt/Vesktop/vesktop "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/vesktop
 
-# Fix desktop file for openSUSE
-%suse_update_desktop_file vesktop
+%check
+# Upstream desktop file is already correct; validate it instead of the
+# deprecated suse_update_desktop_file macro (rpmlint:
+# suse-update-desktop-file-deprecated).
+desktop-file-validate %{buildroot}%{_datadir}/applications/vesktop.desktop
 
 %files
 %{_bindir}/vesktop
