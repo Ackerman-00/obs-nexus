@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1 + libstdc++.so.6: DT_NEEDED of the shipped
+  node-pty prebuilds and sherpa-onnx libs under the auto-requires-
+  excluded /opt/openchamber path (readelf -d on the published 2.5.0
+  payload; rpm -qpR had neither). Debian control synced (+libgcc-s1
+  +libstdc++6).
+
 Tue Oct 20 00:33:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlint: suppress statically-linked-binary E for the bundled ripgrep

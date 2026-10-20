@@ -48,6 +48,8 @@ Requires:       gtk3
 Requires:       hicolor-icon-theme
 Requires:       libasound2
 Requires:       libfreetype6
+Requires:       libgcc_s1
+Requires:       libstdc++6
 Requires:       libxkbcommon-x11-0
 Requires:       libxkbcommon0
 ExclusiveArch:  x86_64

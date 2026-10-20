@@ -1,4 +1,11 @@
--------------------------------------------------------------------
+Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1 + libstdc++.so.6: DT_NEEDED of the shipped
+  btime/get-fonts binding.node helpers under the auto-requires-excluded
+  /opt/obsidian path (readelf -d on the published 1.14.4 payload;
+  rpm -qpR had neither). Debian control synced (+libgcc-s1
+  +libstdc++6).
+
 Tue Oct 20 01:23:41 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declared libpipewire-0.3.so.0 + libpulse.so.0 (dlopen-only,

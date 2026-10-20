@@ -1,3 +1,12 @@
+Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1 + libstdc++.so.6: all 12 shipped Flutter GTK
+  plugin .so files DT_NEEDED both, under the auto-requires-excluded
+  /opt/localsend_app path (readelf -d on the published 1.18.2 payload;
+  rpm -qpR had neither, so the plugins would fail to dlopen on a minimal
+  system). Debian control synced (+libgcc-s1; libstdc++6 was already
+  declared there).
+
 Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.18.2-0

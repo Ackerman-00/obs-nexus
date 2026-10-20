@@ -1,4 +1,12 @@
--------------------------------------------------------------------
+Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1 + libstdc++.so.6 (DT_NEEDED of the shipped
+  SkiaSharp/HarfBuzzSharp under the auto-requires-excluded /opt/rootapp
+  path; rpm -qpR had neither) and libXinerama.so.1 (DT_NEEDED of the
+  shipped libuiohook global-hotkey lib; the Debian recipe already
+  carried libxinerama1). Debian control synced (+libgcc-s1
+  +libstdc++6).
+
 Tue Oct 13 22:25:29 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to 0.9.148 (sha256: 801fcbdb9ec4756accbe7555aafe042f3de48c34f5e7177dd2e079ed38578480)

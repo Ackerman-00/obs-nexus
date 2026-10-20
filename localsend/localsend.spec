@@ -22,6 +22,8 @@ BuildRequires:  zstd
 Requires:       libayatana-appindicator3.so.1()(64bit)
 Requires:       libayatana-ido3-0.4.so.0()(64bit)
 Requires:       libayatana-indicator3.so.7()(64bit)
+Requires:       libgcc_s.so.1()(64bit)
+Requires:       libstdc++.so.6()(64bit)
 Requires:       xdg-user-dirs
 ExclusiveArch:  x86_64
 

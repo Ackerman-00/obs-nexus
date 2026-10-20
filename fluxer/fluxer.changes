@@ -1,4 +1,11 @@
--------------------------------------------------------------------
+Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1 + libstdc++.so.6: DT_NEEDED of the shipped .node
+  helpers (incl. system-hunspell) under the auto-requires-excluded
+  /usr/lib64/fluxer path (readelf -d on the published 2026.1018.223338
+  payload; rpm -qpR had neither). Debian control synced (+libgcc-s1
+  +libstdc++6).
+
 Tue Oct 20 01:23:41 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Drop dead Requires libXss.so.1 / libXtst.so.6 / libuuid.so.1: the

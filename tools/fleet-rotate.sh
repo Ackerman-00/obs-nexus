@@ -68,7 +68,10 @@ for pkg in $PKGS; do
     fi
     rpmbuild -ba "$spec" >/tmp/build.log 2>&1 || { echo "--- BUILD-FAIL"; tail -25 /tmp/build.log; exit 22; }
     echo "--- BUILD OK"
-    rpms=$(ls /usr/src/packages/RPMS/x86_64/*.rpm 2>/dev/null)
+    # glob ALL arch dirs: noarch packages (BuildArch: noarch) land in
+    # RPMS/noarch/, and an empty $rpms made zypper print usage -> rc=23
+    # (was misread as a package defect on bibata-cursor-theme/faugus).
+    rpms=$(ls /usr/src/packages/RPMS/*/*.rpm 2>/dev/null)
     cp $rpms /out/ 2>/dev/null
     zypper --non-interactive --no-gpg-checks in -y --no-recommends $rpms >/tmp/inst.log 2>&1 || { echo "--- INSTALL-FAIL"; tail -8 /tmp/inst.log; exit 23; }
     echo "--- INSTALL OK"

@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Oct 20 05:54:31 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1 + libstdc++.so.6: the payload is installed under
+  the auto-requires-excluded /opt/koharu path and both the main koharu
+  ELF and the CEF libs DT_NEEDED them (readelf -d on the published
+  0.83.5 payload; rpm -qpR had neither, so a minimal system could install
+  but fail to load the app). Debian control synced (+libgcc-s1
+  +libstdc++6).
+
 Tue Oct 13 18:30:08 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Move CEF bundle from /usr/share/koharu to /opt/koharu (repo convention
