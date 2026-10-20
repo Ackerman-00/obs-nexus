@@ -11,3 +11,9 @@ addFilter("invalid-desktopfile")
 # warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
 # here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
 addFilter("unstripped-binary-or-object")
+
+# Upstream Electron/Chromium runtime findings, not packaging mistakes: the
+# shipped chrome-sandbox and browser binaries are immutable upstream bytes
+# (same filters as stoat-desktop/obsidian).
+addFilter("binary-or-shlib-calls-gethostbyname")
+addFilter("missing-call-to-setgroups-before-setuid")

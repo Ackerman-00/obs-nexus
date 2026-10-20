@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: suppress binary-or-shlib-calls-gethostbyname for the
+  bundled upstream Chromium (immutable upstream bytes).
+
+-------------------------------------------------------------------
 Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - License: Proprietary is not a valid openSUSE license tag (rpmlint

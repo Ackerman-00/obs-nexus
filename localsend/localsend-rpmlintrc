@@ -21,3 +21,10 @@ addFilter("unstripped-binary-or-object")
 # expected for /opt layouts and is already filtered by obsidian, koharu,
 # stoat-desktop, vesktop and helium-browser in this repo.
 addFilter("dir-or-file-outside-snapshot")
+
+# Upstream Flutter engine libs (libapp.so / librust_lib_localsend_app.so) ship
+# without a SONAME and without a GNU hash section by design; they are loaded by
+# the Flutter runner via an absolute path, never through the dynamic linker
+# cache, and are immutable upstream bytes.
+addFilter("no-soname")
+addFilter("missing-gnu-hash-section")

@@ -34,3 +34,7 @@ addFilter("unstripped-binary-or-object")
 # expected for /opt layouts and is already filtered by obsidian, koharu,
 # stoat-desktop, vesktop and helium-browser in this repo.
 addFilter("dir-or-file-outside-snapshot")
+
+# Upstream Chromium runtime calls gethostbyname directly (immutable upstream
+# binary; same filter as obsidian/stoat-desktop).
+addFilter("binary-or-shlib-calls-gethostbyname")

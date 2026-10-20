@@ -27,3 +27,12 @@ addFilter("branding-requires-unversioned")
 # ggml/whisper/ONNX libs shipped byte-for-byte inside the upstream RPM, which we
 # repackage unmodified (same reason concat-unstable already carries this filter).
 addFilter("unstripped-binary-or-object")
+
+# /opt payload warnings (same class as the other repacks in this repo):
+# dir-or-file-outside-snapshot for the intended /opt/concat layout, no-soname
+# for upstream's bundled FFmpeg/ggml/ONNX shared objects (renaming or adding a
+# SONAME would alter byte-for-byte upstream binaries), and gethostbyname for
+# the bundled Electron/Chromium runtime (obsidian/stoat filter the same).
+addFilter("dir-or-file-outside-snapshot")
+addFilter("no-soname")
+addFilter("binary-or-shlib-calls-gethostbyname")

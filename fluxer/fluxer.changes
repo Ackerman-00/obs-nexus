@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: suppress the upstream Electron/Chromium
+  gethostbyname / setgroups findings (immutable upstream bytes).
+
+-------------------------------------------------------------------
 Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - License: BSD is not a valid SPDX identifier (rpmlint: invalid-license);

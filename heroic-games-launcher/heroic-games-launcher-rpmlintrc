@@ -21,3 +21,11 @@ addFilter("branding-requires-unversioned")
 # expected for /opt layouts and is already filtered by obsidian, koharu,
 # stoat-desktop, vesktop and helium-browser in this repo.
 addFilter("dir-or-file-outside-snapshot")
+
+# Upstream Electron/Chromium runtime findings, not packaging mistakes: the
+# shipped chrome-sandbox and browser binaries are immutable upstream bytes
+# (stoat-desktop already filters the gethostbyname/setgroups pair). We do not
+# patch or strip upstream Electron payloads in this repo.
+addFilter("binary-or-shlib-calls-gethostbyname")
+addFilter("missing-call-to-setgroups-before-setuid")
+addFilter("position-independent-executable-suggested")

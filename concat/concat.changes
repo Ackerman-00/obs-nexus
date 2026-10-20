@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: also suppress dir-or-file-outside-snapshot, no-soname and
+  binary-or-shlib-calls-gethostbyname for the unchanged upstream /opt
+  payload (same filters as the sibling repacks).
+
+-------------------------------------------------------------------
 Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: suppress unstripped-binary-or-object for the bundled

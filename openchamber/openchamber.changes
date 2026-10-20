@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: suppress the upstream Electron/Chromium
+  gethostbyname / setgroups / PIE findings (immutable upstream bytes;
+  same filters as stoat-desktop).
+
+-------------------------------------------------------------------
 Tue Oct 20 20:25:44 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: suppress dir-or-file-outside-snapshot for the intended
