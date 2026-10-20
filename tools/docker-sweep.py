@@ -169,6 +169,12 @@ def deb_source_urls(spec_path):
 # Docker test runners
 # ---------------------------------------------------------------------------
 
+# Per-package Docker timeout. Honours the --timeout CLI flag (which was
+# previously parsed but ignored - every callsite hardcoded 300s, so a slow
+# mirror download looked like an install failure). main() overrides this.
+PKG_TIMEOUT = 300
+
+
 def docker_run(image, commands, timeout=600, volumes=None):
     args = ["docker", "run", "--rm", "--network=host",
             "-v", "/var/run/docker.sock:/var/run/docker.sock"]
@@ -191,7 +197,7 @@ def test_gentoo_package(atom, overlay_path, workdir):
         "emerge --sync --quiet 2>/dev/null || true",
         "emerge --pretend --verbose %s 2>&1 | tail -30" % atom,
     ]
-    rc, out, err = docker_run("gentoo/stage3", commands, timeout=300)
+    rc, out, err = docker_run("gentoo/stage3", commands, timeout=PKG_TIMEOUT)
     combined = out + err
     result = {"package": atom, "status": STATUS_PASS, "details": ""}
     if rc != 0:
@@ -213,7 +219,7 @@ def test_fedora_package(name, nvra, spec_path, workdir):
         "rpm -V %s 2>&1 | head -20" % name,
         "which %s 2>/dev/null && ldd $(which %s) 2>/dev/null | grep 'not found' || true" % (name, name),
     ]
-    rc, out, err = docker_run("fedora:latest", commands, timeout=300)
+    rc, out, err = docker_run("fedora:latest", commands, timeout=PKG_TIMEOUT)
     combined = out + err
     result = {"package": name, "status": STATUS_PASS, "details": ""}
     if "Error" in combined and "Nothing to do" not in combined:
@@ -249,7 +255,7 @@ def test_opensuse_package(name, nvra, spec_path, workdir):
         "rpm -V %s 2>&1 | head -20" % name,
         "which %s 2>/dev/null && ldd $(which %s) 2>/dev/null | grep 'not found' || true" % (name, name),
     ]
-    rc, out, err = docker_run("registry.opensuse.org/opensuse/tumbleweed:latest", commands, timeout=300)
+    rc, out, err = docker_run("registry.opensuse.org/opensuse/tumbleweed:latest", commands, timeout=PKG_TIMEOUT)
     combined = out + err
     result = {"package": name, "status": STATUS_PASS, "details": ""}
     if "nothing provides" in combined.lower() or "no provider" in combined.lower():
@@ -405,7 +411,7 @@ def test_debian_package(name, ver, spec_path, workdir, image="debian:testing"):
         "test -f \"$b\" && test -x \"$b\" && file \"$b\" 2>/dev/null | grep -q ELF && ldd \"$b\" 2>/dev/null; done "
         "| grep 'not found' | sort -u | head -10 || true" % name,
     ]
-    rc, out, err = docker_run(image, commands, timeout=300)
+    rc, out, err = docker_run(image, commands, timeout=PKG_TIMEOUT)
     combined = out + err
     result = {"package": name, "status": STATUS_PASS, "details": ""}
     if "NO-DEB-URL" in combined or "NO-DEB-FILE" in combined:
@@ -432,7 +438,7 @@ def test_nix_package(name, expr_path, workdir):
         "nix-build '<nixpkgs>' -A %s 2>&1 | tail -10" % name,
         "nix-store --query --requisites $(nix-build '<nixpkgs>' -A %s 2>/dev/null) 2>&1 | wc -l" % name,
     ]
-    rc, out, err = docker_run("nixos/nix", commands, timeout=600)
+    rc, out, err = docker_run("nixos/nix", commands, timeout=PKG_TIMEOUT)
     combined = out + err
     result = {"package": name, "status": STATUS_PASS, "details": ""}
     if rc != 0 and "error" in combined.lower():
@@ -449,7 +455,7 @@ def test_void_package(name, template_path, workdir):
         "xbps-install -Sy 2>/dev/null || true",
         "xbps-install -S %s 2>&1 | tail -10" % name,
     ]
-    rc, out, err = docker_run("voidlinux/voidlinux", commands, timeout=300)
+    rc, out, err = docker_run("voidlinux/voidlinux", commands, timeout=PKG_TIMEOUT)
     combined = out + err
     result = {"package": name, "status": STATUS_PASS, "details": ""}
     if rc != 0:
@@ -511,6 +517,8 @@ def main():
     ap.add_argument("--debdist", default="testing", choices=["testing", "sid", "both"],
                     help="Debian release(s) for --type debian (default: testing; both=testing+sid)")
     args = ap.parse_args()
+    global PKG_TIMEOUT
+    PKG_TIMEOUT = max(60, int(args.timeout))
 
     root = Path(args.overlay)
     repo_type = args.type if args.type != "auto" else detect_type(root)
