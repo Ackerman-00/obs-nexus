@@ -1,3 +1,13 @@
+Tue Oct 20 01:23:41 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declared dlopen-only libsecret-1.so.0 / libpulse.so.0 /
+  libpipewire-0.3.so.0 (strings-proven in the 1.6.7 main binary:
+  keyring, audio playback, screen-share audio; same Electron code
+  path as fluxer). Dropped dead libXss.so.1 / libXtst6 / libuuid1
+  (zero references in the shipped payload). Debian control synced
+  (+libsecret-1-0/+libpulse0/+libpipewire-0.3-0t64,
+  -libuuid1/-libxss1/-libxtst6).
+
 Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.7-0

@@ -24,8 +24,6 @@ Requires:       libXdamage.so.1()(64bit)
 Requires:       libXext.so.6()(64bit)
 Requires:       libXfixes.so.3()(64bit)
 Requires:       libXrandr.so.2()(64bit)
-Requires:       libXss.so.1()(64bit)
-Requires:       libXtst6
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -44,9 +42,16 @@ Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
+# dlopen-only at runtime (not DT_NEEDED, so invisible to auto-deps):
+# libsecret for the OS keyring (Chromium os_crypt), libpulse for audio
+# playback, libpipewire for screen-share audio capture - all proven by
+# strings in the shipped 1.6.7 main binary (same Electron code path as
+# fluxer, whose spec declares them).
+Requires:       libpipewire-0.3.so.0()(64bit)
+Requires:       libpulse.so.0()(64bit)
+Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libuuid1
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils

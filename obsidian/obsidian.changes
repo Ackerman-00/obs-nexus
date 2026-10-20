@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Oct 20 01:23:41 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declared libpipewire-0.3.so.0 + libpulse.so.0 (dlopen-only,
+  strings-proven in the 1.14.4 main binary: screen/audio capture +
+  playback; same code path as fluxer) and libfontconfig.so.1
+  (DT_NEEDED of the shipped get-fonts/binding.node). Dropped dead
+  libXss.so.1 / libXtst.so.6 / libuuid.so.1 (zero references in the
+  shipped payload). Debian control synced (+libpipewire-0.3-0t64
+  +libpulse0, -libuuid1/-libxss1/-libxtst6).
+
 Sat Oct 17 22:55:18 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Ship the AppImage's real-size hicolor icon tree (16..512) instead of

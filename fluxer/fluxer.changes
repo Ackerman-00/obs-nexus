@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 20 01:23:41 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Drop dead Requires libXss.so.1 / libXtst.so.6 / libuuid.so.1: the
+  2026.1018.223338 payload has zero DT_NEEDED, dlopen-string or symbol
+  references to any of them (verified on the published -3.1 RPM);
+  keep the strings-proven dlopen set (libsecret/libpipewire/libpulse)
+  and libnotify. Debian control synced (-libuuid1/-libxss1/-libxtst6).
+
 Mon Oct 19 03:38:48 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.1018.223338-0

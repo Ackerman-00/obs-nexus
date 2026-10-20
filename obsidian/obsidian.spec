@@ -39,8 +39,6 @@ Requires:       libXdamage.so.1()(64bit)
 Requires:       libXext.so.6()(64bit)
 Requires:       libXfixes.so.3()(64bit)
 Requires:       libXrandr.so.2()(64bit)
-Requires:       libXss.so.1()(64bit)
-Requires:       libXtst.so.6()(64bit)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -49,6 +47,8 @@ Requires:       libcairo.so.2()(64bit)
 Requires:       libcups.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
 Requires:       libexpat.so.1()(64bit)
+# DT_NEEDED of the shipped get-fonts/binding.node native helper.
+Requires:       libfontconfig.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
 Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
@@ -59,10 +59,16 @@ Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
+# dlopen-only at runtime (not DT_NEEDED, so invisible to auto-deps):
+# libpulse for audio playback, libpipewire for screen/audio capture -
+# proven by strings in the shipped 1.14.4 main binary (libpulse.so.0 /
+# libpipewire-0.3.so.0 hits; same Chromium code path as fluxer, whose
+# spec declares both). libsecret above is the OS-keyring dlopen.
+Requires:       libpipewire-0.3.so.0()(64bit)
+Requires:       libpulse.so.0()(64bit)
 Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libuuid.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
