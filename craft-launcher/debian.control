@@ -11,7 +11,11 @@ Package: craft-launcher
 Architecture: amd64
 # Runtime set: upstream's own DEB Depends verified correct as-is
 # (t64-era names need no adjustment for this set on Debian Testing).
-Depends: ${misc:Depends}, hicolor-icon-theme, libc6 (>= 2.35), libegl1, libgcc-s1, libvulkan1, libwayland-client0, libx11-6, libx11-xcb1, libxcb1, libxcursor1, libxi6, libxkbcommon-x11-0, libxkbcommon0
+# 0.6.0: upstream collapsed libvulkan1+libegl1 into the alternative
+# "libvulkan1 | libegl1" (wgpu loads either) and added GPU/portal
+# Recommends - mirrored verbatim from upstream's control.
+Depends: ${misc:Depends}, hicolor-icon-theme, libc6 (>= 2.35), libgcc-s1, libvulkan1 | libegl1, libwayland-client0, libx11-6, libx11-xcb1, libxcb1, libxcursor1, libxi6, libxkbcommon-x11-0, libxkbcommon0
+Recommends: mesa-vulkan-drivers, libegl-mesa0, xdg-desktop-portal
 Description: App launcher for the Craft suite
  ArtCraft Launcher: the app launcher for the Craft suite of clean-room
  creative tools.

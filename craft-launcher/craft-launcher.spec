@@ -4,32 +4,39 @@
 # craft-launcher - the package follows the upstream project name
 # (release artifacts stay artcraft-launcher-* prefixed, see ART_PREFIX).
 Name:           craft-launcher
-Version:        0.5.1
+Version:        0.6.0
 Release:        0
 Summary:        App launcher for the Craft suite
 License:        MIT OR Apache-2.0
 Group:          System/Packages
 URL:            https://github.com/storytold/craft-launcher
-Source0:        https://github.com/storytold/craft-launcher/releases/download/v0.5.1/artcraft-launcher-0.5.1-linux-x86_64.rpm
+Source0:        https://github.com/storytold/craft-launcher/releases/download/v0.6.0/artcraft-launcher-0.6.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
 # Runtime mapping: upstream's RPM Requires are ALREADY correct soname
 # form (verified against TW repodata providers), like photocraft's.
 # Kept verbatim on purpose; only libgcc_s (NEEDED) and the icon theme
-# are added. Payload has no bundled .so needing excludes.
+# are added. Payload has no bundled .so needing excludes. 0.6.0: the
+# wgpu/hal Vulkan backend loads EITHER the vulkan loader or EGL's
+# vulkan entrypoint, so upstream collapsed the two into one OR - kept
+# as a rich dependency to match upstream exactly (both providers exist
+# on TW, so resolution is unconditional in practice).
 Requires:       hicolor-icon-theme
 Requires:       libX11-xcb.so.1()(64bit)
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcursor.so.1()(64bit)
 Requires:       libXi.so.6()(64bit)
 Requires:       libgcc_s1
-Requires:       libvulkan.so.1()(64bit)
-Requires:       libEGL.so.1()(64bit)
+Requires:       (libvulkan.so.1()(64bit) or libEGL.so.1()(64bit))
 Requires:       libwayland-client.so.0()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon-x11.so.0()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
+# Optional-degrade strings (present in 0.6.0 payload, NOT upstream
+# Requires): libwayland-egl.so.1 (wgpu wlroots path), libdbus-1.so.3
+# (ksni tray + rfd portal dialogs) - both degrade gracefully without
+# hard-failing launch, so they follow upstream in staying undeclared.
 ExclusiveArch:  x86_64
 Provides:       artcraft-launcher = %{version}-%{release}
 Obsoletes:      artcraft-launcher < %{version}-%{release}
