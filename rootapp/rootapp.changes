@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Oct 20 23:33:20 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare the bundled Chromium/Electron's missing soname Requires
+  (libXext, libXfixes, libatk, libatk-bridge, libatspi, libcairo,
+  libcups, libdbus-1, libexpat, libfontconfig, libgdk-3, libgio,
+  libglib, libgobject, libpango, libudev, libxcb): auto-requires are
+  disabled for the /opt payload, so these were not guaranteed on a
+  minimal install. libjawt/libjvm excluded (bundled JRE only).
+
+-------------------------------------------------------------------
 Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: suppress binary-or-shlib-calls-gethostbyname for the

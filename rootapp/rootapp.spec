@@ -17,26 +17,47 @@ Requires:       Mesa-libEGL1
 Requires:       alsa
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
+# Explicit soname Requires (auto-Requires are off for the /opt payload via
+# __requires_exclude_from below); derived from readelf -d DT_NEEDED of the
+# bundled Chromium/Electron ELFs. libjawt.so/libjvm.so are excluded: they are
+# NEEDED only by the app's own bundled JRE (libawt_toolkit.so), not the OS.
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
 Requires:       libXcursor.so.1()(64bit)
 Requires:       libXdamage.so.1()(64bit)
+Requires:       libXext.so.6()(64bit)
+Requires:       libXfixes.so.3()(64bit)
 Requires:       libXinerama.so.1()(64bit)
 Requires:       libXrandr.so.2()(64bit)
 Requires:       libXrender.so.1()(64bit)
 Requires:       libXss.so.1()(64bit)
 Requires:       libXt.so.6()(64bit)
 Requires:       libXtst.so.6()(64bit)
+Requires:       libatk-1.0.so.0()(64bit)
+Requires:       libatk-bridge-2.0.so.0()(64bit)
+Requires:       libatspi.so.0()(64bit)
+Requires:       libcairo.so.2()(64bit)
+Requires:       libcups.so.2()(64bit)
+Requires:       libdbus-1.so.3()(64bit)
+Requires:       libexpat.so.1()(64bit)
+Requires:       libfontconfig.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
 Requires:       libgcc_s.so.1()(64bit)
+Requires:       libgdk-3.so.0()(64bit)
+Requires:       libgio-2.0.so.0()(64bit)
+Requires:       libglib-2.0.so.0()(64bit)
+Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libgtk-3.so.0()(64bit)
 Requires:       libnotify.so.4()(64bit)
+Requires:       libpango-1.0.so.0()(64bit)
 Requires:       libpulse.so.0()(64bit)
 Requires:       libstdc++.so.6()(64bit)
+Requires:       libudev.so.1()(64bit)
 Requires:       libvulkan.so.1()(64bit)
 Requires:       libwayland-client.so.0()(64bit)
 Requires:       libwayland-cursor.so.0()(64bit)
 Requires:       libwayland-egl.so.1()(64bit)
+Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       mozilla-nspr
 Requires:       mozilla-nss

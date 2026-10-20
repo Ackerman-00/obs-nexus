@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 20 23:33:20 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libgcc_s.so.1: the bundled upstream Electron binary NEEDs it,
+  but auto-requires are disabled for the /opt payload
+  (__requires_exclude_from), so it was silently unlisted. Same fix the
+  other Electron repacks already carry.
+
+-------------------------------------------------------------------
 Sun Oct 18 11:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Requires: libpipewire-0_3-0 - the bundled node-pipewire index.node

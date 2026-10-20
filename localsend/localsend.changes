@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Oct 20 23:33:20 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare the Flutter embedder's direct GTK3 soname Requires (libgtk-3,
+  libgdk-3, libglib, libgobject, libgio, libatk, libcairo, libpango,
+  libpangocairo, libfontconfig, libepoxy): auto-requires are disabled for
+  the /opt payload, so these were only transitively satisfied via
+  libayatana-appindicator3 and were not guaranteed on a minimal install.
+
+-------------------------------------------------------------------
 Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: suppress no-soname / missing-gnu-hash-section for the

@@ -31,6 +31,10 @@ Requires:       libasound2
 Requires:       libcups2
 Requires:       libgbm1
 # Explicit because of %%__requires_exclude_from ^/opt/Stoat/ above: the
+# bundled Electron binary NEEDs libgcc_s.so.1 but auto-Requires are off
+# for the /opt payload (same fix as the other Electron repacks).
+Requires:       libgcc_s.so.1()(64bit)
+# Explicit because of %%__requires_exclude_from ^/opt/Stoat/ above: the
 # bundled node-pipewire index.node hard-NEEDED libpipewire-0.3.so.0 is
 # auto-excluded like the rest of /opt, so RPM auto-deps never see it
 # (Debian recipe Depends pipewire; mirror for parity).

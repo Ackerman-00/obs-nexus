@@ -18,11 +18,26 @@ BuildRequires:  tar
 BuildRequires:  zstd
 # Explicit dependencies mapped from the upstream DEB to openSUSE
 # (libappindicator3-1 | libayatana-appindicator3-1 -> libayatana-appindicator3-1,
-#  libayatana-ido3-0.4-0 -> libayatana-ido3-0_4-0, xdg-user-dirs, libc6 -> glibc)
+#  libayatana-ido3-0.4-0 -> libayatana-ido3-0_4-0, xdg-user-dirs, libc6 -> glibc).
+# The GTK3 soname Requires below are the Flutter embedder's direct DT_NEEDED
+# entries, made explicit because auto-Requires are off for /opt
+# (__requires_exclude_from); libjvm.so is excluded (only libdartjni.so, a lazy
+# Dart->JNI bridge, references it and no desktop flow loads it).
+Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libayatana-appindicator3.so.1()(64bit)
 Requires:       libayatana-ido3-0.4.so.0()(64bit)
 Requires:       libayatana-indicator3.so.7()(64bit)
+Requires:       libcairo.so.2()(64bit)
+Requires:       libepoxy.so.0()(64bit)
+Requires:       libfontconfig.so.1()(64bit)
 Requires:       libgcc_s.so.1()(64bit)
+Requires:       libgdk-3.so.0()(64bit)
+Requires:       libgio-2.0.so.0()(64bit)
+Requires:       libglib-2.0.so.0()(64bit)
+Requires:       libgobject-2.0.so.0()(64bit)
+Requires:       libgtk-3.so.0()(64bit)
+Requires:       libpango-1.0.so.0()(64bit)
+Requires:       libpangocairo-1.0.so.0()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       xdg-user-dirs
 ExclusiveArch:  x86_64

@@ -36,6 +36,9 @@ Requires:       libcups.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
 Requires:       libexpat.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
+# Explicit because of __requires_exclude_from ^/opt/Heroic/ above: the
+# bundled Electron binary NEEDs libgcc_s but auto-Requires are off for /opt.
+Requires:       libgcc_s.so.1()(64bit)
 Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
