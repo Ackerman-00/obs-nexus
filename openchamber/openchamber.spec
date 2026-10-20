@@ -33,8 +33,12 @@ Requires:       libatspi.so.0()(64bit)
 Requires:       libcairo.so.2()(64bit)
 Requires:       libcups.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
+# Bundled libnotify (dlopened by the main ELF - "Unable to find libnotify"
+# fallback string) links gdk-pixbuf directly.
+Requires:       libdbusmenu-glib.so.4()(64bit)
 Requires:       libexpat.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
+Requires:       libgdk_pixbuf-2.0.so.0()(64bit)
 Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
@@ -46,7 +50,11 @@ Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libuuid.so.1()(64bit)
+# node-pty pty.node (app.asar.unpacked) links libutil; /opt ELFs are
+# hidden from auto-Requires by __requires_exclude_from, so declare it.
+# libuuid.so.1 dropped same day: zero NEEDED/dlopen refs in the full
+# 2.5.0 payload (grep -r over every file incl. app.asar).
+Requires:       libutil.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils

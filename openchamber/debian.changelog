@@ -1,3 +1,10 @@
+openchamber (2.5.0-2) unstable; urgency=medium
+
+  * Dependency re-tear of the 2.5.0 payload: declare libgdk-pixbuf-2.0-0,
+    libdbusmenu-glib4, libpango-1.0-0, libudev1; drop unused libuuid1.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 19 Oct 2026 23:52:30 +0000
+
 openchamber (2.5.0-1) unstable; urgency=medium
 
   * New upstream release 2.5.0.

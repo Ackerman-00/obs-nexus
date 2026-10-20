@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Oct 19 23:52:30 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.5.0-0
+- Dependency re-tear of the 2.5.0 payload: declare libgdk_pixbuf-2.0
+  (bundled libnotify is dlopened by the main ELF and links it),
+  libdbusmenu-glib (soname candidate string in the main ELF; provider
+  libdbusmenu-glib4 verified on TW) and libutil (node-pty pty.node);
+  drop libuuid - zero NEEDED/dlopen references in the whole payload.
+  Debian control kept in sync (gdk-pixbuf/dbusmenu-glib/pango/udev,
+  uuid dropped; libpango-1.0-0 is the real Debian name).
+
+-------------------------------------------------------------------
 Mon Oct 19 22:07:56 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.5.0-0
