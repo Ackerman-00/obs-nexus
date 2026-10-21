@@ -1,3 +1,9 @@
+zen-browser (1.23.4b-1) unstable; urgency=medium
+
+  * New upstream release 1.23.4b.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 21 Oct 2026 11:20:45 +0000
+
 zen-browser (1.23.3b-1) unstable; urgency=medium
 
   * New upstream release 1.23.3b.

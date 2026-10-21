@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 21 11:20:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.23.4b-0
+- Update zen-browser to v1.23.4b
+
+-------------------------------------------------------------------
 Tue Oct 20 21:00:48 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add zen-browser-rpmlintrc filtering binary-or-shlib-calls-

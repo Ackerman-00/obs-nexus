@@ -1,3 +1,9 @@
+rootapp (0.9.151-1) unstable; urgency=medium
+
+  * New upstream release 0.9.151.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 21 Oct 2026 11:23:55 +0000
+
 rootapp (0.9.150-2) unstable; urgency=medium
 
   * Drop dead runtime deps: libnotify4, xrender and the wayland

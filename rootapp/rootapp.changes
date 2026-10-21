@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Oct 21 11:23:55 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to 0.9.151 (sha256: 6824d70a511a26da88d11feaa563e7970a4252a3658733d3f06ee7451a7cf493)
+
+-------------------------------------------------------------------
 Wed Oct 21 01:05:23 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Drop two more dead soname Requires (fresh-checker re-tear of the

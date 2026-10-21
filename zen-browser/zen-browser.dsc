@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: zen-browser
 Binary: zen-browser
 Architecture: amd64
-Version: 1.23.3b
+Version: 1.23.4b
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), chrpath, desktop-file-utils
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -20,4 +20,4 @@ Build-Depends: debhelper-compat (= 13), chrpath, desktop-file-utils
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: zen-browser-1.23.3b.tar.xz
+Debtransform-Tar: zen-browser-1.23.4b.tar.xz
