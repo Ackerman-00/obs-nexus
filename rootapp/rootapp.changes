@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Oct 21 01:05:23 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Drop two more dead soname Requires (fresh-checker re-tear of the
+  0.9.150 payload: 483 files, ASCII + UTF-16 scans): libwayland-cursor
+  and libwayland-egl are referenced by zero payload files. Synced the
+  Debian control: libnotify4, libxrender1, libwayland-cursor0 and
+  libwayland-egl1 removed there too (they were left behind when the
+  spec's libXrender/libnotify Requires were dropped).
+
+-------------------------------------------------------------------
 Wed Oct 21 00:42:37 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to 0.9.150 (sha256: cc85c6a5027bf1735dbd07d5c769747dd8533fbb092e7a670737f2c64c33c11a)

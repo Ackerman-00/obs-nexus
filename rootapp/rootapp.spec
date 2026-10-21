@@ -53,8 +53,6 @@ Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
 Requires:       libvulkan.so.1()(64bit)
 Requires:       libwayland-client.so.0()(64bit)
-Requires:       libwayland-cursor.so.0()(64bit)
-Requires:       libwayland-egl.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       mozilla-nspr
