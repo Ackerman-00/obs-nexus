@@ -1,3 +1,11 @@
+zen-browser (1.23.4b-2) unstable; urgency=medium
+
+  * Re-release of 1.23.4b: upstream restored the tag/release/assets at 13:41 UTC
+    after the morning retraction (Firefox 158.0.1, FSMA-2026-111 fixes).
+  * Revision -2 so this entry stays distinct from the first, retracted 1.23.4b-1.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 21 Oct 2026 13:53:38 +0000
+
 zen-browser (1.23.3b-2) unstable; urgency=medium
 
   * Revert from 1.23.4b: upstream retracted that release within ~90 minutes of

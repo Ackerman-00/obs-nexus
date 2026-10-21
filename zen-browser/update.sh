@@ -125,7 +125,18 @@ DSC_FILE="zen-browser.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: zen-browser-$NEW_VER.tar.xz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-DEB_ENTRY="zen-browser ($NEW_VER-1) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- Ackerman-00 <noreply@example.com>  $DEB_DATE\n\n"
+# Re-release-safe revision: if this version already appears in the
+# changelog (real case: 1.23.4b was bumped 11:20Z, RETRACTED upstream
+# the same morning, then restored at 13:41Z), write the NEXT revision
+# instead of emitting a duplicate version stanza.
+DEB_REV=1
+if [ -f debian.changelog ]; then
+    EXISTING_REVS=$(grep -oE "^zen-browser \($NEW_VER-[0-9]+\)" debian.changelog | grep -oE '[0-9]+\)$' | tr -d ')' | sort -n)
+    if [ -n "$EXISTING_REVS" ]; then
+        DEB_REV=$(( $(printf '%s\n' "$EXISTING_REVS" | tail -1) + 1 ))
+    fi
+fi
+DEB_ENTRY="zen-browser ($NEW_VER-$DEB_REV) unstable; urgency=medium\n\n  * New upstream release $NEW_VER.\n\n -- Ackerman-00 <noreply@example.com>  $DEB_DATE\n\n"
 if [ -f "debian.changelog" ]; then
     echo -e "${DEB_ENTRY}$(cat debian.changelog)" > debian.changelog
 else
