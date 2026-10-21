@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 21 11:57:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.8+git20261021114711.0aa1a50-0
+- Update concat-unstable to base 0.2.8 + main 0aa1a50
+
+-------------------------------------------------------------------
 Wed Oct 21 11:25:23 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.8+git20261021112124.f5664c8-0
