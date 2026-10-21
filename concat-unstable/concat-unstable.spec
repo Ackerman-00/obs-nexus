@@ -4,9 +4,9 @@
 # automatic dependency generation; system sonames still auto-resolve.
 %global __requires_exclude_from ^/opt/concat-unstable/.*$
 %global __provides_exclude_from ^/opt/concat-unstable/.*$
-%global commit          0aa1a5023e295f798c56fddeb7d038cf89af19a0
-%global shortcommit     0aa1a50
-%global gitdate         20261021114711
+%global commit          2756209a92766a4e4726999a51648349a272c159
+%global shortcommit     2756209
+%global gitdate         20261021123150
 %global base_version    0.2.8
 Name:           concat-unstable
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
