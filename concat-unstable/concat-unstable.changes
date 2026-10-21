@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 21 03:43:02 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.8+git20261021025429.816a8f0-0
+- Update concat-unstable to base 0.2.8 + main 816a8f0
+
+-------------------------------------------------------------------
 Tue Oct 20 21:14:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix macro-in-comment warnings: reword the prep/build notes so no bare
