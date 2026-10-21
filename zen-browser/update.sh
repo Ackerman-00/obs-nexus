@@ -86,6 +86,24 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     exit 0
 fi
 
+# RETRACTION / DOWNGRADE GUARD: never blindly move the version backwards.
+# If upstream's releases/latest is OLDER than what we package, two cases:
+#  (a) our current version's asset is GONE upstream (yanked release - real
+#      case: zen-browser 1.23.4b was published 2026-10-21 10:59Z and fully
+#      retracted before 12:33Z: tag, release and asset all deleted): the
+#      revert is correct, a dead Source0 would 404 on every future OBS
+#      service run and break the package;
+#  (b) otherwise the releases/latest pointer is lagging or glitched: HOLD
+#      the newer packaged version instead of silently regressing.
+if [ "$(printf '%s\n' "$CURRENT_VER" "$NEW_VER" | sort -V | tail -1)" != "$NEW_VER" ]; then
+    CUR_STATUS=$(curl -o /dev/null -s -w "%{http_code}" -I -L "$(zen_url_for "$CURRENT_VER")")
+    if [ "$CUR_STATUS" = "200" ]; then
+        echo "⏸  HOLD: upstream latest $NEW_VER is OLDER than packaged $CURRENT_VER, but $CURRENT_VER's asset is still live (HTTP $CUR_STATUS) - not downgrading."
+        exit 0
+    fi
+    echo "⚠ RETRACTED UPSTREAM: packaged $CURRENT_VER asset is dead (HTTP $CUR_STATUS) - reverting to last live release $NEW_VER."
+fi
+
 echo "🚀 New version found! Testing download URL..."
 DOWNLOAD_URL="https://github.com/zen-browser/desktop/releases/download/${LATEST_TAG}/zen.linux-x86_64.tar.xz"
 HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" -I "$DOWNLOAD_URL" -L)

@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Oct 21 12:42:08 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.23.3b-1 (revert from 1.23.4b)
+- Upstream retracted the 1.23.4b release within ~90 minutes of
+  publishing it: git tag, GitHub release and release asset all
+  deleted (releases/latest back to 1.23.3b, Source0 URL 404s as of
+  2026-10-21 12:33 UTC), so any future OBS service run would fail to
+  re-fetch Source0. Revert to the last live release; update.sh now
+  detects upstream retractions (revert) and refuses to downgrade on a
+  lagging releases/latest pointer (HOLD).
+
+-------------------------------------------------------------------
 Wed Oct 21 11:20:45 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.23.4b-0

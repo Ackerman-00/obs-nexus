@@ -1,3 +1,10 @@
+zen-browser (1.23.3b-2) unstable; urgency=medium
+
+  * Revert from 1.23.4b: upstream retracted that release within ~90 minutes of
+    publishing it (tag, release and Source0 asset all deleted).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 21 Oct 2026 12:42:08 +0000
+
 zen-browser (1.23.4b-1) unstable; urgency=medium
 
   * New upstream release 1.23.4b.
