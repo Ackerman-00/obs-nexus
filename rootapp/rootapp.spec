@@ -3,7 +3,7 @@
 %global __requires_exclude_from ^/opt/rootapp/.*$
 %global __provides_exclude_from ^/opt/rootapp/.*$
 Name:           rootapp
-Version:        0.9.148
+Version:        0.9.150
 Release:        0
 Summary:        Discord alternative for gaming communities and large groups
 License:        SUSE-Freeware
@@ -29,7 +29,6 @@ Requires:       libXext.so.6()(64bit)
 Requires:       libXfixes.so.3()(64bit)
 Requires:       libXinerama.so.1()(64bit)
 Requires:       libXrandr.so.2()(64bit)
-Requires:       libXrender.so.1()(64bit)
 Requires:       libXss.so.1()(64bit)
 Requires:       libXt.so.6()(64bit)
 Requires:       libXtst.so.6()(64bit)
@@ -48,7 +47,6 @@ Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libgtk-3.so.0()(64bit)
-Requires:       libnotify.so.4()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
 Requires:       libpulse.so.0()(64bit)
 Requires:       libstdc++.so.6()(64bit)
@@ -64,7 +62,7 @@ Requires:       mozilla-nss
 Requires:       wl-clipboard
 Requires:       xdg-utils
 Provides:       rootapp = %{version}-%{release}
-# sha256: 801fcbdb9ec4756accbe7555aafe042f3de48c34f5e7177dd2e079ed38578480
+# sha256: cc85c6a5027bf1735dbd07d5c769747dd8533fbb092e7a670737f2c64c33c11a
 ExclusiveArch:  x86_64
 
 %description

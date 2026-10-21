@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Wed Oct 21 00:42:37 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to 0.9.150 (sha256: cc85c6a5027bf1735dbd07d5c769747dd8533fbb092e7a670737f2c64c33c11a)
+- Drop two stale soname Requires that no payload file needs any more:
+  libXrender.so.1 and libnotify.so.4 are neither DT_NEEDED nor referenced
+  (ASCII or UTF-16) by any of the 18 bundled ELFs/.NET assemblies in the
+  0.9.150 AppImage - verified against the 0.9.148 payload too (same 35
+  system sonames). libXss/libwayland-*/libpulse/libvulkan stay: the .NET
+  binaries and Chromium still reference them (dlopen paths).
+
+-------------------------------------------------------------------
 Tue Oct 20 23:33:20 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare the bundled Chromium/Electron's missing soname Requires
