@@ -23,7 +23,8 @@ BuildRequires:  python3
 # icoextract/gtk4/libadwaita/libmanette. All D-Bus use is via Gio
 # (Gio.DBusConnection/DBusProxy in launcher/tray/runner/utils), which
 # ships inside python3-gobject - no separate dbus module is imported
-# anywhere in the 2.5.0 tree, so no dbus Requires is shipped either.
+# anywhere in the 2.5.1 tree (re-checked 2.5.0->2.5.1 import diff this run),
+# so no dbus Requires is shipped either.
 # (No runtime Requires: hicolor-icon-theme either: the unversioned dep
 # trips rpmlint E: branding-requires-unversioned, same as fluxer documents.)
 Requires:       python3-gobject
@@ -38,8 +39,9 @@ Requires:       typelib-1_0-Manette-0_2-0
 
 %description
 Faugus is a simple and lightweight app for running Windows games using
-UMU-Launcher/UMU-Proton. The umu-run component is downloaded and managed
-by the app itself at runtime, so no umu Requires is shipped here.
+UMU-Launcher (upstream dropped the UMU-Proton compat tool in 2.5.1). The
+umu-run component is downloaded and managed by the app itself at runtime,
+so no umu Requires is shipped here.
 
 %package lang
 Summary:        Translations for package %{name}
@@ -59,7 +61,8 @@ Provides translations for the "%{name}" package.
 
 %install
 %meson_install
-# Upstream 2.5.0 tarball carries stray +x bits that trip rpmlint E:
+# Upstream 2.5.1 tarball still carries the stray +x bits (re-checked on the
+# 2.5.1 tarball this run) that trip rpmlint E:
 # script-without-shebang (backup.py/proton_downloader.py have no shebang
 # and run via sys.executable -m; the two app svgs are data), while
 # launcher.py carries a shebang but ships 644 (E: non-executable-script).
