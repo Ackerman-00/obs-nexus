@@ -36,7 +36,7 @@ for pkg in $PKGS; do
   files=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oE 'name="[^"]+"' | sed 's/name="//;s/"//' | grep -v '^_')
   for f in $files; do
     case "$f" in
-      *.spec|*.changes|_service|update.sh|*.rpmlintrc|debian.*|*.dsc|*.desktop) ;;
+      *.spec|*.changes|_service|update.sh|*.rpmlintrc|debian.*|*.dsc) ;;
       *) curl -s -u "$OBS_USER:$OBS_PASS" -o "$sd/$f" "https://api.opensuse.org/source/home:ackerman/$pkg/$f" && echo "  fetched $f" ;;
     esac
   done
