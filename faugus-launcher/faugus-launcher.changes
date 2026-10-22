@@ -1,4 +1,20 @@
 -------------------------------------------------------------------
+Thu Oct 22 12:08:56 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Revert to upstream release 2.5.0: upstream WITHDREW 2.5.0.1 on
+  2026-10-22 - the GitHub release and tag are both 404 (verified this
+  run via the releases list, releases/tags API, git ref API, codeload
+  and releases.atom), so Source0 .../tags/2.5.0.1.tar.gz is dead and
+  the package could never be rebuilt from scratch. 2.5.0 is the newest
+  release that actually exists upstream (GitHub releases + atom feed,
+  AUR 2.5.0-1, repology max 2.5.0); its source archive is HTTP 200,
+  sha256 fda35bae35b8ad3ecbd254a709a3bea9b7ce56e0b4c0bf691a1c9470583f4c9c
+  (9426604 B - byte-identical to the previously synced 2.5.0 tarball).
+  Dep set unchanged (the 2.5.0.1 delta was 6 Python files, zero
+  build-system/Requires changes). update.sh keeps its 3+-component
+  tag regex, so a re-published 4-component release is picked up again.
+
+-------------------------------------------------------------------
 Sun Oct 18 20:48:57 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 2.5.0.1

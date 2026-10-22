@@ -1,5 +1,5 @@
 Name:           faugus-launcher
-Version:        2.5.0.1
+Version:        2.5.0
 Release:        0
 ExclusiveArch:  x86_64
 Summary:        Lightweight app for running Windows games using UMU-Launcher
