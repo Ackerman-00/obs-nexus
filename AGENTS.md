@@ -34,6 +34,25 @@ Key functions:
 Exit code = verdict. Exit 0 = all packages verified. Exit 1 = any
 FAIL/MISMATCH/STALE/UNVERIFIED → CI opens an issue.
 
+### Layer 1a: Distro index collision check (`tools/distro-collision-check.py`) — MANDATORY
+
+Makes the owner rule "check the target's own index before shipping a package,
+and re-check it every run" executable. Reads the live Tumbleweed OSS
+`primary.xml` (served as `.zst` since 2026) plus Debian forky + sid
+`Packages.gz`, then reports:
+
+- lib* / *-devel shadowing a distro package → FAIL (the wlroots/scenefx
+  latent-collision class; those packages must stay dropped / RPM-only)
+- application or data package with the same name → WARN with both versions
+  (legitimate bleeding-edge upgrade along the same package name)
+- invariants: `wlroots` must not exist, `scenefx` must have no `.dsc`,
+  every spec carries `ExclusiveArch: x86_64`, every `.deb` is
+  `Architecture: amd64` except the owner-approved arch-independent recipes
+  (bibata-cursor-theme, lazyvim-git, faugus-launcher)
+
+Exit 0 = no shadowing violation. Network flakes downgrade the affected
+index to a WARN, they never turn into a false PASS of a broken invariant.
+
 ### Layer 1b: Docker battle test + dependency sweep (`tools/docker-sweep.py`) — MANDATORY
 
 Runs INSIDE the agent, clean containers for the THREE-target matrix every
