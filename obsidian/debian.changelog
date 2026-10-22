@@ -1,3 +1,9 @@
+obsidian (1.14.5-1) unstable; urgency=medium
+
+  * New upstream release 1.14.5.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 22 Oct 2026 21:37:53 +0000
+
 obsidian (1.14.4-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream AppImages).
