@@ -4,7 +4,8 @@ GHOSTTY_VER = 1.3.1
 ZIG = $(CURDIR)/zig/zig
 ZCACHE = $(CURDIR)/vendor/zig
 # glslang stays vendored: Debian ships static-only libglslang.a whose glslang.pc omits SPIRV-Tools and libstdc++
-ZFLAGS = --system $(ZCACHE)/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=false -Dversion-string=$(GHOSTTY_VER) -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway
+# -Dstrip=true = upstream's own ReleaseFast default (Config.zig), same as the spec
+ZFLAGS = --system $(ZCACHE)/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=true -Dversion-string=$(GHOSTTY_VER) -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway
 
 %:
 	dh $@

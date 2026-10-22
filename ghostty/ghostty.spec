@@ -1,5 +1,14 @@
 %global zig_ver        0.15.2
-%global common_build_flags --system %{_builddir}/%{name}-%{version}/vendor/zig/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=false -Dversion-string=%{version} -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=glslang -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway %{?_smp_mflags}
+# -Dstrip=true matches upstream's own default for ReleaseFast
+# (src/build/Config.zig: "Strip the final executable. Default true for
+# fast and small releases"): the previous forced -Dstrip=false shipped
+# /usr/bin/ghostty with its full .symtab, which OBS's brp-15-strip-debug
+# cannot remove (it runs strip --strip-debug, a no-op on a binary with no
+# .debug sections - proven locally) and rpmlint flags as
+# unstripped-binary-or-object. ReleaseFast emits no DWARF, so no debug
+# info exists to lose either way (readelf -S: .symtab only, zero .debug_*,
+# and no -debuginfo package is produced by the build).
+%global common_build_flags --system %{_builddir}/%{name}-%{version}/vendor/zig/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=true -Dversion-string=%{version} -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=glslang -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway %{?_smp_mflags}
 %define site_runtimepath %{_datadir}/vim/site
 
 Name:           ghostty
