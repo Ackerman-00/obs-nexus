@@ -48,6 +48,13 @@ for pkg in $PKGS; do
   done
   docker run --rm -v "$sd:/src:ro" -v /tmp/rot/out:/out -e pkg="$pkg" "$IMG" bash -lc '
     set -u
+    # repo-self-deps: some packages BuildRequire libs this project itself
+    # ships (e.g. mangowm -> pkgconfig(scenefx-0.5), absent from TW). OBS
+    # resolves those via project-internal deps; locally the same set comes
+    # from the published nexus mirror - the exact repo a user adds per
+    # README - so add it before resolving BuildRequires. Official TW repos
+    # stay enabled and still provide everything else.
+    zypper --non-interactive addrepo --refresh https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/ home_ackerman >/dev/null 2>&1
     zypper --non-interactive --gpg-auto-import-keys refresh >/dev/null 2>&1
     zypper --non-interactive --no-gpg-checks in -y rpm-build >/dev/null 2>&1
     mkdir -p /usr/src/packages/{SOURCES,SPECS,BUILD,BUILDROOT,RPMS,SRPMS}
