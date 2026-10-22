@@ -257,7 +257,10 @@ jobs:
               arch-independent data-only packages (icon themes, shell/editor
               config snapshots), which correctly declare `Architecture: all`
               (bibata-cursor-theme, lazyvim-git) - never "fix" those to
-              amd64, that is a regression; OBS repos
+              amd64, that is a regression; faugus-launcher is also
+              `Architecture: all` (pure-Python payload, owner-authored
+              debian recipe in commit dc5be70 2026-10-15) - keep it `all`,
+              do not convert it to amd64 either; OBS repos
               carry the x86_64 arch only (i586/aarch64 removed from project
               meta). Never add/enable/sync/test any other arch or distro;
               close expansion requests as out-of-scope. Rules per family:
