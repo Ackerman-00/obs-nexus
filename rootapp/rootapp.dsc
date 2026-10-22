@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: rootapp
 Binary: rootapp
 Architecture: amd64
-Version: 0.9.151
+Version: 0.9.152
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13)
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -20,4 +20,4 @@ Build-Depends: debhelper-compat (= 13)
 # 'File has unexpected size' against a stale mirror (MirrorCache
 # issue #600). Unique filenames per build fix it permanently.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: rootapp-0.9.151.tar.gz
+Debtransform-Tar: rootapp-0.9.152.tar.gz
