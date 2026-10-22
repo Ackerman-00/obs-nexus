@@ -18,9 +18,9 @@
           "maxTokens": 8192,
           "contextWindow": 131072
         },
-        "longcat-2.5-preview-free": {
-          "name": "Longcat 2.5 Preview Free",
-          "model": "opencode/longcat-2.5-preview-free",
+        "flint-40b-free": {
+          "name": "Flint 40B Free",
+          "model": "opencode/flint-40b-free",
           "maxTokens": 8192,
           "contextWindow": 131072
         },
