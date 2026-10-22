@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Oct 21 22:50:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Correct requirements comment against upstream README at pinned commit
+  9997009 (lines 59-62): only the Nerd Font is marked (optional); the
+  C compiler is a listed requirement for nvim-treesitter parsers.
+  Declare it as Recommends: gcc (weak, per openSUSE weak-dependency
+  practice) in the spec and Recommends: gcc in debian.control - the
+  hard Requires/Depends (neovim, git) are unchanged.
+
+-------------------------------------------------------------------
 Fri Oct 16 21:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add missing runtime Requires: neovim >= 0.11.2, git >= 2.19.0
