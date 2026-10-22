@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Thu Oct 22 14:31:32 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 2.5.1 (published 2026-10-22 12:21 UTC, tag
+  978d18f, 13 minutes after upstream withdrew 2.5.0.1). Re-tar of Source0:
+  sha256 0d0ae82febf6b3924b975f79f277887edc9364de67be89831514400cd94b6db6
+  (9427045 B). Delta 2.5.0->2.5.1 = 40 files: Python-only code (GPU
+  selector, removal of Proton-EM/UMU-Proton compat-tool support, Flatpak
+  "already running" fix, Steam shortcut fix) + translations + metainfo
+  release notes + meson version string. Dependency re-derivation: import
+  set unchanged (no new third-party modules), meson.build build deps
+  unchanged, README runtime set unchanged (pygobject/gtk4/libadwaita/
+  libmanette) - spec Requires/BuildRequires unchanged. Artifacts: no file
+  renames (data/ identical except metainfo content) - %files unchanged.
+
+-------------------------------------------------------------------
 Thu Oct 22 12:08:56 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Revert to upstream release 2.5.0: upstream WITHDREW 2.5.0.1 on

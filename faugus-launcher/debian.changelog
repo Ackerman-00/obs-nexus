@@ -1,3 +1,9 @@
+faugus-launcher (2.5.1-1) unstable; urgency=medium
+
+  * New upstream release 2.5.1.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 22 Oct 2026 14:31:32 +0000
+
 faugus-launcher (2.5.0-3) unstable; urgency=medium
 
   * Revert to upstream 2.5.0: upstream withdrew the 2.5.0.1 release
