@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Oct 22 00:50:19 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.6.8-0
+- Update vesktop to v1.6.8
+- Security: upstream ships this release specifically to update the
+  bundled Electron for the eMudhra certificate authority compromise
+  (upstream release notes; Cloudflare advisory linked there). Soname
+  closure re-derived from the new rpm payload: 34 DT_NEEDED, identical
+  set to 1.6.7, all mapped; no Requires changes.
+
+-------------------------------------------------------------------
 Tue Oct 20 22:44:53 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare libgcc_s.so.1: the bundled upstream Electron binary NEEDs it,

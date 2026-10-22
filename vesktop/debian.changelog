@@ -1,3 +1,9 @@
+vesktop (1.6.8-1) unstable; urgency=medium
+
+  * New upstream release 1.6.8.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 22 Oct 2026 00:50:19 +0000
+
 vesktop (1.6.7-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (repack of the upstream .rpm).

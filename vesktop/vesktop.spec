@@ -3,13 +3,13 @@
 %global __requires_exclude_from ^/opt/Vesktop/.*$
 %global __provides_exclude_from ^/opt/Vesktop/.*$
 Name:           vesktop
-Version:        1.6.7
+Version:        1.6.8
 Release:        0
 Summary:        Custom Discord desktop client with Vencord preinstalled
 License:        GPL-3.0-or-later
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://github.com/Vencord/Vesktop
-Source0:        https://github.com/Vencord/Vesktop/releases/download/v1.6.7/vesktop-1.6.7.x86_64.rpm
+Source0:        https://github.com/Vencord/Vesktop/releases/download/v1.6.8/vesktop-1.6.8.x86_64.rpm
 # Source1 is the filter file to bypass the "Badness" check
 Source1:        vesktop-rpmlintrc
 BuildRequires:  cpio
