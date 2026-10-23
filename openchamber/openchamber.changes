@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 23 03:48:04 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.5.1-0
+- Update openchamber to v2.5.1
+
+-------------------------------------------------------------------
 Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: suppress the upstream Electron/Chromium
