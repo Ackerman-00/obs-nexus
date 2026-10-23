@@ -33,7 +33,9 @@ for pkg in $PKGS; do
   rm -rf "$sd"; mkdir -p "$sd"
   # spec from git tree (authoritative), source artifacts from OBS
   cp "$pkg/$pkg.spec" "$sd/"
-  files=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oE 'name="[^"]+"' | sed 's/name="//;s/"//' | grep -v '^_')
+  # Parse <entry name="..."> only - the directory element also carries a
+  # name="<pkg>" attribute, and fetching that as a file yields HTTP 400 noise.
+  files=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oE '<entry name="[^"]+"' | sed 's/.*name="//;s/"//' | grep -v '^_')
   for f in $files; do
     case "$f" in
       *.spec|*.changes|_service|update.sh|*.rpmlintrc|debian.*|*.dsc) ;;
