@@ -5,7 +5,7 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 |---|---|---|---|---|---|
 | bibata-cursor-theme | Bibata.tar.xz | 2.0.7 |  | **SOURCE-OK** | tar extracted, no version evidence found \| hash no-checksum-pinned \| source tarball (version = PV by construction) |
 | concat | Concat-0.2.8-linux-x86_64.rpm | 0.2.8 | 0.2.8-1 | **OK** | rpm header concat=0.2.8-1-1 (tags NAME/VERSION) \| pinned 0.2.8 \| internal 0.2.8-1 |
-| concat-unstable | live jub0t/concat | 1d04d1472a3f | 1d04d1472a3f | **OK** | live jub0t/concat pin 1d04d1472a3f vs upstream 1d04d1472a3f |
+| concat-unstable | live jub0t/concat | 971ad1d9214e | 971ad1d9214e | **OK** | live jub0t/concat pin 971ad1d9214e vs upstream 971ad1d9214e |
 | craft-launcher | artcraft-launcher-0.7.0-linux-x86_64.rpm | 0.7.0 | 0.7.0-1 | **OK** | rpm header artcraft-launcher=0.7.0-1-1 (tags NAME/VERSION) \| pinned 0.7.0 \| internal 0.7.0-1 |
 | faugus-launcher | 2.5.1.tar.gz | 2.5.1 | >=1.2.0 | **SOURCE-OK** | tar meson.build=>=1.2.0 (faugus-launcher-2.5.1/meson.build) \| hash no-checksum-pinned \| weak internal evidence >=1.2.0 (not authoritative) |
 | fluxer | fluxer.rpm | 2026.1018.223338 | 2026.1018.223338-1 | **OK** | rpm header fluxer=2026.1018.223338-1-1 (tags NAME/VERSION) \| pinned 2026.1018.223338 \| internal 2026.1018.223338-1 |
@@ -23,7 +23,7 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 | lazyvim-git | live LazyVim/LazyVim | 999700997f72 | 999700997f72 | **OK** | live LazyVim/LazyVim pin 999700997f72 vs upstream 999700997f72 |
 | localsend | LocalSend-1.18.2-linux-x86-64.deb | 1.18.2 | 1.18.2+64 | **OK** | deb pkg=localsend (control control.tar.zst) \| payload 17 ELF(s) extracted for ldd scan \| pinned 1.18.2 \| internal 1.18.2+64 |
 | localsend | localsend-rpmlintrc | 1.18.2 |  | **OK** | bundled aux/doc asset in repo, no download needed |
-| mangowm | mangowm-0.18.3.tar.gz | 0.18.3 | 0.18.3 | **SOURCE-OK** | tar meson.build=0.18.3 (mango-0.18.3/meson.build) \| hash no-checksum-pinned \| weak internal evidence 0.18.3 (not authoritative) |
+| mangowm | 0.18.3.tar.gz | 0.18.3 | 0.18.3 | **SOURCE-OK** | tar meson.build=0.18.3 (mango-0.18.3/meson.build) \| hash no-checksum-pinned \| weak internal evidence 0.18.3 (not authoritative) |
 | matugen | v4.2.0.tar.gz | 4.2.0 | 4.2.0 | **SOURCE-OK** | tar Cargo.toml=4.2.0 (matugen-4.2.0/Cargo.toml) \| hash no-checksum-pinned \| weak internal evidence 4.2.0 (not authoritative) |
 | matugen | v4.2.0.tar.gz | 4.2.0 | 4.2.0 | **SOURCE-OK** | tar Cargo.toml=4.2.0 (matugen-4.2.0/Cargo.toml) \| hash no-checksum-pinned \| weak internal evidence 4.2.0 (not authoritative) |
 | matugen | v4.2.0.tar.gz | 4.2.0 | 4.2.0 | **SOURCE-OK** | tar Cargo.toml=4.2.0 (matugen-4.2.0/Cargo.toml) \| hash no-checksum-pinned \| weak internal evidence 4.2.0 (not authoritative) |
@@ -32,7 +32,7 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 | obsidian | obsidian-rpmlintrc | 1.14.5 |  | **OK** | bundled aux/doc asset in repo, no download needed |
 | openchamber | OpenChamber-2.5.1-linux-x86_64.AppImage | 2.5.1 | 2.5.1 | **OK** | AppImage 2.5.1 (resources/app.asar) \| pinned 2.5.1 \| internal 2.5.1 |
 | protonplus | v0.6.8.tar.gz | 0.6.8 | >= 1.0.0 | **SOURCE-OK** | tar meson.build=>= 1.0.0 (ProtonPlus-0.6.8/meson.build) \| hash no-checksum-pinned \| weak internal evidence >= 1.0.0 (not authoritative) |
-| rootapp | Root.AppImage | 0.9.154 | 0.9.154 | **OK** | AppImage 0.9.154 (Root.desktop) \| pinned 0.9.154 \| internal 0.9.154 |
+| rootapp | Root.AppImage | 0.9.155 | 0.9.155 | **OK** | AppImage 0.9.155 (Root.desktop) \| pinned 0.9.155 \| internal 0.9.155 |
 | scenefx | 0.5.tar.gz | 0.5 | >=1.3 | **SOURCE-OK** | tar meson.build=>=1.3 (scenefx-0.5/meson.build) \| hash no-checksum-pinned \| weak internal evidence >=1.3 (not authoritative) |
 | stoat-desktop | Stoat-linux-x64-1.5.4.zip | 1.5.4 | 1.5.4 | **OK** | zip asar=1.5.4 (Stoat-linux-x64/resources/app.asar) \| pinned 1.5.4 \| internal 1.5.4 |
 | stoat-desktop | stoat-desktop.desktop | 1.5.4 |  | **OK** | bundled aux/doc asset in repo, no download needed |
@@ -53,6 +53,7 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 | heroic-games-launcher | upstream github.com/Heroic-Games-Launcher/HeroicGamesLauncher | 2.22.4 | v2.22.4 | **OK** | at upstream latest v2.22.4 [releases/latest] |
 | koharu | upstream github.com/koharu-rs/koharu | 0.83.5 | 0.83.5 | **OK** | at upstream latest 0.83.5 [releases/latest] |
 | localsend | upstream github.com/localsend/localsend | 1.18.2 | v1.18.2 | **OK** | at upstream latest v1.18.2 [releases/latest] |
+| mangowm | upstream github.com/mangowm/mango | 0.18.3 | 0.18.3 | **OK** | at upstream latest 0.18.3 [releases/latest] |
 | matugen | upstream github.com/InioX/matugen | 4.2.0 | v4.2.0 | **OK** | at upstream latest v4.2.0 [releases/latest] |
 | openchamber | upstream github.com/openchamber/openchamber | 2.5.1 | v2.5.1 | **OK** | at upstream latest v2.5.1 [releases/latest] |
 | protonplus | upstream github.com/vysp3r/ProtonPlus | 0.6.8 | v0.6.8 | **OK** | at upstream latest v0.6.8 [releases/latest] |
