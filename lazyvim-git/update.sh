@@ -50,11 +50,12 @@ if [ "$CURRENT_COMMIT" == "$LATEST_COMMIT" ] && [ "$CURRENT_BASE" == "$LATEST_BA
     UP_TO_DATE=1
 fi
 
-# The Source0 tarball is gitignored and never present in CI checkouts. Always
-# ensure it exists locally so the OBS sync step can upload it; if OBS ever
-# loses the tarball while the commit is unchanged, this prevents a rebuild
-# failure. The version guard above stays a pure commit/base comparison.
-if [ -f "lazyvim-$SHORT_COMMIT.tar.gz" ] && [ "$UP_TO_DATE" -eq 1 ]; then
+# PURE commit/base guard (repo rule: never require local artifact files to
+# exist - lazyvim-$SHORT.tar.gz is gitignored and never present in CI
+# checkouts, so "[ -f tarball ] && up-to-date" never fired there and the
+# script re-downloaded every 6h run). The comparison below is now the whole
+# guard: exit 0 on a pure version/commit match, before any artifact work.
+if [ "$UP_TO_DATE" -eq 1 ]; then
     echo "Package is already at the latest commit ($SHORT_COMMIT) and base version ($LATEST_BASE). No update needed."
     exit 0
 fi

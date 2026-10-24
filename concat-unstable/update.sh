@@ -67,11 +67,13 @@ CURRENT_COMMIT=$(grep -E "^%global commit" "$SPEC_FILE" | awk '{print $3}')
 CURRENT_PIN=$(grep -E "^%global commit" "$SPEC_FILE" | awk '{print $3}')
 TARBALL="concat-unstable-$BASE_VER+git$GITDATE.$SHORT.tar.gz"
 
-# The unified snapshot tarball is gitignored and never present in CI
-# checkouts. Always ensure it exists locally so the OBS sync step can
-# upload it; per-package actions/cache in update-packages.yml keeps it
-# across fresh checkouts.
-if [ -f "$TARBALL" ] && [ "$CURRENT_COMMIT" = "$HEAD_SHA" ]; then
+# PURE commit-SHA guard (repo rule: the up-to-date guard must be a pure
+# commit comparison and must never require local artifact files - the
+# tarball is gitignored and never present in CI checkouts). Gating on
+# "[ -f $TARBALL ]" here made every 6h auto-updater run fall through to a
+# full cargo-vendor/ffmpeg/skia snapshot rebuild with zero upstream change
+# (CI waste; no git churn - the spec writes below were separately gated).
+if [ "$CURRENT_COMMIT" = "$HEAD_SHA" ]; then
     echo "Package is already at main $SHORT (base $BASE_VER). No update needed."
     exit 0
 fi

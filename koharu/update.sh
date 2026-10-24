@@ -74,7 +74,10 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
 fi
 
 # Defensive check: the release asset must actually exist before we bump.
-SOURCE_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/koharu_$LATEST_VERSION_amd64.deb"
+# ${LATEST_VERSION} MUST be braced: `$LATEST_VERSION_amd64` parses as the
+# undefined variable $LATEST_VERSION_amd64 and expands to empty, making the
+# asset URL 404 forever (latent silent-update-blocker, found 2026-10-24).
+SOURCE_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/koharu_${LATEST_VERSION}_amd64.deb"
 HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$SOURCE_URL")
 if [ "$HTTP_CODE" != "200" ]; then
     echo "Release asset $SOURCE_URL returns HTTP $HTTP_CODE (not 200); not bumping to avoid a broken spec."
@@ -89,7 +92,7 @@ sed -i -E "s/^Version:.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
 # 2. Update the download URL path in the spec file with the RAW tag
-sed -i -E "s|download/[^/]+/koharu_[^/]+\.deb|download/$LATEST_TAG/koharu_$LATEST_VERSION_amd64.deb|g" "$SPEC_FILE"
+sed -i -E "s|download/[^/]+/koharu_[^/]+\.deb|download/$LATEST_TAG/koharu_${LATEST_VERSION}_amd64.deb|g" "$SPEC_FILE"
 
 # 2b. Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync.
 build_orig_wrapper "$LATEST_VERSION" "$SOURCE_URL"
