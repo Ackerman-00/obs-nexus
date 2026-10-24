@@ -512,7 +512,14 @@ jobs:
             PKGS_TO_SYNC="$PKGS_TO_SYNC $pkg"
           done
 
-          for pkg in $PKGS_TO_SYNC; do
+          # Dedupe before syncing (2026-10-24 incident): collect_pkgs already
+          # emits each changed package once, but the drift-reconciliation loop
+          # above APPENDS without checking membership, so a package that was
+          # both committed this run AND drifted got sync_files called twice -
+          # duplicate uploads of every file and a duplicate runservice/rebuild
+          # trigger (observed: 41 uploads for 2 packages in run 40085879446).
+          # sort -u makes the upload+rebuild path exactly-once per package.
+          for pkg in $(printf '%s\n' $PKGS_TO_SYNC | sort -u); do
             if [ -z "$pkg" ] || [ ! -d "$pkg" ]; then
               continue
             fi
