@@ -559,8 +559,20 @@ def main():
         sys.exit(1)
 
     if args.packages:
-        wanted = set(args.packages.split())
+        # Accept both space- and comma-separated lists: a typo like
+        # "pkg1,pkg2" must not silently select ZERO packages and still
+        # print a green sweep (real incident 2026-10-24).
+        wanted = set(args.packages.replace(",", " ").split())
         pkgs = [(n, v, p) for n, v, p in all_pkgs if n in wanted or n.split("/")[-1] in wanted]
+        if not pkgs:
+            log("ERROR: --packages matched no known package: %s" % sorted(wanted))
+            log("Known packages for type %s: %s" % (
+                repo_type, sorted({n for n, _, _ in all_pkgs})))
+            sys.exit(1)
+        unmatched = wanted - {n for n, _, _ in pkgs} - {n.split("/")[-1] for n, _, _ in pkgs}
+        if unmatched:
+            log("ERROR: --packages names not found: %s" % sorted(unmatched))
+            sys.exit(1)
     elif args.all:
         pkgs = all_pkgs
     else:
@@ -649,6 +661,12 @@ def main():
 
     if n_bad:
         log("=== DOCKER SWEEP FAILED: %d package(s) ===" % n_bad)
+        sys.exit(1)
+    if not results:
+        # Vacuous-pass guard: a sweep that tested nothing must never be
+        # reported as green (real incident 2026-10-24: comma-separated
+        # --packages matched 0 packages and printed PASSED).
+        log("=== DOCKER SWEEP FAILED: no packages were actually tested ===")
         sys.exit(1)
     log("=== DOCKER SWEEP PASSED ===")
     sys.exit(0)
