@@ -1,8 +1,8 @@
-%global mango_ver      0.18.2
+%global mango_ver      0.18.3
 %global wlroots_ver    0.20.2
 %global scenefx_ver    0.5
 Name:           mangowm
-Version:        0.18.2
+Version:        0.18.3
 Release:        0
 Summary:        Practical and powerful Wayland compositor (dwm-like, wlroots-based)
 License:        GPL-3.0-or-later
@@ -21,7 +21,8 @@ BuildRequires:  pkgconfig
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  wayland-protocols-devel
-# Mango direct deps (meson.build dependency() set, 0.18.0)
+# Mango direct deps (meson.build dependency() set, re-derived 0.18.3:
+# byte-identical to 0.18.2 - only version/docs/animation code changed)
 BuildRequires:  pkgconfig(libcjson)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libinput) >= 1.27.1
