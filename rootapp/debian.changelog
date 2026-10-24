@@ -1,3 +1,9 @@
+rootapp (0.9.155-1) unstable; urgency=medium
+
+  * New upstream release 0.9.155.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 24 Oct 2026 10:29:57 +0000
+
 rootapp (0.9.154-1) unstable; urgency=medium
 
   * New upstream release 0.9.154.
