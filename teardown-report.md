@@ -8,8 +8,8 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 | concat-unstable | live jub0t/concat | 971ad1d9214e | 971ad1d9214e | **OK** | live jub0t/concat pin 971ad1d9214e vs upstream 971ad1d9214e |
 | craft-launcher | artcraft-launcher-0.7.0-linux-x86_64.rpm | 0.7.0 | 0.7.0-1 | **OK** | rpm header artcraft-launcher=0.7.0-1-1 (tags NAME/VERSION) \| pinned 0.7.0 \| internal 0.7.0-1 |
 | faugus-launcher | 2.5.1.tar.gz | 2.5.1 | >=1.2.0 | **SOURCE-OK** | tar meson.build=>=1.2.0 (faugus-launcher-2.5.1/meson.build) \| hash no-checksum-pinned \| weak internal evidence >=1.2.0 (not authoritative) |
-| fluxer | fluxer.rpm | 2026.1018.223338 | 2026.1018.223338-1 | **OK** | rpm header fluxer=2026.1018.223338-1-1 (tags NAME/VERSION) \| pinned 2026.1018.223338 \| internal 2026.1018.223338-1 |
-| fluxer | fluxer-rpmlintrc | 2026.1018.223338 |  | **OK** | bundled aux/doc asset in repo, no download needed |
+| fluxer | fluxer.rpm | 2026.1025.12517 | 2026.1025.12517-1 | **OK** | rpm header fluxer=2026.1025.12517-1-1 (tags NAME/VERSION) \| pinned 2026.1025.12517 \| internal 2026.1025.12517-1 |
+| fluxer | fluxer-rpmlintrc | 2026.1025.12517 |  | **OK** | bundled aux/doc asset in repo, no download needed |
 | ghostty | ghostty-1.3.1.tar.gz | 1.3.1 | 1.3.1 | **SOURCE-OK** | tar version file=1.3.1 (ghostty-1.3.1/VERSION) \| hash no-checksum-pinned \| weak internal evidence 1.3.1 (not authoritative) |
 | ghostty | v1.3.1.tar.gz | 1.3.1 | 1.3.1 | **SOURCE-OK** | tar build.zig.zon=1.3.1 (ghostty-1.3.1/build.zig.zon) \| hash no-checksum-pinned \| weak internal evidence 1.3.1 (not authoritative) |
 | ghostty | ghostty-1.3.1.tar.gz.minisig | 1.3.1 |  | **OK** | signature/keyring verification material, no teardown applicable |
