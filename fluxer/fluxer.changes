@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Oct 25 03:35:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2026.1025.12517-0
+- Update fluxer to v2026.1025.12517
+
+-------------------------------------------------------------------
 Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: suppress the upstream Electron/Chromium
