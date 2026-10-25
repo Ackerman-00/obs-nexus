@@ -612,6 +612,7 @@ def main():
         log("  [%s] %s: %s" % (r["status"], name, r["details"]))
 
     n_bad = sum(1 for r in results if r["status"] not in (STATUS_PASS, STATUS_SKIP))
+    n_pass = sum(1 for r in results if r["status"] == STATUS_PASS)
 
     image_vulns = {}
     if args.scan_images:
@@ -655,20 +656,26 @@ def main():
     for r in results:
         lines.append("| %s | **%s** | %s |" % (r["package"], r["status"], r["details"].replace("|", "\\|")))
     lines.append("")
-    lines.append("**Verdict: %s** (%d failures)" % ("PASS" if n_bad == 0 else "FAIL", n_bad))
+    lines.append("**Verdict: %s** (%d failures, %d real PASSes of %d results)" % (
+        "PASS" if (n_bad == 0 and n_pass > 0) else "FAIL", n_bad, n_pass, len(results)))
     report.write_text("\n".join(lines) + "\n")
     log("report written to %s" % report)
 
     if n_bad:
         log("=== DOCKER SWEEP FAILED: %d package(s) ===" % n_bad)
         sys.exit(1)
-    if not results:
+    if not results or n_pass == 0:
         # Vacuous-pass guard: a sweep that tested nothing must never be
         # reported as green (real incident 2026-10-24: comma-separated
-        # --packages matched 0 packages and printed PASSED).
-        log("=== DOCKER SWEEP FAILED: no packages were actually tested ===")
+        # --packages matched 0 packages and printed PASSED; re-confirmed
+        # 2026-10-25: an all-SKIP selection -- e.g. --type debian over
+        # package dirs with no upstream .deb -- also printed PASSED with
+        # 0 real tests).
+        log("=== DOCKER SWEEP FAILED: no packages were actually tested "
+            "(%d results, 0 real PASSes -- check --packages/--all selection) ==="
+            % len(results))
         sys.exit(1)
-    log("=== DOCKER SWEEP PASSED ===")
+    log("=== DOCKER SWEEP PASSED (%d real PASSes) ===" % n_pass)
     sys.exit(0)
 
 
