@@ -5,10 +5,10 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 |---|---|---|---|---|---|
 | bibata-cursor-theme | Bibata.tar.xz | 2.0.7 |  | **SOURCE-OK** | tar extracted, no version evidence found \| hash no-checksum-pinned \| source tarball (version = PV by construction) |
 | concat | Concat-0.2.8-linux-x86_64.rpm | 0.2.8 | 0.2.8-1 | **OK** | rpm header concat=0.2.8-1-1 (tags NAME/VERSION) \| pinned 0.2.8 \| internal 0.2.8-1 |
-| concat-unstable | live jub0t/concat | 2429c0ca6a8b | 2429c0ca6a8b | **OK** | live jub0t/concat pin 2429c0ca6a8b vs upstream 2429c0ca6a8b |
+| concat-unstable | live jub0t/concat | 94f4255f1b57 | 94f4255f1b57 | **OK** | live jub0t/concat pin 94f4255f1b57 vs upstream 94f4255f1b57 |
 | craft-launcher | artcraft-launcher-0.8.1-linux-x86_64.rpm | 0.8.1 | 0.8.1-1 | **OK** | rpm header artcraft-launcher=0.8.1-1-1 (tags NAME/VERSION) \| pinned 0.8.1 \| internal 0.8.1-1 |
 | faugus-launcher | 2.5.1.tar.gz | 2.5.1 | >=1.2.0 | **SOURCE-OK** | tar meson.build=>=1.2.0 (faugus-launcher-2.5.1/meson.build) \| hash no-checksum-pinned \| weak internal evidence >=1.2.0 (not authoritative) |
-| fluxer | fluxer.rpm | 2026.1025.12517 | 2026.1025.12517-1 | **OK** | rpm header fluxer=2026.1025.12517-1-1 (tags NAME/VERSION) \| pinned 2026.1025.12517 \| internal 2026.1025.12517-1 |
+| fluxer | fluxer.rpm | 2026.1025.12517 | 2026.1026.24218-1 | **MISMATCH** | rpm header fluxer=2026.1026.24218-1-1 (tags NAME/VERSION) \| pinned 2026.1025.12517 \| internal 2026.1026.24218-1 |
 | fluxer | fluxer-rpmlintrc | 2026.1025.12517 |  | **OK** | bundled aux/doc asset in repo, no download needed |
 | ghostty | ghostty-1.3.1.tar.gz | 1.3.1 | 1.3.1 | **SOURCE-OK** | tar version file=1.3.1 (ghostty-1.3.1/VERSION) \| hash no-checksum-pinned \| weak internal evidence 1.3.1 (not authoritative) |
 | ghostty | v1.3.1.tar.gz | 1.3.1 | 1.3.1 | **SOURCE-OK** | tar build.zig.zon=1.3.1 (ghostty-1.3.1/build.zig.zon) \| hash no-checksum-pinned \| weak internal evidence 1.3.1 (not authoritative) |
@@ -30,7 +30,7 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 | obsidian | Obsidian-1.14.5.AppImage | 1.14.5 | 1.14.5 | **OK** | AppImage 1.14.5 (resources/app.asar) \| pinned 1.14.5 \| internal 1.14.5 |
 | obsidian | obsidian.sh | 1.14.5 |  | **OK** | bundled aux/doc asset in repo, no download needed |
 | obsidian | obsidian-rpmlintrc | 1.14.5 |  | **OK** | bundled aux/doc asset in repo, no download needed |
-| openchamber | OpenChamber-2.5.1-linux-x86_64.AppImage | 2.5.1 | 2.5.1 | **OK** | AppImage 2.5.1 (resources/app.asar) \| pinned 2.5.1 \| internal 2.5.1 |
+| openchamber | OpenChamber-2.5.2-linux-x86_64.AppImage | 2.5.2 | 2.5.2 | **OK** | AppImage 2.5.2 (resources/app.asar) \| pinned 2.5.2 \| internal 2.5.2 |
 | protonplus | v0.6.8.tar.gz | 0.6.8 | >= 1.0.0 | **SOURCE-OK** | tar meson.build=>= 1.0.0 (ProtonPlus-0.6.8/meson.build) \| hash no-checksum-pinned \| weak internal evidence >= 1.0.0 (not authoritative) |
 | rootapp | Root.AppImage | 0.9.155 | 0.9.155 | **OK** | AppImage 0.9.155 (Root.desktop) \| pinned 0.9.155 \| internal 0.9.155 |
 | scenefx | 0.5.tar.gz | 0.5 | >=1.3 | **SOURCE-OK** | tar meson.build=>=1.3 (scenefx-0.5/meson.build) \| hash no-checksum-pinned \| weak internal evidence >=1.3 (not authoritative) |
@@ -55,7 +55,7 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 | localsend | upstream github.com/localsend/localsend | 1.18.2 | v1.18.2 | **OK** | at upstream latest v1.18.2 [releases/latest] |
 | mangowm | upstream github.com/mangowm/mango | 0.18.3 | 0.18.3 | **OK** | at upstream latest 0.18.3 [releases/latest] |
 | matugen | upstream github.com/InioX/matugen | 4.2.0 | v4.2.0 | **OK** | at upstream latest v4.2.0 [releases/latest] |
-| openchamber | upstream github.com/openchamber/openchamber | 2.5.1 | v2.5.1 | **OK** | at upstream latest v2.5.1 [releases/latest] |
+| openchamber | upstream github.com/openchamber/openchamber | 2.5.2 | v2.5.2 | **OK** | at upstream latest v2.5.2 [releases/latest] |
 | protonplus | upstream github.com/vysp3r/ProtonPlus | 0.6.8 | v0.6.8 | **OK** | at upstream latest v0.6.8 [releases/latest] |
 | scenefx | upstream github.com/wlrfx/scenefx | 0.5 | 0.5 | **OK** | at upstream latest 0.5 [releases/latest] |
 | stoat-desktop | upstream github.com/stoatchat/for-desktop | 1.5.4 | v1.5.4 | **OK** | at upstream latest v1.5.4 [releases/latest] |
