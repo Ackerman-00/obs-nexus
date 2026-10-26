@@ -80,6 +80,19 @@ if ! [ -s "$RPM_FILE" ] || ! rpm -qp "$RPM_FILE" >/dev/null 2>&1; then
     exit 1
 fi
 
+# The transport metadata (X-Fluxer-Version header / content-disposition
+# filename) can advertise a build the CDN has not actually published yet
+# (observed 2026-10-26: header+filename said 2026.1026.151750 while the
+# served rpm bytes were still the 2026.1026.24218 build, sha256 unchanged).
+# The rpm's OWN internal Version is the ground truth for what we ship -- use
+# it, so the spec label can never disagree with the packaged artifact and a
+# metadata-only "bump" can never masquerade as a real update.
+INTERNAL_VERSION=$(rpm -qp --queryformat '%{VERSION}' "$RPM_FILE" 2>/dev/null | tr -d '\r')
+if [ -n "$INTERNAL_VERSION" ] && [ "$INTERNAL_VERSION" != "$VERSION" ]; then
+    echo "Note: transport metadata advertised $VERSION but the served rpm is internally $INTERNAL_VERSION; using the rpm's own version so the label matches the shipped bytes."
+    VERSION="$INTERNAL_VERSION"
+fi
+
 # Debian_Testing recipe: (re)build the debtransform orig wrapper (gzip-compressed
 # tar holding the upstream RPM; dpkg-source 3.0 (quilt) rejects uncompressed
 # .orig.tar, so the wrapper MUST stay compressed) whenever the RPM was

@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Mon Oct 26 22:23:32 UTC 2026 - Ackerman-00 <noreply@example.com>
+Mon Oct 26 22:50:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
-- version 2026.1026.151750-0
-- Update fluxer to v2026.1026.151750
+- fix version label mismatch: revert to 2026.1026.24218 (the bytes the
+  CDN actually serves). The 22:23Z auto-update trusted the transport
+  X-Fluxer-Version header (2026.1026.151750) but the served rpm was
+  still the 24218 build (sha256 unchanged, internal Version=2026.1026.24218).
+- update.sh: derive the version from the rpm's own internal Version
+  (rpm -qp --queryformat %{VERSION}) instead of transport metadata, so a
+  metadata-only "bump" can never again ship a label that disagrees with
+  the artifact.
 
 -------------------------------------------------------------------
 Mon Oct 26 05:57:13 UTC 2026 - Ackerman-00 <noreply@example.com>
