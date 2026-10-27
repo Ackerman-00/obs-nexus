@@ -72,9 +72,6 @@ assemble_wrapper() {
     mkdir -p "$tmpd/stage/ghostty-$ver/zig"
     tar -xJf "zig-x86_64-linux-$ZIG_VER.tar.xz" -C "$tmpd/stage/ghostty-$ver/zig" --strip-components=1 \
         || { echo "zig extract failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    # build.zig lives at the tarball ROOT in both 1.3.1 and 1.4.0 (verified
-    # against the CDN tarballs 2026-10-27); the old `src/build.zig` path never
-    # existed, so wrapper assembly could never re-run from a fresh checkout.
     [ -x "$tmpd/stage/ghostty-$ver/zig/zig" ] \
         && { [ -f "$tmpd/stage/ghostty-$ver/build.zig" ] || [ -f "$tmpd/stage/ghostty-$ver/src/build.zig" ]; } \
         || { echo "wrapper layout broken."; trap - EXIT; rm -rf "$tmpd"; return 1; }

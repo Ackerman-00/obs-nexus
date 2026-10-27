@@ -155,10 +155,6 @@ def versions_match(pv, internal):
         return True
     if len(pc) > len(ic) and pc[len(pc) - len(ic):] == ic:
         return True
-    # Separator-equivalent pass: Debian upstream versions may carry '+' where
-    # the RPM recipe deliberately maps '+' -> '.' (update.sh `tr '+' '.'`),
-    # e.g. deb control '0.1.0+b500' vs spec '0.1.0.b500' (hyperframes
-    # 2026-10-27). Same digits, same meaning, different legal separator.
     sp, si = re.sub(r"[+.]", ".", p), re.sub(r"[+.]", ".", i)
     if sp != p or si != i:
         if sp == si:
@@ -2076,14 +2072,6 @@ def sweep_package(pkg, pv, srcs, live, repo_type, workdir):
                     pkg_ok = True
                     note += " | upstream declares %s via %s on this artifact URL (internal tag uses a different scheme)" % (pv, hv[0])
                 elif hv:
-                    # Content beats metadata (2026-10-27 hyperframes): the
-                    # bytes we just fetched from this URL already passed
-                    # verify_file against the spec pin, so an opaque channel
-                    # header (x-amz-version-id/etag) flipping proves nothing -
-                    # upstream rewrote the object byte-identically. Only a
-                    # header change on an UNPINNED artifact (or bytes that
-                    # differ from the pin, which would have failed above)
-                    # still warrants STALE.
                     if fresh_download and hash_note == "hash-OK":
                         status = STATUS_OK
                         pkg_ok = True

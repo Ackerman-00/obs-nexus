@@ -363,14 +363,6 @@ jobs:
                     ;;
                 esac
               fi
-              # regen=1 only means an enabled _service EXISTS, not that it can
-              # rebuild every artifact: Debtransform wrapper tarballs named by
-              # <pkg>.dsc are assembled locally by update.sh (download_files
-              # only fetches spec Source URLs). 2026-10-27 freebuff-desktop:
-              # a fresh checkout had no wrapper, the delete ran because
-              # download_files was enabled, and all 3 targets failed in
-              # debtransform. Keep the only copy; update.sh's ensure-artifact
-              # branch re-uploads the fresh one on the next run.
               dsc_file=$(ls "$pkg"/*.dsc 2>/dev/null | head -1)
               if [ -n "$dsc_file" ] && grep -qE "^Debtransform-Tar:[[:space:]]*$remote_file[[:space:]]*$" "$dsc_file" \
                  && [ ! -f "$pkg/$remote_file" ]; then

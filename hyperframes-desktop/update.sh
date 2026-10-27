@@ -22,23 +22,13 @@ if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
   if [ -z "$CURRENT_SHA" ] || [ "$NEW_SHA" = "$CURRENT_SHA" ]; then
     echo "Already up to date ($CURRENT_VERSION)."
     if [ ! -f "hyperframes-desktop.deb" ]; then cp "$tmpd/up.deb" "hyperframes-desktop.deb"; fi
-    # ensure the Debtransform wrapper tarball exists (same class as
-    # freebuff-desktop 2026-10-27: sync_files would delete the only OBS copy
-    # of a locally-built wrapper that download_files cannot regenerate).
     [ -f "hyperframes-desktop-${CURRENT_VERSION}.tar.gz" ] \
       || tar -czf "hyperframes-desktop-${CURRENT_VERSION}.tar.gz" "hyperframes-desktop.deb"
     exit 0
   fi
-  # Same-version respin (2026-10-27: upstream re-uploaded the b500 .deb at
-  # 14:40Z, x-amz-version-id changed). Re-pin + refresh the payload, but do
-  # NOT prepend a duplicate debian.changelog entry for an unchanged version
-  # (that would give two <ver>-1 entries and break the Debian recipe) -
-  # same handling as cline/omnirush respin.
   echo "Upstream respinned $CURRENT_VERSION (sha256 $CURRENT_SHA -> $NEW_SHA); re-pinning, no debian.changelog entry."
   cp "$tmpd/up.deb" "hyperframes-desktop.deb"
   sed -i -E "s|^# sha256:.*|# sha256:  $NEW_SHA|" "$SPEC_FILE"
-  # refresh the wrapper tarball unconditionally: an existing tarball would
-  # otherwise keep shipping the PREVIOUS payload bytes
   tar -czf "hyperframes-desktop-${CURRENT_VERSION}.tar.gz" "hyperframes-desktop.deb"
   C=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
   NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- upstream respin of $CURRENT_VERSION (sha256 $CURRENT_SHA ->\n  $NEW_SHA), payload + Debtransform tarball refreshed, version unchanged\n\n"

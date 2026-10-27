@@ -1,19 +1,9 @@
-# Prebuilt Electron payload installs under /opt
 addFilter("dir-or-file-outside-snapshot")
 addFilter("filelist-forbidden-opt /opt/Freebuff")
-# invalid-desktopfile filter removed 2026-10-27: unused on the current
-# payload (rpmlint E: unused-rpmlintrc-filter aborted the TW build);
-# same removal as hyperframes 2026-10-27 and fluxer 2026-09-20.
 addFilter("unstripped-binary-or-object")
 addFilter("binary-or-shlib-calls-gethostbyname")
 addFilter("missing-call-to-setgroups-before-setuid")
-# bundled Electron/Chromium payload carries RUNPATH $ORIGIN (freebuff +
-# libffmpeg.so; rpmlint Badness 20000 aborted the TW build without this)
 addFilter("binary-or-shlib-defines-rpath")
-# 2026-10-27: TW build aborted at Badness 20104 - every finding below
-# describes the immutable upstream payload under /opt/Freebuff (bundled
-# git-core/git-lfs, ripgrep, bun, locale .mo files), not a packaging
-# mistake. Same class as hyperframes/obsidian/stoat/vesktop.
 addFilter("statically-linked-binary")
 addFilter("files-duplicated-waste")
 addFilter("files-duplicate")
