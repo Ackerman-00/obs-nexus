@@ -1,6 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 27 07:39:52 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0.b497-0
+- Update hyperframes-desktop to 0.1.0.b497
+
+-------------------------------------------------------------------
 Tue Oct 27 00:00:01 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0.b496-0
 - Initial packaging of HyperFrames Studio (Electron) from the upstream .deb
-
