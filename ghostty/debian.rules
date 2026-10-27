@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-GHOSTTY_VER = $(shell cat $(CURDIR)/VERSION)
+GHOSTTY_VER = $(shell cat $(CURDIR)/src/VERSION 2>/dev/null || cat $(CURDIR)/VERSION 2>/dev/null)
 ZIG = $(CURDIR)/zig/zig
 ZCACHE = $(CURDIR)/vendor/zig
 ZFLAGS = --system $(ZCACHE)/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=true -Dversion-string=$(GHOSTTY_VER) -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway
