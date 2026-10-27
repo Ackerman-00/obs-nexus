@@ -1,3 +1,9 @@
+rootapp (0.9.156-1) unstable; urgency=medium
+
+  * New upstream release 0.9.156.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 27 Oct 2026 23:46:22 +0000
+
 rootapp (0.9.155-2) unstable; urgency=medium
 
   * Full dependency re-tear of the 0.9.155 AppImage (483 files, 18 ELFs,

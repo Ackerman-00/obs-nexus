@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Oct 27 23:46:22 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to 0.9.156 (sha256: 827f991a6b4b94c3c07dc7403b7dd6fbceff353e787e4c5967772a30021cdcb0)
+
+-------------------------------------------------------------------
 Tue Oct 27 15:33:36 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Full dependency re-tear of the 0.9.155 AppImage (sha256 matches the
