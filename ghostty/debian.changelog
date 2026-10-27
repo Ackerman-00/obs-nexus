@@ -1,3 +1,10 @@
+ghostty (1.3.1-2) unstable; urgency=medium
+
+  * Hold at 1.3.1: 1.4.0 requires zig 0.17.0, the bundled pinned compiler
+    is 0.15.2 and no Debian/Tumbleweed zig 0.17 exists yet.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 27 Oct 2026 19:04:21 +0000
+
 ghostty (1.4.0-1) unstable; urgency=medium
 
   * New upstream release 1.4.0.

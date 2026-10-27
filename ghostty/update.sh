@@ -111,6 +111,13 @@ if [ ! -f "ghostty-$CURRENT_VERSION-debian.tar.gz" ]; then
 fi
 
 if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+    MIN_ZIG=$(curl -fsSL "https://release.files.ghostty.org/$LATEST_VERSION/ghostty-$LATEST_VERSION.tar.gz" 2>/dev/null \
+        | tar -xzO "ghostty-$LATEST_VERSION/build.zig.zon" 2>/dev/null \
+        | grep -oP 'minimum_zig_version\s*=\s*"\K[0-9.]+' | head -1)
+    if [ -n "$MIN_ZIG" ] && [ "$(printf '%s\n%s\n' "$ZIG_VER" "$MIN_ZIG" | sort -V | tail -1)" != "$ZIG_VER" ]; then
+        echo "  -> ⏸️ [HOLD] upstream $LATEST_VERSION requires zig $MIN_ZIG, this recipe pins $ZIG_VER (distro zig). Not bumping."
+        exit 0
+    fi
     echo "  -> 🚀 [UPDATE] New version detected: $LATEST_VERSION (Current: $CURRENT_VERSION)"
 
     ARCHIVE_URL="https://release.files.ghostty.org/$LATEST_VERSION/ghostty-$LATEST_VERSION.tar.gz"

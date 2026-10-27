@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 27 19:04:21 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Hold at 1.3.1: upstream 1.4.0 requires zig 0.17.0, Tumbleweed ships
+  zig 0.15.2 (openSUSE:Factory also stays at 1.3.1). update.sh now
+  refuses such bumps automatically until the distro provides zig 0.17.
+- version 1.3.1-0
+
+-------------------------------------------------------------------
 Tue Oct 27 17:49:48 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 1.4.0

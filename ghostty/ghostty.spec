@@ -3,7 +3,7 @@
 %define site_runtimepath %{_datadir}/vim/site
 
 Name:           ghostty
-Version:        1.4.0
+Version:        1.3.1
 Release:        0
 Summary:        Cross-platform terminal emulator
 License:        MIT AND OFL-1.1
