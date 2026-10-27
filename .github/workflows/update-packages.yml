@@ -277,6 +277,10 @@ jobs:
               case "$code" in
                 2??) rm -f /tmp/obs_mutate_resp.$$; return 0 ;;
               esac
+              if [ "$code" = "404" ] && grep -q 'no source service defined' /tmp/obs_mutate_resp.$$ 2>/dev/null; then
+                rm -f /tmp/obs_mutate_resp.$$
+                return 2
+              fi
               echo "    OBS $method -> HTTP ${code:-000} (attempt $attempt)"
               sleep 15
             done
@@ -300,16 +304,26 @@ jobs:
           }
 
           trigger_build() {
-            local pkg="$1"
-            if [ -f "$pkg/_service" ]; then
-              echo " -> Running services for: $pkg"
-              obs_mutate POST "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=runservice" \
-                || { echo "ERROR: runservice failed for $pkg"; exit 1; }
-            else
-              echo " -> Triggering rebuild for: $pkg"
-              obs_mutate POST "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=rebuild" \
-                || { echo "ERROR: rebuild trigger failed for $pkg"; exit 1; }
+            local pkg="$1" rc=0
+            local enabled=0
+            if [ -f "$pkg/_service" ] && grep -oP '<service\b[^>]*>' "$pkg/_service" | grep -qv 'mode="disabled"'; then
+              enabled=1
             fi
+            if [ "$enabled" = "1" ]; then
+              echo " -> Running services for: $pkg"
+              obs_mutate POST "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=runservice" || rc=$?
+              if [ "$rc" = "2" ]; then
+                echo "    OBS reports no enabled source service for $pkg; falling back to rebuild"
+              elif [ "$rc" = "0" ]; then
+                return 0
+              else
+                echo "ERROR: runservice failed for $pkg"
+                exit 1
+              fi
+            fi
+            echo " -> Triggering rebuild for: $pkg"
+            obs_mutate POST "https://api.opensuse.org/source/home:ackerman/$pkg?cmd=rebuild" \
+              || { echo "ERROR: rebuild trigger failed for $pkg"; exit 1; }
           }
 
           sync_files() {
