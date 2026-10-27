@@ -90,6 +90,11 @@ if [ -d usr/share/applications ]; then install -d %{buildroot}%{_datadir}/applic
 # upstream ships usr/share/doc/omnirush.ai/changelog.gz; without this entry
 # rpmbuild's unpackaged-files check fails the build
 %{_datadir}/doc/omnirush.ai/
+# own the icon dirs explicitly: hicolor-icon-theme does not own the
+# size/apps subdirs on OBS, and unowned dirs fail 50-check-filelist
+%dir %{_datadir}/icons/hicolor
+%dir %{_datadir}/icons/hicolor/*
+%dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/*/omnirush.png
 
 %post

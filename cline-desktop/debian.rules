@@ -14,6 +14,12 @@ override_dh_shlibdeps:
 override_dh_dwz:
 	:
 
+override_dh_strip:
+	# prebuilt Tauri payload ships aarch64 remote-helper binaries that the
+	# host objcopy cannot process ("Unable to recognise the architecture");
+	# upstream binaries are already final, nothing to strip
+	:
+
 override_dh_auto_test:
 	:
 

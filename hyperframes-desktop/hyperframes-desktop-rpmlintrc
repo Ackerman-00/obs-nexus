@@ -1,6 +1,10 @@
+# Prebuilt Electron payload installs under /opt
+addFilter("dir-or-file-outside-snapshot")
+addFilter("filelist-forbidden-opt /opt/hyperframes")
 addFilter("invalid-desktopfile")
 addFilter("unstripped-binary-or-object")
 addFilter("binary-or-shlib-calls-gethostbyname")
 addFilter("missing-call-to-setgroups-before-setuid")
-addFilter("dir-or-file-outside-snapshot")
-addFilter("filelist-forbidden-opt /opt/hyperframes")
+# bundled Electron/Chromium libs carry RUNPATH $ORIGIN (libffmpeg.so,
+# sharp-libvips; rpmlint Badness 50598 aborted the TW build without this)
+addFilter("binary-or-shlib-defines-rpath")

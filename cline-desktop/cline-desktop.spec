@@ -1,4 +1,12 @@
 %global debug_package %{nil}
+# Remote-helper binaries run on REMOTE ssh hosts, not locally: the payload
+# ships an aarch64 variant whose ld-linux-aarch64.so.1 interpreter would
+# otherwise become an uninstallable auto-Requires on x86_64 (caught by the
+# clean-container install test of run 40452617607). Same exclusion pattern
+# as omnirush/hyperframes (/opt) - keep auto-deps off the whole dir; the
+# hand-mapped Requires below cover the local runtime.
+%global __requires_exclude_from ^/usr/lib/Cline/bin/remote-helpers/
+%global __provides_exclude_from ^/usr/lib/Cline/bin/remote-helpers/
 Name:           cline-desktop
 Version:        0.0.49
 # sha256:  3e2c1f824fbdceaf67a8c01404e58218f8534f952318d1689807824b9ca2e2f6
@@ -76,6 +84,11 @@ for b in usr/bin/*; do install -m 0755 "$b" %{buildroot}%{_bindir}/; done
 %{_bindir}/cline-cli
 /usr/lib/Cline/
 %{_datadir}/applications/*
+# own the icon dirs explicitly: hicolor-icon-theme does not own the
+# size/apps subdirs on OBS, and unowned dirs fail 50-check-filelist
+%dir %{_datadir}/icons/hicolor
+%dir %{_datadir}/icons/hicolor/*
+%dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/metainfo/*
 

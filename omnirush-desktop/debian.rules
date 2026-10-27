@@ -14,6 +14,12 @@ override_dh_shlibdeps:
 override_dh_dwz:
 	:
 
+override_dh_strip:
+	# prebuilt Electron payload ships foreign-arch koffi.node modules
+	# (linux_riscv64d, freebsd_x64, ...) that host objcopy cannot process
+	# ("Unable to recognise the architecture"); nothing to strip
+	:
+
 override_dh_auto_test:
 	:
 
