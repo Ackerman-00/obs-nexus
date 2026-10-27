@@ -16,6 +16,9 @@ BuildRequires:  binutils
 BuildRequires:  tar
 BuildRequires:  zstd
 BuildRequires:  desktop-file-utils
+# a11y bus daemon: Electron's AT-SPI path needs it at runtime (matches the
+# proven fluxer/obsidian Requires set)
+Requires:       at-spi2-core
 # Hand-mapped soname Depends (Electron runtime)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
@@ -31,10 +34,21 @@ Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libgtk-3.so.0()(64bit)
+Requires:       libnotify.so.4()(64bit)
 Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
+# dlopen-only at runtime (not DT_NEEDED, invisible to auto-deps): libpulse
+# for audio playback, libpipewire for capture, libsecret for OS-keyring
+# credential storage - proven by strings in the shipped HyperFrames main
+# binary (2/1/2 hits; same Chromium code path as fluxer/obsidian).
+# libnotify above is the same strings-proven dlopen (1 hit).
+# libsmime3 IS DT_NEEDED (was missing here).
+Requires:       libpipewire-0.3.so.0()(64bit)
+Requires:       libpulse.so.0()(64bit)
+Requires:       libsecret-1.so.0()(64bit)
+Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
 Requires:       libX11.so.6()(64bit)
@@ -54,7 +68,10 @@ HyperFrames Studio re-packs the upstream .deb payload under /opt.
 %prep
 %setup -q -c -T
 ar x %{SOURCE0}
-if [ -f data.tar.xz ]; then tar xf data.tar.xz
+# guard every common data.tar compression (the static heygen URL is a
+# rolling target; the current asset ships data.tar.xz)
+if [ -f data.tar.gz ]; then tar xzf data.tar.gz
+elif [ -f data.tar.xz ]; then tar xf data.tar.xz
 elif [ -f data.tar.zst ]; then tar --zstd -xf data.tar.zst
 else echo "ERROR: unexpected data.tar compression" >&2; exit 1; fi
 
@@ -65,7 +82,11 @@ else echo "ERROR: unexpected data.tar compression" >&2; exit 1; fi
 install -d %{buildroot}/opt %{buildroot}%{_datadir} %{buildroot}%{_bindir} %{buildroot}%{_datadir}/applications
 if [ -d opt/hyperframes ]; then cp -a opt/hyperframes %{buildroot}/opt/; fi
 if [ -d usr/share ]; then cp -a usr/share/* %{buildroot}%{_datadir}/; fi
-if [ -f usr/bin/hyperframes ]; then install -m 0755 usr/bin/hyperframes %{buildroot}%{_bindir}/hyperframes; fi
+# usr/bin/hyperframes is a symlink to /opt/hyperframes/HyperFrames upstream;
+# keep it a symlink - a plain install would duplicate the ~200 MB binary.
+# Test with -L: the absolute symlink is dangling inside the buildroot
+# (its /opt target only exists on the user's system), so -f/-e are false.
+if [ -L usr/bin/hyperframes ] || [ -e usr/bin/hyperframes ]; then ln -sf /opt/hyperframes/HyperFrames %{buildroot}%{_bindir}/hyperframes; fi
 
 %files
 /opt/hyperframes/

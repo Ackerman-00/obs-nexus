@@ -31,6 +31,12 @@ Requires:       libgcc_s.so.1()(64bit)
 Requires:       libjavascriptcoregtk-4.1.so.0()(64bit)
 Requires:       libsoup-3.0.so.0()(64bit)
 Requires:       libwebkit2gtk-4.1.so.0()(64bit)
+# Tray icon: cline-app dlopens libayatana-appindicator3.so.1 /
+# libappindicator3.so.1 at runtime (46 libappindicator strings + the
+# "Failed to load ayatana-appindicator3 or appindicator3 dynamic library"
+# message in the shipped binary; mirrors the upstream .deb's Depends on
+# libayatana-appindicator3-1). dlopen-only, so invisible to auto-deps.
+Requires:       libayatana-appindicator3-1
 Requires:       hicolor-icon-theme
 ExclusiveArch:  x86_64
 
@@ -43,7 +49,11 @@ those bytes without recompiling.
 %prep
 %setup -q -c -T
 ar x %{SOURCE0}
-if [ -f data.tar.xz ]; then
+# desktop-v0.0.49 ships data.tar.gz; guard every common compression so an
+# upstream packaging change cannot silently break the re-pack build.
+if [ -f data.tar.gz ]; then
+  tar xzf data.tar.gz
+elif [ -f data.tar.xz ]; then
   tar xf data.tar.xz
 elif [ -f data.tar.zst ]; then
   tar --zstd -xf data.tar.zst

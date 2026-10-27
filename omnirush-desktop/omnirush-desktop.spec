@@ -16,6 +16,9 @@ BuildRequires:  binutils
 BuildRequires:  tar
 BuildRequires:  zstd
 BuildRequires:  desktop-file-utils
+# a11y bus daemon: Electron's AT-SPI path needs it at runtime (matches the
+# proven fluxer/obsidian Requires set)
+Requires:       at-spi2-core
 # Hand-mapped soname Depends (Electron runtime, same as fluxer)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
@@ -31,10 +34,21 @@ Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libgtk-3.so.0()(64bit)
+Requires:       libnotify.so.4()(64bit)
 Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
+# dlopen-only at runtime (not DT_NEEDED, invisible to auto-deps): libpulse
+# for audio playback, libpipewire for capture, libsecret for OS-keyring
+# credential storage - proven by strings in the shipped omnirush main
+# binary (2/1/2 hits; same Chromium code path as fluxer/obsidian).
+# libnotify above is the same strings-proven dlopen (1 hit) and mirrors the
+# upstream .deb's libnotify4. libsmime3 IS DT_NEEDED (was missing here).
+Requires:       libpipewire-0.3.so.0()(64bit)
+Requires:       libpulse.so.0()(64bit)
+Requires:       libsecret-1.so.0()(64bit)
+Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
 Requires:       libX11.so.6()(64bit)
@@ -54,7 +68,10 @@ OmniRush.ai desktop shell re-packs the upstream .deb payload under /opt.
 %prep
 %setup -q -c -T
 ar x %{SOURCE0}
-if [ -f data.tar.xz ]; then tar xf data.tar.xz
+# guard every common data.tar compression (upstream could switch at any
+# release; the v3.8.0 asset ships data.tar.xz)
+if [ -f data.tar.gz ]; then tar xzf data.tar.gz
+elif [ -f data.tar.xz ]; then tar xf data.tar.xz
 elif [ -f data.tar.zst ]; then tar --zstd -xf data.tar.zst
 else echo "ERROR: unexpected data.tar compression" >&2; exit 1; fi
 
@@ -70,6 +87,9 @@ if [ -d usr/share/applications ]; then install -d %{buildroot}%{_datadir}/applic
 %files
 /opt/omnirush/
 %{_datadir}/applications/*
+# upstream ships usr/share/doc/omnirush.ai/changelog.gz; without this entry
+# rpmbuild's unpackaged-files check fails the build
+%{_datadir}/doc/omnirush.ai/
 %{_datadir}/icons/hicolor/*/*/omnirush.png
 
 %post

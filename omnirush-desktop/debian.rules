@@ -19,8 +19,9 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	mkdir -p payload
-	cd payload && (ar x ../*.deb data.tar.xz data.tar.zst 2>/dev/null || true); cd ..
-	if [ -f payload/data.tar.xz ]; then tar -xf payload/data.tar.xz -C payload; \
+	cd payload && (ar x ../*.deb data.tar.gz data.tar.xz data.tar.zst 2>/dev/null || true); cd ..
+	if [ -f payload/data.tar.gz ]; then tar -xzf payload/data.tar.gz -C payload; \
+	elif [ -f payload/data.tar.xz ]; then tar -xf payload/data.tar.xz -C payload; \
 	elif [ -f payload/data.tar.zst ]; then tar --zstd -xf payload/data.tar.zst -C payload; \
 	else echo "ERROR: unexpected data.tar compression"; exit 1; fi
 	mkdir -p debian/omnirush-desktop/opt debian/omnirush-desktop/usr/share debian/omnirush-desktop/usr/bin

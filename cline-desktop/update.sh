@@ -39,8 +39,10 @@ curl -fsSL --retry 3 --connect-timeout 30 "$LATEST_URL" -o "$LOCAL_FILE"
 NEW_SHA=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
 sed -i -E "s/^Version:.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
 sed -i -E "s|Source0:.*|Source0:        $LATEST_URL|" "$SPEC_FILE"
-# insert sha pin if missing
+# insert sha pin if missing, then refresh it - a bump without this leaves
+# the PREVIOUS version's pin in the spec (fluxer-style drift guard)
 grep -q "^# sha256:" "$SPEC_FILE" || sed -i -E "/^Version:/a # sha256:  $NEW_SHA" "$SPEC_FILE"
+sed -i -E "s|^# sha256:.*|# sha256:  $NEW_SHA|" "$SPEC_FILE"
 
 DSC_FILE="cline-desktop.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
@@ -48,6 +50,8 @@ sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: cline-desktop-$LATEST_VERSIO
 
 # wrapper tarball (Debian side)
 tar -czf "cline-desktop-${LATEST_VERSION}.tar.gz" "$LOCAL_FILE" 2>/dev/null
+OLD=$(ls cline-desktop-*.tar.gz 2>/dev/null | grep -v "$NEW_VERSION")
+[ -n "$OLD" ] && rm -f $OLD
 
 D=$(date -R -u)
 printf 'cline-desktop (%s-1) unstable; urgency=medium\n\n  * New upstream release %s.\n\n -- %s <noreply@example.com>  %s\n\n' "$LATEST_VERSION" "$LATEST_VERSION" "$PACKAGER" "$D" > /tmp/_debcl.tmp
