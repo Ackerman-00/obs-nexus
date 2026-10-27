@@ -1,5 +1,4 @@
 %global debug_package %{nil}
-# Prevent RPM from trying to auto-generate dependencies from the bundled Electron libraries
 %global __requires_exclude_from ^/opt/Vesktop/.*$
 %global __provides_exclude_from ^/opt/Vesktop/.*$
 Name:           vesktop
@@ -10,12 +9,10 @@ License:        GPL-3.0-or-later
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://github.com/Vencord/Vesktop
 Source0:        https://github.com/Vencord/Vesktop/releases/download/v1.6.8/vesktop-1.6.8.x86_64.rpm
-# Source1 is the filter file to bypass the "Badness" check
 Source1:        vesktop-rpmlintrc
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
-# Runtime dependencies for the bundled Electron/Chromium runtime
 Requires:       at-spi2-core
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
@@ -42,11 +39,6 @@ Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
-# dlopen-only at runtime (not DT_NEEDED, so invisible to auto-deps):
-# libsecret for the OS keyring (Chromium os_crypt), libpulse for audio
-# playback, libpipewire for screen-share audio capture - all proven by
-# strings in the shipped 1.6.7 main binary (same Electron code path as
-# fluxer, whose spec declares them).
 Requires:       libpipewire-0.3.so.0()(64bit)
 Requires:       libpulse.so.0()(64bit)
 Requires:       libsecret-1.so.0()(64bit)
@@ -69,20 +61,16 @@ Repackaged for openSUSE with auto-Wayland support.
 rpm2cpio %{SOURCE0} | cpio -idmv
 
 %build
-# No compilation required
 
 %install
 
-# 1. Install main app
 install -d -m 0755 %{buildroot}/opt/Vesktop
 cp -a opt/Vesktop/* %{buildroot}/opt/Vesktop/
 
-# 2. Install icons and desktop files
 install -d -m 0755 %{buildroot}%{_datadir}
 cp -a usr/share/applications %{buildroot}%{_datadir}/
 cp -a usr/share/icons %{buildroot}%{_datadir}/
 
-# 3. Native Wayland Wrapper
 install -d -m 0755 %{buildroot}%{_bindir}
 cat <<-'EOF' > %{buildroot}%{_bindir}/vesktop
 #!/bin/sh
@@ -94,9 +82,6 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/vesktop
 
 %check
-# Upstream desktop file is already correct; validate it instead of the
-# deprecated suse_update_desktop_file macro (rpmlint:
-# suse-update-desktop-file-deprecated).
 desktop-file-validate %{buildroot}%{_datadir}/applications/vesktop.desktop
 
 %files

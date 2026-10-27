@@ -5,11 +5,6 @@ on:
     - cron: '0 */6 * * *'   # Every 6 hours
   workflow_dispatch:
 
-# Serialize with opencode-schedule.yml: both workflows mutate the SAME OBS
-# source tree (home:ackerman). Separate groups allowed a stale checkout in
-# this workflow to silently overwrite the agent's fresh OBS uploads
-# (2026-10-19 incident: agent revs 112-114 reverted by workflow rev 115+).
-# A shared group makes that interleaving structurally impossible.
 concurrency:
   group: obs-source-writer
   cancel-in-progress: false
@@ -46,8 +41,6 @@ jobs:
           for script in $(find . -mindepth 2 -name "update.sh"); do
             dir=$(dirname "$script")
             pushd "$dir" > /dev/null
-            # A transient upstream/API failure in one updater must NOT abort the
-            # whole pipeline (it would skip the OBS build check and sync below).
             if ! bash update.sh; then
               echo "::warning::update.sh failed in $dir - continuing with the next package"
             fi
@@ -128,14 +121,6 @@ jobs:
           fi
 
       - name: Validate recipe consistency (Debian .dsc)
-        # Generator guard (added 2026-10-09 after the zen-browser 1.23.2b
-        # incident: spec/.dsc Version was bumped but Debtransform-Tar still
-        # named the 1.23.1b tarball, failing the Debian_Testing build in
-        # debtransform). For every <pkg>.dsc: the .dsc Version must equal
-        # the spec Version (or its base_version for macro-composed -git
-        # versions), and Debtransform-Tar must embed that version (or the
-        # spec shortcommit for snapshot recipes like lazyvim-git).
-        # Fails the run BEFORE commit so a broken recipe never lands.
         run: |
           python3 << 'EOF'
           import re, sys
@@ -176,7 +161,6 @@ jobs:
           EOF
 
       - name: Validate payload file references (AppImage repacks)
-        # Payload Reference Guard
         run: |
           python3 << 'EOF'
           import glob, os, re, subprocess, sys, tempfile
@@ -222,9 +206,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "auto-update: sync spec files to latest upstream versions"
-          # Defense-in-depth on top of the shared concurrency group: never
-          # push from a stale base (a manual/agent commit can land between
-          # checkout and this step).
           git fetch origin
           git pull --rebase origin main
           git push
@@ -236,9 +217,6 @@ jobs:
           OBS_PASS: ${{ secrets.OBS_PASS }}
         run: |
           echo "==> Phase 3: Checking OBS Build Status..."
-          # The OBS API occasionally returns transient 500s ("Web application
-          # could not be started"). Retry before giving up - a false failure
-          # here aborts the job and skips the sync phase below.
           RESULT=""
           for attempt in 1 2 3 4 5; do
             RESULT=$(curl -s -S -u "$OBS_USER:$OBS_PASS" -G "https://api.opensuse.org/build/home:ackerman/_result" \
@@ -286,22 +264,12 @@ jobs:
             echo "$PKGS" | tr ' ' '\n' | sort -u
           }
 
-          # EVERY mutating OBS call goes through obs_mutate (2026-10-19
-          # incident): OBS returns HTTP 500 ("Web application could not be
-          # started") during API restarts, and a bare curl -s exits 0 without
-          # writing anything - every PUT 500'd, concat-unstable's old tarball
-          # was deleted while no new file landed, all 3 builds failed, yet the
-          # workflow reported success. obs_mutate retries with an explicit
-          # HTTP-code check and returns nonzero if OBS never accepts; callers
-          # fail the job so the run goes RED instead of silently
-          # half-syncing. The next scheduled run's drift detection re-syncs.
           obs_mutate() {
             local method="$1" url="$2"; shift 2
             local code="" attempt
             for attempt in 1 2 3 4 5; do
               code=$(curl -sS -X "$method" -o /tmp/obs_mutate_resp.$$ -w "%{http_code}" \
                 -u "$OBS_USER:$OBS_PASS" "$@" "$url" || :)
-              # DELETE of an already-gone file is success (idempotent).
               if [ "$method" = "DELETE" ] && [ "$code" = "404" ]; then
                 rm -f /tmp/obs_mutate_resp.$$
                 return 0
@@ -319,9 +287,6 @@ jobs:
             return 1
           }
 
-          # Create the package in OBS first, otherwise PUT uploads fail with
-          # "<status code="unknown_package">". PUT of the _meta file creates
-          # the package if it does not exist yet (idempotent).
           ensure_package() {
             local pkg="$1"
             if curl -s -u "$OBS_USER:$OBS_PASS" \
@@ -334,8 +299,6 @@ jobs:
             fi
           }
 
-          # Trigger a rebuild. Packages with a _service need runservice to fetch
-          # remote sources first; packages without one just need a plain rebuild.
           trigger_build() {
             local pkg="$1"
             if [ -f "$pkg/_service" ]; then
@@ -355,17 +318,6 @@ jobs:
 
             OBS_FILES=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oP '(?<=<entry name=")[^"]+' || true)
 
-            # ---- 1) UPLOADS FIRST, .spec LAST, before any delete ----------
-            # Order keeps OBS green at every prefix of a partial sync:
-            #  a) Source payloads (tarballs/rpm/AppImage/deb): versioned names
-            #     coexist with the old ones, so the OLD spec keeps building;
-            #  b) everything else (.changes/.dsc/debian.*/rpmlintrc...): never
-            #     referenced by the build;
-            #  c) the .spec LAST: the commit point that switches the build to
-            #     the just-uploaded payload.
-            # Only after ALL uploads succeed are obsolete files deleted, so a
-            # failed upload can never leave a new spec pointing at a missing
-            # tarball (the 2026-10-19 concat-unstable failure mode).
             local filepath filename phase
             for phase in payload other spec; do
               while IFS= read -r filepath; do
@@ -392,18 +344,7 @@ jobs:
               done < <(find "$pkg" -maxdepth 1 -type f ! -name "update.sh" ! -name ".*")
             done
 
-            # ---- 2) DELETE obsolete remote files (only after all uploads) --
             for remote_file in $OBS_FILES; do
-              # NEVER delete gitignored source artifacts (tarballs, vendor,
-              # cargo_config, repacked RPMs/AppImages/...) when the local tree
-              # lacks them AND the package cannot regenerate them server-side.
-              # A package regenerates sources only via a _service with at least
-              # one ENABLED service. Packages without _service (issue #8: sync
-              # wiped niri-git TW sources it could not re-upload) and packages
-              # whose services are all mode="disabled" (2026-09-09: the same
-              # wipe hit matugen, whose obs_scm/cargo_vendor chain is disabled
-              # and whose tarball+vendor+cargo_config then broke both distros)
-              # would lose their sources permanently - keep the remote copies.
               regen=0
               if [ -f "$pkg/_service" ]; then
                 total=$(grep -c '<service ' "$pkg/_service" || true)
@@ -443,22 +384,13 @@ jobs:
               fi
             done
 
-            # ---- 3) trigger the build only from a fully-synced source ------
             trigger_build "$pkg"
           }
 
           PKGS_TO_SYNC=$(collect_pkgs)
 
-          # Reconcile repo-vs-OBS drift: if a previous run committed a version
-          # bump but its OBS sync failed (e.g. transient API outage), the repo
-          # stays ahead of OBS forever. Compare md5 of every git-tracked file
-          # (spec/.changes/_service/patches...) against OBS and re-sync any
-          # package that differs. Untracked generated artifacts (tarballs,
-          # vendor.tar.xz) are intentionally ignored - they are produced by
-          # update.sh / source services and differ harmlessly.
           echo "==> Checking repo-vs-OBS drift for tracked files..."
           expand_spec_macro() {
-            # expand_spec_macro <spec> <text-with-%macros>  (one level per call)
             local spec="$1" val="$2" macro mval out
             macro=$(printf '%s' "$val" | grep -oP '%\{[a-zA-Z_][a-zA-Z0-9_]*\}|%[a-zA-Z_][a-zA-Z0-9_]*' | head -1 | tr -d '%{}') || true
             [ -n "$macro" ] || { printf '%s' "$val"; return; }
@@ -497,11 +429,6 @@ jobs:
             if [ "$DRIFT" != "1" ]; then
               continue
             fi
-            # Safety: packages without _service get their sources uploaded from
-            # the local tree. Only re-sync when every Source artifact is present
-            # locally, otherwise the sync would DELETE the remote sources and
-            # break the build. Skip such packages; a scheduled updater pass will
-            # regenerate the artifacts and sync them properly.
             if [ ! -f "$pkg/_service" ]; then
               ART_OK=1
               while IFS= read -r srcline; do
@@ -526,13 +453,6 @@ jobs:
             PKGS_TO_SYNC="$PKGS_TO_SYNC $pkg"
           done
 
-          # Dedupe before syncing (2026-10-24 incident): collect_pkgs already
-          # emits each changed package once, but the drift-reconciliation loop
-          # above APPENDS without checking membership, so a package that was
-          # both committed this run AND drifted got sync_files called twice -
-          # duplicate uploads of every file and a duplicate runservice/rebuild
-          # trigger (observed: 41 uploads for 2 packages in run 40085879446).
-          # sort -u makes the upload+rebuild path exactly-once per package.
           for pkg in $(printf '%s\n' $PKGS_TO_SYNC | sort -u); do
             if [ -z "$pkg" ] || [ ! -d "$pkg" ]; then
               continue
@@ -541,10 +461,6 @@ jobs:
             sync_files "$pkg"
           done
 
-          # Sync local packages that don't yet exist in OBS (new packages),
-          # or that exist in OBS but have an empty source directory (e.g. a
-          # package stub created by an earlier interrupted _meta PUT whose
-          # file upload never completed -> OBS reports these as "broken").
           OBS_ALL_PKGS=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman" | grep -oP '(?<=<entry name=")[^"]+' || true)
           for pkg_dir in */; do
             pkg=$(basename "$pkg_dir")
@@ -552,8 +468,6 @@ jobs:
               continue
             fi
             if echo "$OBS_ALL_PKGS" | grep -q "^${pkg}$"; then
-              # Package already exists in OBS: only re-sync if its source
-              # directory is empty (broken build due to missing files).
               OBS_FILES=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oP '(?<=<entry name=")[^"]+' || true)
               if [ -n "$OBS_FILES" ]; then
                 echo " -> OK, package $pkg already synced in OBS"

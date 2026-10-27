@@ -9,7 +9,6 @@ Homepage: https://github.com/ghostty-org/ghostty
 
 Package: ghostty
 Architecture: amd64
-# shlibdeps + terminfo; nautilus ext stays opt-in
 Depends: ${shlibs:Depends}, ${misc:Depends}, hicolor-icon-theme, ncurses-term
 Recommends: python3-nautilus
 Description: Cross-platform terminal emulator

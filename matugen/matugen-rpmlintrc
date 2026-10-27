@@ -1,9 +1,1 @@
-# unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
-# "This error should actually never show up in the build service. The build
-# script automatically strips binaries according to global project
-# settings" and "Please do not strip binaries manually as that will break
-# debuginfo creation"; Packaging_guidelines confirms the sanctioned remedy
-# is to suppress a false positive. rpmlint.opensuse.org reports this same
-# warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
-# here. No -debuginfo subpackage is produced for this package (none appears in the build result), so a manual strip would feed nothing and is what the guidance above warns against.
 addFilter("unstripped-binary-or-object")

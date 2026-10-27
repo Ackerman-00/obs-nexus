@@ -39,7 +39,7 @@ def rpm_payload(path):
         base = pos + 16 + n * 16
         tags = {}
         for tag, typ, off, _ in entries:
-            if typ in (6, 8, 9):  # string / string-array types
+            if typ in (6, 8, 9):
                 end = d.find(b'\x00', base + off)
                 tags[tag] = d[base + off:end].decode(errors='ignore')
         return tags, base + dlen
@@ -47,7 +47,7 @@ def rpm_payload(path):
     _, pos = parse_header(96)
     if pos is None:
         raise ValueError('%s: signature header unreadable' % path)
-    for _ in range(64):  # padding may sit between the two headers
+    for _ in range(64):
         tags, pos2 = parse_header(pos)
         if tags is not None:
             pos = pos2
@@ -83,9 +83,6 @@ def cpio_extract(raw, dest):
         dataoff += (-dataoff) % 4
         if name == 'TRAILER!!!':
             break
-        # Sanitize: strip leading slashes (some vendor RPMs store absolute
-        # paths like /opt/foo) and refuse path traversal, so extraction
-        # can never escape destdir.
         name = name.lstrip('/')
         if not name or name in ('.',) or '..' in Path(name).parts:
             continue

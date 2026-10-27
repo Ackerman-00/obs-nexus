@@ -1,13 +1,4 @@
 #!/usr/bin/make -f
-# Debian packaging of the LazyVim git snapshot (data-only, same payload
-# policy as the RPM spec: install init.lua + lua/doc/queries/scripts +
-# LICENSE/NEWS.md under /usr/share/lazyvim). No network at build time:
-# the orig tarball IS the snapshot tarball update.sh already generates
-# for the RPM flow (single top dir LazyVim-<commit>/). dpkg-source -x
-# strips that single top-level directory, so the payload files land
-# directly at the build root (same convention as bibata-cursor-theme's
-# working rules) -- never glob for LazyVim-*/ here (it matches nothing
-# post-strip and failed the Debian_Testing build on 2026-10-09).
 %:
 	dh $@
 

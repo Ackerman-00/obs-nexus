@@ -1,44 +1,12 @@
-# desktop-file-validate passes the shipped file (verified 2026-08-23,
-# rc=0 with desktop-file-utils on Tumbleweed); rpmlint's built-in parser
-# disagrees - false positive.
 addFilter("rootapp.*: E: invalid-desktopfile")
-# The payload is a prebuilt .NET/Avalonia app (usr/bin/Root) bundling its own
-# Chromium (usr/bin/chromium/LinuxX64) - it is not an Electron app - and it
-# ships duplicate resources; hardlinking upstream files would alter the
-# vendored payload. Accepted waste, tracked here.
 addFilter("rootapp.*: E: files-duplicated-waste")
 addFilter("rootapp.*: E: statically-linked-binary /opt/rootapp")
-# Vendored Chromium locale tree ships upstream zero-length *.pak.info
-# placeholders (165 files under /opt/rootapp, re-verified in the 0.9.155
-# teardown: X-AppImage-Version=0.9.155, sha256 matches spec pin).
-# Upstream payload, not a packaging bug.
 addFilter("rootapp.*: E: zero-length /opt/rootapp")
-# Prebuilt repack installs the upstream tree verbatim under /opt,
-# same as helium-browser. Not FHS-violating by choice.
 addFilter("rootapp.*: E: filelist-forbidden-opt /opt/rootapp")
-# hicolor-icon-theme is intentionally unversioned (repo convention,
-# same as every other spec in this repo).
 addFilter("rootapp.*: E: branding-requires-unversioned")
 
-# unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
-# "This error should actually never show up in the build service. The build
-# script automatically strips binaries according to global project
-# settings" and "Please do not strip binaries manually as that will break
-# debuginfo creation"; Packaging_guidelines confirms the sanctioned remedy
-# is to suppress a false positive. rpmlint.opensuse.org reports this same
-# warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
-# here. The flagged ELFs are upstream payload files shipped byte-for-byte
-# (Chromium, LiveKit, SkiaSharp/HarfBuzzSharp); rewriting them would alter the
-# shipped artifact.
 addFilter("unstripped-binary-or-object")
 
-# dir-or-file-outside-snapshot: this package installs its immutable upstream
-# payload under /opt (the only sane location for a repacked AppImage/.NET
-# tree). rpmlint flags every such file as "outside the snapshot"; that is
-# expected for /opt layouts and is already filtered by obsidian, koharu,
-# stoat-desktop, vesktop and helium-browser in this repo.
 addFilter("dir-or-file-outside-snapshot")
 
-# Upstream Chromium runtime calls gethostbyname directly (immutable upstream
-# binary; same filter as obsidian/stoat-desktop).
 addFilter("binary-or-shlib-calls-gethostbyname")

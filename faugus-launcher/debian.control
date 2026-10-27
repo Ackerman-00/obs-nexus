@@ -9,9 +9,6 @@ Homepage: https://github.com/Faugus/faugus-launcher
 
 Package: faugus-launcher
 Architecture: all
-# Pure-Python meson app: dh_python3 resolves the module deps; the GI
-# typelibs and remaining modules are explicit (all verified present on
-# Debian Testing and Unstable).
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, gir1.2-gtk-4.0, gir1.2-adw-1, gir1.2-manette-0.2, python3-gi, python3-requests, python3-pil, python3-vdf, python3-psutil, python3-icoextract, hicolor-icon-theme
 Description: Lightweight app for running Windows games using UMU-Launcher
  Faugus is a simple and lightweight app for running Windows games using

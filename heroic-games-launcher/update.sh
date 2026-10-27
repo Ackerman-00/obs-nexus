@@ -1,5 +1,4 @@
 #!/bin/bash
-# Package updater
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="heroic-games-launcher.spec"
@@ -10,7 +9,6 @@ PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "Checking for upstream updates on $GITHUB_REPO..."
 
-# Latest release
 if [ -n "$GITHUB_TOKEN" ]; then
     RESP=$(curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPO/releases/latest")
 else
@@ -26,7 +24,6 @@ fi
 LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//;s@-@.@g')
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Orig wrapper helper
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
@@ -50,7 +47,6 @@ rpm_url_for() {
     echo "https://github.com/$GITHUB_REPO/releases/download/v$1/Heroic-$1-linux-x86_64.rpm"
 }
 
-# Orig guard
 if [ ! -f "heroic-games-launcher-$CURRENT_VERSION.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VERSION" "$(deb_url_for "$CURRENT_VERSION")" || \
@@ -62,7 +58,6 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
     exit 0
 fi
 
-# Dual asset guard
 RPM_URL="$(rpm_url_for "$LATEST_VERSION")"
 SOURCE_URL="$(deb_url_for "$LATEST_VERSION")"
 for url in "$RPM_URL" "$SOURCE_URL"; do
@@ -76,7 +71,6 @@ done
 
 echo "Update found: $CURRENT_VERSION -> $LATEST_VERSION"
 
-# Payload guard
 GUARD_TMP=$(mktemp -d)
 trap 'rm -rf "$GUARD_TMP"' EXIT
 curl -fsSL --retry 3 --connect-timeout 60 "$SOURCE_URL" -o "$GUARD_TMP/upstream.deb" \
@@ -97,12 +91,10 @@ done
 trap - EXIT
 rm -rf "$GUARD_TMP"
 
-# Spec bump
 sed -i -E "s/^Version:.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 sed -i -E "s|download/[^/]+/Heroic-[^/]+\.rpm|download/$LATEST_TAG/Heroic-$LATEST_VERSION-linux-x86_64.rpm|g" "$SPEC_FILE"
 
-# Debian sync
 build_orig_wrapper "$LATEST_VERSION" "$SOURCE_URL"
 DSC_FILE="heroic-games-launcher.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
@@ -115,7 +107,6 @@ else
     echo -e "$DEB_ENTRY" > debian.changelog
 fi
 
-# Changelog
 CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-0\n- Update heroic-games-launcher to v$LATEST_VERSION\n\n"
 

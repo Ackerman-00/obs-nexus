@@ -1,25 +1,6 @@
 Name:           zen-browser
 Version:        1.23.4b
 Release:        0
-# zen-browser bundles its own Firefox/NSS stack under /usr/lib64/zen-browser.
-# Exclude those private libs from the solver index so they can never satisfy
-# another package's soname Requires (proven 2026-09-09: leaked bundled
-# libnspr4/libnss3 Provides hijacked helium-browser's mozilla-nspr
-# dependency on co-install, leaving helium unable to start).
-# Requires are intentionally NOT path-excluded: the bundled ELFs' auto-Requires
-# pull in the system libs zen needs at runtime (gtk, X, alsa, ...).
-# Only the Firefox-private bundled libs are excluded by SONAME: nothing in
-# the distro provides them (proven 2026-09-09 via rpm -q --whatprovides in a
-# clean TW container) and they resolve at runtime from zen's own directory
-# via $ORIGIN (zen-bin runs in place).
-# 2026-10-17 (1.23.3b): the bundled NSS/NSPr stack (libnss3/nssutil3/ssl3/
-# smime3/nspr4/plc4/plds4) must ALSO be soname-excluded. libxul.so imports
-# versioned NSS symbols up to NSSUTIL_3.130/NSS_3.126 that the system
-# mozilla-nss does NOT provide, so the auto-Requires emitted an unresolvable
-# "nothing provides libnssutil3.so(NSSUTIL_3.130)(64bit)" and every install
-# broke. zen uses its OWN bundled NSS via $ORIGIN - the system copy is
-# irrelevant, same rationale as the moz* libs. Only libnssckbi.so (root CA
-# module) comes from the system: explicit mozilla-nss-certs Requires + symlink.
 %global __provides_exclude_from ^/usr/lib64/zen-browser/.*$
 %global __requires_exclude ^lib(gkcodecs|lgpllibs|mozavcodec|mozavutil|mozgtk|mozsandbox|mozsqlite3|mozwayland|clearkey|freeblpriv3|nss3|nssutil3|ssl3|smime3|nspr4|plc4|plds4)\.so.*$
 Summary:        Minimal browser focused on privacy and calm browsing
@@ -83,15 +64,9 @@ install -m644 %{_sourcedir}/policies.json %{buildroot}%{_libdir}/zen-browser/dis
 ln -sf %{_datadir}/hunspell %{buildroot}%{_libdir}/zen-browser/dictionaries
 ln -sf %{_datadir}/hyphen %{buildroot}%{_libdir}/zen-browser/hyphenation
 
-# zen-browser bundles its own NSS/NSPr stack; libxul.so references the
-# NSS_3.126 versioned symbol which the system mozilla-nss does not provide,
-# so the bundled libs MUST be kept (do not replace them with system libs).
-# Only the root CA certs module (libnssckbi.so) is not bundled - link the
-# system one from mozilla-nss-certs.
 rm -f %{buildroot}%{_libdir}/zen-browser/libnssckbi.so
 ln -sf %{_libdir}/libnssckbi.so %{buildroot}%{_libdir}/zen-browser/libnssckbi.so
 
-# Safeguard: Only execute stack clearance if upstream shipped libonnxruntime.so
 if [ -f "%{buildroot}%{_libdir}/zen-browser/libonnxruntime.so" ]; then
     execstack -c %{buildroot}%{_libdir}/zen-browser/libonnxruntime.so
     chrpath -d %{buildroot}%{_libdir}/zen-browser/libonnxruntime.so

@@ -9,8 +9,6 @@ Homepage: https://github.com/vysp3r/ProtonPlus
 
 Package: protonplus
 Architecture: amd64
-# Compiled Vala/GTK4 app: shlibdeps resolves the linked system libs
-# (translations ship in-package; gsettings/desktop caches ride triggers).
 Depends: ${shlibs:Depends}, ${misc:Depends}, hicolor-icon-theme
 Description: A Wine and Proton-based compatibility tools manager for GNOME
  ProtonPlus is a Proton version manager for installing and managing

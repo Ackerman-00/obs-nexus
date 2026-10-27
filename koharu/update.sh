@@ -1,25 +1,14 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="koharu.spec"
 CHANGES_FILE="koharu.changes"
 GITHUB_REPO="koharu-rs/koharu"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "Checking for upstream updates on $GITHUB_REPO..."
 
-# Get the latest version from the GitHub releases API. Using the API (not
-# git ls-remote) guarantees the tag is a real release with downloadable
-# assets: a bare tag with no release would point at a 404 asset.
-# Koharu tags carry NO v prefix (0.83.5, not v0.83.5); sanitize only dashes
-# (RPM spec files do not allow dashes in the Version field).
 LATEST_TAG=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
   "https://api.github.com/repos/$GITHUB_REPO/releases/latest" \
   | grep -oP '"tag_name":\s*"\K[^"]+')
@@ -31,13 +20,8 @@ fi
 
 LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's@-@.@g')
 
-# Grab the current version from the spec file
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Debian_Testing recipe helper: wrap an upstream .deb into the gzip-compressed
-# debtransform orig input (dpkg-source 3.0 (quilt) rejects an uncompressed
-# .orig.tar, so the wrapper MUST stay compressed). The wrapper is gitignored
-# (*.tar.gz) and rides the OBS sync.
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
@@ -54,14 +38,9 @@ build_orig_wrapper() {
 }
 
 deb_url_for() {
-    # deb_url_for <version>: reconstruct the upstream .deb URL (koharu
-    # tags and asset names carry no v prefix).
     echo "https://github.com/$GITHUB_REPO/releases/download/$1/koharu_$1_amd64.deb"
 }
 
-# Orig-tarball guard: fresh checkouts start without the gitignored wrapper.
-# Rebuild when missing so an OBS sync can never wipe the remote copy with
-# nothing to re-upload.
 if [ ! -f "koharu-$CURRENT_VERSION.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VERSION" "$(deb_url_for "$CURRENT_VERSION")" || \
@@ -73,10 +52,6 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
     exit 0
 fi
 
-# Defensive check: the release asset must actually exist before we bump.
-# ${LATEST_VERSION} MUST be braced: `$LATEST_VERSION_amd64` parses as the
-# undefined variable $LATEST_VERSION_amd64 and expands to empty, making the
-# asset URL 404 forever (latent silent-update-blocker, found 2026-10-24).
 SOURCE_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/koharu_${LATEST_VERSION}_amd64.deb"
 HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$SOURCE_URL")
 if [ "$HTTP_CODE" != "200" ]; then
@@ -87,14 +62,11 @@ fi
 
 echo "Update found: $CURRENT_VERSION -> $LATEST_VERSION"
 
-# 1. Update the Version and Release fields
 sed -i -E "s/^Version:.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# 2. Update the download URL path in the spec file with the RAW tag
 sed -i -E "s|download/[^/]+/koharu_[^/]+\.deb|download/$LATEST_TAG/koharu_${LATEST_VERSION}_amd64.deb|g" "$SPEC_FILE"
 
-# 2b. Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync.
 build_orig_wrapper "$LATEST_VERSION" "$SOURCE_URL"
 DSC_FILE="koharu.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
@@ -107,7 +79,6 @@ else
     echo -e "$DEB_ENTRY" > debian.changelog
 fi
 
-# 3. Update .changes
 CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-0\n- Update koharu to $LATEST_VERSION\n\n"
 

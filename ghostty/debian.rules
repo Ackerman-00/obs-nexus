@@ -1,14 +1,7 @@
 #!/usr/bin/make -f
-# Pinned-Zig offline build (wrapper orig: src + vendor cache + compiler)
-# Version comes from the source tree's VERSION file (shipped by every
-# ghostty release tarball, verified 1.3.1 and 1.4.0), so a version bump can
-# never leave this stale - it was hardcoded 1.3.1 and would have stamped the
-# wrong -Dversion-string into the 1.4.0 build (found 2026-10-27).
 GHOSTTY_VER = $(shell cat $(CURDIR)/VERSION)
 ZIG = $(CURDIR)/zig/zig
 ZCACHE = $(CURDIR)/vendor/zig
-# glslang stays vendored: Debian ships static-only libglslang.a whose glslang.pc omits SPIRV-Tools and libstdc++
-# -Dstrip=true = upstream's own ReleaseFast default (Config.zig), same as the spec
 ZFLAGS = --system $(ZCACHE)/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=true -Dversion-string=$(GHOSTTY_VER) -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway
 
 %:
@@ -24,7 +17,6 @@ override_dh_auto_configure:
 
 override_dh_auto_build:
 	:
-# Single build+install (no double compile); no upstream test suite
 override_dh_auto_test:
 	:
 

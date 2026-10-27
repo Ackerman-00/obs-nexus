@@ -61,9 +61,6 @@ def detect_type(root):
     return None
 
 
-# ---------------------------------------------------------------------------
-# Per-repo: extract package metadata
-# ---------------------------------------------------------------------------
 
 def get_gentoo_packages(root):
     pkgs = []
@@ -158,20 +155,13 @@ def deb_source_urls(spec_path):
         raw = m.group(1).strip()
         if ".deb" in raw:
             urls.append(raw)
-    # Also catch commented canonical URLs (e.g. "# Source: https://...deb")
     for m in re.finditer(r"https?://\S+\.deb", txt):
         if m.group(0) not in urls:
             urls.append(m.group(0))
     return urls
 
 
-# ---------------------------------------------------------------------------
-# Docker test runners
-# ---------------------------------------------------------------------------
 
-# Per-package Docker timeout. Honours the --timeout CLI flag (which was
-# previously parsed but ignored - every callsite hardcoded 300s, so a slow
-# mirror download looked like an install failure). main() overrides this.
 PKG_TIMEOUT = 300
 
 
@@ -180,12 +170,6 @@ def docker_run(image, commands, timeout=600, volumes=None):
             "-v", "/var/run/docker.sock:/var/run/docker.sock"]
     for vol in volumes or []:
         args += ["-v", vol]
-    # Prefer IPv4 for getaddrinfo: download.opensuse.org's AAAA record is
-    # served first, and the runner's IPv6 path intermittently black-holes
-    # (2026-10-20: zypper TIMEOUT-after-600s flakes on faugus/fluxer/
-    # heroic/concat-unstable while isolated curl -4 succeeded; the same
-    # packages passed in clean re-runs). Appending a precedence rule is
-    # read by glibc from every container; harmless where IPv4 already wins.
     gai = "echo 'precedence ::ffff:0:0/96 100' >> /etc/gai.conf"
     cmd_script = gai + " && " + " && ".join(commands)
     try:
@@ -257,10 +241,6 @@ def test_opensuse_package(name, nvra, spec_path, workdir):
         "https://download.opensuse.org/tumbleweed/repo/oss/ oss 2>&1 | tail -3",
         "zypper --non-interactive addrepo --refresh "
         "https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/ nexus 2>&1 | tail -3",
-        # Refresh/install with one retry: the trailing `[ $rc -eq 0 ]`
-        # preserves zypper's real exit code (a `| tail` pipeline would
-        # mask it as tail's 0), so a persistent failure still breaks the
-        # && chain and surfaces as INSTALL-FAIL with trimmed output.
         "{ zypper --non-interactive refresh > /tmp/z1.out 2>&1 || "
         "{ sleep 10; zypper --non-interactive refresh > /tmp/z1.out 2>&1; }; "
         "rc=$?; tail -3 /tmp/z1.out; [ $rc -eq 0 ]; }",
@@ -314,8 +294,6 @@ def expand_deb_url(spec_path, ver):
         u = u.replace("%{version}", ver).replace("%{ver}", ver)
         if u.startswith(("http://", "https://")):
             return u
-    # Sibling update.sh fallback (craft-style repacks: Source0 is the
-    # upstream .rpm, the .deb URL lives in deb_url_for()/ensure guards).
     try:
         shu = Path(spec_path).parent / "update.sh"
         shtxt = shu.read_text()
@@ -323,10 +301,6 @@ def expand_deb_url(spec_path, ver):
         return ""
     m_repo = re.search(r'^GITHUB_REPO="([^"]+)"', shtxt, re.M)
     repo = m_repo.group(1).strip() if m_repo else ""
-    # Generic literal shell assignments (ART_PREFIX="artcraft-launcher"
-    # etc.): any $UPPER_SNAKE var with a plain quoted assignment in
-    # update.sh is expanded, so wrapper-repack recipes whose .deb URL is
-    # built from such vars resolve instead of being skipped.
     assigns = dict(re.findall(r'^([A-Z][A-Z0-9_]*)="([^"$%{}]*)"\s*$',
                               shtxt, re.M))
     for m in re.finditer(r"https?://\S+\.deb", shtxt):
@@ -359,7 +333,6 @@ def parse_debian_control_depends(name, spec_path):
         text = ctrl.read_text()
     except Exception:
         return []
-    # Join control continuation lines (lines starting with whitespace)
     fields, cur = [], ""
     for line in text.splitlines():
         if line[:1] in (" ", "\t"):
@@ -377,10 +350,10 @@ def parse_debian_control_depends(name, spec_path):
         for tok in f[len("Depends:"):].split(","):
             tok = tok.strip()
             if not tok or "${" in tok:
-                continue  # ${misc:Depends} is dpkg's own, not installable
-            tok = re.sub(r'\(.*?\)', "", tok).strip()   # version constraints
-            tok = re.sub(r'\[.*?\]', "", tok).strip()   # arch restrictions
-            tok = tok.split("|")[0].strip()             # first alternative
+                continue
+            tok = re.sub(r'\(.*?\)', "", tok).strip()
+            tok = re.sub(r'\[.*?\]', "", tok).strip()
+            tok = tok.split("|")[0].strip()
             if re.fullmatch(r'[a-z0-9][a-z0-9+.-]+', tok):
                 deps.append(tok)
     return sorted(set(deps))
@@ -407,20 +380,12 @@ def test_debian_package(name, ver, spec_path, workdir, image="debian:testing"):
     commands = [
         "apt-get update -qq 2>&1 | tail -3",
         "apt-get install -y -qq curl binutils file 2>&1 | tail -3",
-        # Install our debian.control runtime set first (what the OBS-built
-        # package declares); DEP-SKIP lines name anything absent in this dist
         dep_install or "true",
         "curl -fsSL '%s' -o /tmp/pkg.deb && ls -l /tmp/pkg.deb || echo NO-DEB-URL" % deb_url,
         "dpkg-deb -f /tmp/pkg.deb Version 2>&1 || echo NO-DEB-FILE",
-        # Install: apt handles deps, dpkg -i + apt -f fallback covers odd control files
         "apt-get install -y /tmp/pkg.deb 2>&1 | tail -15 || "
         "(dpkg -i /tmp/pkg.deb 2>&1 | tail -10 && apt-get install -f -y 2>&1 | tail -10)",
         "dpkg -l '%s' 2>/dev/null | tail -3 || dpkg -l | grep -i '%s' | head -5 || true" % (name, name),
-        # ldd sweep over installed executables (NOT bundled *.so* libs: they
-        # carry no RPATH of their own and resolve via the main binary's
-        # $ORIGIN at runtime, so ldd'ing them directly reports false
-        # "not found" - proven 2026-10-09 on concat's bundled libav*.
-        # Transitive system deps still surface via the executable's ldd.)
         "for b in $(dpkg -L '%s' 2>/dev/null | head -50); do "
         "case \"$b\" in *.so*) continue;; esac; "
         "test -f \"$b\" && test -x \"$b\" && file \"$b\" 2>/dev/null | grep -q ELF && ldd \"$b\" 2>/dev/null; done "
@@ -435,7 +400,6 @@ def test_debian_package(name, ver, spec_path, workdir, image="debian:testing"):
         return result
     if "not found" in combined:
         missing = [l.strip() for l in combined.splitlines() if "not found" in l]
-        # The ldd-not-found lines are the last stage; distinguish from shell noise
         if missing:
             result["status"] = STATUS_DEPS_MISSING
             result["details"] = "missing libs on %s: %s" % (image, "; ".join(missing[:5]))
@@ -483,9 +447,6 @@ def test_void_package(name, template_path, workdir):
 
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def trivy_scan_image(image_tag):
     """Scan a built Docker image with Trivy for known CVEs.
@@ -559,9 +520,6 @@ def main():
         sys.exit(1)
 
     if args.packages:
-        # Accept both space- and comma-separated lists: a typo like
-        # "pkg1,pkg2" must not silently select ZERO packages and still
-        # print a green sweep (real incident 2026-10-24).
         wanted = set(args.packages.replace(",", " ").split())
         pkgs = [(n, v, p) for n, v, p in all_pkgs if n in wanted or n.split("/")[-1] in wanted]
         if not pkgs:
@@ -665,12 +623,6 @@ def main():
         log("=== DOCKER SWEEP FAILED: %d package(s) ===" % n_bad)
         sys.exit(1)
     if not results or n_pass == 0:
-        # Vacuous-pass guard: a sweep that tested nothing must never be
-        # reported as green (real incident 2026-10-24: comma-separated
-        # --packages matched 0 packages and printed PASSED; re-confirmed
-        # 2026-10-25: an all-SKIP selection -- e.g. --type debian over
-        # package dirs with no upstream .deb -- also printed PASSED with
-        # 0 real tests).
         log("=== DOCKER SWEEP FAILED: no packages were actually tested "
             "(%d results, 0 real PASSes -- check --packages/--all selection) ==="
             % len(results))

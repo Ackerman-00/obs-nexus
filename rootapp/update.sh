@@ -1,15 +1,9 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="rootapp.spec"
 CHANGES_FILE="rootapp.changes"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 APPIMAGE_URL="https://installer.rootapp.com/installer/Linux/X64/Root.AppImage"
 
@@ -29,11 +23,6 @@ NEW_SHA=$(sha256sum "$TMPDIR/Root.AppImage" | awk '{print $1}')
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | awk '{print $3}')
 
-# Debian_Testing recipe helper: wrap the upstream AppImage into the
-# gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt) rejects
-# an uncompressed .orig.tar). The wrapper is gitignored (*.tar.gz) and
-# rides the OBS sync; per-package actions/cache in update-packages.yml
-# keeps it across fresh CI checkouts.
 build_orig_wrapper() {
     local ver="$1" img="$2"
     tar -czf "rootapp-$ver.tar.gz" -C "$(dirname "$img")" "$(basename "$img")"
@@ -45,10 +34,6 @@ build_orig_wrapper() {
 
 if [ -n "$CURRENT_SHA" ] && [ "$NEW_SHA" = "$CURRENT_SHA" ]; then
     echo "Package is up to date (sha256: $CURRENT_SHA)."
-    # Orig-tarball guard: fresh CI checkouts start without the gitignored
-    # wrapper (actions/cache usually restores it). Rebuild it here from the
-    # just-downloaded AppImage so an OBS sync can never wipe the remote copy
-    # with nothing to re-upload.
     if [ ! -f "rootapp-$CURRENT_VERSION.tar.gz" ]; then
         build_orig_wrapper "$CURRENT_VERSION" "$TMPDIR/Root.AppImage"
     fi
@@ -88,8 +73,6 @@ fi
 if [ "$EXTRACTED" = "1" ]; then
     ROOT="$TMPDIR/squashfs-root"
 
-    # .NET/Avalonia apps: version lives in sq.version (NuSpec XML).
-    # This is the ONLY authoritative source for Root App versions.
     if [ -f "$ROOT/usr/bin/sq.version" ]; then
         VERSION=$(python3 -c "
 import xml.etree.ElementTree as ET
@@ -108,7 +91,6 @@ except:
 ")
     fi
 
-    # Electron apps: version in package.json
     if [ -z "$VERSION" ] && [ -f "$ROOT/resources/app/package.json" ]; then
         VERSION=$(python3 -c "
 import json
@@ -120,12 +102,10 @@ except:
 ")
     fi
 
-    # No wildcard grep - it picks up dependency versions (e.g. Stripe billing SDK "19.2.5").
 
     rm -rf "$TMPDIR/squashfs-root" "$TMPDIR/squashfs.img"
 fi
 
-# Validate extracted version (reject implausible values like dependency versions)
 if [ -n "$VERSION" ]; then
     MAJOR="${VERSION%%.*}"
     if [ "$MAJOR" -gt 5 ] 2>/dev/null; then
@@ -149,7 +129,6 @@ else
     sed -i "/^Source0:/a # sha256:  $NEW_SHA" "$SPEC_FILE"
 fi
 
-# Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync.
 build_orig_wrapper "$VERSION" "$TMPDIR/Root.AppImage"
 DSC_FILE="rootapp.dsc"
 sed -i "s/^Version: .*/Version: $VERSION/" "$DSC_FILE"

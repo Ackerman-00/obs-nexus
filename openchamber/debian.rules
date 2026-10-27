@@ -1,9 +1,4 @@
 #!/usr/bin/make -f
-# Debian repack of the upstream openchamber AppImage (binary
-# re-distributor, same payload policy as the RPM spec: /opt/openchamber
-# install, APPDIR wrapper through AppRun, repointed desktop entry, PNG
-# icon, 0755 chrome-sandbox). No network at build time: the orig tarball
-# holds the upstream AppImage, extracted with --appimage-extract (no FUSE).
 %:
 	dh $@
 
@@ -14,10 +9,10 @@ override_dh_auto_build:
 	:
 
 override_dh_auto_test:
-	: # desktop entry is validated post-install by the RPM %check and by
-	: # docker-sweep on the built .deb; validating debian/<pkg>/... here
-	: # runs BEFORE auto_install stages the files (same ordering trap
-	: # localsend avoids with a no-op test).
+	:
+	:
+	:
+	:
 
 override_dh_auto_install:
 	chmod +x "$$(ls *.AppImage)" && ./"$$(ls *.AppImage)" --appimage-extract >/dev/null && mv squashfs-root appimage-root
@@ -30,23 +25,11 @@ override_dh_auto_install:
 	    appimage-root/openchamber.desktop > debian/openchamber/usr/share/applications/openchamber.desktop
 	install -Dm644 appimage-root/openchamber.png debian/openchamber/usr/share/icons/hicolor/256x256/apps/openchamber.png
 
-# Binary repack: the payload is prebuilt upstream, so automatic
-# shlibdeps analysis cannot run (bundled Electron/Chromium tree) and its
-# ${shlib:Depends} output is unused -- the manually maintained Depends
-# (derived from the payload's ELF DT_NEEDED union) IS the dependency
-# declaration. Same as stoat-desktop/vesktop rules.
 override_dh_shlibdeps:
 	:
 
-# Prebuilt upstream binaries are already stripped and carry no usable
-# debuginfo -- and the payload even contains foreign-arch (linux-arm64,
-# musl) .node files that make objcopy fail. Skip stripping; same class
-# as the RPM-side debuginfo exclusion for repackaged binaries.
 override_dh_strip:
 	:
 
-# Prebuilt upstream binaries are already stripped and carry no
-# usable debuginfo -- dwz aborts on them. Skip it; same pattern as
-# stoat-desktop/vesktop/helium-browser/obsidian/fluxer rules.
 override_dh_dwz:
 	:

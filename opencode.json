@@ -1,76 +1,71 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "*": "allow"
-  },
-  "provider": {
-    "opencode": {
-      "models": {
-        "mimo-v2.6-flash-free": {
-          "name": "MiMo-V2.6-Flash Free",
-          "model": "opencode/mimo-v2.6-flash-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "jev-1.13-free": {
-          "name": "Jev 1.13 Free",
-          "model": "opencode/jev-1.13-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "flint-40b-free": {
-          "name": "Flint 40B Free",
-          "model": "opencode/flint-40b-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "nemotron-3.5-lightning-free": {
-          "name": "Nemotron 3.5 Lightning Free",
-          "model": "opencode/nemotron-3.5-lightning-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "big-pickle": {
-          "name": "Big Pickle",
-          "model": "opencode/big-pickle",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "deepseek-v4.1-flash-free": {
-          "name": "DeepSeek V4.1 Flash Free",
-          "model": "opencode/deepseek-v4.1-flash-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "glm-5.3-flash-free": {
-          "name": "GLM 5.3 Flash Free",
-          "model": "opencode/glm-5.3-flash-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "nemotron-3.5-super-vl-free": {
-          "name": "Nemotron 3.5 Super VL Free",
-          "model": "opencode/nemotron-3.5-super-vl-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        },
-        "beam-free": {
-          "name": "Beam Free",
-          "model": "opencode/beam-free",
-          "maxTokens": 8192,
-          "contextWindow": 131072
-        }
-      }
+  "model": "opencode/deepseek-v4.1-flash-free",
+  "permissions": [
+    {
+      "action": "*",
+      "resource": "*",
+      "effect": "allow"
     }
-  },
+  ],
   "agents": {
     "general": {
       "mode": "subagent",
-      "model": "opencode/glm-5.3-flash-free"
+      "model": "opencode/deepseek-v4.1-flash-free"
     },
     "explore": {
       "mode": "subagent",
       "model": "opencode/deepseek-v4.1-flash-free"
+    }
+  },
+  "providers": {
+    "opencode": {
+      "models": {
+        "deepseek-v4.1-flash-free": {
+          "name": "DeepSeek V4.1 Flash Free",
+          "modelID": "deepseek-v4.1-flash-free"
+        },
+        "mimo-v2.6-flash-free": {
+          "name": "MiMo-V2.6-Flash Free",
+          "modelID": "mimo-v2.6-flash-free",
+          "limit": {
+            "context": 200000,
+            "output": 32000
+          }
+        },
+        "nemotron-3.5-super-vl-free": {
+          "name": "Nemotron 3.5 Super VL Free",
+          "modelID": "nemotron-3.5-super-vl-free"
+        },
+        "nemotron-3.5-lightning-free": {
+          "name": "Nemotron 3.5 Lightning Free",
+          "modelID": "nemotron-3.5-lightning-free",
+          "limit": {
+            "context": 262144,
+            "output": 262144
+          }
+        },
+        "beam-free": {
+          "name": "Beam Free",
+          "modelID": "beam-free"
+        },
+        "flint-40b-free": {
+          "name": "Flint 40B Free",
+          "modelID": "flint-40b-free"
+        },
+        "jev-1.13-free": {
+          "name": "Jev 1.13 Free",
+          "modelID": "jev-1.13-free"
+        },
+        "big-pickle": {
+          "name": "Big Pickle",
+          "modelID": "big-pickle",
+          "limit": {
+            "context": 200000,
+            "output": 32000
+          }
+        }
+      }
     }
   }
 }

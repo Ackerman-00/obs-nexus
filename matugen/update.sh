@@ -1,23 +1,14 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="matugen.spec"
 CHANGES_FILE="matugen.changes"
 REPO="InioX/matugen"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for updates..."
 
-# Get latest release tag from GitHub API (authenticated to avoid rate limits).
-# Retry on transient network/API failures so one hiccup does not stub the
-# version and abort the whole update.
 LATEST_TAG=""
 for attempt in 1 2 3; do
     if [ -n "$GITHUB_TOKEN" ]; then
@@ -44,11 +35,6 @@ CURRENT_VER=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 echo "   📂 Current Local: $CURRENT_VER"
 echo "   ☁️  Latest Online: $NEW_VER"
 
-# build_vendor <ver> <tag>: download the source tarball, vendor the cargo
-# tree and write cargo_config. Shared by the bump path below and the
-# no-bump ensure guard (fresh CI checkouts start without these gitignored
-# artifacts; actions/cache usually restores them). Artifacts double as the
-# RPM offline-build inputs; the combined Debian orig below reuses them.
 build_vendor() {
     local ver="$1" tag="$2"
     echo "📦 Downloading source tarball..."
@@ -87,16 +73,6 @@ build_vendor() {
     build_debian_orig "$ver" || return 1
 }
 
-# build_debian_orig <ver>: assemble the COMBINED Debian orig tarball
-# matugen-<ver>-debian.tar.gz (single top dir matugen-<ver>/ holding the
-# upstream source PLUS vendor/ PLUS cargo_config at its root) from the
-# artifacts build_vendor already produced. The Debian recipe uses this as
-# its Debtransform-Tar instead of merging vendor.tar.xz via
-# Debtransform-Files-Tar: that merge path silently dropped every
-# vendor/*/Cargo.toml.orig file (proven 2026-10-09: cargo failed on
-# vendor/ariadne/Cargo.toml.orig although vendor.tar.xz contains it),
-# breaking the offline build. A combined orig keeps vendor/ inside the
-# upstream tarball so dpkg-source never diffs it.
 build_debian_orig() {
     local ver="$1" tmpd
     tmpd=$(mktemp -d) || return 1
@@ -112,15 +88,11 @@ build_debian_orig() {
         echo "❌ Combined Debian orig tarball missing."
         return 1
     fi
-    # The combined tree must carry vendor/ + cargo_config at the top level
-    # (dpkg-source strips the single top dir on unpack).
     tar -tzf "matugen-$ver-debian.tar.gz" | grep -q "matugen-$ver/vendor/ariadne/Cargo.toml" || { echo "❌ Combined orig lacks vendor tree."; return 1; }
     tar -tzf "matugen-$ver-debian.tar.gz" | grep -q "matugen-$ver/cargo_config$" || { echo "❌ Combined orig lacks cargo_config."; return 1; }
 }
 
 if [ "$NEW_VER" == "$CURRENT_VER" ]; then
-    # No-bump path: ensure every gitignored artifact exists so an OBS sync
-    # can never wipe a remote copy with nothing to re-upload.
     if [ ! -f "matugen-$CURRENT_VER.tar.gz" ] || [ ! -f vendor.tar.xz ] || [ ! -f cargo_config ]; then
         echo "📦 Vendor artifacts missing locally; regenerating..."
         build_vendor "$CURRENT_VER" "v$CURRENT_VER" || \
@@ -137,18 +109,12 @@ fi
 
 echo "🚀 New version found! Updating $SPEC_FILE..."
 
-# 0. Download and vendor (shared builder; aborts the bump on failure so a
-#    failed fetch can never leave git/OBS touched).
 build_vendor "$NEW_VER" "$LATEST_TAG" \
     || { echo "❌ Vendor build failed; spec left untouched."; exit 1; }
 
-# Update the spec (last, so a failure above leaves git/OBS untouched)
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 
-# Debian_Testing recipe: keep the .dsc Version and debian/changelog in
-# sync (the combined Debian orig assembled above already embeds vendor/ +
-# cargo_config; DEBTRANSFORM-TAR points at it, never at the RPM tarball).
 DSC_FILE="matugen.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: matugen-$NEW_VER-debian.tar.gz|" "$DSC_FILE"

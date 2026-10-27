@@ -12,32 +12,6 @@ Source0:        https://installer.rootapp.com/installer/Linux/X64/Root.AppImage
 BuildRequires:  binutils
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  squashfs
-# Runtime set re-derived from the payload itself (2026-10-27 full teardown of
-# the pinned Root.AppImage: sha256 matches, 483 files, 18 ELFs, ASCII + UTF-16
-# string scans of every file - UTF-16 matters because `Root` is a .NET binary
-# and its DllImport probe table is stored that way). auto-Requires are off for
-# the /opt payload (__requires_exclude_from above), so every runtime library
-# has to be written out here:
-#
-#   (1) DT_NEEDED union of every shipped ELF (readelf -d). Excluded: glibc
-#       (libc/libm/libpthread/libdl/librt/ld-linux - always present) and
-#       libjawt, which only the bundled JRE's libawt_toolkit.so needs, not the
-#       OS.
-#   (2) + the libraries the payload loads BY NAME at runtime: Chromium's
-#       dlopen list and `Root`'s .NET probe table - libwayland-client (the app
-#       is Avalonia with a native Wayland backend now: assembly
-#       Avalonia.Wayland + dlopen of libwayland-client.so.0), GL/EGL/Vulkan,
-#       Pulse + PipeWire (LiveKit voice/video, screen-cast audio), the X11
-#       extras (uiohook hotkeys, cursor, screensaver inhibit, input), OpenSSL
-#       and Kerberos (.NET TLS / SPNEGO), VA-API (LiveKit video decode).
-#
-# Deliberately NOT required, each verified against this payload rather than
-# assumed: wl-clipboard - zero references anywhere, ASCII or UTF-16, the
-# clipboard is in-process (X11 selection / Wayland protocol), no helper is
-# ever exec'd; libvlc - LibVLCSharp P/Invoke declarations only; speechd,
-# GTK4, CUDA/NVIDIA/onnxruntime providers, librenderdoc - optional probes
-# that degrade to a fallback; xdg-desktop-portal - any session able to run
-# this on Wayland already ships it.
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
 Requires:       mozilla-nspr
@@ -112,17 +86,8 @@ chmod go-w squashfs-root
 install -dm755 %{buildroot}/opt/rootapp
 cp -ar squashfs-root/* %{buildroot}/opt/rootapp/
 
-# Root.dbg is the split debug companion of usr/bin/Root: same GNU build-id
-# (d66170ab62b2f9a92ae918223266c3c6195fbd53), referenced only by Root's own
-# .gnu_debuglink section - pure DWARF, never loaded at runtime. It is 352 MB
-# of a 1.4 GB payload, and this package sets debug_package %{nil}, so it would
-# ship to /opt with no debugger story attached. Drop it.
 rm -f %{buildroot}/opt/rootapp/usr/bin/Root.dbg
 
-# No chrome-sandbox handling: the payload ships no sandbox helper at all
-# (0.9.155 teardown finds zero files matching *sandbox*), so the old setuid
-# block was dead code. Do not reintroduce a 4755 bit on /opt without an
-# upstream file to put it on.
 
 install -dm755 %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/rootapp <<'WRAPPER_EOF'
@@ -132,8 +97,6 @@ exec /opt/rootapp/AppRun "$@"
 WRAPPER_EOF
 chmod 755 %{buildroot}%{_bindir}/rootapp
 
-# Upstream Root.png is 512x512 (verified by IHDR, 2026-10-27): install it
-# into the matching hicolor size class, not 256x256 as before.
 install -Dm644 squashfs-root/Root.png %{buildroot}%{_datadir}/pixmaps/rootapp.png
 install -Dm644 squashfs-root/Root.png %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/rootapp.png
 

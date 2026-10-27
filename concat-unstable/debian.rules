@@ -1,20 +1,4 @@
 #!/usr/bin/make -f
-# Debian source build of upstream main (same env recipe as the RPM spec
-# and upstream's own Linux CI: BtbN FFmpeg tree via FFMPEG_DIR, Microsoft
-# ONNX build via ORT_LIB_LOCATION + dynamic preference, vendored crates
-# offline, rpath $ORIGIN/lib with old-style DT_RPATH). The unified orig
-# tarball carries everything (top dir concat-<commit>/): source tree with
-# src/vendor + src/.cargo, plus ffmpeg-dev/ and onnxlib/ beside it.
-# shlibdeps is skipped (bundled FFmpeg/ONNX have no system providers);
-# Depends are hand-mapped like all other repo recipes and re-verified by
-# docker-sweep ldd on the built .deb.
-# NOTE (2026-10-09): dpkg-source -x strips the single top-level dir
-# (repo convention, cf. lazyvim-git/matugen rules) -- the payload lands
-# at the build root, so NEVER glob for concat-*/ here (it matches
-# nothing post-strip and failed the first Debian_Testing build).
-# SKIA RESOLVED (2026-10-09): same prebuilt-binary mechanism as the RPM
-# spec (archive prefetched into skia-cache/ by update.sh step 4b,
-# key read from the OBS log, never guessed).
 %:
 	dh $@
 
@@ -35,7 +19,7 @@ override_dh_auto_test:
 	:
 
 override_dh_shlibdeps:
-	: # bundled FFmpeg/ONNX have no system providers; hand-mapped Depends instead
+	:
 
 override_dh_auto_install:
 	mkdir -p debian/concat-unstable/opt/concat-unstable/lib debian/concat-unstable/usr/bin debian/concat-unstable/usr/share/applications
@@ -49,8 +33,3 @@ override_dh_auto_install:
 
 override_dh_clean:
 	dh_clean -X.orig
-# NOTE (2026-10-09): dh_clean deletes every *.orig as "detritus", but
-# cargo verifies the sha256 of each vendor/*/Cargo.toml.orig recorded in
-# .cargo-checksum.json -- deleting them breaks the offline build
-# ("failed to calculate checksum of .../vendor/slint-build/Cargo.toml.orig",
-# Debian_Testing 17:29 UTC build). Same fix as matugen's rules.

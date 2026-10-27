@@ -21,7 +21,6 @@ CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
 if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
   if [ -z "$CURRENT_SHA" ] || [ "$NEW_SHA" = "$CURRENT_SHA" ]; then
     echo "Already up to date ($CURRENT_VERSION)."
-    # ensure cached artifact
     if [ ! -f "hyperframes-desktop.deb" ]; then cp "$tmpd/up.deb" "hyperframes-desktop.deb"; fi
     # ensure the Debtransform wrapper tarball exists (same class as
     # freebuff-desktop 2026-10-27: sync_files would delete the only OBS copy

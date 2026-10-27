@@ -1,10 +1,4 @@
 #!/usr/bin/make -f
-# Debian repack of the upstream obsidian AppImages (binary re-distributor,
-# same payload policy as the RPM spec: /opt/obsidian install, bash wrapper
-# with user-flags + Wayland detection, setuid chrome-sandbox, repointed
-# desktop entry + icons). No network at build time: the orig tarball holds
-# both upstream AppImages; the arch-appropriate one is picked per
-# DEB_HOST_ARCH and extracted with --appimage-extract (no FUSE needed).
 %:
 	dh $@
 
@@ -14,32 +8,16 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	:
 
-# Prebuilt upstream binaries are already stripped and carry no
-# usable debuginfo -- dwz aborts on them (exit 25). Skip it; same
-# class as the RPM-side debuginfo exclusion for repackaged binaries.
-# Binary repack: the payload is prebuilt upstream, so automatic
-# shlibdeps analysis cannot run (buildroot holds none of the
-# runtime libs) and its ${shlib:Depends} output is unused -- the
-# manually maintained Depends above (derived from the payload's
-# ELF DT_NEEDED union) IS the dependency declaration.
 override_dh_shlibdeps:
 	:
 
 override_dh_dwz:
 	:
 
-# Prebuilt upstream binaries are already stripped and carry no usable
-# debuginfo. Skip stripping; same pattern as
-# openchamber/stoat-desktop/vesktop/helium-browser/fluxer rules, and
-# same class as the RPM-side debuginfo exclusion for repackaged binaries.
 override_dh_strip:
 	:
 
 override_dh_auto_test:
-	# The desktop entry is generated at install time from the AppImage
-	# payload (Exec/Icon repointed), so there is no static source file to
-	# validate here -- same policy as rootapp, whose inline desktop also
-	# skips pre-install validation.
 	:
 
 override_dh_auto_install:
@@ -58,14 +36,9 @@ override_dh_auto_install:
 	    appimage-root/md.obsidian.Obsidian.desktop > debian/obsidian/usr/share/applications/md.obsidian.Obsidian.desktop
 	install -Dm644 appimage-root/obsidian.png debian/obsidian/usr/share/icons/hicolor/256x256/apps/md.obsidian.Obsidian.png
 	install -Dm644 appimage-root/obsidian.png debian/obsidian/usr/share/pixmaps/md.obsidian.Obsidian.png
-	# Real-size hicolor tree from the payload (16..512): the single file
-	# above is the 512px bitmap; installing every size keeps hicolor
-	# metadata honest, same fix as the RPM side (2026-10-17).
 	for sizedir in appimage-root/usr/share/icons/hicolor/[0-9]*x[0-9]*/apps; do \
 	    [ -f "$$sizedir/obsidian.png" ] || continue; \
 	    sz=$$(basename "$$(dirname "$$sizedir")"); \
 	    install -Dm644 "$$sizedir/obsidian.png" "debian/obsidian/usr/share/icons/hicolor/$$sz/apps/md.obsidian.Obsidian.png"; \
 	done
-	# MIME definitions (x-scheme-handler/obsidian + x-obsidian-* types):
-	# the desktop entry registers them, so the xml must ship system-wide.
 	install -Dm644 appimage-root/usr/share/mime/packages/obsidian.xml debian/obsidian/usr/share/mime/packages/obsidian.xml

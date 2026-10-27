@@ -1,10 +1,4 @@
 #!/usr/bin/make -f
-# Debian repack of the upstream concat .deb (binary re-distributor, same
-# file policy as the RPM spec: /opt/concat install, PATH launcher,
-# desktop entry, icon, docs). Upstream's own Depends are pre-t64 names
-# (libgtk-3-0, libasound2) that do not resolve on Testing - debian/control
-# carries the corrected set. No network at build time: the orig tarball
-# holds the upstream .deb, opened here with binutils ar + tar.
 %:
 	dh $@
 
@@ -15,16 +9,11 @@ override_dh_auto_build:
 	:
 
 override_dh_auto_test:
-	: # desktop entry is validated post-install by the RPM %check and by
-	: # docker-sweep on the built .deb; validating debian/<pkg>/... here
-	: # runs BEFORE auto_install stages the files (same ordering trap
-	: # localsend avoids with a no-op test).
+	:
+	:
+	:
+	:
 
-# Binary repack: the payload is prebuilt upstream, so automatic
-# shlibdeps analysis cannot run (bundled FFmpeg/ONNX libs have no system
-# providers) and its ${shlib:Depends} output is unused -- the manually
-# maintained Depends (derived from the payload's ELF DT_NEEDED union)
-# IS the dependency declaration. Same as stoat-desktop/vesktop rules.
 override_dh_shlibdeps:
 	:
 

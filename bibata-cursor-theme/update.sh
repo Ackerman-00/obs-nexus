@@ -1,16 +1,10 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="bibata-cursor-theme.spec"
 CHANGES_FILE="bibata-cursor-theme.changes"
 GITHUB_REPO="ful1e5/Bibata_Cursor"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "Checking for upstream updates on $GITHUB_REPO..."
@@ -27,10 +21,6 @@ echo "Latest upstream tag: $LATEST_TAG (version: $VERSION)"
 
 CURRENT_VERSION=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Debian_Testing recipe helper: fetch the upstream tarball under its
-# versioned orig name (content-identical rename, no recompression). The
-# tarball is gitignored (*.tar.xz) and rides the OBS sync; per-package
-# actions/cache in update-packages.yml keeps it across fresh CI checkouts.
 fetch_orig_tarball() {
     local ver="$1" tmpd
     tmpd=$(mktemp -d)
@@ -48,9 +38,6 @@ fetch_orig_tarball() {
     rm -rf "$tmpd"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# tarball (actions/cache usually restores it). Rebuild when missing so an
-# OBS sync can never wipe the remote copy with nothing to re-upload.
 if [ ! -f "bibata-cursor-theme-$CURRENT_VERSION.tar.xz" ]; then
     echo "Orig tarball missing locally; rebuilding..."
     fetch_orig_tarball "$CURRENT_VERSION" || \
@@ -67,8 +54,6 @@ echo "Updating: $CURRENT_VERSION -> $VERSION"
 sed -i "s/^Version:.*/Version:        $VERSION/" "$SPEC_FILE"
 sed -i "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# Debian_Testing recipe: refresh the orig tarball + keep .dsc/changelog
-# in sync.
 fetch_orig_tarball "$VERSION"
 DSC_FILE="bibata-cursor-theme.dsc"
 sed -i "s/^Version: .*/Version: $VERSION/" "$DSC_FILE"

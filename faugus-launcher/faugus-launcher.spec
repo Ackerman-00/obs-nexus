@@ -15,18 +15,7 @@ BuildRequires:  gtk3-tools
 BuildRequires:  meson >= 1.2.0
 BuildRequires:  ninja
 BuildRequires:  python3-rpm-macros
-# Upstream is pure Python + meson (meson.build + py.install_sources);
-# byte-compile at install time needs the interpreter only.
 BuildRequires:  python3
-# Upstream runtime set (packaging/fedora/faugus-launcher.spec Requires +
-# README Dependencies): pygobject/requests/pillow/vdf/psutil/
-# icoextract/gtk4/libadwaita/libmanette. All D-Bus use is via Gio
-# (Gio.DBusConnection/DBusProxy in launcher/tray/runner/utils), which
-# ships inside python3-gobject - no separate dbus module is imported
-# anywhere in the 2.5.1 tree (re-checked 2.5.0->2.5.1 import diff this run),
-# so no dbus Requires is shipped either.
-# (No runtime Requires: hicolor-icon-theme either: the unversioned dep
-# trips rpmlint E: branding-requires-unversioned, same as fluxer documents.)
 Requires:       python3-gobject
 Requires:       python3-requests
 Requires:       python3-Pillow
@@ -61,12 +50,6 @@ Provides translations for the "%{name}" package.
 
 %install
 %meson_install
-# Upstream 2.5.1 tarball still carries the stray +x bits (re-checked on the
-# 2.5.1 tarball this run) that trip rpmlint E:
-# script-without-shebang (backup.py/proton_downloader.py have no shebang
-# and run via sys.executable -m; the two app svgs are data), while
-# launcher.py carries a shebang but ships 644 (E: non-executable-script).
-# Normalize modes only - no content changes.
 chmod -x %{buildroot}%{python3_sitelib}/faugus/backup.py \
          %{buildroot}%{python3_sitelib}/faugus/proton_downloader.py \
          %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/faugus-*.svg \

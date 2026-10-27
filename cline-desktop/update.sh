@@ -20,10 +20,6 @@ CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
 LOCAL_FILE="cline-desktop.deb"
 
-# Pure version guard (fluxer pattern): the local .deb is gitignored and
-# never present in a fresh CI checkout, so the up-to-date check must NOT
-# depend on it - otherwise every pipeline run re-prepends a duplicate
-# changelog entry for the same version (2026-10-27 incident, twice).
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
     if [ -f "$LOCAL_FILE" ]; then
         CACHED_SHA=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
@@ -32,7 +28,6 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
             echo "Cached cline-desktop.deb sha256 ($CACHED_SHA) != spec pin ($CURRENT_SHA); re-downloading."
         else
             echo "Already up to date ($CURRENT_VERSION)."
-            # ensure the Debian orig wrapper exists for the OBS sync
             [ -f "cline-desktop-${CURRENT_VERSION}.tar.gz" ] || tar -czf "cline-desktop-${CURRENT_VERSION}.tar.gz" "$LOCAL_FILE"
             exit 0
         fi
@@ -61,8 +56,6 @@ curl -fsSL --retry 3 --connect-timeout 30 "$LATEST_URL" -o "$LOCAL_FILE"
 NEW_SHA=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
 sed -i -E "s/^Version:.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
 sed -i -E "s|Source0:.*|Source0:        $LATEST_URL|" "$SPEC_FILE"
-# insert sha pin if missing, then refresh it - a bump without this leaves
-# the PREVIOUS version's pin in the spec (fluxer-style drift guard)
 grep -q "^# sha256:" "$SPEC_FILE" || sed -i -E "/^Version:/a # sha256:  $NEW_SHA" "$SPEC_FILE"
 sed -i -E "s|^# sha256:.*|# sha256:  $NEW_SHA|" "$SPEC_FILE"
 
@@ -70,7 +63,6 @@ DSC_FILE="cline-desktop.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
 sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: cline-desktop-$LATEST_VERSION.tar.gz|" "$DSC_FILE"
 
-# wrapper tarball (Debian side)
 tar -czf "cline-desktop-${LATEST_VERSION}.tar.gz" "$LOCAL_FILE" 2>/dev/null
 OLD=$(ls cline-desktop-*.tar.gz 2>/dev/null | grep -v "$LATEST_VERSION")
 [ -n "$OLD" ] && rm -f $OLD

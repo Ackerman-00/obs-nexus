@@ -1,11 +1,4 @@
 #!/usr/bin/make -f
-# Debian repack of the upstream artcraft-launcher .deb (binary
-# re-distributor, same file policy as the RPM spec: /usr hierarchy
-# installed verbatim - upstream already ships correct FHS layout).
-# Upstream's own Depends verified correct (t64-era names need no
-# adjustment), with the vulkan/egl alternative spelled out explicitly.
-# No network at build time: the orig tarball holds the upstream .deb,
-# opened here with binutils ar + tar (data.tar may be .gz/.xz/.zst).
 %:
 	dh $@
 
@@ -15,9 +8,6 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	:
 
-# Upstream binaries are prebuilt/pre-stripped with no usable debuginfo
-# (dh_dwz warns 'no debug information at all'; strip fails on them).
-# Skip both, same pattern as obsidian/openchamber/stoat-desktop rules.
 override_dh_dwz:
 	:
 
@@ -25,9 +15,9 @@ override_dh_strip:
 	:
 
 override_dh_auto_test:
-	: # no-op: validating debian/<pkg>/... here runs BEFORE auto_install
-	: # stages the payload (same ordering trap cadcraft documents); the
-	: # desktop entry is validated by the RPM %check instead.
+	:
+	:
+	:
 
 override_dh_auto_install:
 	mkdir -p payload

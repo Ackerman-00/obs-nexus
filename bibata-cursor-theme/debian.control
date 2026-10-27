@@ -3,8 +3,6 @@ Section: x11
 Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), fdupes
-# ^ fdupes is dedup-only (cosmetic, cursors install fine without it), so
-# debian/rules skips it when absent rather than failing the build.
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/ful1e5/Bibata_Cursor

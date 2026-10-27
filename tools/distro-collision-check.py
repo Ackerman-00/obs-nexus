@@ -43,9 +43,7 @@ DEB_MIRRORS = {
     "unstable/sid": "https://deb.debian.org/debian/dists/sid/main/binary-amd64/Packages.gz",
 }
 
-# Owner-approved arch-independent DEB recipes (not shadowing, not an error).
 ARCH_ALL_OK = {"bibata-cursor-theme", "lazyvim-git", "faugus-launcher"}
-# Packages that must stay RPM-only (distro ships the library).
 RPM_ONLY = {"scenefx"}
 FORBIDDEN = {"wlroots"}
 
@@ -69,7 +67,6 @@ def local_packages() -> list[str]:
 
 def tumbleweed_packages() -> dict[str, str]:
     repomd = fetch(TW_OSS + "repodata/repomd.xml").decode("utf-8", "replace")
-    # Tumbleweed started publishing primary.xml.zst (not .gz) in 2026.
     match = re.search(r'href="([^"]*primary\.xml\.(?:gz|zst))"', repomd)
     if not match:
         raise RuntimeError("primary.xml location not found in Tumbleweed repomd.xml")
@@ -157,7 +154,7 @@ def main() -> int:
 
     try:
         tw = tumbleweed_packages()
-    except Exception as exc:  # network flake: report, do not fail the sweep
+    except Exception as exc:
         print(f"WARN: could not read Tumbleweed index ({exc}); RPM shadow check skipped")
         tw = {}
 

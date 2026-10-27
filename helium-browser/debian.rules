@@ -1,10 +1,4 @@
 #!/usr/bin/make -f
-# Debian repack of the upstream helium tarball (binary re-distributor, same
-# payload policy as the RPM spec: /opt/helium install, branded wrapper,
-# desktop entry via desktop-file-install, metainfo sidecar, icon).
-# No network at build time: the orig tarball IS the upstream release
-# tarball (renamed by update.sh); the metainfo sidecar rides as a
-# debian.* copy refreshed per bump.
 %:
 	dh $@
 
@@ -14,14 +8,6 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	:
 
-# Prebuilt upstream binaries are already stripped and carry no
-# usable debuginfo -- dwz aborts on them (exit 25). Skip it; same
-# class as the RPM-side debuginfo exclusion for repackaged binaries.
-# Binary repack: the payload is prebuilt upstream, so automatic
-# shlibdeps analysis cannot run (buildroot holds none of the
-# runtime libs) and its ${shlib:Depends} output is unused -- the
-# manually maintained Depends above (derived from the payload's
-# ELF DT_NEEDED union) IS the dependency declaration.
 override_dh_shlibdeps:
 	:
 
@@ -31,10 +17,6 @@ override_dh_dwz:
 override_dh_auto_test:
 	desktop-file-validate helium.desktop
 
-# NOTE: dpkg-source -x strips the orig tarball's single top-level dir
-# when unpacking into BUILD, so the payload files sit at the BUILD root
-# here (there is no helium-*_linux dir at build time); debian/ itself must
-# be excluded from the payload copy.
 override_dh_auto_install:
 	mkdir -p debian/helium-browser/opt/helium debian/helium-browser/usr/bin debian/helium-browser/usr/share/applications debian/helium-browser/usr/share/metainfo debian/helium-browser/usr/share/icons/hicolor/256x256/apps; \
 	find . -maxdepth 1 -mindepth 1 ! -name debian ! -name '.pc' -exec cp -a -t debian/helium-browser/opt/helium/ {} +

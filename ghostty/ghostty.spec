@@ -1,13 +1,4 @@
 %global zig_ver        0.15.2
-# -Dstrip=true matches upstream's own default for ReleaseFast
-# (src/build/Config.zig: "Strip the final executable. Default true for
-# fast and small releases"): the previous forced -Dstrip=false shipped
-# /usr/bin/ghostty with its full .symtab, which OBS's brp-15-strip-debug
-# cannot remove (it runs strip --strip-debug, a no-op on a binary with no
-# .debug sections - proven locally) and rpmlint flags as
-# unstripped-binary-or-object. ReleaseFast emits no DWARF, so no debug
-# info exists to lose either way (readelf -S: .symtab only, zero .debug_*,
-# and no -debuginfo package is produced by the build).
 %global common_build_flags --system %{_builddir}/%{name}-%{version}/vendor/zig/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=true -Dversion-string=%{version} -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=glslang -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway %{?_smp_mflags}
 %define site_runtimepath %{_datadir}/vim/site
 
@@ -18,15 +9,10 @@ Summary:        Cross-platform terminal emulator
 License:        MIT AND OFL-1.1
 Group:          System/X11/Terminals
 URL:            https://github.com/ghostty-org/ghostty
-# Official release tarball (preprocessed, fewer build deps)
-# minisig key: RWQlAjJC23149WL2sEpT/l0QKy7hMIFhYdQOFy0Z7z7PbneUgvlsnYcV
 Source0:        https://release.files.ghostty.org/%{version}/ghostty-%{version}.tar.gz
-# Offline Zig dep cache (update.sh, pinned Zig)
 Source1:        vendor.tar.zst
 Source2:        https://release.files.ghostty.org/%{version}/ghostty-%{version}.tar.gz.minisig
 ExclusiveArch:  x86_64
-# Debian wrapper orig: src + vendor cache + pinned Zig (no Zig on Debian)
-# Factory BuildRequires set + gettext-runtime for msgfmt
 BuildRequires:  fdupes
 BuildRequires:  gettext-runtime
 BuildRequires:  gobject-introspection
@@ -64,20 +50,8 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  python-nautilus-common-files
 BuildRequires:  python3-gobject
 Requires:       hicolor-icon-theme
-# System terminfo base + the distro's terminfo-ghostty (Tumbleweed ships
-# 1.3.1-2.2 from Factory): ncurses-term has NO xterm-ghostty/ghostty
-# entries (verified via infocmp in a clean TW container), and upstream's
-# own terminfo dir is removed below - without terminfo-ghostty users get
-# no ghostty terminfo at all. Never ship our own copy: the distro package
-# exists (owner no-repackage-a-distro-package rule, checked 2026-10-20).
 Requires:       terminfo
 Requires:       terminfo-ghostty
-# NOTE: libghostty-vt.so.0.1.0 + headers + pc are deliberately NOT
-# shipped: /usr/bin/ghostty does not link them (readelf NEEDED: no
-# libghostty-vt; no dlopen string either) and Tumbleweed already ships
-# libghostty-vt0/ghostty-devel 1.3.1-2.2 - our copy would shadow the
-# distro's on the same SONAME (the wlroots lesson). Debian has no
-# ghostty/libghostty package, so the .dsc recipe keeps bundling them.
 
 %description
 Ghostty is a fast, feature-rich, and cross-platform terminal
@@ -96,7 +70,6 @@ Provides translations for the "%{name}" package.
 %autosetup -p1 -a1
 
 %build
-# Offline build via vendored cache
 zig build %{common_build_flags}
 
 %install
@@ -116,10 +89,6 @@ mv %{buildroot}%{_datadir}/pkgconfig/ %{buildroot}%{_libdir}
 chmod 0644 \
     %{buildroot}%{_datadir}/kio/servicemenus/com.mitchellh.ghostty.desktop
 
-# See the Requires note: drop the VT library, its headers and the pkgconfig
-# file (Tumbleweed ships libghostty-vt0/ghostty-devel already). The mv put
-# the only .pc file under libdir/pkgconfig; remove the file and the
-# directory so nothing unpackaged remains.
 rm -f %{buildroot}%{_libdir}/libghostty-vt.so \
       %{buildroot}%{_libdir}/libghostty-vt.so.0 \
       %{buildroot}%{_libdir}/libghostty-vt.so.0.1.0 \
@@ -201,8 +170,6 @@ rm -rf %{buildroot}%{_includedir}/ghostty
 %{site_runtimepath}/ftplugin/ghostty.vim
 %{site_runtimepath}/syntax/ghostty.vim
 %{site_runtimepath}/compiler/ghostty.vim
-# libghostty-vt / headers / pc intentionally not packaged: see the Requires
-# block note (Tumbleweed ships libghostty-vt0 + ghostty-devel natively).
 
 %files lang -f com.mitchellh.ghostty.lang
 

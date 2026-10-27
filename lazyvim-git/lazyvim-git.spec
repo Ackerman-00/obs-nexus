@@ -1,4 +1,3 @@
-# These will be automatically populated by update.sh
 %global commit          999700997f72227187d49d8b92667183dc7fc809
 %global shortcommit     9997009
 %global gitdate         20260908200953
@@ -10,15 +9,9 @@ Summary:        Neovim setup for lazy people (Nexus Optimized Git Snapshot)
 License:        Apache-2.0
 Group:          Productivity/Text/Editors
 URL:            https://github.com/LazyVim/LazyVim
-# Generated dynamically by GitHub Actions
 Source0:        lazyvim-%{shortcommit}.tar.gz
 BuildArch:      noarch
 ExclusiveArch:  x86_64
-# Hard runtime requirements per upstream README (Requirements section,
-# pinned commit 9997009, lines 59-62): Neovim >= 0.11.2 (LuaJIT build),
-# Git >= 2.19.0. Nerd Font is marked (optional); a C compiler is NOT -
-# it is required to compile nvim-treesitter parsers, so it is declared
-# as a weak dep below rather than omitted.
 Requires:       git >= 2.19.0
 Requires:       neovim >= 0.11.2
 Recommends:     gcc
@@ -32,7 +25,6 @@ Nexus repository via automated main-branch tracking.
 %autosetup -n LazyVim-%{commit}
 
 %build
-# Pure configuration files, no compilation needed
 
 %install
 install -d -m 0755 %{buildroot}%{_datadir}/lazyvim

@@ -1,26 +1,14 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="openchamber.spec"
 CHANGES_FILE="openchamber.changes"
 GITHUB_REPO="openchamber/openchamber"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
-# Upstream layout: release tag v<ver>, Linux asset
-# OpenChamber-<ver>-linux-x86_64.AppImage (note: version WITHOUT v prefix
-# in the filename, unlike the tag).
 echo "Checking for upstream updates on $GITHUB_REPO..."
 
-# Get latest release data (authenticated to avoid rate limits).
-# Retry on transient network/API failures so one hiccup does not stub the
-# version and abort the whole update.
 LATEST_TAG=""
 LATEST_JSON=""
 for attempt in 1 2 3; do
@@ -51,13 +39,6 @@ echo "   Latest Online: $NEW_VER"
 
 X86_APPIMAGE="OpenChamber-$NEW_VER-linux-x86_64.AppImage"
 
-# Debian_Testing recipe helper: wrap upstream artifact(s) into the
-# gzip-compressed debtransform orig input. dpkg-source 3.0 (quilt) REJECTS
-# an uncompressed .orig.tar ("unrecognized file for a v2.0 source
-# package", Debian_Testing 2026-10-09) - same fix as localsend. The
-# wrapper is gitignored (*.tar.gz) and rides the OBS sync; per-package
-# actions/cache in update-packages.yml keeps it across fresh CI
-# checkouts.
 build_orig_wrapper() {
     local ver="$1"; shift
     tar -czf "openchamber-$ver.tar.gz" "$@"
@@ -67,16 +48,9 @@ build_orig_wrapper() {
     ls -l "openchamber-$ver.tar.gz"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# wrapper (actions/cache usually restores it). Rebuild from the current
-# release asset when missing so an OBS sync can never wipe the remote copy
-# with nothing to re-upload.
 if [ ! -f "openchamber-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     CUR_IMG="OpenChamber-$CURRENT_VER-linux-x86_64.AppImage"
-    # NOTE: the downloaded AppImage is deliberately KEPT (not rm'd): the
-    # RPM flow's bare-filename Source0 must be uploaded by the OBS sync,
-    # so deleting it here would break the Tumbleweed build.
     curl -fsSL --retry 3 --connect-timeout 30 \
         "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VER/$CUR_IMG" \
         -o "$CUR_IMG" && build_orig_wrapper "$CURRENT_VER" "$CUR_IMG" || \
@@ -88,9 +62,6 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     exit 0
 fi
 
-# Asset guard: only bump once the Linux x86_64 AppImage really exists
-# (releases also ship apk/dmg/exe/vsix/tgz; a blind bump on a tag whose
-# AppImage is missing produces a 404 spec).
 ASSET_NAMES=$(echo "$LATEST_JSON" | jq -r '.assets[]?.name // empty')
 if ! echo "$ASSET_NAMES" | grep -qx "$X86_APPIMAGE"; then
     echo "HOLD: $LATEST_TAG has no Linux x86_64 AppImage ($X86_APPIMAGE missing). Spec stays on $CURRENT_VER."
@@ -100,9 +71,6 @@ echo "Linux x86_64 AppImage asset present; proceeding."
 
 echo "New version found! Downloading $X86_APPIMAGE for verification..."
 
-# Download + verify the AppImage BEFORE touching anything else (a failed
-# or error-stubbed download must NOT bump or reach OBS - the spec sed
-# below runs only after every guard passes).
 X86_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$X86_APPIMAGE"
 curl -fsSL --retry 3 --connect-timeout 60 "$X86_URL" -o "$X86_APPIMAGE" \
     || { echo "AppImage download failed; spec left untouched."; exit 1; }
@@ -112,23 +80,13 @@ if ! [ -s "$X86_APPIMAGE" ] || ! head -c4 "$X86_APPIMAGE" | grep -q $'\x7fELF'; 
     exit 1
 fi
 
-# A curl-written file is mode 644; --appimage-extract EXECUTES the
-# payload, so without this every fresh download dies "Permission denied"
-# (auto-updater failure 2026-10-14: spec got bumped below nothing -
-# recipe mismatch 2.3.2 vs 2.3.1 killed the whole pipeline run).
 chmod +x "$X86_APPIMAGE"
 
-# Payload Guard
 ICON_TMP=$(mktemp -d)
 APPIMG="$PWD/$X86_APPIMAGE"
 (cd "$ICON_TMP" && "$APPIMG" --appimage-extract >/dev/null) || \
     { echo "AppImage extraction failed; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
 for ref in $(grep -ho -E '(squashfs-root|appimage-root)/[A-Za-z0-9._-]+' "$SPEC_FILE" debian.rules | sort -u); do
-    # debian.rules renames squashfs-root -> appimage-root AFTER extraction,
-    # so its refs carry the appimage-root/ prefix while this tree only ever
-    # has squashfs-root/. Compare the bare relative path (2026-10-14: the
-    # literal check false-HOLDed 2.3.2 on appimage-root/openchamber.desktop
-    # although squashfs-root/openchamber.desktop was present).
     rel="${ref#*/}"
     [ -e "$ICON_TMP/squashfs-root/$rel" ] || \
         { echo "HOLD: recipe references $ref but the $NEW_VER payload lacks it; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
@@ -137,14 +95,10 @@ done
     { echo "HOLD: $NEW_VER payload lacks AppRun; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
 rm -rf "$ICON_TMP"
 
-# All guards passed - NOW bump the spec (never before: a guard failure
-# above must leave the tree byte-identical).
 echo "All guards passed; updating $SPEC_FILE..."
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 
-# Debian_Testing recipe: wrap the verified AppImage + keep .dsc/changelog
-# in sync.
 build_orig_wrapper "$NEW_VER" "$X86_APPIMAGE"
 DSC_FILE="openchamber.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# 2026 battle-tested verifier -- opensuse-nexus. Returns 0 only if agent truly finished.
 RUN_ID="${RUN_ID:-}"
 RELAY=".opencode-relay.md"
 FAIL=0
@@ -68,7 +67,6 @@ for spec in */*.spec; do
 done
 if [[ "$bad" -gt 0 ]]; then echo "FAIL: $bad specs malformed"; FAIL=1; fi
 
-# ---- 3-target matrix soft checks (WARN only - never FAIL, never block) ----
 for tgt in "Tumbleweed" "Debian_Testing" "Debian_Unstable"; do
   if grep -qi "$tgt" "$RELAY" 2>/dev/null; then
     echo "PASS: relay mentions target $tgt"

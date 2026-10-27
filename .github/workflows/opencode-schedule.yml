@@ -2,7 +2,7 @@ name: opencode-schedule
 
 on:
   schedule:
-    - cron: '10 */6 * * *'   # Every 6 hours at :10 - 10 min after update-packages.yml ('0 */6')
+    - cron: '10 */6 * * *'
   workflow_dispatch:
     inputs:
       relay:
@@ -12,16 +12,13 @@ on:
         type: boolean
 
 permissions:
+  artifact-metadata: write
   contents: write
   pull-requests: write
   issues: write
   actions: write
-  id-token: write
+  models: read
 
-# Shared with update-packages.yml: both workflows write the same OBS
-# project (home:ackerman). The updater once overwrote the agent's fresh
-# uploads from a stale checkout, so the two must never run concurrently.
-# Never cancel an in-progress agent run (6h budget) - queue instead.
 concurrency:
   group: obs-source-writer
   cancel-in-progress: false
@@ -31,11 +28,12 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 355
     permissions:
+      artifact-metadata: write
       contents: write
       pull-requests: write
       issues: write
       actions: write
-      id-token: write
+      models: read
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -50,8 +48,6 @@ jobs:
       - name: Set up Node.js (npm fallback toolchain)
         uses: actions/setup-node@v7.1.0
         with:
-          # Node 24 = Active LTS as of Oct 2026 (nodejs.org). Pinned so the
-          # npm fallback below never depends on the runner's bundled node.
           node-version: '24'
 
       - name: Install opencode (latest, resilient)
@@ -62,9 +58,6 @@ jobs:
           set -u
           mkdir -p "$HOME/.opencode/bin"
           export PATH="$HOME/.opencode/bin:$PATH"
-          # 1) Official v2 installer, retried: its internal version fetch can flap
-          #    or hit the shared-runner-IP 60/hr GitHub quota. curl retries +
-          #    4 outer attempts ride out transients.
           for i in 1 2 3 4; do
             if curl -fsSL --retry 3 --retry-delay 10 --retry-all-errors https://opencode.ai/v2/install | bash; then
               break
@@ -72,10 +65,6 @@ jobs:
             echo "opencode install attempt $i/4 failed - sleeping 30s"
             sleep 30
           done
-          # 2) npm fallback (documented v2 install method at opencode.ai/v2:
-          #    package @opencode/cli with a postinstall native-binary picker).
-          #    Link the binary into $HOME/.opencode/bin so later steps need
-          #    no PATH change.
           if ! command -v opencode >/dev/null 2>&1; then
             echo "official installer failed - trying npm"
             npm install -g @opencode/cli || sudo npm install -g @opencode/cli || true
@@ -83,10 +72,6 @@ jobs:
               ln -sf "$(command -v opencode)" "$HOME/.opencode/bin/opencode"
             fi
           fi
-          # 3) Authenticated GitHub-release fallback: GITHUB_TOKEN gets 1000/hr
-          #    in Actions, immune to the shared-IP quota that breaks the script's
-          #    version fetch. Asset name discovered live via API, never hardcoded.
-          #    Canonical repo is anomalyco/opencode (sst/opencode redirects there).
           if ! command -v opencode >/dev/null 2>&1; then
             echo "npm fallback failed - trying authenticated gh release download"
             asset="$(gh release view --repo anomalyco/opencode --json assets --jq '.assets[].name' | grep -E '^opencode-linux-(x64|amd64).*\.(tar\.gz|tgz|zip)$' | head -n 1)"
@@ -102,18 +87,17 @@ jobs:
               echo "no linux x64 asset found in latest anomalyco/opencode release"
             fi
           fi
-          # Hard gate: every later step assumes `opencode` exists.
           command -v opencode && opencode --version
+          ver="$(opencode --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)"
+          case "$ver" in
+            2.*) echo "opencode version OK: $ver (V2)" ;;
+            *) echo "FATAL: need opencode 2.x, got '$ver'" >&2; exit 1 ;;
+          esac
 
       - name: Run opencode
         shell: bash
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
-          # raw.githubusercontent.com serves CDN-stale content (~5min max-age=300) after a
-          # push, and its CDN ignores cache-busting query params. Read the relay via the
-          # git protocol first, then the GitHub API; never via raw.githubusercontent.com.
-          # NOTE: use ${GITHUB_REPOSITORY}, never a hard-coded repo name - a past
-          # copy-paste error pointed this at gentoo-nexus and failed every run.
           gate_passes() {
             git fetch -q origin +refs/heads/main:refs/remotes/origin/main >/dev/null 2>&1 || true
             local content=""
@@ -123,19 +107,29 @@ jobs:
             fi
             printf '%s' "$content" | grep -qx "run_id: $RUN_ID" && printf '%s' "$content" | grep -qi "status: complete" && printf '%s' "$content" | grep -qi "PACKAGE.*BR\|deps-verified\|dependency audit"
           }
-          # Start jitter: many schedulers fire on sharp cron boundaries - a random
-          # 0-3 min delay desyncs this run from the thundering herd that knocks
-          # free-model gateways over (AI_APICallError: socket closed). Cheap
-          # insurance inside a 355-min job.
+          NOTES="$RUNNER_TEMP/cascade-notes.txt"
+          mapfile -t CASCADE < <(bash tools/model-cascade.sh 2>"$NOTES") || true
+          if [ "${#CASCADE[@]}" -eq 0 ]; then
+            CASCADE=(opencode/mimo-v2.6-flash-free opencode/deepseek-v4.1-flash-free)
+          fi
+          MODEL_NOTES="$(cat "$NOTES" 2>/dev/null || true)"
+          export MODEL_NOTES
+          echo "free-model cascade: ${CASCADE[*]}"
+          [ -n "$MODEL_NOTES" ] && echo "$MODEL_NOTES"
           sleep $((RANDOM % 180))
-          for model in "opencode/mimo-v2.6-flash-free" "opencode/deepseek-v4.1-flash-free" "opencode/glm-5.3-flash-free" "opencode/nemotron-3.5-super-vl-free" "opencode/nemotron-3.5-lightning-free" "opencode/flint-40b-free" "opencode/beam-free" "opencode/jev-1.13-free" "opencode/big-pickle"; do
-            echo "=== opencode run attempt with $model ==="
+          deadline=$(( $(date +%s) + 330 * 60 ))
+          for model in "${CASCADE[@]}"; do
+            left=$(( deadline - $(date +%s) ))
+            [ "$left" -gt 300 ] || break
+            echo "=== opencode run attempt with $model (${left}s left) ==="
             exit_code=0
-            # Per-model retries with backoff: free-tier gateways drop sockets under
-            # load. A flap is NOT a dead model - retry the SAME model before
-            # falling through. Bounded at 3 tries with full jitter.
             for attempt_n in 1 2 3; do
-              if MODEL="$model" opencode run -m "$model" --dangerously-skip-permissions --agent=build --print-logs "$PROMPT"; then
+              left=$(( deadline - $(date +%s) ))
+              if [ "$left" -le 60 ]; then
+                exit_code=1
+                break
+              fi
+              if timeout --signal=TERM --kill-after=60s "$left" env MODEL="$model" opencode run --standalone --model "$model" --agent build "$PROMPT"; then
                 exit_code=0
                 break
               fi
@@ -164,13 +158,12 @@ jobs:
             else
               echo "=== attempt with $model failed (exit $exit_code) - trying next ==="
             fi
-            # Long inter-model sleep: hammering a loaded gateway faster makes it worse.
             sleep 60
           done
           exit 1
         env:
           MODEL: opencode/deepseek-v4.1-flash-free
-          OPENCODE_CONFIG_CONTENT: '{"small_model":"opencode/mimo-v2.6-flash-free"}'
+          OPENCODE_CONFIG_CONTENT: '{"agents":{"title":{"model":"opencode/mimo-v2.6-flash-free"}},"websearch":{"provider":"random"}}'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OBS_USER: ${{ secrets.OBS_USER }}
@@ -225,6 +218,10 @@ jobs:
             detect, fix, rebuild, verify, review, merge, and close issues yourself,
             never leave the repo broken, and never wait for a human to review or merge
             anything. Act like an experienced open-source maintainer.
+
+            NO COMMENTS (MANDATORY): never add a comment to any file except a
+            short #title/topic of a few words when it is strictly necessary.
+            If any other comment exists anywhere in the repo, remove it fully.
 
             CONTEXT
             - Each package lives in its own directory with a .spec file, a .changes
@@ -378,6 +375,10 @@ jobs:
               scan that every permissions: key is in the list above - a
               validation failure blocks the push like a build failure. Never
               add a permission key from memory; check it against this list.
+              Prefer the repo tooling: bash tools/check-workflows.sh (YAML
+              parse + actionlint + tools/workflow-valid.py over every
+              .github/workflows/*.yml); push only if it prints WORKFLOW
+              VALIDATION PASSED.
             - EVERY OPEN ISSUE AND PR IS YOURS. Track, triage, fix,
               verify, and close every open issue and decide every open PR
               yourself, with evidence, every run - no human handoff. Never
@@ -1381,15 +1382,17 @@ jobs:
             8. MODEL + TOOLCHAIN FRESHNESS (MANDATORY - free models churn
                weekly; a dead model ID burns a full 6h run on retries).
                Every run, before starting package work: fetch the live free
-               set (`GET https://opencode.ai/zen/v1/models` - the ground
-               truth; `docs/zen` table as cross-check) and confirm every ID
-               in this workflow's model cascade plus opencode.json is still
+               set (`GET https://opencode.ai/inference/v1/models` - the ground
+               truth; `https://opencode.ai/v2/docs/console/models` as cross-check) and confirm every ID
+               in tools/model-rank.txt (cascade order: tools/model-cascade.sh;
+               the MODEL_NOTES env var carries this run's new/retired ids
+               from the catalog script) plus opencode.json is still
                listed. Any ID returning 401/404/delisted (past casualties:
                x-preview-f-free, hy3-free, deepseek-v4-flash-free,
                mimo-v2.5-free, ling-3.1-flash-free,
                muse-spark-1.3-contributor-free,
                muse-spark-1.2-contributor-free) is removed THAT run:
-               patch the cascade(s)
+               patch tools/model-rank.txt
                and opencode.json to live equivalents, keeping the order
                mimo-v2.6-flash-free first, then the remaining verified
                *-free IDs. Same pass:
@@ -1616,7 +1619,7 @@ jobs:
                  required confirmation for every version, URL, checksum,
                  flag name, CVE id and dependency string before it is used
                  in a table, a commit or a claim.
-              3. SUBAGENT output (`general` -> GLM 5.3 Flash, `explore` ->
+              3. SUBAGENT output (`general` -> DeepSeek V4.1 Flash, `explore` ->
                  DeepSeek V4.1 Flash) - PARTIAL trust, never quotable as proof. Good
                  for locating code, mapping a package dir, drafting a
                  candidate fix, or pointing at where to look next.
@@ -1723,6 +1726,28 @@ jobs:
               result, and what remains. Include the pre-completion gate checklist
               with PASS/FAIL + evidence per item.
 
+      - name: Preserve relay checkpoint
+        if: always()
+        shell: bash
+        env:
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          [ -f .opencode-relay.md ] || { echo "no relay on disk"; exit 0; }
+          grep -qx "run_id: $RUN_ID" .opencode-relay.md || { echo "relay is not this run - leaving it"; exit 0; }
+          git fetch -q origin main || true
+          if git show origin/main:.opencode-relay.md 2>/dev/null | cmp -s - .opencode-relay.md; then
+            echo "relay on main already matches"
+            exit 0
+          fi
+          blob=$(git hash-object -w .opencode-relay.md)
+          export GIT_INDEX_FILE=$(mktemp -u)
+          git read-tree origin/main
+          git update-index --add --cacheinfo "100644,$blob,.opencode-relay.md"
+          tree=$(git write-tree)
+          commit=$(git commit-tree "$tree" -p origin/main -m "chore(relay): preserve run $RUN_ID checkpoint")
+          rm -f "$GIT_INDEX_FILE"
+          git push origin "$commit:main" || { echo "::warning::checkpoint push rejected"; exit 0; }
+
       - name: Verify completion (external, battle-tested 2026)
         if: always()
         shell: bash
@@ -1735,7 +1760,6 @@ jobs:
             exit 1
           }
 
-      # ---- topic: teardown-sweep ----
       - name: Upload opencode logs (on failure)
         if: failure()
         uses: actions/upload-artifact@v7.0.2

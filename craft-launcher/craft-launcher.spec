@@ -1,8 +1,4 @@
 %global debug_package %{nil}
-# NOTE: upstream repo is storytold/craft-launcher but every artifact
-# (rpm/deb/AppImage name, binary, desktop file, Cargo crates) is called
-# craft-launcher - the package follows the upstream project name
-# (release artifacts stay artcraft-launcher-* prefixed, see ART_PREFIX).
 Name:           craft-launcher
 Version:        0.8.1
 Release:        0
@@ -14,14 +10,6 @@ Source0:        https://github.com/storytold/craft-launcher/releases/download/v0
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
-# Runtime mapping: upstream's RPM Requires are ALREADY correct soname
-# form (verified against TW repodata providers), like photocraft's.
-# Kept verbatim on purpose; only libgcc_s (NEEDED) and the icon theme
-# are added. Payload has no bundled .so needing excludes. 0.6.0: the
-# wgpu/hal Vulkan backend loads EITHER the vulkan loader or EGL's
-# vulkan entrypoint, so upstream collapsed the two into one OR - kept
-# as a rich dependency to match upstream exactly (both providers exist
-# on TW, so resolution is unconditional in practice).
 Requires:       hicolor-icon-theme
 Requires:       libX11-xcb.so.1()(64bit)
 Requires:       libX11.so.6()(64bit)
@@ -33,10 +21,6 @@ Requires:       libwayland-client.so.0()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon-x11.so.0()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-# Optional-degrade strings (present in 0.6.0 payload, NOT upstream
-# Requires): libwayland-egl.so.1 (wgpu wlroots path), libdbus-1.so.3
-# (ksni tray + rfd portal dialogs) - both degrade gracefully without
-# hard-failing launch, so they follow upstream in staying undeclared.
 ExclusiveArch:  x86_64
 Provides:       artcraft-launcher = %{version}-%{release}
 Obsoletes:      artcraft-launcher < %{version}-%{release}
@@ -50,7 +34,6 @@ creative tools (CAD, audio, video, photo, vector, PDF, design).
 rpm2cpio %{SOURCE0} | cpio -idmv
 
 %build
-# No compilation required for pre-built binaries
 
 %install
 install -d -m 0755 %{buildroot}%{_bindir}

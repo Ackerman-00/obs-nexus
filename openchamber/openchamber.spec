@@ -12,10 +12,6 @@ Source0:        https://github.com/openchamber/openchamber/releases/download/v%{
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
 BuildRequires:  hicolor-icon-theme
-# Runtime dependencies for the bundled Electron/Chromium runtime (soname
-# form where possible for distro-agnostic resolution; NEEDED set read from
-# the payload ELF plus the tray/notification libs Electron uses at runtime,
-# same proven set as the sibling Electron repacks).
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
 Requires:       libX11.so.6()(64bit)
@@ -33,8 +29,6 @@ Requires:       libatspi.so.0()(64bit)
 Requires:       libcairo.so.2()(64bit)
 Requires:       libcups.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
-# Bundled libnotify (dlopened by the main ELF - "Unable to find libnotify"
-# fallback string) links gdk-pixbuf directly.
 Requires:       libdbusmenu-glib.so.4()(64bit)
 Requires:       libexpat.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
@@ -52,10 +46,6 @@ Requires:       libpango-1.0.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
-# node-pty pty.node (app.asar.unpacked) links libutil; /opt ELFs are
-# hidden from auto-Requires by __requires_exclude_from, so declare it.
-# libuuid.so.1 dropped same day: zero NEEDED/dlopen refs in the full
-# 2.5.0 payload (grep -r over every file incl. app.asar).
 Requires:       libutil.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
@@ -69,25 +59,18 @@ variable management, and desktop builds for Linux.
 
 %prep
 %setup -q -c -T
-# Extract the AppImage payload (type-2 runtime self-extract, no FUSE and no
-# unsquashfs offset math needed - verified against the 2.2.0 artifact).
 chmod +x %{SOURCE0}
 %{SOURCE0} --appimage-extract
 chmod go-w squashfs-root
 
 %build
-# Nothing to compile.
 
 %install
 install -dm755 %{buildroot}/opt/openchamber
 cp -ar squashfs-root/* %{buildroot}/opt/openchamber/
 
-# Upstream ships chrome-sandbox 0755 (userns path, same policy as
-# stoat-desktop); normalize in case a future build flips it setuid.
 chmod 0755 %{buildroot}/opt/openchamber/chrome-sandbox
 
-# Launcher wrapper through AppRun (electron-builder env setup), same shape
-# as the rootapp repack.
 install -dm755 %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/openchamber <<'WRAPPER_EOF'
 #!/bin/sh
@@ -96,12 +79,10 @@ exec /opt/openchamber/AppRun "$@"
 WRAPPER_EOF
 chmod 755 %{buildroot}%{_bindir}/openchamber
 
-# Desktop entry from the AppImage, repointed at our wrapper + icon.
 install -dm755 %{buildroot}%{_datadir}/applications/
 sed -e 's|^Exec=.*|Exec=%{_bindir}/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
     squashfs-root/openchamber.desktop > %{buildroot}%{_datadir}/applications/openchamber.desktop
 
-# Payload Icon
 install -Dm644 squashfs-root/openchamber.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/openchamber.png
 
 %fdupes %{buildroot}/opt/openchamber
@@ -117,8 +98,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/openchamber.desktop
 %{_datadir}/icons/hicolor/256x256/apps/openchamber.png
 %exclude /opt/openchamber/LICENSE.electron.txt
 %exclude /opt/openchamber/LICENSES.chromium.html
-# AppRun is the electron-builder runtime loader the /usr/bin/openchamber
-# wrapper execs - it MUST ship (excluding it breaks every launch).
 /opt/openchamber/
 
 %changelog

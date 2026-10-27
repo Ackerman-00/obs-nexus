@@ -27,6 +27,4 @@ override_dh_auto_install:
 	mkdir -p debian/hyperframes-desktop/opt debian/hyperframes-desktop/usr/share debian/hyperframes-desktop/usr/bin
 	cp -a payload/opt/hyperframes debian/hyperframes-desktop/opt/
 	cp -a payload/usr/share/* debian/hyperframes-desktop/usr/share/
-	# keep the upstream symlink (a plain install would duplicate ~200 MB);
-	# -L because the absolute symlink is dangling inside the build dir
 	if [ -L payload/usr/bin/hyperframes ] || [ -e payload/usr/bin/hyperframes ]; then ln -sf /opt/hyperframes/HyperFrames debian/hyperframes-desktop/usr/bin/hyperframes; fi

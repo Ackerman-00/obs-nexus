@@ -10,9 +10,5 @@ Homepage: https://freebuff.com
 Package: freebuff-desktop
 Architecture: amd64
 Depends: ${misc:Depends}, libgtk-3-0t64, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0t64, libuuid1, libsecret-1-0
-# Upstream's Recommends: libappindicator3-1 is dead on both targets
-# (apt-cache policy Candidate=(none) on testing+sid, package removed from
-# the Debian archives) and the shipped binary has 0 appindicator string
-# references - dropped rather than carried as unsatisfiable metadata.
 Description: Freebuff Desktop
  Freebuff Desktop re-packs the upstream .deb payload under /opt.

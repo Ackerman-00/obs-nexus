@@ -4,9 +4,6 @@ SPEC_FILE="mangowm.spec"
 CHANGES_FILE="mangowm.changes"
 GITHUB_REPO="mangowm/mango"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 echo "Checking for upstream updates on $GITHUB_REPO..."
 LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
@@ -18,11 +15,6 @@ NEW_VER="$LATEST_TAG"
 CURRENT_VER=$(grep "^%global mango_ver" "$SPEC_FILE" | awk '{print $3}')
 echo "   Current Local: $CURRENT_VER"
 echo "   Latest Online: $NEW_VER"
-# ONE source tarball serves BOTH recipes (RPM Source0 + DEB
-# Debtransform-Tar): the plain upstream mango tree. wlroots +
-# scenefx are NOT bundled - they resolve from the sibling packages
-# built in this same OBS project (spec + debian.control declare
-# them as build deps). Gitignored, rides the OBS sync.
 fetch_orig_tarball() {
     local ver="$1" tmpd
     tmpd=$(mktemp -d)

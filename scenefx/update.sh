@@ -4,13 +4,8 @@ SPEC_FILE="scenefx.spec"
 CHANGES_FILE="scenefx.changes"
 GITHUB_REPO="wlrfx/scenefx"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 echo "Checking for upstream updates on $GITHUB_REPO..."
-# scenefx ships patch releases (0.2.1, 0.4.1): the old 2-component regex
-# ^[0-9]+\.[0-9]+$ was structurally blind to them and silently missed them.
 LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+(\.[0-9]+)+$' | sort -V | tail -1)
 if [ -z "$LATEST_TAG" ]; then
     echo "Error: Could not fetch latest version."

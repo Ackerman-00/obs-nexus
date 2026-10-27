@@ -1,6 +1,5 @@
 %global             debug_package %{nil}
 %global             helium_base /opt/helium
-# Prevent RPM from trying to auto-generate dependencies from the bundled Chromium libraries
 %global __requires_exclude_from ^/opt/helium/.*$
 %global __provides_exclude_from ^/opt/helium/.*$
 Name:           helium-browser
@@ -11,18 +10,10 @@ License:        GPL-3.0-only
 Group:          Productivity/Networking/Web/Browsers
 URL:            https://github.com/imputnet/helium-linux
 Source0:        https://github.com/imputnet/helium-linux/releases/download/%{version}/helium-%{version}-x86_64_linux.tar.xz
-# The official binary tarball does not ship the metainfo file, so pull it
-# from the repo at the matching release tag (all release tags carry it).
 Source1:        https://raw.githubusercontent.com/imputnet/helium-linux/%{version}/package/net.imput.helium.metainfo.xml
 Source2:        helium-browser-rpmlintrc
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
-# Runtime dependencies for the bundled Chromium binary (auto-requires for
-# /opt/helium are excluded above, so list them explicitly - the full
-# DT_NEEDED closure of the helium binary, read from the 0.19.3.1 tarball
-# via readelf (2026-10-15 audit). Only listing a subset silently relies
-# on coincidental providers (e.g. the gtk3-tools posttrans chain), so
-# every system soname is listed here, mirroring debian.control Depends.
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -53,14 +44,10 @@ Requires:       libxkbcommon.so.0()(64bit)
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
-# Qt portal file-dialog shims (bundled libqt5_shim.so/libqt6_shim.so) are
-# dlopen-optional with a GTK fallback; Recommends mirrors the Debian recipe's
-# libqt5widgets5t64/libqt6widgets6 exactly (weak dep, install never blocked).
 Recommends:     libQt5Widgets5
 Recommends:     libQt6Widgets6
 Recommends:     liberation-fonts
 Recommends:     vulkan-loader
-# www-browser convention shared by openSUSE's firefox/chromium packages
 Provides:       www-browser = %{version}-%{release}
 ExclusiveArch:  x86_64
 
@@ -73,7 +60,6 @@ while keeping the Chromium browsing experience.
 %setup -q -n helium-%{version}-x86_64_linux
 
 %build
-# Using prebuilt binaries
 
 %install
 mkdir -p %{buildroot}%{helium_base} \
@@ -84,7 +70,6 @@ mkdir -p %{buildroot}%{helium_base} \
 
 cp -a . %{buildroot}%{helium_base}
 
-# Brand the wrapper so bug reports show the distribution the build came from
 sed -Ei "s/(CHROME_VERSION_EXTRA=).*/\1suse/" \
     %{buildroot}%{helium_base}/helium-wrapper
 
@@ -103,7 +88,6 @@ ln -sf %{helium_base}/helium-wrapper %{buildroot}%{_bindir}/helium
 desktop-file-validate %{buildroot}%{_datadir}/applications/helium.desktop
 
 %post
-# Refresh the desktop database and icon cache
 %{_bindir}/update-desktop-database > /dev/null 2>&1 || :
 /bin/touch --no-create %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
 

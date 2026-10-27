@@ -1,16 +1,10 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="lazyvim-git.spec"
 CHANGES_FILE="lazyvim-git.changes"
 GITHUB_REPO="LazyVim/LazyVim"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 VERSION_FILE="lua/lazyvim/config/init.lua"
 
@@ -30,9 +24,6 @@ if [ -z "$LATEST_COMMIT" ] || [ "$LATEST_COMMIT" == "null" ]; then
     exit 1
 fi
 
-# Base version: LazyVim stopped tagging releases (last tag v9.9.1 is from
-# 2023); the authoritative version is the release-please managed
-# M.version in lua/lazyvim/config/init.lua at the pinned commit.
 LATEST_BASE=$(curl -fsSL "https://raw.githubusercontent.com/$GITHUB_REPO/$LATEST_COMMIT/$VERSION_FILE" | grep -oE 'M\.version = "[0-9]+\.[0-9]+\.[0-9]+"' | head -1 | sed 's/.*"\(.*\)"/\1/')
 
 if [ -z "$LATEST_BASE" ]; then
@@ -50,11 +41,6 @@ if [ "$CURRENT_COMMIT" == "$LATEST_COMMIT" ] && [ "$CURRENT_BASE" == "$LATEST_BA
     UP_TO_DATE=1
 fi
 
-# PURE commit/base guard (repo rule: never require local artifact files to
-# exist - lazyvim-$SHORT.tar.gz is gitignored and never present in CI
-# checkouts, so "[ -f tarball ] && up-to-date" never fired there and the
-# script re-downloaded every 6h run). The comparison below is now the whole
-# guard: exit 0 on a pure version/commit match, before any artifact work.
 if [ "$UP_TO_DATE" -eq 1 ]; then
     echo "Package is already at the latest commit ($SHORT_COMMIT) and base version ($LATEST_BASE). No update needed."
     exit 0
@@ -86,10 +72,6 @@ sed -i -E "s/^%global base_version.*/%global base_version    $LATEST_BASE/" "$SP
 sed -i -E "s/^Version:.*/Version:        %{base_version}+git%{gitdate}.%{shortcommit}/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# Debian_Testing recipe: keep the .dsc template Version/Tar and the
-# debian/changelog head in sync (the snapshot tarball lifecycle above is
-# shared with the RPM flow, no extra download). Template Version mirrors
-# the spec's macro Version with values substituted.
 DSC_FILE="lazyvim-git.dsc"
 DSC_VER="${LATEST_BASE}+git${LATEST_DATE}.${SHORT_COMMIT}"
 sed -i -E "s/^Version: .*/Version: $DSC_VER/" "$DSC_FILE"

@@ -1,30 +1,15 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="craft-launcher.spec"
 CHANGES_FILE="craft-launcher.changes"
 GITHUB_REPO="storytold/craft-launcher"
-# NOTE: release artifacts are prefixed artcraft-launcher- (not
-# craft-launcher-); keep ART_PREFIX in sync if upstream ever renames.
 ART_PREFIX="artcraft-launcher"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
-# Upstream layout: release tag v<ver>, native per-distro artifacts
-# <prefix>-<ver>-linux-x86_64.{rpm,deb}. The RPM is repacked for
-# Tumbleweed, the DEB for Debian_Testing; both get our own
-# distro-correct dependency mapping.
 echo "Checking for upstream updates on $GITHUB_REPO..."
 
-# Get latest release data (authenticated to avoid rate limits).
-# Retry on transient network/API failures so one hiccup does not stub the
-# version and abort the whole update.
 LATEST_TAG=""
 LATEST_JSON=""
 for attempt in 1 2 3; do
@@ -56,11 +41,6 @@ echo "   Latest Online: $NEW_VER"
 RPM_NAME="$ART_PREFIX-$NEW_VER-linux-x86_64.rpm"
 DEB_NAME="$ART_PREFIX-$NEW_VER-linux-x86_64.deb"
 
-# Debian_Testing recipe helper: wrap the upstream .deb into the gzip-compressed
-# debtransform orig input. The wrapper is gitignored (*.tar.gz) and rides the
-# OBS sync; per-package actions/cache in update-packages.yml keeps it
-# across fresh CI checkouts. (The RPM side needs nothing local: Source0 is
-# a versioned URL fetched server-side by download_files.)
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
@@ -80,9 +60,6 @@ deb_url_for() {
     echo "https://github.com/$GITHUB_REPO/releases/download/v$1/$ART_PREFIX-$1-linux-x86_64.deb"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# wrapper (actions/cache usually restores it). Rebuild when missing so an
-# OBS sync can never wipe the remote copy with nothing to re-upload.
 if [ ! -f "craft-launcher-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VER" "$(deb_url_for "$CURRENT_VER")" || \
@@ -94,8 +71,6 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     exit 0
 fi
 
-# Asset guard: only bump once BOTH native artifacts really exist (a tag
-# can exist before its assets finish uploading; a blind bump ships 404s).
 ASSET_NAMES=$(echo "$LATEST_JSON" | jq -r '.assets[]?.name // empty')
 for want in "$RPM_NAME" "$DEB_NAME"; do
     if ! echo "$ASSET_NAMES" | grep -qx "$want"; then
@@ -110,8 +85,6 @@ sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 sed -i "s|^Source0:.*|Source0:        https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$RPM_NAME|" "$SPEC_FILE"
 
-# Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog in sync
-# (asset URLs verified present via the asset guard above).
 build_orig_wrapper "$NEW_VER" "$(deb_url_for "$NEW_VER")"
 DSC_FILE="craft-launcher.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"

@@ -1,7 +1,4 @@
 %global debug_package %{nil}
-# Bundled prebuilt CEF runtime under /opt/koharu is immutable upstream
-# binaries - exclude its private libs from auto-deps (repo convention,
-# same as vesktop/obsidian/stoat-desktop).
 %global __requires_exclude_from ^/opt/koharu/.*$
 %global __provides_exclude_from ^/opt/koharu/.*$
 Name:           koharu
@@ -11,17 +8,12 @@ Summary:        Local-first ML-powered manga translator
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Other
 URL:            https://github.com/koharu-rs/koharu
-# Use the upstream DEB as our raw source payload (tags carry no v prefix)
 Source0:        %{url}/releases/download/0.83.5/koharu_0.83.5_amd64.deb
 Source1:        koharu-rpmlintrc
-# Required to unpack the upstream DEB natively
 BuildRequires:  binutils
 BuildRequires:  fdupes
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  tar
-# Explicit dependencies mapped from the payload's ELF DT_NEEDED union
-# (koharu binary wants gtk4/graphene/openssl; libcef.so wants the usual
-# Chromium set; upstream's own Depends names only libgtk-3-0)
 Requires:       at-spi2-core
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
@@ -67,7 +59,6 @@ This version natively extracts the upstream DEB payload.
 
 %prep
 %setup -q -c -T
-# Rip open the upstream DEB natively (Tauri bundler ships data.tar.gz)
 ar x %{SOURCE0}
 if [ -f data.tar.gz ]; then
   tar xzf data.tar.gz
@@ -77,30 +68,17 @@ else
 fi
 
 %build
-# No compilation required for pre-built binaries
 
 %install
 
-# Install the CEF application bundle under /opt (repo convention for
-# prebuilt Electron/CEF apps: vesktop/obsidian/stoat-desktop). /usr/share
-# is reserved for arch-independent files - ELFs there trip rpmlint
-# E: arch-dependent-file-in-usr-share and abort the OBS build (badness).
-# The whole directory moves together, so the binary's relative resource
-# lookup (locales, .pak, libcef.so) keeps working.
 install -d -m 0755 %{buildroot}/opt/koharu
 cp -a usr/share/koharu/* %{buildroot}/opt/koharu/
-# Upstream stashes the license texts under usr/lib/koharu/_up_; keep them
-# with the bundle and mark them as license files below.
 cp -a usr/lib/koharu/_up_/_up_/LICENSE-MIT usr/lib/koharu/_up_/_up_/LICENSE-APACHE %{buildroot}/opt/koharu/
-# Launcher symlink (replaces upstream's usr/bin/koharu -> ../share/... link,
-# which no longer resolves after the move to /opt).
 install -d -m 0755 %{buildroot}%{_bindir}
 ln -s ../../opt/koharu/koharu %{buildroot}%{_bindir}/koharu
-# Desktop entry + icons, byte-for-byte from the payload.
 install -d -m 0755 %{buildroot}%{_datadir}
 cp -a usr/share/applications %{buildroot}%{_datadir}/
 cp -a usr/share/icons %{buildroot}%{_datadir}/
-# Deduplicate the near-identical en-US_*.pak locale files.
 %fdupes %{buildroot}/opt/koharu
 
 %files

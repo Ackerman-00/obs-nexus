@@ -1,25 +1,15 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash fluxer/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="fluxer.spec"
 CHANGES_FILE="fluxer.changes"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 API_URL="https://api.fluxer.app/dl/desktop/stable/linux/x64/latest/rpm"
 RPM_FILE="fluxer.rpm"
 
 echo "Checking for fluxer updates..."
 
-# The X-Fluxer-Version header on the 302 sometimes lags the artifact actually
-# served (observed 2026-09-20: header advertised 2026.920.41250 while the
-# served stable RPM was fluxer-2026.920.41303). The Content-Disposition
-# filename of the served RPM is authoritative — prefer it when they differ.
 HEADER=$(curl -s -D - -o /dev/null -L "$API_URL" 2>/dev/null)
 VERSION=$(echo "$HEADER" | grep -i "^X-Fluxer-Version:" | awk '{print $2}' | tr -d '\r')
 DISP_VERSION=$(echo "$HEADER" | grep -i "content-disposition:" | grep -oiP 'Fluxer-\K[0-9.]+' | tail -1)
@@ -35,13 +25,6 @@ fi
 
 CURRENT_VERSION=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# The Source0 RPM is gitignored and never present in CI checkouts. Always
-# ensure it exists locally so the OBS sync step can upload it; if OBS ever
-# loses the RPM while the version is unchanged, this prevents a rebuild
-# failure. The version guard above stays a pure version comparison.
-# Integrity: a cached RPM must match the spec's `# sha256:` pin (rootapp
-# pattern); mismatch => fall through and re-download instead of trusting
-# the cache. A missing pin on a version-matched cache is adopted once.
 if [ -f "$RPM_FILE" ] && [ "$CURRENT_VERSION" = "$VERSION" ]; then
     CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
     CACHED_SHA=$(sha256sum "$RPM_FILE" | awk '{print $1}')
@@ -53,7 +36,6 @@ if [ -f "$RPM_FILE" ] && [ "$CURRENT_VERSION" = "$VERSION" ]; then
             sed -i "/^Source0:/a # sha256:  $CACHED_SHA" "$SPEC_FILE"
         fi
         echo "Package is already at $VERSION (sha256: $CACHED_SHA). No update needed."
-        # Keep the Debian orig wrapper in step (no download needed here).
         if [ ! -f "fluxer-$VERSION.tar.gz" ]; then
             tar -czf "fluxer-$VERSION.tar.gz" "$RPM_FILE"
         fi
@@ -62,11 +44,6 @@ if [ -f "$RPM_FILE" ] && [ "$CURRENT_VERSION" = "$VERSION" ]; then
 fi
 
 echo "Downloading RPM..."
-# Stable channel must never package a canary build: upstream sometimes
-# redirects the stable endpoint to canary during channel migrations
-# (observed 2026-09-10: stable -> .../canary/.../Fluxer-Canary-*.rpm
-# while x-fluxer-version still advertised a stable-looking number).
-# Refuse and HOLD instead of shipping canary as stable.
 FINAL_NAME=$(curl -s -D - -o /dev/null -L "$API_URL" 2>/dev/null | grep -i "^content-disposition:" | tail -1 | grep -oiE 'filename="[^"]+"' | tail -1)
 if echo "$FINAL_NAME" | grep -qi canary; then
     echo "Upstream stable endpoint currently serves a canary build ($FINAL_NAME); holding at $CURRENT_VERSION."
@@ -80,33 +57,17 @@ if ! [ -s "$RPM_FILE" ] || ! rpm -qp "$RPM_FILE" >/dev/null 2>&1; then
     exit 1
 fi
 
-# The transport metadata (X-Fluxer-Version header / content-disposition
-# filename) can advertise a build the CDN has not actually published yet
-# (observed 2026-10-26: header+filename said 2026.1026.151750 while the
-# served rpm bytes were still the 2026.1026.24218 build, sha256 unchanged).
-# The rpm's OWN internal Version is the ground truth for what we ship -- use
-# it, so the spec label can never disagree with the packaged artifact and a
-# metadata-only "bump" can never masquerade as a real update.
 INTERNAL_VERSION=$(rpm -qp --queryformat '%{VERSION}' "$RPM_FILE" 2>/dev/null | tr -d '\r')
 if [ -n "$INTERNAL_VERSION" ] && [ "$INTERNAL_VERSION" != "$VERSION" ]; then
     echo "Note: transport metadata advertised $VERSION but the served rpm is internally $INTERNAL_VERSION; using the rpm's own version so the label matches the shipped bytes."
     VERSION="$INTERNAL_VERSION"
 fi
 
-# Debian_Testing recipe: (re)build the debtransform orig wrapper (gzip-compressed
-# tar holding the upstream RPM; dpkg-source 3.0 (quilt) rejects uncompressed
-# .orig.tar, so the wrapper MUST stay compressed) whenever the RPM was
-# (re)downloaded above -- this covers version bumps AND same-version
-# refreshes. The wrapper is gitignored (*.tar.gz) and rides the OBS sync;
-# per-package actions/cache in update-packages.yml keeps it across fresh CI
-# checkouts.
 tar -czf "fluxer-$VERSION.tar.gz" "$RPM_FILE"
 for old in fluxer-*.tar fluxer-*.tar.gz; do
     [ "$old" = "fluxer-$VERSION.tar.gz" ] || rm -f "$old"
 done
 
-# Refresh the spec's sha256 pin BEFORE the same-version early return, so a
-# same-version upstream respin also re-pins (and OBS re-syncs) the payload.
 NEW_SHA=$(sha256sum "$RPM_FILE" | awk '{print $1}')
 if grep -q "^# sha256:" "$SPEC_FILE"; then
     sed -i "s/^# sha256:.*/# sha256:  $NEW_SHA/" "$SPEC_FILE"
@@ -124,7 +85,6 @@ echo "Update available: $CURRENT_VERSION -> $VERSION"
 sed -i "s/^Version:.*/Version:        $VERSION/" "$SPEC_FILE"
 sed -i "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# Debian_Testing recipe: keep the .dsc Version/Tar and debian/changelog in sync.
 DSC_FILE="fluxer.dsc"
 sed -i "s/^Version: .*/Version: $VERSION/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: fluxer-$VERSION.tar.gz|" "$DSC_FILE"

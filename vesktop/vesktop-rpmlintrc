@@ -1,22 +1,7 @@
 addFilter("filelist-forbidden-opt")
 addFilter("binary-or-shlib-defines-rpath")
-# explicit-lib-dependency filter removed 2026-10-20: its only triggers were
-# the package-form Requires libXtst6/libuuid1, dropped in the 1.6.7 dep
-# cleanup (zero payload references); OBS now flags the filter itself as
-# unused-rpmlintrc-filter, so the dead filter had to go.
 addFilter("dir-or-file-outside-snapshot")
 
-# unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
-# "This error should actually never show up in the build service. The build
-# script automatically strips binaries according to global project
-# settings" and "Please do not strip binaries manually as that will break
-# debuginfo creation"; Packaging_guidelines confirms the sanctioned remedy
-# is to suppress a false positive. rpmlint.opensuse.org reports this same
-# warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
-# here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
 addFilter("unstripped-binary-or-object")
 
-# Upstream Electron/Chromium runtime: the bundled browser binary uses its own
-# resolver stub. Immutable upstream bytes, same filter as stoat-desktop,
-# heroic-games-launcher and fluxer in this repo.
 addFilter("binary-or-shlib-calls-gethostbyname")

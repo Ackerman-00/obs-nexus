@@ -1,12 +1,6 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
-# ==========================================
-# zen-browser Auto-Updater strictly for Git
-# ==========================================
 
 SPEC_FILE="zen-browser.spec"
 CHANGES_FILE="zen-browser.changes"
@@ -15,9 +9,6 @@ PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for updates..."
 
-# Get latest release tag from GitHub API (authenticated to avoid rate limits).
-# Retry on transient network/API failures so one hiccup does not stub the
-# version and abort the whole update.
 LATEST_TAG=""
 for attempt in 1 2 3; do
     if [ -n "$GITHUB_TOKEN" ]; then
@@ -34,19 +25,13 @@ for attempt in 1 2 3; do
 done
 NEW_VER="${LATEST_TAG#v}"
 
-# Only accept a plausible semantic version (prevents "null"/API-error stub versions)
 if [ -z "$NEW_VER" ] || [ "$NEW_VER" == "null" ] || ! echo "$NEW_VER" | grep -qE '^[0-9]'; then
     echo "❌ Error: Could not fetch a valid latest version from GitHub."
     exit 1
 fi
 
-# Check current local version using the .spec file
 CURRENT_VER=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Debian_Testing recipe helper: fetch the upstream tarball under its
-# versioned orig name (content-identical rename, no recompression). The
-# tarball is gitignored (*.tar.xz) and rides the OBS sync; per-package
-# actions/cache in update-packages.yml keeps it across fresh CI checkouts.
 fetch_orig_tarball() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
@@ -66,11 +51,6 @@ zen_url_for() {
     echo "https://github.com/zen-browser/desktop/releases/download/$1/zen.linux-x86_64.tar.xz"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# tarball (actions/cache usually restores it). Rebuild when missing so an
-# OBS sync can never wipe the remote copy with nothing to re-upload.
-# NOTE: upstream tags carry a varying prefix (1.23.1b lives under a
-# non-v tag); try the stored tag forms newest-first.
 if [ ! -f "zen-browser-$CURRENT_VER.tar.xz" ]; then
     echo "Orig tarball missing locally; rebuilding..."
     ( fetch_orig_tarball "$CURRENT_VER" "$(zen_url_for "$CURRENT_VER")" || \
@@ -86,15 +66,6 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
     exit 0
 fi
 
-# RETRACTION / DOWNGRADE GUARD: never blindly move the version backwards.
-# If upstream's releases/latest is OLDER than what we package, two cases:
-#  (a) our current version's asset is GONE upstream (yanked release - real
-#      case: zen-browser 1.23.4b was published 2026-10-21 10:59Z and fully
-#      retracted before 12:33Z: tag, release and asset all deleted): the
-#      revert is correct, a dead Source0 would 404 on every future OBS
-#      service run and break the package;
-#  (b) otherwise the releases/latest pointer is lagging or glitched: HOLD
-#      the newer packaged version instead of silently regressing.
 if [ "$(printf '%s\n' "$CURRENT_VER" "$NEW_VER" | sort -V | tail -1)" != "$NEW_VER" ]; then
     CUR_STATUS=$(curl -o /dev/null -s -w "%{http_code}" -I -L "$(zen_url_for "$CURRENT_VER")")
     if [ "$CUR_STATUS" = "200" ]; then
@@ -114,21 +85,14 @@ if [ "$HTTP_STATUS" -ne 200 ]; then
 fi
 
 echo "⚙️ Updating $SPEC_FILE..."
-# Update Spec version and reset the release number to 0
 sed -i "s/^Version:.*/Version:        $NEW_VER/" "$SPEC_FILE"
 sed -i "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# Debian_Testing recipe: refresh the orig tarball + keep .dsc/changelog
-# in sync (DOWNLOAD_URL verified 200 above).
 fetch_orig_tarball "$NEW_VER" "$DOWNLOAD_URL"
 DSC_FILE="zen-browser.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: zen-browser-$NEW_VER.tar.xz|" "$DSC_FILE"
 DEB_DATE=$(date -R -u)
-# Re-release-safe revision: if this version already appears in the
-# changelog (real case: 1.23.4b was bumped 11:20Z, RETRACTED upstream
-# the same morning, then restored at 13:41Z), write the NEXT revision
-# instead of emitting a duplicate version stanza.
 DEB_REV=1
 if [ -f debian.changelog ]; then
     EXISTING_REVS=$(grep -oE "^zen-browser \($NEW_VER-[0-9]+\)" debian.changelog | grep -oE '[0-9]+\)$' | tr -d ')' | sort -n)
@@ -144,11 +108,9 @@ else
 fi
 
 echo "📝 Updating changelog ($CHANGES_FILE)..."
-# Manually generate the OBS/RPM changelog format since we aren't using osc
 CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $NEW_VER-0\n- Update zen-browser to v$NEW_VER\n\n"
 
-# Prepend the new entry to the changes file
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"
 else

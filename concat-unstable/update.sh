@@ -1,26 +1,10 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
-# update.sh for concat-unstable (main-branch snapshot, source build).
-# Tracks upstream main past the latest release: version is base release +
-# newest commit (lazyvim-git pattern). The build needs three network
-# artifacts OBS builders cannot fetch, so all are materialized here into
-# ONE unified snapshot tarball (top dir concat-<commit>/):
-#   src/              upstream tree + vendored crates + .cargo/config
-#   ffmpeg-dev/       BtbN FFmpeg 8.1 shared tree (upstream's own recipe)
-#   onnxlib/          Microsoft ONNX Runtime 1.28.0 lib + .so symlink
-# Sidecar pins below mirror upstream .github/workflows/build-app.yml;
-# refresh them when upstream bumps ort/FFmpeg there.
 
 SPEC_FILE="concat-unstable.spec"
 CHANGES_FILE="concat-unstable.changes"
 GITHUB_REPO="jub0t/concat"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 FFMPEG_RELEASE="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
 FFMPEG_VERSION="8.1"
@@ -30,7 +14,6 @@ ORT_TGZ="onnxruntime-linux-x64-$ORT_VERSION.tgz"
 
 echo "Checking for upstream updates on $GITHUB_REPO main..."
 
-# Latest main HEAD (authenticated to avoid rate limits).
 HEAD_SHA=""
 HEAD_DATE_RAW=""
 for attempt in 1 2 3; do
@@ -53,7 +36,6 @@ if [ -z "$HEAD_SHA" ] || [ "$HEAD_SHA" == "null" ]; then
     exit 1
 fi
 
-# Base version: latest stable release tag (the +git version builds on it).
 LATEST_TAG=$(git ls-remote --tags "https://github.com/$GITHUB_REPO.git" 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
 BASE_VER="${LATEST_TAG#v}"
 if [ -z "$BASE_VER" ]; then
@@ -67,12 +49,6 @@ CURRENT_COMMIT=$(grep -E "^%global commit" "$SPEC_FILE" | awk '{print $3}')
 CURRENT_PIN=$(grep -E "^%global commit" "$SPEC_FILE" | awk '{print $3}')
 TARBALL="concat-unstable-$BASE_VER+git$GITDATE.$SHORT.tar.gz"
 
-# PURE commit-SHA guard (repo rule: the up-to-date guard must be a pure
-# commit comparison and must never require local artifact files - the
-# tarball is gitignored and never present in CI checkouts). Gating on
-# "[ -f $TARBALL ]" here made every 6h auto-updater run fall through to a
-# full cargo-vendor/ffmpeg/skia snapshot rebuild with zero upstream change
-# (CI waste; no git churn - the spec writes below were separately gated).
 if [ "$CURRENT_COMMIT" = "$HEAD_SHA" ]; then
     echo "Package is already at main $SHORT (base $BASE_VER). No update needed."
     exit 0
@@ -82,15 +58,10 @@ echo "Building snapshot: base $BASE_VER + main $SHORT ($HEAD_DATE_RAW)"
 TMPD=$(mktemp -d)
 trap 'rm -rf "$TMPD"' EXIT
 
-# 1. Upstream tree at the pinned commit.
 curl -fsSL --retry 3 --connect-timeout 30 "https://github.com/$GITHUB_REPO/archive/$HEAD_SHA.tar.gz" -o "$TMPD/main.tar.gz" \
     || { echo "Source download failed; spec left untouched."; exit 1; }
 tar -xzf "$TMPD/main.tar.gz" -C "$TMPD" \
     || { echo "Source tarball corrupt; spec left untouched."; exit 1; }
-# Upstream renamed the repo jub0t/concat -> jub0t/Concat (2026-10-16), so the
-# archive top dir is now Concat-<sha> (GitHub uses the repo name verbatim).
-# Normalize to the canonical lowercase dir so the unified tarball layout and
-# the spec's %autosetup -n concat-%{commit} keep working regardless of case.
 TOPD=$(tar -tzf "$TMPD/main.tar.gz" | head -1 | cut -d/ -f1)
 if [ "$TOPD" != "concat-$HEAD_SHA" ]; then
     echo "Note: archive top dir is $TOPD, normalizing to concat-$HEAD_SHA."
@@ -100,7 +71,6 @@ fi
 SRC="$TMPD/concat-$HEAD_SHA"
 [ -d "$SRC/src" ] || { echo "Unexpected source layout (no src/); spec left untouched."; exit 1; }
 
-# 2. Vendor the cargo tree (offline build input, matugen pattern).
 (
     cd "$SRC/src" || exit 1
     if ! cargo vendor > ../cargo_config.tmp 2> /tmp/cargo-vendor.err; then
@@ -119,11 +89,6 @@ SRC="$TMPD/concat-$HEAD_SHA"
 ) || exit 1
 [ -s "$SRC/cargo_config" ] || { echo "cargo_config missing; spec left untouched."; exit 1; }
 
-# 3. BtbN FFmpeg 8.1 shared tree (upstream's own Linux recipe). NOTE
-# (2026-10-09): the shared tarball ships BOTH lib/ (runtime .so) and
-# include/ (headers) - both are copied. ffmpeg-sys-the-third needs the
-# headers at build time (without them it detects version (0,0) and the
-# build fails); the .so files land in /opt at install via $ORIGIN/lib.
 curl -fsSL --retry 3 --connect-timeout 60 "$FFMPEG_RELEASE/$FFMPEG_FILE" -o "$TMPD/ffmpeg.tar.xz" \
     || { echo "FFmpeg sidecar download failed; spec left untouched."; exit 1; }
 mkdir -p "$SRC/ffmpeg-dev"
@@ -136,8 +101,6 @@ if [ -z "$FFTOP" ] || [ -z "$(ls "$FFTOP"/lib/libavcodec.* 2>/dev/null)" ] || [ 
 fi
 cp -a "$FFTOP"/lib "$FFTOP"/include "$SRC/ffmpeg-dev/"
 
-# 4. Microsoft ONNX Runtime shared lib (upstream's own Linux recipe:
-# ORT_LIB_LOCATION + dynamic preference). Linker name symlink included.
 curl -fsSL --retry 3 --connect-timeout 60 "https://github.com/microsoft/onnxruntime/releases/download/v$ORT_VERSION/$ORT_TGZ" -o "$TMPD/onnx.tgz" \
     || { echo "ONNX sidecar download failed; spec left untouched."; exit 1; }
 mkdir -p "$SRC/onnxlib"
@@ -148,12 +111,6 @@ ONNXLIB=$(ls -d "$TMPD"/onnxruntime-linux-*/lib 2>/dev/null | head -n1)
 cp -a "$ONNXLIB"/libonnxruntime.so* "$SRC/onnxlib/"
 ln -sf "libonnxruntime.so.$ORT_VERSION" "$SRC/onnxlib/libonnxruntime.so"
 
-# 4b. Skia prebuilt binaries (rust-skia binary cache). The {tag}/{key}
-# come from a build log's "TRYING TO DOWNLOAD AND INSTALL SKIA BINARIES"
-# line - never guessed (key embeds the skia commit + feature set, so it
-# changes whenever skia-bindings or its features change; a stale key 404s
-# and the offline build fails). Refresh procedure: run a build, read the
-# exact tag/key + FROM: URL from the log, update SKIA_TAG/SKIA_KEY below.
 SKIA_TAG="0.153.3"
 SKIA_KEY="b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan"
 curl -fsSL --retry 3 --connect-timeout 60 \
@@ -162,14 +119,8 @@ curl -fsSL --retry 3 --connect-timeout 60 \
     || { echo "Skia binaries download failed; spec left untouched."; exit 1; }
 mkdir -p "$SRC/skia-cache"
 cp -a "$TMPD/skia-binaries.tar.gz" "$SRC/skia-cache/skia-binaries-$SKIA_KEY.tar.gz"
-# Keep the spec/rules file:// names in sync with the key above.
 sed -i -E "s|skia-binaries-[^\"']*\.tar\.gz|skia-binaries-$SKIA_KEY.tar.gz|g" "$SPEC_FILE" debian.rules
 
-# 4c. sherpa-onnx static libs (sherpa-onnx-sys build.rs supports
-# SHERPA_ONNX_ARCHIVE_DIR: a dir holding the exact archive, copied to the
-# cargo cache instead of downloading). Archive name embeds
-# sherpa-onnx-sys's CARGO_PKG_VERSION (read from the vendored crate, never
-# guessed); refresh both together when the crate bumps.
 SHERPA_VER=$(grep -A2 'name = "sherpa-onnx-sys"' "$SRC/src/Cargo.lock" | grep '^version' | head -1 | cut -d'"' -f2)
 [ -n "$SHERPA_VER" ] || { echo "sherpa-onnx-sys version unreadable; spec left untouched."; exit 1; }
 SHERPA_ARCHIVE="sherpa-onnx-v$SHERPA_VER-linux-x64-static-lib.tar.bz2"
@@ -181,17 +132,12 @@ mkdir -p "$SRC/sherpa-cache"
 cp -a "$TMPD/sherpa.tar.bz2" "$SRC/sherpa-cache/$SHERPA_ARCHIVE"
 sed -i -E "s|sherpa-onnx-v[0-9.]+-linux-x64-static-lib\.tar\.bz2|$SHERPA_ARCHIVE|g" "$SPEC_FILE" debian.rules
 
-# 5. Pack the unified snapshot tarball, drop superseded ones.
 rm -f concat-unstable-*.tar.gz
 tar -czf "$TARBALL" -C "$TMPD" "concat-$HEAD_SHA"
 ls -l "$TARBALL"
 trap - EXIT
 rm -rf "$TMPD"
 
-# 6. Bump the spec pins (last, so any failure above leaves git/OBS untouched).
-# Skip the pins AND both changelogs when HEAD is unchanged (fresh-checkout
-# tarball rebuild only) - otherwise every cache miss would stack duplicate
-# entries for the same commit.
 if [ "$HEAD_SHA" != "$CURRENT_PIN" ]; then
 sed -i -E "s/^%global commit.*/%global commit          $HEAD_SHA/" "$SPEC_FILE"
 sed -i -E "s/^%global shortcommit.*/%global shortcommit     $SHORT/" "$SPEC_FILE"
@@ -200,8 +146,6 @@ sed -i -E "s/^%global base_version.*/%global base_version    $BASE_VER/" "$SPEC_
 sed -i -E "s/^Version:.*/Version:        %{base_version}+git%{gitdate}.%{shortcommit}/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# Debian_Testing recipe: keep the .dsc Version in sync (Tar name derives
-# from the version; no separate orig inputs - everything rides one tarball).
 DSC_FILE="concat-unstable.dsc"
 DSC_VER="${BASE_VER}+git${GITDATE}.${SHORT}"
 sed -i -E "s/^Version: .*/Version: $DSC_VER/" "$DSC_FILE"

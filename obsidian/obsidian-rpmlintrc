@@ -1,33 +1,12 @@
-# Bundled prebuilt Electron runtime under /opt/obsidian is immutable
-# upstream binaries - these findings describe upstream's own files,
-# not packaging mistakes. Same pattern as stoat-desktop/vesktop.
 addFilter("binary-or-shlib-defines-rpath")
 addFilter("filelist-forbidden-opt")
-# NOTE (2026-10-09): the permissions-*/setgroups/explicit-lib filters that
-# used to live here were removed -- the current 1.14.4 payload triggers
-# none of those findings on OBS (verified E: unused-rpmlintrc-filter on
-# the 1.14.4-29.1 TW build), so keeping them is itself an error. If a
-# future payload reintroduces setuid findings, re-add scoped filters then.
 addFilter("dir-or-file-outside-snapshot")
 addFilter("binary-or-shlib-calls-gethostbyname")
-# Private bundled libs under /opt/obsidian/usr/lib (never in ldconfig
-# path, never +x upstream): not ours to chmod or register.
 addFilter("shared-library-not-executable")
 addFilter("missing-hash-section")
 addFilter("library-without-ldconfig-postin")
 addFilter("library-without-ldconfig-postun")
-# Data files inside the bundled app.asar node_modules tree.
 addFilter("script-without-shebang")
-# hicolor-icon-theme is intentionally unversioned (repo convention,
-# same as every other spec in this repo).
 addFilter("branding-requires-unversioned")
 
-# unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
-# "This error should actually never show up in the build service. The build
-# script automatically strips binaries according to global project
-# settings" and "Please do not strip binaries manually as that will break
-# debuginfo creation"; Packaging_guidelines confirms the sanctioned remedy
-# is to suppress a false positive. rpmlint.opensuse.org reports this same
-# warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
-# here. The flagged ELFs are upstream Electron/Chromium payload files shipped byte-for-byte; rewriting them would alter the shipped artifact.
 addFilter("unstripped-binary-or-object")

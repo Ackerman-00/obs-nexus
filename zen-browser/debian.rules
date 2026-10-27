@@ -1,11 +1,4 @@
 #!/usr/bin/make -f
-# Debian repack of the upstream zen tarball (binary re-distributor, same
-# payload policy as the RPM spec: /usr/lib/zen-browser install, wrapper,
-# desktop entry, icons, distribution policies, dictionaries/hyphenation
-# symlinks, system libnssckbi instead of the bundled copy since it lacks
-# the NSS_3.126 symbol set zen needs). No network at build time: the orig
-# tarball IS the upstream release tarball (renamed by update.sh).
-# Static branding rides as debian.* copies (wrapper adapted to /usr/lib).
 %:
 	dh $@
 
@@ -15,14 +8,6 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	:
 
-# Prebuilt upstream binaries are already stripped and carry no
-# usable debuginfo -- dwz aborts on them (exit 25). Skip it; same
-# class as the RPM-side debuginfo exclusion for repackaged binaries.
-# Binary repack: the payload is prebuilt upstream, so automatic
-# shlibdeps analysis cannot run (buildroot holds none of the
-# runtime libs) and its ${shlib:Depends} output is unused -- the
-# manually maintained Depends above (derived from the payload's
-# ELF DT_NEEDED union) IS the dependency declaration.
 override_dh_shlibdeps:
 	:
 
@@ -32,9 +17,6 @@ override_dh_dwz:
 override_dh_auto_test:
 	desktop-file-validate debian/zen-browser.desktop
 
-# NOTE: dpkg-source -x strips the orig tarball's single top-level dir
-# when unpacking into BUILD (no zen/ dir at build time); debian/ itself
-# must be excluded from the payload copy.
 override_dh_auto_install:
 	mkdir -p debian/zen-browser/usr/bin debian/zen-browser/usr/share/applications debian/zen-browser/usr/lib/zen-browser
 	find . -maxdepth 1 -mindepth 1 ! -name debian ! -name '.pc' -exec cp -a -t debian/zen-browser/usr/lib/zen-browser/ {} +

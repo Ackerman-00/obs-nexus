@@ -1,14 +1,7 @@
-# GitHub Actions transient state files
 .git_modified_files.txt
 .rebuild_packages.txt
 tools/__pycache__/
 
-# Generated package source artifacts (downloaded by update.sh / _service;
-# never committed). Consolidated here from per-package .gitignore files so
-# no tracked dotfiles live inside package dirs - the OBS drift check in
-# update-packages.yml only scans tracked files under package dirs, and a
-# tracked dotfile there would flag phantom drift forever (sync_files never
-# uploads dotfiles to OBS).
 *.tar.gz
 *.tar.xz
 *.tar.bz2
@@ -19,8 +12,6 @@ tools/__pycache__/
 cargo_config
 fluxer.rpm
 Root.AppImage
-# Debian debtransform orig wrappers + upstream artifacts repacked by
-# update.sh (never committed; they ride the OBS sync as untracked files).
 *.deb
 *.rpm
 *.zip

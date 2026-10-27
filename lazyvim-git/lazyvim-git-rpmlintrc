@@ -1,3 +1,1 @@
-# Upstream LazyVim ships helper scripts with '#!/usr/bin/env bash' on
-# purpose (portability); do not patch third-party scripts.
 addFilter("lazyvim-git.*: E: env-script-interpreter /usr/share/lazyvim/scripts/")

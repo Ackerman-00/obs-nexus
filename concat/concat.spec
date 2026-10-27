@@ -1,7 +1,4 @@
 %global debug_package %{nil}
-# Bundled FFmpeg 8 + ONNX Runtime under /opt/concat/lib (found via the
-# binary's $ORIGIN/lib RUNPATH) - exclude them from automatic dependency
-# generation, same pattern as the other prebuilt repacks.
 %global __requires_exclude_from ^/opt/concat/.*$
 %global __provides_exclude_from ^/opt/concat/.*$
 Name:           concat
@@ -15,13 +12,6 @@ Source0:        https://github.com/jub0t/concat/releases/download/v0.2.8/Concat-
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
-# Runtime dependencies: the upstream RPM's Requires are Fedora names, four
-# of which do not exist on openSUSE (freetype -> libfreetype6,
-# libxkbcommon -> libxkbcommon0, mesa-libGL -> Mesa-libGL1,
-# alsa-lib -> libasound2 - proven via rpm header dump), plus upstream's
-# nfpm config additionally declares libxkbcommon-x11 (missing even from
-# the RPM header) and the payload ELF NEEDED adds libstdc++/libgcc_s.
-# Bundled libav*/libonnxruntime resolve via $ORIGIN/lib, never the system.
 Requires:       Mesa-libGL1
 Requires:       fontconfig
 Requires:       gtk3
@@ -44,15 +34,11 @@ underneath and hardware-accelerated preview and export.
 rpm2cpio %{SOURCE0} | cpio -idmv
 
 %build
-# No compilation required for pre-built binaries
 
 %install
 install -d -m 0755 %{buildroot}/opt/concat
 cp -a opt/concat/* %{buildroot}/opt/concat/
 
-# Upstream's RPM stores lib/*.so* with mode 000 (its DEB correctly uses
-# 0755) - unreadable bundled libs would break the app for non-root users,
-# so normalize like its own .deb does.
 chmod 755 %{buildroot}/opt/concat/lib/*.so*
 
 install -d -m 0755 %{buildroot}%{_bindir}
@@ -63,7 +49,6 @@ cp -a usr/share/applications %{buildroot}%{_datadir}/
 cp -a usr/share/icons %{buildroot}%{_datadir}/
 cp -a usr/share/doc %{buildroot}%{_datadir}/
 
-# Point the desktop entry at the PATH launcher.
 sed -i 's|^Exec=.*|Exec=%{_bindir}/concat %U|' \
     %{buildroot}%{_datadir}/applications/concat.desktop
 

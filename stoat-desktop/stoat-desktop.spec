@@ -1,6 +1,4 @@
-# Disable debuginfo extraction since we are repackaging pre-compiled binaries
 %global debug_package %{nil}
-# Prevent RPM from trying to auto-generate dependencies from the bundled Electron libraries
 %global __requires_exclude_from ^/opt/Stoat/.*$
 %global __provides_exclude_from ^/opt/Stoat/.*$
 Name:           stoat-desktop
@@ -8,7 +6,6 @@ Version:        1.5.4
 Release:        0
 Summary:        Open source, user-first chat platform desktop client
 License:        AGPL-3.0-only AND MIT AND BSD-2-Clause
-# FIXME: use correct group or remove it, see "https://en.opensuse.org/openSUSE:Package_group_guidelines"
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://github.com/stoatchat/for-desktop
 Source0:        %{url}/releases/download/v%{version}/Stoat-linux-x64-%{version}.zip
@@ -30,14 +27,7 @@ Requires:       libXrandr2
 Requires:       libasound2
 Requires:       libcups2
 Requires:       libgbm1
-# Explicit because of %%__requires_exclude_from ^/opt/Stoat/ above: the
-# bundled Electron binary NEEDs libgcc_s.so.1 but auto-Requires are off
-# for the /opt payload (same fix as the other Electron repacks).
 Requires:       libgcc_s.so.1()(64bit)
-# Explicit because of %%__requires_exclude_from ^/opt/Stoat/ above: the
-# bundled node-pipewire index.node hard-NEEDED libpipewire-0.3.so.0 is
-# auto-excluded like the rest of /opt, so RPM auto-deps never see it
-# (Debian recipe Depends pipewire; mirror for parity).
 Requires:       libpipewire-0_3-0
 Requires:       libsecret-1-0
 Requires:       libsystemd0
@@ -61,24 +51,19 @@ Nexus repository.
 unzip -q %{SOURCE0}
 
 %build
-# No compilation required for pre-built binaries
 
 %install
 
-# 1. Install the main application folder
 install -d -m 0755 %{buildroot}/opt/Stoat
 cp -a Stoat-linux-x64/* %{buildroot}/opt/Stoat/
 
-# 2. Install desktop entry, icon and metainfo
 install -Dpm 0644 %{SOURCE1} %{buildroot}%{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 install -Dpm 0644 %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/chat.stoat.StoatDesktop.png
 install -Dpm 0644 %{SOURCE3} %{buildroot}%{_datadir}/metainfo/chat.stoat.StoatDesktop.metainfo.xml
 
-# 3. Create the Wayland-aware wrapper script
 install -d -m 0755 %{buildroot}%{_bindir}
 cat <<-'EOF' > %{buildroot}%{_bindir}/stoat-desktop
 #!/bin/sh
-# Automatically force native Wayland rendering if detected
 if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
     export ELECTRON_OZONE_PLATFORM_HINT="auto"
 fi
@@ -86,20 +71,12 @@ exec /opt/Stoat/stoat-desktop "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/stoat-desktop
 
-# chrome-sandbox ships 0755 (NOT setuid): rpmlint's SUIDPermissionsCheck tags
-# are in BlockedFilters (unwaivable; proven this run: even a scoped filter
-# for permissions-file-setuid-bit reports unused while the finding fires),
-# and third-party drop-ins can never join the central permissions
-# whitelist, so a setuid sandbox can never be E-clean here. The sandbox
-# still works via unprivileged user namespaces (default on Tumbleweed;
-# same pattern as openchamber in this repo).
 chmod 0755 %{buildroot}/opt/Stoat/chrome-sandbox
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 
 %post
-# Refresh the desktop database and icon cache
 %{_bindir}/update-desktop-database > /dev/null 2>&1 || :
 /bin/touch --no-create %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
 

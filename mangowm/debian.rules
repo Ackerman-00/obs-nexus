@@ -1,6 +1,4 @@
 #!/usr/bin/make -f
-# Debian build of mango against the wlroots + scenefx packages from
-# this same repository (system pkgconfig names, pinned floors).
 %:
 	dh $@
 

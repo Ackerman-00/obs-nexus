@@ -1,15 +1,2 @@
-# unstripped-binary-or-object: openSUSE:Packaging_checks says of this rule
-# "This error should actually never show up in the build service. The build
-# script automatically strips binaries according to global project
-# settings" and "Please do not strip binaries manually as that will break
-# debuginfo creation"; Packaging_guidelines confirms the sanctioned remedy
-# is to suppress a false positive. rpmlint.opensuse.org reports this same
-# warning on 239 openSUSE:Factory packages, so it is systemic, not a defect
-# here. No -debuginfo subpackage is produced for this package (none appears in the build result), so a manual strip would feed nothing and is what the guidance above warns against.
 addFilter("unstripped-binary-or-object")
-# no-binary: the base scenefx package is intentionally license-only - the
-# shared library ships in libscenefx-0_5 and headers/pkgconfig in
-# scenefx-devel. This standard license/meta base shape trips rpmlint's
-# no-binary check as a false positive; suppressing it with a reason is the
-# sanctioned remedy (same precedent as the unstripped filter above).
 addFilter("no-binary")

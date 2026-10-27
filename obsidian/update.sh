@@ -1,26 +1,15 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
 
 SPEC_FILE="obsidian.spec"
 CHANGES_FILE="obsidian.changes"
 GITHUB_REPO="obsidianmd/obsidian-releases"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
-# Our packaging format: self-contained Linux AppImage (bundled Electron,
-# no system electron - see issue #9). x86_64 only.
-#   x86_64: Obsidian-<ver>.AppImage
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
-# Retry on transient network/API failures so one hiccup does not stub the
-# version and abort the whole update.
 API_RESPONSE=""
 LATEST_TAG=""
 for attempt in 1 2 3; do
@@ -36,7 +25,7 @@ for attempt in 1 2 3; do
     echo "   Retry $attempt: could not fetch latest tag from GitHub..."
     sleep 5
 done
-LATEST_VER="${LATEST_TAG#v}" # Strip the 'v' prefix
+LATEST_VER="${LATEST_TAG#v}"
 
 if [ -z "$LATEST_VER" ] || [ "$LATEST_VER" == "null" ]; then
     echo "❌ Error: Failed to fetch Obsidian version from GitHub. Check API limits or connection."
@@ -45,11 +34,6 @@ fi
 
 CURRENT_VER=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Debian_Testing recipe helper: wrap upstream artifact(s) into the
-# gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt) rejects
-# an uncompressed .orig.tar). The wrapper is gitignored (*.tar.gz) and
-# rides the OBS sync; per-package actions/cache in update-packages.yml
-# keeps it across fresh CI checkouts.
 build_orig_wrapper() {
     local ver="$1"; shift
     tar -czf "obsidian-$ver.tar.gz" "$@"
@@ -59,14 +43,6 @@ build_orig_wrapper() {
     ls -l "obsidian-$ver.tar.gz"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# wrapper (actions/cache usually restores it). Rebuild from the current
-# release assets when missing so an OBS sync can never wipe the remote
-# copy with nothing to re-upload. The AppImages are KEPT locally (not
-# deleted): they are the spec Source0/Source1, and the pipeline drift-sync
-# gate requires every Source artifact to be present before it uploads any
-# tracked-file changes (e.g. new debian.* files) -- deleting them here
-# would defer the drift-sync forever.
 if [ ! -f "obsidian-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding from release assets..."
     X86_FN="Obsidian-$CURRENT_VER.AppImage"
@@ -83,11 +59,6 @@ fi
 
 echo "🚀 Update found: $CURRENT_VER -> $LATEST_VER"
 
-# Asset guard (issue #9 HOLD pattern): if the new release ships no Linux
-# assets for our packaging format, SKIP it cleanly (exit 0, spec untouched).
-# Real case: v1.13.8 shipped only Obsidian-1.13.8.apk (Android) - no
-# AppImage/tarball/deb, so there is nothing Linux to package. A blind bump
-# would break the build and wipe good OBS sources.
 ASSET_NAMES=$(echo "$API_RESPONSE" | jq -r '.assets[]?.name // empty')
 if [ -z "$ASSET_NAMES" ]; then
     echo "⚠️  Could not list release assets; refusing to bump blind. Spec left untouched (HOLD)."
@@ -104,10 +75,6 @@ if ! echo "$ASSET_NAMES" | grep -qx "$X86_APPIMAGE"; then
 fi
 echo "✅ Linux x86_64 AppImage asset present; proceeding."
 
-# 0. Download and VERIFY the AppImage BEFORE touching the spec. A failed
-#    or error-stubbed download (e.g. rate-limited HTML page) must NOT bump the
-#    version or reach OBS - otherwise the sync step uploads a stub and deletes
-#    the previous good sources, breaking the build.
 echo "📦 Downloading AppImage sources..."
 rm -f Obsidian-*.AppImage
 
@@ -116,19 +83,15 @@ X86_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$X86_APPI
 curl -fsSL --retry 3 --connect-timeout 20 "$X86_URL" -o "$X86_APPIMAGE" \
     || { echo "❌ x86_64 AppImage download failed; OBS sources left untouched."; exit 1; }
 
-# Verify the file is a real AppImage (ELF) before use.
 if ! [ -s "$X86_APPIMAGE" ] || ! head -c4 "$X86_APPIMAGE" | grep -q $'\x7fELF'; then
     echo "❌ $X86_APPIMAGE is missing, empty, or not an ELF AppImage; OBS sources left untouched."
     exit 1
 fi
 echo "✅ AppImage verified (x86_64 $(du -h "$X86_APPIMAGE" | cut -f1))."
 
-# 1. Update the spec file
 sed -i -E "s/^Version:.*/Version:        $LATEST_VER/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
-# 1b. Debian recipe: wrap the verified AppImage + keep
-# .dsc/changelog in sync (AppImage downloaded + verified in step 0 above).
 build_orig_wrapper "$LATEST_VER" "$X86_APPIMAGE"
 DSC_FILE="obsidian.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VER/" "$DSC_FILE"
@@ -141,7 +104,6 @@ else
     echo -e "$DEB_ENTRY" > debian.changelog
 fi
 
-# 2. Generate OBS Changes File
 echo "📝 Generating OBS changes file..."
 FORMATTED_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER_ADDR\n\n- Update to upstream version $LATEST_VER (bundled Electron AppImage)\n\n"

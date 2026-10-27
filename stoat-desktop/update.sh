@@ -1,22 +1,14 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
-# update.sh for Stoat Desktop (Repackaging Build, OBS edition)
 
 SPEC_FILE="stoat-desktop.spec"
 CHANGES_FILE="stoat-desktop.changes"
 GITHUB_REPO="stoatchat/for-desktop"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
-# Get latest vX.Y.Z tag via git ls-remote (no rate limit)
 LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
 
 if [ -z "$LATEST_TAG" ]; then
@@ -26,16 +18,8 @@ fi
 
 LATEST_VERSION="${LATEST_TAG#v}"
 
-# Read current version from the spec file
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Debian_Testing recipe helper: wrap an upstream .zip into the
-# gzip-compressed debtransform orig input (dpkg-source 3.0 (quilt) rejects
-# an uncompressed .orig.tar). The wrapper also carries icon.png (a copy of
-# the tracked stoat.png): binary files are rejected inside debian.* by
-# dpkg-source ("unwanted binary file"), so the icon rides the orig instead.
-# The wrapper is gitignored (*.tar.gz) and rides the OBS sync; per-package
-# actions/cache in update-packages.yml keeps it across fresh CI checkouts.
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
@@ -57,23 +41,15 @@ zip_url_for() {
     echo "https://github.com/$GITHUB_REPO/releases/download/v$1/Stoat-linux-x64-$1.zip"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# wrapper (actions/cache usually restores it). Rebuild when missing so an
-# OBS sync can never wipe the remote copy with nothing to re-upload.
 if [ ! -f "stoat-desktop-$CURRENT_VERSION.tar.gz" ]; then
     echo "  -> Orig wrapper missing locally; rebuilding..."
     build_orig_wrapper "$CURRENT_VERSION" "$(zip_url_for "$CURRENT_VERSION")" || \
         echo "  -> WARNING: orig wrapper rebuild failed; continuing version check."
 fi
 
-# Compare and update
 if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     echo "  -> 🚀 [UPDATE] New version detected: $LATEST_VERSION (Current: $CURRENT_VERSION)"
 
-    # A tag can exist before its release assets do: stoat's release workflow
-    # uploads the zips at the end. Bumping on a tag whose asset is missing
-    # produces a spec whose Source0 404s, so every OBS build of that NVR
-    # fails. Only bump once the zip really exists.
     ZIP_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/Stoat-linux-x64-$LATEST_VERSION.zip"
     echo "  -> [CHECK] Verifying $ZIP_URL"
     if ! curl --output /dev/null --silent --location --head --fail "$ZIP_URL"; then
@@ -81,12 +57,9 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         exit 1
     fi
 
-    # 1. Update the Version and Release fields
     sed -i "s/^Version:\s*.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
     sed -i "s/^Release:\s*.*/Release:        0/" "$SPEC_FILE"
 
-    # 1b. Debian_Testing recipe: refresh the wrapper + keep .dsc/changelog
-    # in sync (ZIP_URL verified 200 above).
     build_orig_wrapper "$LATEST_VERSION" "$ZIP_URL"
     DSC_FILE="stoat-desktop.dsc"
     sed -i "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
@@ -99,7 +72,6 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         echo -e "$DEB_ENTRY" > debian.changelog
     fi
 
-    # 2. Prepend an entry to the OBS changes file
     DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
     NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$DATE - $PACKAGER_ADDR\n\n- Update to upstream release $LATEST_VERSION\n\n"
 

@@ -1,22 +1,14 @@
 #!/bin/bash
-# Always operate in this script's own directory (the workflow pushds here,
-# but a direct `bash <pkg>/update.sh` from the repo root would otherwise
-# touch the wrong files).
 cd "$(dirname "$0")" || exit 1
-# update.sh for Helium Browser (Repackaging Build, OBS edition)
 
 SPEC_FILE="helium-browser.spec"
 CHANGES_FILE="helium-browser.changes"
 GITHUB_REPO="imputnet/helium-linux"
 PACKAGER="Ackerman-00"
-# changelog heading needs an addr-spec: OBS changelog2spec
-# refuses a bare name, and without it every RPM builds with an
-# empty %changelog (rpmlint E: no-changelogname-tag).
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
-# Get latest tag via git ls-remote (no rate limit)
 LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
 
 if [ -z "$LATEST_TAG" ]; then
@@ -26,13 +18,8 @@ fi
 
 LATEST_VERSION="$LATEST_TAG"
 
-# Read current version from the spec file
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
-# Debian_Testing recipe helper: fetch the upstream tarball under its
-# versioned orig name (content-identical rename, no recompression). The
-# tarball is gitignored (*.tar.xz) and rides the OBS sync; per-package
-# actions/cache in update-packages.yml keeps it across fresh CI checkouts.
 fetch_orig_tarball() {
     local ver="$1" url="$2" tmpd
     tmpd=$(mktemp -d)
@@ -48,23 +35,15 @@ fetch_orig_tarball() {
     rm -rf "$tmpd"
 }
 
-# Orig-tarball guard: fresh CI checkouts start without the gitignored
-# tarball (actions/cache usually restores it). Rebuild when missing so an
-# OBS sync can never wipe the remote copy with nothing to re-upload.
 if [ ! -f "helium-browser-$CURRENT_VERSION.tar.xz" ]; then
     echo "  -> Orig tarball missing locally; rebuilding..."
     fetch_orig_tarball "$CURRENT_VERSION" "https://github.com/$GITHUB_REPO/releases/download/$CURRENT_VERSION/helium-$CURRENT_VERSION-x86_64_linux.tar.xz" || \
         echo "  -> WARNING: orig tarball rebuild failed; continuing version check."
 fi
 
-# Compare and update
 if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     echo "  -> 🚀 [UPDATE] New version detected: $LATEST_VERSION (Current: $CURRENT_VERSION)"
 
-    # A tag can exist before its release assets do: helium's release workflow
-    # uploads the tarballs at the end. Bumping on a tag whose asset is missing
-    # produces a spec whose Source0 404s, so every OBS build of that NVR
-    # fails. Only bump once the tarball really exists.
     TARBALL_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_VERSION/helium-$LATEST_VERSION-x86_64_linux.tar.xz"
     echo "  -> [CHECK] Verifying $TARBALL_URL"
     if ! curl --output /dev/null --silent --location --head --fail "$TARBALL_URL"; then
@@ -72,13 +51,9 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         exit 1
     fi
 
-    # 1. Update the Version and Release fields
     sed -i "s/^Version:\s*.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
     sed -i "s/^Release:\s*.*/Release:        0/" "$SPEC_FILE"
 
-    # 1b. Debian_Testing recipe: refresh the orig tarball + metainfo
-    # sidecar and keep .dsc/changelog in sync (TARBALL_URL verified 200
-    # above; the metainfo sidecar is absent from the tarball).
     fetch_orig_tarball "$LATEST_VERSION" "$TARBALL_URL"
     curl -fsSL --retry 3 --connect-timeout 30 \
         "https://raw.githubusercontent.com/$GITHUB_REPO/$LATEST_VERSION/package/net.imput.helium.metainfo.xml" \
@@ -95,7 +70,6 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
         echo -e "$DEB_ENTRY" > debian.changelog
     fi
 
-    # 2. Prepend an entry to the OBS changes file
     DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
     NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$DATE - $PACKAGER_ADDR\n\n- Update to upstream release $LATEST_TAG\n\n"
 

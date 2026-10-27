@@ -1,15 +1,4 @@
 #!/usr/bin/make -f
-# Debian build of upstream ProtonPlus (Vala + meson, same dependency set
-# as the RPM spec: gtk4/adwaita/soup/sdl3 verified mandatory upstream).
-# The meson buildsystem is forced explicitly: the upstream root Makefile
-# wraps meson with a `sudo meson install` target, and debhelper's
-# auto-detection picks the make flow, which fails in the buildroot
-# ("sudo: No such file or directory", 2026-10-09). The forced meson flow
-# below is exactly what the wrapper runs (meson setup --prefix=/usr,
-# meson install with DESTDIR) minus sudo, mirroring the RPM's
-# %meson/%meson_install. meson test runs like the spec's %check (via a
-# direct meson test call, see the HOME note below). No network at build
-# time: the orig tarball IS the upstream source archive.
 %:
 	dh $@
 
@@ -17,11 +6,6 @@ override_dh_auto_clean:
 	mkdir -p debian/source; \
 	printf '%s\n' 'extend-diff-ignore = "build/.*"' 'extend-diff-ignore = "build-native/.*"' 'extend-diff-ignore = "obj-.*/.*"' > debian/source/options; \
 	dh_auto_clean
-# NOTE (2026-10-09): OBS runs dpkg-source -b right AFTER debian/rules
-# clean and BEFORE configure, so the in-tree meson build-dir exclusion
-# MUST be generated here (debian/source/options cannot ride the flat
-# debian.* channel). Without it -b aborts on build-dir binaries on
-# dirty-tree rebuilds.
 
 override_dh_auto_configure:
 	dh_auto_configure --buildsystem=meson -- --prefix=/usr
@@ -33,17 +17,6 @@ override_dh_auto_test:
 	mkdir -p /tmp/protonplus-test-home; \
 	BUILDDIR=$$(ls -d obj-* build build-native 2>/dev/null | head -n1); \
 	HOME=/tmp/protonplus-test-home meson test -C "$$BUILDDIR" --verbose
-# NOTE (2026-10-09): debhelper resets HOME to
-# debian/.debhelper/generated/_source/home for every dh_* command, and the
-# upstream test native-distro-paths-and-projection asserts the managed tool
-# root does NOT live under /usr/ -- with that HOME it always does (the
-# whole build tree is under /usr/src), failing 4/5. An inline HOME= on
-# dh_auto_test is silently scrubbed (proven: the 15:49 UTC build log still
-# shows the debhelper HOME), so the test step calls meson test directly
-# with HOME=/tmp/protonplus-test-home. That preserves the test's intent
-# (user-dir, never system /usr) while dropping the buildroot artifact
-# (RPM builds use /home/abuild: unaffected). BUILDDIR is derived, never
-# hardcoded (debhelper uses obj-<arch>).
 
 override_dh_auto_install:
 	dh_auto_install --buildsystem=meson

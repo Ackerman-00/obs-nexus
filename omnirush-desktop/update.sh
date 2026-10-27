@@ -14,10 +14,6 @@ LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//;s@-@.@g')
 
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 CACHED_DEB="omnirush-linux-amd64-${CURRENT_VERSION}.deb"
-# Pure version guard (fluxer pattern): the local .deb is gitignored and
-# never present in a fresh CI checkout, so the up-to-date check must NOT
-# depend on it - otherwise every pipeline run re-prepends a duplicate
-# changelog entry for the same version (2026-10-27 incident, twice).
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
   if [ -f "$CACHED_DEB" ]; then
     CACHED_SHA=$(sha256sum "$CACHED_DEB" | awk '{print $1}')
@@ -64,8 +60,6 @@ curl -fsSL --retry 3 --connect-timeout 30 "$ASSET_URL" -o "$DEBNAME"
 NEW_SHA=$(sha256sum "$DEBNAME" | awk '{print $1}')
 sed -i -E "s/^Version:.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
 sed -i -E "s|Source0:.*|Source0:        $ASSET_URL|" "$SPEC_FILE"
-# insert sha pin if missing, then refresh it (fluxer-style drift guard -
-# a stale pin would silently lie about the artifact on the next bump)
 grep -q "^# sha256:" "$SPEC_FILE" || sed -i -E "/^Version:/a # sha256:  $NEW_SHA" "$SPEC_FILE"
 sed -i -E "s|^# sha256:.*|# sha256:  $NEW_SHA|" "$SPEC_FILE"
 

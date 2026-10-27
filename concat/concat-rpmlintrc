@@ -1,38 +1,14 @@
-# Upstream prebuilt RPM tree under /opt/concat is immutable upstream
-# binaries - these findings describe upstream's own files, not packaging
-# mistakes. Same pattern as obsidian/openchamber (verified against the
-# 0.2.6 TW build log: 35 E:).
 addFilter("binary-or-shlib-defines-rpath")
 addFilter("filelist-forbidden-opt")
-# Bundled FFmpeg 8.1 + ONNX Runtime 1.28.0 under /opt/concat/lib (found
-# via the binary's $ORIGIN/lib RPATH): the unversioned .so symlinks are
-# upstream's devel-style links, and the libs are never in the ldconfig
-# path and never +x upstream - not ours to move, chmod, or register.
 addFilter("devel-file-in-non-devel-package")
 addFilter("missing-hash-section")
 addFilter("library-without-ldconfig-postin")
 addFilter("library-without-ldconfig-postun")
-# Manual Requires are NEEDED-proven (libstdc++/libgcc_s/libasound2/
-# libfreetype6/libxkbcommon-x11-0/libxkbcommon0 from the payload ELF
-# plus the nfpm-declared GUI stack); rpmlint cannot see the proof.
 addFilter("explicit-lib-dependency")
-# hicolor-icon-theme is intentionally unversioned (repo convention,
-# same as every other spec in this repo).
 addFilter("branding-requires-unversioned")
 
-# unstripped-binary-or-object: openSUSE:Packaging_checks explicitly says not to
-# strip binaries manually (it breaks debuginfo creation) and Packaging_guidelines
-# sanctions suppressing this false positive; rpmlint.opensuse.org reports it on
-# 239 openSUSE:Factory packages. The flagged ELFs are upstream's bundled
-# ggml/whisper/ONNX libs shipped byte-for-byte inside the upstream RPM, which we
-# repackage unmodified (same reason concat-unstable already carries this filter).
 addFilter("unstripped-binary-or-object")
 
-# /opt payload warnings (same class as the other repacks in this repo):
-# dir-or-file-outside-snapshot for the intended /opt/concat layout, no-soname
-# for upstream's bundled FFmpeg/ggml/ONNX shared objects (renaming or adding a
-# SONAME would alter byte-for-byte upstream binaries), and gethostbyname for
-# the bundled Electron/Chromium runtime (obsidian/stoat filter the same).
 addFilter("dir-or-file-outside-snapshot")
 addFilter("no-soname")
 addFilter("binary-or-shlib-calls-gethostbyname")
