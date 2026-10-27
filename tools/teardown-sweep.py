@@ -159,6 +159,19 @@ def versions_match(pv, internal):
         return True
     if len(pc) > len(ic) and pc[len(pc) - len(ic):] == ic:
         return True
+    # Separator-equivalent pass: Debian upstream versions may carry '+' where
+    # the RPM recipe deliberately maps '+' -> '.' (update.sh `tr '+' '.'`),
+    # e.g. deb control '0.1.0+b500' vs spec '0.1.0.b500' (hyperframes
+    # 2026-10-27). Same digits, same meaning, different legal separator.
+    sp, si = re.sub(r"[+.]", ".", p), re.sub(r"[+.]", ".", i)
+    if sp != p or si != i:
+        if sp == si:
+            return True
+        spc, sic = sp.split("."), si.split(".")
+        if len(sic) > len(spc) and sic[len(sic) - len(spc):] == spc:
+            return True
+        if len(spc) > len(sic) and spc[len(spc) - len(sic):] == sic:
+            return True
     return False
 
 
@@ -2027,10 +2040,12 @@ def sweep_package(pkg, pv, srcs, live, repo_type, workdir):
                         dst = dl / ("%s_%d.%s" % (base, idx, ext)) if ext else dl / "%s_%d" % (base, idx)
                         idx += 1
         if not dst.exists():
+            fresh_download = False
             try:
                 log("  downloading %s (%s)" % (name, url))
                 data, cd_name = fetch_with_name(url)
                 dst.write_bytes(data)
+                fresh_download = True
                 if cd_name and cd_name != name:
                     (dl / (name + ".cdname")).write_text(cd_name)
             except Exception as e:
@@ -2098,8 +2113,23 @@ def sweep_package(pkg, pv, srcs, live, repo_type, workdir):
                     pkg_ok = True
                     note += " | upstream declares %s via %s on this artifact URL (internal tag uses a different scheme)" % (pv, hv[0])
                 elif hv:
-                    status = STATUS_STALE
-                    note += " | upstream now declares %s via %s on this URL - rerun update.sh" % (hv[1], hv[0])
+                    # Content beats metadata (2026-10-27 hyperframes): the
+                    # bytes we just fetched from this URL already passed
+                    # verify_file against the spec pin, so an opaque channel
+                    # header (x-amz-version-id/etag) flipping proves nothing -
+                    # upstream rewrote the object byte-identically. Only a
+                    # header change on an UNPINNED artifact (or bytes that
+                    # differ from the pin, which would have failed above)
+                    # still warrants STALE.
+                    if fresh_download and hash_note == "hash-OK":
+                        status = STATUS_OK
+                        pkg_ok = True
+                        note += (" | upstream %s now %s but the bytes served "
+                                 "equal our pinned sha256 (byte-identical "
+                                 "rewrite; header is metadata only)" % (hv[0], hv[1]))
+                    else:
+                        status = STATUS_STALE
+                        note += " | upstream now declares %s via %s on this URL - rerun update.sh" % (hv[1], hv[0])
             note = "%s | pinned %s | internal %s" % (note, pv, internal)
         elif internal and not strong:
             status = STATUS_SOURCE_OK
