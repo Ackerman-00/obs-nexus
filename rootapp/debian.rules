@@ -1,7 +1,7 @@
 #!/usr/bin/make -f
 # Debian repack of the upstream rootapp AppImage (binary re-distributor,
 # same payload policy as the RPM spec: /opt/rootapp install, APPDIR
-# wrapper, setuid chrome-sandbox, inline desktop entry + icons).
+# wrapper, Root.dbg debug-symbols drop, inline desktop entry + icons).
 # No network at build time: the orig tarball holds the upstream AppImage,
 # extracted here with --appimage-extract (no FUSE needed).
 %:
@@ -34,11 +34,16 @@ override_dh_auto_install:
 	chmod +x "$$(ls *.AppImage)" && ./"$$(ls *.AppImage)" --appimage-extract >/dev/null && mv squashfs-root appimage-root
 	mkdir -p debian/rootapp/opt/rootapp debian/rootapp/usr/bin debian/rootapp/usr/share/applications
 	cp -ar appimage-root/* debian/rootapp/opt/rootapp/
-	if [ -f debian/rootapp/opt/rootapp/chrome-sandbox ]; then \
-	    chmod 4755 debian/rootapp/opt/rootapp/chrome-sandbox; \
-	fi
+	# Root.dbg is the split DWARF companion of usr/bin/Root (same GNU build-id,
+	# referenced only by Root's .gnu_debuglink): 352 MB of a 1.4 GB payload,
+	# never loaded at runtime. Mirrors the RPM %install drop.
+	rm -f debian/rootapp/opt/rootapp/usr/bin/Root.dbg
+	# No chrome-sandbox: the payload ships no sandbox helper (zero *sandbox
+	# files in 0.9.155), so the old setuid chmod was dead code.
 	printf '#!/bin/sh\nexport APPDIR="/opt/rootapp"\nexec /opt/rootapp/AppRun "$$@"\n' > debian/rootapp/usr/bin/rootapp
 	chmod 0755 debian/rootapp/usr/bin/rootapp
+	# Root.png is 512x512 (IHDR verified 2026-10-27): install it into the
+	# matching hicolor size class, not 256x256 as before.
 	install -Dm644 appimage-root/Root.png debian/rootapp/usr/share/pixmaps/rootapp.png
-	install -Dm644 appimage-root/Root.png debian/rootapp/usr/share/icons/hicolor/256x256/apps/rootapp.png
+	install -Dm644 appimage-root/Root.png debian/rootapp/usr/share/icons/hicolor/512x512/apps/rootapp.png
 	printf '[Desktop Entry]\nType=Application\nName=Root\nComment=Root App is a new Discord alternative, designed for gaming communities and large online groups\nExec=rootapp %%U\nIcon=rootapp\nTerminal=false\nStartupWMClass=Root\nCategories=Network;InstantMessaging;\nMimeType=x-scheme-handler/rootapp;\n' > debian/rootapp/usr/share/applications/rootapp.desktop

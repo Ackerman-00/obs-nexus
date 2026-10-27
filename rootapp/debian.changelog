@@ -1,3 +1,26 @@
+rootapp (0.9.155-2) unstable; urgency=medium
+
+  * Full dependency re-tear of the 0.9.155 AppImage (483 files, 18 ELFs,
+    ASCII + UTF-16 scans).
+  * Fix unsatisfiable Depends: libxt6 -> libxt6t64 and libatspi2.0-0 ->
+    libatspi2.0-0t64. Neither old name exists in Debian testing or sid
+    (t64 renames), so rootapp was uninstallable on both targets.
+  * Drop wl-clipboard: zero references in the payload, ASCII or UTF-16.
+  * Add 17 deps verified against the live testing/sid Packages index:
+    libxext6, libxfixes3, libcairo2, libpango-1.0-0, libglib2.0-0t64,
+    libexpat1 (all DT_NEEDED gaps), plus the libraries the payload loads
+    by name at runtime - libgl1, libxi6, libice6, libsm6, libx11-xcb1,
+    libpipewire-0.3-0t64 (LiveKit/Chromium screen-cast), libgssapi-krb5-2,
+    libssl3t64 (.NET TLS), libva2 + libva-drm2 (LiveKit video decode).
+  * Stop shipping Root.dbg: split DWARF companion of usr/bin/Root (same
+    GNU build-id, referenced only by .gnu_debuglink); 352 MB of a 1.4 GB
+    payload, never loaded at runtime.
+  * Drop the chrome-sandbox setuid chmod: the payload ships no sandbox
+    helper (zero *sandbox files).
+  * Icon installed into hicolor/512x512 (Root.png is 512x512, not 256x256).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 27 Oct 2026 15:33:36 +0000
+
 rootapp (0.9.155-1) unstable; urgency=medium
 
   * New upstream release 0.9.155.

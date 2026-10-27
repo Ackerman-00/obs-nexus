@@ -1,4 +1,42 @@
 -------------------------------------------------------------------
+Tue Oct 27 15:33:36 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Full dependency re-tear of the 0.9.155 AppImage (sha256 matches the
+  pin; 483 files, 18 ELFs, ASCII + UTF-16 scans of every file - UTF-16
+  because `Root` is a .NET binary and its DllImport probe table is stored
+  that way).
+- Drop wl-clipboard: zero references anywhere in the payload, ASCII or
+  UTF-16. The clipboard is in-process (X11 selection / Wayland protocol);
+  no helper binary is ever exec'd. It was a year-old guess.
+- Drop BuildRequires python3: nothing in %prep/%build/%install runs it.
+- Drop the chrome-sandbox setuid block: the payload ships no sandbox
+  helper at all (zero *sandbox files in 0.9.155), so chmod 4755 was dead
+  code - and a setuid bit on /opt is not something to reintroduce blind.
+- Stop shipping Root.dbg: the split DWARF companion of usr/bin/Root
+  (identical GNU build-id d66170ab62b2f9a92ae918223266c3c6195fbd53,
+  referenced only by Root's .gnu_debuglink). 352 MB of a 1.4 GB payload
+  in a package that sets debug_package %{nil} - installed size drops to
+  ~1.05 GB.
+- Declare 11 runtime sonames a year-old tear missed; the payload loads
+  them by name at runtime, so the auto-requires exclusion hid them:
+  libGL.so.1 (HW GL), libXi/libICE/libSM (X11 input, session),
+  libX11-xcb.so.1 (Chromium's XCB bridge), libpipewire-0.3.so.0
+  (LiveKit + Chromium screen-cast/audio), libgssapi_krb5.so.2 (Kerberos
+  SPNEGO), libssl.so.3 (the .NET OpenSSL TLS load), libva.so.2 +
+  libva-drm.so.2 (LiveKit video decode), and - via the conversion below -
+  libEGL.so.1.
+- Convert the last two package-name Requires (alsa, Mesa-libEGL1) to
+  soname form (libasound.so.2, libEGL.so.1), completing the 2026-10-09
+  rpmlint explicit-lib-dependency conversion and dropping two
+  package-name guesses.
+- Icon: upstream Root.png is 512x512 (IHDR verified), so install it into
+  hicolor/512x512/ - it was being installed as 256x256.
+- rpmlintrc: comments said "Electron" throughout; this package is a
+  self-contained .NET/Avalonia app bundling its own Chromium. Filters
+  unchanged; the zero-length *.pak.info count re-verified at 165.
+- desktop-file-validate: rc=0 on the shipped entry (re-verified).
+
+-------------------------------------------------------------------
 Sat Oct 24 10:29:57 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to 0.9.155 (sha256: 306824e30d41334a7fa569b5d7e08837e5d0e7110b48eb214c987bfe2fea34a1)

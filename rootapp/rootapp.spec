@@ -11,27 +11,49 @@ URL:            https://www.rootapp.com
 Source0:        https://installer.rootapp.com/installer/Linux/X64/Root.AppImage
 BuildRequires:  binutils
 BuildRequires:  hicolor-icon-theme
-BuildRequires:  python3
 BuildRequires:  squashfs
-Requires:       Mesa-libEGL1
-Requires:       alsa
+# Runtime set re-derived from the payload itself (2026-10-27 full teardown of
+# the pinned Root.AppImage: sha256 matches, 483 files, 18 ELFs, ASCII + UTF-16
+# string scans of every file - UTF-16 matters because `Root` is a .NET binary
+# and its DllImport probe table is stored that way). auto-Requires are off for
+# the /opt payload (__requires_exclude_from above), so every runtime library
+# has to be written out here:
+#
+#   (1) DT_NEEDED union of every shipped ELF (readelf -d). Excluded: glibc
+#       (libc/libm/libpthread/libdl/librt/ld-linux - always present) and
+#       libjawt, which only the bundled JRE's libawt_toolkit.so needs, not the
+#       OS.
+#   (2) + the libraries the payload loads BY NAME at runtime: Chromium's
+#       dlopen list and `Root`'s .NET probe table - libwayland-client (the app
+#       is Avalonia with a native Wayland backend now: assembly
+#       Avalonia.Wayland + dlopen of libwayland-client.so.0), GL/EGL/Vulkan,
+#       Pulse + PipeWire (LiveKit voice/video, screen-cast audio), the X11
+#       extras (uiohook hotkeys, cursor, screensaver inhibit, input), OpenSSL
+#       and Kerberos (.NET TLS / SPNEGO), VA-API (LiveKit video decode).
+#
+# Deliberately NOT required, each verified against this payload rather than
+# assumed: wl-clipboard - zero references anywhere, ASCII or UTF-16, the
+# clipboard is in-process (X11 selection / Wayland protocol), no helper is
+# ever exec'd; libvlc - LibVLCSharp P/Invoke declarations only; speechd,
+# GTK4, CUDA/NVIDIA/onnxruntime providers, librenderdoc - optional probes
+# that degrade to a fallback; xdg-desktop-portal - any session able to run
+# this on Wayland already ships it.
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
-# Explicit soname Requires (auto-Requires are off for the /opt payload via
-# __requires_exclude_from below); derived from readelf -d DT_NEEDED of the
-# bundled Chromium/Electron ELFs. libjawt.so/libjvm.so are excluded: they are
-# NEEDED only by the app's own bundled JRE (libawt_toolkit.so), not the OS.
+Requires:       mozilla-nspr
+Requires:       mozilla-nss
+Requires:       xdg-utils
+# --- sonames: DT_NEEDED union (see above) -------------------------------
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
-Requires:       libXcursor.so.1()(64bit)
 Requires:       libXdamage.so.1()(64bit)
 Requires:       libXext.so.6()(64bit)
 Requires:       libXfixes.so.3()(64bit)
 Requires:       libXinerama.so.1()(64bit)
 Requires:       libXrandr.so.2()(64bit)
-Requires:       libXss.so.1()(64bit)
 Requires:       libXt.so.6()(64bit)
 Requires:       libXtst.so.6()(64bit)
+Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
 Requires:       libatspi.so.0()(64bit)
@@ -48,17 +70,27 @@ Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libgtk-3.so.0()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
-Requires:       libpulse.so.0()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libvulkan.so.1()(64bit)
-Requires:       libwayland-client.so.0()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-Requires:       mozilla-nspr
-Requires:       mozilla-nss
-Requires:       wl-clipboard
-Requires:       xdg-utils
+# --- sonames: loaded by name at runtime (dlopen / .NET probe table) -----
+Requires:       libEGL.so.1()(64bit)
+Requires:       libGL.so.1()(64bit)
+Requires:       libICE.so.6()(64bit)
+Requires:       libSM.so.6()(64bit)
+Requires:       libX11-xcb.so.1()(64bit)
+Requires:       libXcursor.so.1()(64bit)
+Requires:       libXi.so.6()(64bit)
+Requires:       libXss.so.1()(64bit)
+Requires:       libgssapi_krb5.so.2()(64bit)
+Requires:       libpipewire-0.3.so.0()(64bit)
+Requires:       libpulse.so.0()(64bit)
+Requires:       libssl.so.3()(64bit)
+Requires:       libva-drm.so.2()(64bit)
+Requires:       libva.so.2()(64bit)
+Requires:       libvulkan.so.1()(64bit)
+Requires:       libwayland-client.so.0()(64bit)
 Provides:       rootapp = %{version}-%{release}
 # sha256: 306824e30d41334a7fa569b5d7e08837e5d0e7110b48eb214c987bfe2fea34a1
 ExclusiveArch:  x86_64
@@ -80,10 +112,17 @@ chmod go-w squashfs-root
 install -dm755 %{buildroot}/opt/rootapp
 cp -ar squashfs-root/* %{buildroot}/opt/rootapp/
 
-# Set SUID on chrome-sandbox if present (Electron sandbox)
-if [ -f "%{buildroot}/opt/rootapp/chrome-sandbox" ]; then
-    chmod 4755 %{buildroot}/opt/rootapp/chrome-sandbox
-fi
+# Root.dbg is the split debug companion of usr/bin/Root: same GNU build-id
+# (d66170ab62b2f9a92ae918223266c3c6195fbd53), referenced only by Root's own
+# .gnu_debuglink section - pure DWARF, never loaded at runtime. It is 352 MB
+# of a 1.4 GB payload, and this package sets debug_package %{nil}, so it would
+# ship to /opt with no debugger story attached. Drop it.
+rm -f %{buildroot}/opt/rootapp/usr/bin/Root.dbg
+
+# No chrome-sandbox handling: the payload ships no sandbox helper at all
+# (0.9.155 teardown finds zero files matching *sandbox*), so the old setuid
+# block was dead code. Do not reintroduce a 4755 bit on /opt without an
+# upstream file to put it on.
 
 install -dm755 %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/rootapp <<'WRAPPER_EOF'
@@ -93,8 +132,10 @@ exec /opt/rootapp/AppRun "$@"
 WRAPPER_EOF
 chmod 755 %{buildroot}%{_bindir}/rootapp
 
+# Upstream Root.png is 512x512 (verified by IHDR, 2026-10-27): install it
+# into the matching hicolor size class, not 256x256 as before.
 install -Dm644 squashfs-root/Root.png %{buildroot}%{_datadir}/pixmaps/rootapp.png
-install -Dm644 squashfs-root/Root.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/rootapp.png
+install -Dm644 squashfs-root/Root.png %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/rootapp.png
 
 install -dm755 %{buildroot}%{_datadir}/applications/
 cat > %{buildroot}%{_datadir}/applications/rootapp.desktop <<DESKTOP_EOF
