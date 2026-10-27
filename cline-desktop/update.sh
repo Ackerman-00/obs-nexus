@@ -20,14 +20,36 @@ CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
 LOCAL_FILE="cline-desktop.deb"
 
-if [ -f "$LOCAL_FILE" ] && [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
-    CACHED_SHA=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
-    CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
-    if [ -z "$CURRENT_SHA" ] || [ "$CACHED_SHA" = "$CURRENT_SHA" ]; then
-        echo "Already up to date ($CURRENT_VERSION)."
+# Pure version guard (fluxer pattern): the local .deb is gitignored and
+# never present in a fresh CI checkout, so the up-to-date check must NOT
+# depend on it - otherwise every pipeline run re-prepends a duplicate
+# changelog entry for the same version (2026-10-27 incident, twice).
+if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
+    if [ -f "$LOCAL_FILE" ]; then
+        CACHED_SHA=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
+        CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
+        if [ -n "$CURRENT_SHA" ] && [ "$CACHED_SHA" != "$CURRENT_SHA" ]; then
+            echo "Cached cline-desktop.deb sha256 ($CACHED_SHA) != spec pin ($CURRENT_SHA); re-downloading."
+        else
+            echo "Already up to date ($CURRENT_VERSION)."
+            # ensure the Debian orig wrapper exists for the OBS sync
+            [ -f "cline-desktop-${CURRENT_VERSION}.tar.gz" ] || tar -czf "cline-desktop-${CURRENT_VERSION}.tar.gz" "$LOCAL_FILE"
+            exit 0
+        fi
+    else
+        echo "Already up to date ($CURRENT_VERSION); ensuring source artifacts for OBS sync."
+        HTTP2=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$LATEST_URL")
+        if [ "$HTTP2" != "200" ]; then echo "Asset returns HTTP $HTTP2; nothing to do."; exit 0; fi
+        curl -fsSL --retry 3 --connect-timeout 30 "$LATEST_URL" -o "$LOCAL_FILE"
+        NEW_SHA2=$(sha256sum "$LOCAL_FILE" | awk '{print $1}')
+        CURRENT_SHA2=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
+        if [ -n "$CURRENT_SHA2" ] && [ "$NEW_SHA2" != "$CURRENT_SHA2" ]; then
+            echo "Upstream respinned $CURRENT_VERSION (sha256 $CURRENT_SHA2 -> $NEW_SHA2); re-pinning, no changelog entry (version unchanged)."
+            sed -i -E "s|^# sha256:.*|# sha256:  $NEW_SHA2|" "$SPEC_FILE"
+        fi
+        [ -f "cline-desktop-${CURRENT_VERSION}.tar.gz" ] || tar -czf "cline-desktop-${CURRENT_VERSION}.tar.gz" "$LOCAL_FILE"
         exit 0
     fi
-    echo "sha mismatch; re-downloading."
 fi
 
 HTTP=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$LATEST_URL")
@@ -50,7 +72,7 @@ sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: cline-desktop-$LATEST_VERSIO
 
 # wrapper tarball (Debian side)
 tar -czf "cline-desktop-${LATEST_VERSION}.tar.gz" "$LOCAL_FILE" 2>/dev/null
-OLD=$(ls cline-desktop-*.tar.gz 2>/dev/null | grep -v "$NEW_VERSION")
+OLD=$(ls cline-desktop-*.tar.gz 2>/dev/null | grep -v "$LATEST_VERSION")
 [ -n "$OLD" ] && rm -f $OLD
 
 D=$(date -R -u)
@@ -58,7 +80,7 @@ printf 'cline-desktop (%s-1) unstable; urgency=medium\n\n  * New upstream releas
 [ -f debian.changelog ] && cat debian.changelog >> /tmp/_debcl.tmp
 mv /tmp/_debcl.tmp debian.changelog
 
-C=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+C=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-0\n- Update cline-desktop to v$LATEST_VERSION\n\n"
 [ -f "$CHANGES_FILE" ] && printf "%b%s" "$NEWENTRY" "$(cat $CHANGES_FILE)" > "$CHANGES_FILE" || printf "%b" "$NEWENTRY" > "$CHANGES_FILE"
 

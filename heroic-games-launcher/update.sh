@@ -116,7 +116,7 @@ else
 fi
 
 # Changelog
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-0\n- Update heroic-games-launcher to v$LATEST_VERSION\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then

@@ -161,7 +161,7 @@ else
 fi
 
 echo "📝 Updating changelog..."
-FORMATTED_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+FORMATTED_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$FORMATTED_DATE - $PACKAGER_ADDR\n\n- Update matugen to v$NEW_VER\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then

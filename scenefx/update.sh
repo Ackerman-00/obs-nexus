@@ -46,7 +46,7 @@ sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 sed -i "s|^%global scen_ver.*|%global scen_ver      $NEW_VER|" "$SPEC_FILE"
 fetch_tarball "$NEW_VER" || { echo "Download failed; aborting bump."; exit 1; }
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- Update scenefx to $NEW_VER\n\n"
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"

@@ -103,7 +103,7 @@ else
 fi
 
 echo "Generating OBS changes file..."
-FORMATTED_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+FORMATTED_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 if [ "$CURRENT_BASE" != "$LATEST_BASE" ]; then
     ENTRY_NOTE="- Update to base version $LATEST_BASE (Commit: $SHORT_COMMIT)"
 else

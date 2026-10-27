@@ -101,7 +101,7 @@ if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
     fi
 
     # 2. Prepend an entry to the OBS changes file
-    DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+    DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
     NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$DATE - $PACKAGER_ADDR\n\n- Update to upstream release $LATEST_VERSION\n\n"
 
     if [ -f "$CHANGES_FILE" ]; then

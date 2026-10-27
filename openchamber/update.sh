@@ -158,7 +158,7 @@ else
 fi
 
 echo "Updating changelog ($CHANGES_FILE)..."
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $NEW_VER-0\n- Update openchamber to v$NEW_VER\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then

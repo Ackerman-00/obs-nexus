@@ -145,7 +145,7 @@ fi
 
 echo "📝 Updating changelog ($CHANGES_FILE)..."
 # Manually generate the OBS/RPM changelog format since we aren't using osc
-CURRENT_DATE=$(LC_ALL=C date +"%a %b %d %T UTC %Y")
+CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
 NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $NEW_VER-0\n- Update zen-browser to v$NEW_VER\n\n"
 
 # Prepend the new entry to the changes file
