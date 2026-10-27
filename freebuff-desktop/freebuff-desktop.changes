@@ -1,11 +1,21 @@
 -------------------------------------------------------------------
-Tue Oct 27 16:14:21 UTC 2026 - Ackerman-00 <noreply@example.com>
+Tue Oct 27 12:59:31 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.0.192-0
-- Update freebuff-desktop to v0.0.192
+- add missing runtime Requires (at-spi2-core, libnotify, libpulse,
+  libpipewire, libsecret dlopen set, libuuid/libXtst upstream-control
+  parity, libcurl/libz from bundled git DT_NEEDED, xdg-utils) - all
+  providers verified live on Tumbleweed
+- package usr/share/doc/freebuff/changelog.gz (rpmbuild failed on OBS
+  Tumbleweed: 'Installed (but unpackaged) file(s) found', 2026-10-27)
+- drop dead Recommends: libappindicator3-1 from debian.control (no
+  candidate on Debian testing/sid; 0 appindicator refs in payload)
 
 -------------------------------------------------------------------
-Tue Oct 27 2026 - Ackerman-00 <noreply@example.com>
+Tue Oct 27 10:14:21 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.0.192-0
 - Initial packaging of Freebuff Desktop (Electron) from the upstream .deb
+  v0.0.192 (collapsed: the one-shot generator wrote two entries for this
+  single event, one of them future-dated, which made changelog2spec reject
+  the file as non-incremental)

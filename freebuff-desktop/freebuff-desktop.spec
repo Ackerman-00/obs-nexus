@@ -16,6 +16,9 @@ BuildRequires:  binutils
 BuildRequires:  tar
 BuildRequires:  zstd
 BuildRequires:  desktop-file-utils
+# a11y bus daemon: Electron's AT-SPI path needs it at runtime (matches the
+# proven omnirush/hyperframes Requires set)
+Requires:       at-spi2-core
 # Hand-mapped soname Depends (Electron runtime, same as freebuff .deb)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
@@ -32,10 +35,20 @@ Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libgtk-3.so.0()(64bit)
+Requires:       libnotify.so.4()(64bit)
 Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
+# dlopen-only at runtime (not DT_NEEDED, invisible to auto-deps): libpulse
+# for audio playback, libpipewire for capture, libsecret for OS-keyring
+# credential storage - proven by strings in the shipped freebuff main
+# binary (4/11/7 hits; same Chromium code path as omnirush/hyperframes).
+# libnotify above is the same strings-proven dlopen (7 hits) and mirrors
+# the upstream .deb's libnotify4.
+Requires:       libpipewire-0.3.so.0()(64bit)
+Requires:       libpulse.so.0()(64bit)
+Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
@@ -47,7 +60,22 @@ Requires:       libXext.so.6()(64bit)
 Requires:       libXfixes.so.3()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       libXrandr.so.2()(64bit)
-Requires:       libsecret-1.so.0()(64bit)
+# DT_NEEDED of the bundled git under resources/git (git -> libz.so.1,
+# git-remote-http -> libcurl.so.4; readelf on the payload); both resolve on
+# Tumbleweed (libz1 / libcurl4).
+Requires:       libcurl.so.4()(64bit)
+Requires:       libz.so.1()(64bit)
+# Upstream .deb control parity (electron-builder stock Depends list).
+# libuuid1/libxtst6 are referenced by no payload ELF (0 readelf/strings
+# hits) but upstream declares them and our debian.control carries them, so
+# keep the RPM side in step. xdg-utils IS referenced (xdg-open, 2 strings).
+# libXScrnSaver is deliberately NOT required on the RPM side: Tumbleweed
+# ships no provider at all (zypper search --provides libXScrnSaver.so.1:
+# no matching items) and nothing in the payload references it; the Debian
+# side keeps libxss1 where the archive does provide it.
+Requires:       libuuid.so.1()(64bit)
+Requires:       libXtst.so.6()(64bit)
+Requires:       xdg-utils
 Requires:       hicolor-icon-theme
 ExclusiveArch:  x86_64
 
@@ -77,6 +105,10 @@ ln -sf /opt/Freebuff/freebuff %{buildroot}%{_bindir}/freebuff
 /opt/Freebuff/
 %{_bindir}/freebuff
 %{_datadir}/applications/*
+# upstream ships usr/share/doc/freebuff/changelog.gz; without this entry
+# rpmbuild dies "Installed (but unpackaged) file(s) found" (reproduced on
+# OBS openSUSE_Tumbleweed 2026-10-27, same class as omnirush line 97)
+%{_datadir}/doc/freebuff/
 %dir %{_datadir}/icons/hicolor
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps

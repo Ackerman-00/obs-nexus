@@ -1,11 +1,10 @@
 freebuff-desktop (0.0.192-1) unstable; urgency=medium
 
-  * New upstream release 0.0.192.
+  * Initial release from upstream .deb v0.0.192.
+  * Drop dead Recommends: libappindicator3-1 (removed from the Debian
+    archives on both targets; the shipped binary has no appindicator
+    references).
+  * Collapsed the one-shot generator's two same-moment entries (one was
+    future-dated 20:00 +0000) into this single stanza.
 
  -- Ackerman-00 <noreply@example.com>  Tue, 27 Oct 2026 10:14:21 +0000
-
-freebuff-desktop (0.0.192-1) unstable; urgency=medium
-
-  * Initial release from upstream .deb.
-
- -- Ackerman-00 <noreply@example.com>  Tue, 27 Oct 2026 20:00:00 +0000
