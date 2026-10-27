@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && (ar x ../*.deb data.tar.xz data.tar.zst 2>/dev/null || true); cd ..
+	if [ -f payload/data.tar.xz ]; then tar -xf payload/data.tar.xz -C payload; \
+	elif [ -f payload/data.tar.zst ]; then tar --zstd -xf payload/data.tar.zst -C payload; \
+	else echo "ERROR: unexpected data.tar compression"; exit 1; fi
+	mkdir -p debian/cline-desktop/usr
+	cp -a payload/usr/* debian/cline-desktop/usr/

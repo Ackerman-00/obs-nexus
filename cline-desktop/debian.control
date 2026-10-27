@@ -1,0 +1,14 @@
+Source: cline-desktop
+Section: devel
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://cline.bot
+
+Package: cline-desktop
+Architecture: amd64
+Depends: ${misc:Depends}, hicolor-icon-theme, libgtk-3-0t64, libwebkit2gtk-4.1-0, libsoup-3.0-0, libjavascriptcoregtk-4.1-0
+Description: Cline AI coding agent desktop app
+ Cline reads your code, edits files, runs commands, and works through tasks.

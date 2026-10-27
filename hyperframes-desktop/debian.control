@@ -1,0 +1,14 @@
+Source: hyperframes-desktop
+Section: video
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://hyperframes.dev
+
+Package: hyperframes-desktop
+Architecture: amd64
+Depends: ${misc:Depends}, libasound2, libatk-bridge2.0-0, libgbm1, libgtk-3-0t64, libnss3, libsecret-1-0, xdg-utils
+Description: HyperFrames Studio
+ Make and edit videos with an agent.

@@ -109,6 +109,9 @@ out of scope):
 | **stoat-desktop** | Open source, user-first chat platform desktop client
 | **vesktop** | Custom Discord client with Vencord preinstalled
 | **zen-browser** | Minimal browser focused on privacy and calm browsing
+| **cline-desktop** | Agentic AI coding agent desktop app (Tauri)
+| **hyperframes-desktop** | HyperFrames Studio video editor (Electron)
+| **omnirush-desktop** | OmniRush.ai desktop shell (Electron)
 
 ---
 

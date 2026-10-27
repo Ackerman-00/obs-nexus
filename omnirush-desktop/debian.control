@@ -1,0 +1,14 @@
+Source: omnirush-desktop
+Section: net
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://omnirush.ai
+
+Package: omnirush-desktop
+Architecture: amd64
+Depends: ${misc:Depends}, libgtk-3-0t64, libnotify4, libnss3, libxss1, libxtst6, xdg-utils, libatspi2.0-0t64, libuuid1, libsecret-1-0, libx11-6
+Description: OmniRush.ai desktop shell
+ OmniRush.ai desktop shell (Electron).

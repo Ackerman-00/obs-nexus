@@ -1,0 +1,7 @@
+addFilter("invalid-desktopfile")
+addFilter("unstripped-binary-or-object")
+addFilter("binary-or-shlib-calls-gethostbyname")
+addFilter("missing-call-to-setgroups-before-setuid")
+# Prebuilt Electron payload installs under /opt
+addFilter("dir-or-file-outside-snapshot")
+addFilter("filelist-forbidden-opt /opt/omnirush")
