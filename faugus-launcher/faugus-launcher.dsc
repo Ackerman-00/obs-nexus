@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: faugus-launcher
 Binary: faugus-launcher
 Architecture: all
-Version: 2.5.3
+Version: 2.5.4
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, python3, dh-python, gettext, desktop-file-utils, appstream, libgtk-4-bin
 # OBS debtransform input (NOT a final .dsc): debtransform runs at build time,
@@ -19,4 +19,4 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, python3, dh-python, 
 # forever, so apt fails with 'File has unexpected size' against a stale
 # mirror (MirrorCache issue #600). Unique filenames per build fix it.
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: faugus-launcher-2.5.3.tar.gz
+Debtransform-Tar: faugus-launcher-2.5.4.tar.gz
