@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Tue Oct 27 17:25:49 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: filter the immutable upstream payload findings (RUNPATH
+  $ORIGIN x2, statically-linked bundled git-lfs/rg, duplicated files,
+  locale .mo, hicolor-icon-theme) and drop the unused
+  invalid-desktopfile filter - TW rpmlint aborted at Badness 20104
+  over the 999 threshold on 2026-10-27
+- update.sh: rebuild the Debtransform wrapper tarball on the
+  "already up to date" path too - a fresh checkout carries no gitignored
+  artifacts, so sync_files deleted the only OBS copy and all 3 targets
+  failed in debtransform (run 40539185674)
+
+-------------------------------------------------------------------
 Tue Oct 27 12:59:31 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.0.192-0

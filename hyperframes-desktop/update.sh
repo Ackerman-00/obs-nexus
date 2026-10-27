@@ -23,6 +23,11 @@ if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
     echo "Already up to date ($CURRENT_VERSION)."
     # ensure cached artifact
     if [ ! -f "hyperframes-desktop.deb" ]; then cp "$tmpd/up.deb" "hyperframes-desktop.deb"; fi
+    # ensure the Debtransform wrapper tarball exists (same class as
+    # freebuff-desktop 2026-10-27: sync_files would delete the only OBS copy
+    # of a locally-built wrapper that download_files cannot regenerate).
+    [ -f "hyperframes-desktop-${CURRENT_VERSION}.tar.gz" ] \
+      || tar -czf "hyperframes-desktop-${CURRENT_VERSION}.tar.gz" "hyperframes-desktop.deb"
     exit 0
   fi
   echo "sha drift; bumping."

@@ -20,7 +20,14 @@ CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
 if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
   if [ -z "$CURRENT_SHA" ] || [ "$NEW_SHA" = "$CURRENT_SHA" ]; then
     echo "Already up to date ($CURRENT_VERSION)."
+    # ensure cached artifact
     if [ ! -f "freebuff-desktop.deb" ]; then cp "$tmpd/up.deb" "freebuff-desktop.deb"; fi
+    # ensure the Debtransform wrapper tarball exists: a fresh CI checkout has
+    # no gitignored artifacts, and sync_files would then DELETE the only copy
+    # on OBS (download_files cannot regenerate a locally-built wrapper),
+    # breaking the Debian builds (2026-10-27 incident, run 40539185674).
+    [ -f "freebuff-desktop-${CURRENT_VERSION}.tar.gz" ] \
+      || tar -czf "freebuff-desktop-${CURRENT_VERSION}.tar.gz" "freebuff-desktop.deb"
     exit 0
   fi
   echo "sha drift; bumping."

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 27 17:25:49 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- update.sh: ensure the Debtransform wrapper tarball exists on the
+  "already up to date" path (same failure class as freebuff-desktop
+  2026-10-27: sync_files can delete the only OBS copy of a locally
+  built wrapper that download_files cannot regenerate)
+
+-------------------------------------------------------------------
 Tue Oct 27 16:17:02 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0.b500-0
