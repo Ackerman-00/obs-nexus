@@ -79,13 +79,20 @@ else echo "ERROR: unexpected data.tar compression" >&2; exit 1; fi
 :
 
 %install
-install -d %{buildroot}/opt %{buildroot}%{_datadir}
+install -d %{buildroot}/opt %{buildroot}%{_datadir} %{buildroot}%{_bindir}
 if [ -d opt/omnirush ]; then cp -a opt/omnirush %{buildroot}/opt/; fi
 if [ -d usr/share ]; then cp -a usr/share/* %{buildroot}%{_datadir}/; fi
 if [ -d usr/share/applications ]; then install -d %{buildroot}%{_datadir}/applications; fi
+# plain symlink, NOT update-alternatives: omnirush is the only provider of
+# this command (no alternative exists), and the %post --install dance tripped
+# rpmlint E: alternative-link-missing / alternative-generic-name-missing /
+# update-alternatives-requirement-missing, aborting the TW build at Badness
+# 2526 (run 40468416902). Same pattern as hyperframes/fluxer.
+ln -sf /opt/omnirush/omnirush %{buildroot}%{_bindir}/omnirush
 
 %files
 /opt/omnirush/
+%{_bindir}/omnirush
 %{_datadir}/applications/*
 # upstream ships usr/share/doc/omnirush.ai/changelog.gz; without this entry
 # rpmbuild's unpackaged-files check fails the build
@@ -98,11 +105,6 @@ if [ -d usr/share/applications ]; then install -d %{buildroot}%{_datadir}/applic
 %{_datadir}/icons/hicolor/*/*/omnirush.png
 
 %post
-if command -v update-alternatives >/dev/null 2>&1; then
-  update-alternatives --install /usr/bin/omnirush omnirush /opt/omnirush/omnirush 100 >/dev/null 2>&1 || ln -sf /opt/omnirush/omnirush /usr/bin/omnirush
-else
-  ln -sf /opt/omnirush/omnirush /usr/bin/omnirush
-fi
 if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
   chmod 4755 /opt/omnirush/chrome-sandbox || true
 else
@@ -117,7 +119,8 @@ if command -v apparmor_status >/dev/null 2>&1 && apparmor_status --enabled >/dev
 fi
 
 %postun
-rm -f /usr/bin/omnirush
-if command -v update-alternatives >/dev/null 2>&1; then update-alternatives --remove omnirush /opt/omnirush/omnirush >/dev/null 2>&1 || true; fi
+# %postun intentionally minimal: /usr/bin/omnirush is a package-owned
+# symlink (removed by rpm itself); the former update-alternatives cleanup
+# lived here and is gone with the alternatives misuse fixed.
 
 %changelog

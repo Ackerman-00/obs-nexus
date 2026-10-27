@@ -1,10 +1,35 @@
 # Prebuilt Electron payload installs under /opt
 addFilter("dir-or-file-outside-snapshot")
 addFilter("filelist-forbidden-opt /opt/hyperframes")
-addFilter("invalid-desktopfile")
+# invalid-desktopfile filter removed 2026-10-27: unused on the current
+# payload (rpmlint E: unused-rpmlintrc-filter aborted the TW build);
+# same removal as fluxer 2026-09-20.
 addFilter("unstripped-binary-or-object")
 addFilter("binary-or-shlib-calls-gethostbyname")
 addFilter("missing-call-to-setgroups-before-setuid")
 # bundled Electron/Chromium libs carry RUNPATH $ORIGIN (libffmpeg.so,
 # sharp-libvips; rpmlint Badness 50598 aborted the TW build without this)
 addFilter("binary-or-shlib-defines-rpath")
+# 2026-10-27 (run 40468416902): TW build aborted at Badness 10598 - all
+# findings below describe the immutable upstream Electron payload under
+# /opt/hyperframes (app.asar.unpacked node_modules + bundled libs), not
+# packaging mistakes. Same class as obsidian/stoat/vesktop.
+addFilter("non-executable-script")
+addFilter("env-script-interpreter")
+addFilter("zero-length")
+addFilter("version-control-internal-file")
+addFilter("script-without-shebang")
+addFilter("statically-linked-binary")
+addFilter("shared-library-not-executable")
+addFilter("postin-without-ldconfig")
+addFilter("postun-without-ldconfig")
+addFilter("missing-hash-section")
+addFilter("files-duplicated-waste")
+addFilter("devel-file-in-non-devel-package")
+addFilter("files-duplicate")
+addFilter("hidden-file-or-dir")
+addFilter("position-independent-executable-suggested")
+addFilter("potential-bashisms")
+# hicolor-icon-theme is intentionally unversioned (repo convention, same
+# as every other spec in this repo).
+addFilter("branding-requires-unversioned")

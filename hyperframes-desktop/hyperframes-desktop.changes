@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 27 08:36:20 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlintrc: append immutable Electron-payload filters (TW rpmlint
+  Badness 10598 on the b498 payload: node_modules scripts/zero-length
+  stubs/.git dirs), drop the unused invalid-desktopfile filter
+
+-------------------------------------------------------------------
 Tue Oct 27 08:15:24 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0.b498-0
