@@ -1,0 +1,30 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && (ar x ../*.deb data.tar.xz data.tar.zst 2>/dev/null || true); cd ..
+	if [ -f payload/data.tar.xz ]; then tar -xf payload/data.tar.xz -C payload; \
+	elif [ -f payload/data.tar.zst ]; then tar --zstd -xf payload/data.tar.zst -C payload; \
+	elif [ -f payload/data.tar.gz ]; then tar xzf payload/data.tar.gz -C payload; \
+	else echo "ERROR: unexpected data.tar compression"; exit 1; fi
+	mkdir -p debian/freebuff-desktop/opt debian/freebuff-desktop/usr/share debian/freebuff-desktop/usr/bin
+	cp -a payload/opt/Freebuff debian/freebuff-desktop/opt/
+	cp -a payload/usr/share/* debian/freebuff-desktop/usr/share/
+	ln -sf /opt/Freebuff/freebuff debian/freebuff-desktop/usr/bin/freebuff

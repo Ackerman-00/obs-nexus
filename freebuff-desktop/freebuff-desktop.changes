@@ -1,0 +1,11 @@
+-------------------------------------------------------------------
+Tue Oct 27 16:14:21 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.0.192-0
+- Update freebuff-desktop to v0.0.192
+
+-------------------------------------------------------------------
+Tue Oct 27 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.0.192-0
+- Initial packaging of Freebuff Desktop (Electron) from the upstream .deb

@@ -112,6 +112,7 @@ out of scope):
 | **cline-desktop** | Agentic AI coding agent desktop app (Tauri)
 | **hyperframes-desktop** | HyperFrames Studio video editor (Electron)
 | **omnirush-desktop** | OmniRush.ai desktop shell (Electron)
+| **freebuff-desktop** | Codebuff Freebuff Desktop (Electron)
 
 ---
 
