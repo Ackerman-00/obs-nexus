@@ -345,24 +345,14 @@ jobs:
             done
 
             for remote_file in $OBS_FILES; do
-              regen=0
-              if [ -f "$pkg/_service" ]; then
-                total=$(grep -c '<service ' "$pkg/_service" || true)
-                disabled=$(grep -c 'mode="disabled"' "$pkg/_service" || true)
-                if [ "${total:-0}" -gt "${disabled:-0}" ]; then
-                  regen=1
-                fi
-              fi
-              if [ "$regen" != "1" ]; then
-                case "$remote_file" in
-                  *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|cargo_config|vendor*|*.rpm|*.AppImage|*.deb|*.keyring)
-                    if [ ! -f "$pkg/$remote_file" ]; then
-                      echo "    Keeping remote source artifact (no local copy to re-upload): $remote_file"
-                      continue
-                    fi
-                    ;;
-                esac
-              fi
+              case "$remote_file" in
+                *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|cargo_config|vendor*|*.rpm|*.AppImage|*.deb|*.keyring)
+                  if [ ! -f "$pkg/$remote_file" ]; then
+                    echo "    Keeping remote source artifact (no local copy to re-upload): $remote_file"
+                    continue
+                  fi
+                  ;;
+              esac
               dsc_file=$(ls "$pkg"/*.dsc 2>/dev/null | head -1)
               if [ -n "$dsc_file" ] && grep -qE "^Debtransform-Tar:[[:space:]]*$remote_file[[:space:]]*$" "$dsc_file" \
                  && [ ! -f "$pkg/$remote_file" ]; then
