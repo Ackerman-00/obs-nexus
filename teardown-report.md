@@ -5,7 +5,7 @@ Repo type: **opensuse**. Sweep of **22** packages. Exit code is the verdict; thi
 |---|---|---|---|---|---|
 | bibata-cursor-theme | Bibata.tar.xz | 2.0.7 |  | **SOURCE-OK** | tar extracted, no version evidence found \| hash no-checksum-pinned \| source tarball (version = PV by construction) |
 | concat | Concat-0.2.8-linux-x86_64.rpm | 0.2.8 | 0.2.8-1 | **OK** | rpm header concat=0.2.8-1-1 (tags NAME/VERSION) \| pinned 0.2.8 \| internal 0.2.8-1 |
-| concat-unstable | live jub0t/concat | 9e20c56269f6 | 9e20c56269f6 | **OK** | live jub0t/concat pin 9e20c56269f6 vs upstream 9e20c56269f6 |
+| concat-unstable | live jub0t/concat | 3d549940ab79 | 3d549940ab79 | **OK** | live jub0t/concat pin 3d549940ab79 vs upstream 3d549940ab79 |
 | craft-launcher | artcraft-launcher-0.8.1-linux-x86_64.rpm | 0.8.1 | 0.8.1-1 | **OK** | rpm header artcraft-launcher=0.8.1-1-1 (tags NAME/VERSION) \| pinned 0.8.1 \| internal 0.8.1-1 |
 | faugus-launcher | 2.5.1.tar.gz | 2.5.1 | >=1.2.0 | **SOURCE-OK** | tar meson.build=>=1.2.0 (faugus-launcher-2.5.1/meson.build) \| hash no-checksum-pinned \| weak internal evidence >=1.2.0 (not authoritative) |
 | fluxer | fluxer.rpm | 2026.1026.24218 | 2026.1026.24218-1 | **OK** | rpm header fluxer=2026.1026.24218-1-1 (tags NAME/VERSION) \| pinned 2026.1026.24218 \| internal 2026.1026.24218-1 |
