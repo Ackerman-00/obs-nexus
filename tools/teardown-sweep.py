@@ -1206,6 +1206,49 @@ def _tagkey(t):
     return [int(x) if x.isdigit() else x for x in re.split(r"([0-9]+)", t)]
 
 
+def release_line_prefix(srcs):
+    """Release-line prefix of the tag our Source0 downloads from, e.g.
+    .../releases/download/freebuff-desktop-v0.0.192/Freebuff-...deb ->
+    'freebuff-desktop-v'. A bare 'v1.2.3' tag line yields 'v'.
+
+    GitHub's `releases/latest` pointer is repo-wide, so a repo that ships
+    several product lines (CLI vs desktop, host vs community build) reports
+    the newest tag of ANY line there. Comparing our pin against that pointer
+    produces false STALE/SKIP verdicts. Deriving the line from our own
+    download URL keeps the check evidence-based instead of skip-listed."""
+    for item in srcs:
+        url = item[0] if isinstance(item, tuple) else None
+        if isinstance(url, str) and "/releases/download/" in url:
+            tag = url.split("/releases/download/", 1)[1].split("/", 1)[0]
+            return re.sub(r"[\d.]+[-_]?$", "", tag) or ""
+    return None
+
+
+def _lsremote_line_tags(clone_url, prefix):
+    """Tags sharing a release-line prefix, version-like remainder only.
+
+    `_lsremote_version_tags` intentionally drops tags that do not start with
+    an optional 'v' + digit, which excludes prefixed lines such as
+    'desktop-v0.0.49'. This variant keeps them and is only used once a
+    release-line prefix has been derived from the package's own Source0."""
+    try:
+        out = subprocess.run(["git", "ls-remote", "--tags", clone_url],
+                             capture_output=True, text=True, timeout=180).stdout
+    except Exception:
+        return []
+    tags = []
+    for line in out.splitlines():
+        if "\t" not in line or "refs/tags/" not in line:
+            continue
+        ref = line.split("\t", 1)[1].split("refs/tags/", 1)[-1].replace("^{}", "")
+        if "/" in ref or not ref.startswith(prefix):
+            continue
+        if not re.match(r"^v?\d", ref[len(prefix):]):
+            continue
+        tags.append(ref)
+    return tags
+
+
 def latest_tag_lsremote(clone_url, include_prereleases=False):
     """Latest version-like tag via `git ls-remote --tags` - no API rate limits.
     Prerelease-looking tags (beta/rc/alpha/...) are ignored unless requested.
@@ -2209,6 +2252,22 @@ def check_upstream_latest(pkgs):
             if all_tags:
                 latest, source = max(all_tags, key=_tagkey), "ls-remote"
 
+        # Multi-product-line repos: releases/latest is repo-wide, so it can
+        # point at a different product line than the one our Source0 pins.
+        # When that happens, re-resolve "latest" inside OUR line only.
+        line_prefix = release_line_prefix(srcs) if latest else None
+        if latest and source == "releases/latest" and line_prefix is not None:
+            if not latest.startswith(line_prefix):
+                line_tags = _lsremote_line_tags(clone, line_prefix)
+                if line_tags:
+                    line_latest = max(line_tags,
+                                      key=lambda t: _tagkey(t[len(line_prefix):]))
+                    log("  [release-line] %s : releases/latest %s is another product "
+                        "line; line '%s' newest is %s"
+                        % (pkg, latest, line_prefix or "(none)", line_latest))
+                    latest, source = line_latest[len(line_prefix):], "ls-remote(line)"
+                    slug = "%s (line %s)" % (slug, line_prefix or "(none)")
+
         if not latest:
             rep_ver, rep_repo = repology_newest(pkg)
             if rep_ver:
@@ -2265,8 +2324,13 @@ def check_upstream_latest(pkgs):
             log("[%s] %s : %s" % (STATUS_STALE, pkg, note))
             continue
         if all_tags and any(same(pv, t) for t in all_tags):
-            note = ("pinned %s matches an existing tag but lexical-max is %s "
-                    "- ambiguous scheme, verify manually" % (pv, latest))
+            if _tagkey(latest.lstrip("vV")) > _tagkey(pv.lstrip("vV")):
+                note = ("upstream released %s; pinned %s is an older published tag "
+                        "- re-verify the blocker, then rerun update.sh"
+                        % (latest, pv))
+            else:
+                note = ("pinned %s matches an existing tag but lexical-max is %s "
+                        "- ambiguous scheme, verify manually" % (pv, latest))
             rows.append((pkg, "upstream %s" % slug, pv, latest, STATUS_SKIP, note))
             log("[%s] %s : %s" % (STATUS_SKIP, pkg, note))
             continue
