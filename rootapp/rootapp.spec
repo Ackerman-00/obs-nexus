@@ -101,7 +101,7 @@ install -Dm644 squashfs-root/Root.png %{buildroot}%{_datadir}/pixmaps/rootapp.pn
 install -Dm644 squashfs-root/Root.png %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/rootapp.png
 
 install -dm755 %{buildroot}%{_datadir}/applications/
-cat > %{buildroot}%{_datadir}/applications/rootapp.desktop <<DESKTOP_EOF
+cat > %{buildroot}%{_datadir}/applications/rootapp-app.desktop <<DESKTOP_EOF
 [Desktop Entry]
 Type=Application
 Name=Root
@@ -117,7 +117,7 @@ DESKTOP_EOF
 %files
 %{_bindir}/rootapp
 /opt/rootapp/
-%{_datadir}/applications/rootapp.desktop
+%{_datadir}/applications/rootapp-app.desktop
 %{_datadir}/icons/hicolor/*/apps/rootapp.png
 %{_datadir}/pixmaps/rootapp.png
 
