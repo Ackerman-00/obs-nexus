@@ -236,6 +236,8 @@ def test_fedora_package(name, nvra, spec_path, workdir):
 
 def test_opensuse_package(name, nvra, spec_path, workdir):
     commands = [
+        "sed -i 's|http://download.opensuse.org|https://download.opensuse.org|g' "
+        "/etc/zypp/repos.d/*.repo 2>/dev/null || true",
         "rpm --import https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/repodata/repomd.xml.key 2>&1 | tail -3",
         "zypper --non-interactive --gpg-auto-import-keys addrepo --refresh "
         "https://download.opensuse.org/tumbleweed/repo/oss/ oss 2>&1 | tail -3",

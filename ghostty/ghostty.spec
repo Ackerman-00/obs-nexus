@@ -52,6 +52,7 @@ BuildRequires:  python3-gobject
 Requires:       hicolor-icon-theme
 Requires:       terminfo
 Requires:       terminfo-ghostty
+Recommends:     python3-nautilus
 
 %description
 Ghostty is a fast, feature-rich, and cross-platform terminal

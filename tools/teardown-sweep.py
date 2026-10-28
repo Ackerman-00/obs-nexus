@@ -1749,7 +1749,7 @@ def tear_apart(path, distname, tmp):
             sub = tmp / "rpm"
             sub.mkdir()
             import subprocess as _sp
-            _sp.run(["bash", "-c", "rpm2cpio '%s' | cpio -idm" % str(path)],
+            _sp.run(["bash", "-c", "rpm2cpio '%s' | cpio -idm --no-absolute-filenames" % str(path)],
                     cwd=str(sub), check=True, capture_output=True)
             hits = version_evidence(sub, distname)
             for kind, v, rel in hits:

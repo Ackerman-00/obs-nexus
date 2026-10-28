@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Oct 28 23:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- The shipped launcher calls org.freedesktop.portal.FileChooser and
+  org.freedesktop.portal.Settings, but no portal frontend was declared,
+  so file dialogs fail with "No such interface" on a minimal install.
+  Add weak Recommends on xdg-desktop-portal and
+  xdg-desktop-portal-gtk in the RPM and DEB recipes.
+
+-------------------------------------------------------------------
 Wed Oct 28 17:37:17 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update craft-launcher to 0.9.0

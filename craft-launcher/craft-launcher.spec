@@ -21,6 +21,8 @@ Requires:       libwayland-client.so.0()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon-x11.so.0()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 Provides:       artcraft-launcher = %{version}-%{release}
 Obsoletes:      artcraft-launcher < %{version}-%{release}

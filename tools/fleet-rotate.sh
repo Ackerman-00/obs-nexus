@@ -31,6 +31,7 @@ for pkg in $PKGS; do
   done
   docker run --rm -v "$sd:/src:ro" -v /tmp/rot/out:/out -e pkg="$pkg" "$IMG" bash -lc '
     set -u
+    sed -i "s|http://download.opensuse.org|https://download.opensuse.org|g" /etc/zypp/repos.d/*.repo
     zypper --non-interactive addrepo --refresh https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/ home_ackerman >/dev/null 2>&1
     zypper --non-interactive --gpg-auto-import-keys refresh >/dev/null 2>&1
     zypper --non-interactive --no-gpg-checks in -y rpm-build >/dev/null 2>&1
