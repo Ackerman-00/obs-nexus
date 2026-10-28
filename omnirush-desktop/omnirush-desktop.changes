@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 28 04:38:05 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 3.8.1-0
+- Update omnirush-desktop to v3.8.1
+
+-------------------------------------------------------------------
 Tue Oct 27 08:36:20 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - fix TW build: replace the %post update-alternatives dance with a
