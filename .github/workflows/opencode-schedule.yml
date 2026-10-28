@@ -717,6 +717,54 @@ jobs:
                   unproven > 0 fails the gate; the external verifier counts
                   `unproven:` tokens and requires one per inventory package.
 
+            DESKTOP-INTEGRATION FEATURE TEARDOWN (MANDATORY - every package,
+            every run). A dependency list that resolves is not a working
+            application: the failures users report are features dying at
+            runtime (a file picker that never opens, a tray icon that never
+            appears, voice devices that stay empty), and each one is a missing
+            runtime SERVICE, not a missing library. Run this for every package
+            you touch, plus a rotating sample of at least 5 others.
+              a. INVENTORY THE FEATURES FROM THE PAYLOAD, never from the
+                 README: extract the artifact and read the real files -
+                 .desktop entries, AppRun/wrapper scripts, DBus names in
+                 strings (`grep -a org.kde.StatusNotifier`,
+                 `org.freedesktop.portal.`, `org.freedesktop.Notifications`),
+                 .so probes, CLI flags. For every GUI package decide each of:
+                 window launch, tray/StatusNotifierItem, file picker and
+                 attachments, notifications, screen sharing, global hotkeys,
+                 audio in/out, GPU/video decode, URL scheme handler,
+                 autostart, update channel.
+              b. PROVE IT AT RUNTIME, NOT BY READING. Start the installed
+                 package and observe what it actually does:
+                 `dbus-monitor --session` for the portal / StatusNotifier
+                 calls it makes (a tray feature that never calls
+                 org.kde.StatusNotifierWatcher.RegisterStatusNotifierItem is
+                 not a tray feature), `journalctl --user -u
+                 xdg-desktop-portal*` for backend failures, `busctl --user`
+                 for the host that must serve it, `pgrep`/`ss` for the audio
+                 socket. Paste the output.
+              c. A FEATURE NEEDS ITS SERVICE, NOT ITS LIBRARY: a PulseAudio
+                 client library is not an audio server; libgtk-3 is not an
+                 xdg-desktop-portal backend; an AppIndicator library is not a
+                 StatusNotifier host; a portal frontend with no FileChooser
+                 backend answers "No such interface". Name the SERVICE for
+                 every feature and depend on it, recommend it, or document it
+                 - never leave it silent.
+              d. VERIFY EVERY SERVICE PACKAGE NAME IN THE TARGET INDEX before
+                 adding it (deb.debian.org Packages.gz for Forky + Sid;
+                 download.opensuse.org Tumbleweed primary.xml for RPM). A name
+                 the target does not ship is not a dependency, it is a broken
+                 build. Weak deps (Recommends/optdepends) are the correct form
+                 for desktop-integration services - never force a hard
+                 dependency on a desktop environment.
+              e. OUTPUT CONTRACT - one row per audited package, no exceptions:
+                 | package | feature | required component | declared
+                 (depends/recommends/optdepends) | verified how | status |
+                 with status = feature-ok / feature-fixed /
+                 upstream-broken-(evidence) / not-verifiable-(why). "Assumed
+                 to work" fails the run, and so does claiming a tray or a
+                 file picker works because a library is installed.
+
             INSTALL-VERIFICATION SWEEP (MANDATORY - "zypper in <pkg>" MUST
             work on a real openSUSE machine, not just build on OBS). An OBS
             "succeeded" state only proves the package COMPILES. It does NOT

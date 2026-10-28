@@ -17,6 +17,9 @@ Requires:       hicolor-icon-theme
 Requires:       mozilla-nspr
 Requires:       mozilla-nss
 Requires:       xdg-utils
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
+Recommends:     pipewire-pulseaudio
 # --- sonames: DT_NEEDED union (see above) -------------------------------
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
