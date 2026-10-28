@@ -1,3 +1,9 @@
+lazyvim-git (16.0.1+git20261028082036.301a3f7-1) unstable; urgency=medium
+
+  * New upstream snapshot 301a3f7 (base 16.0.1).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 08:22:16 +0000
+
 lazyvim-git (16.0.1+git20260908200953.9997009-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (git-snapshot tarball).

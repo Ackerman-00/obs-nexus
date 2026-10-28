@@ -1980,6 +1980,7 @@ def sweep_package(pkg, pv, srcs, live, repo_type, workdir):
                     continue
                 hash_note = why
             with tempfile.TemporaryDirectory() as td:
+                hv = None
                 internal, note, strong, src_like = tear_apart(src_path, name, Path(td))
             if internal and strong:
                 if PLACEHOLDER_RE.match(pv or ""):
