@@ -30,6 +30,8 @@ Requires:       libpango-1.0.so.0()(64bit)
 Requires:       libpangocairo-1.0.so.0()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       xdg-user-dirs
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description

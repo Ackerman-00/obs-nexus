@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Oct 28 16:34:14 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- The shipped binary talks to org.freedesktop.portal.* (file chooser,
+  screen share), but no portal frontend was declared, so those
+  features fail with "No such interface" on a minimal install.
+  Add weak Recommends on xdg-desktop-portal and
+  xdg-desktop-portal-gtk - never a hard dependency on a desktop
+  stack.
+
 Wed Oct 28 16:12:51 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.5.3-0

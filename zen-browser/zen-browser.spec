@@ -23,6 +23,8 @@ BuildRequires:  mozilla-nss-certs
 Requires:       hunspell
 Requires:       hyphen
 Requires:       mozilla-nss-certs
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description

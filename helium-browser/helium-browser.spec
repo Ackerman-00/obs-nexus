@@ -47,7 +47,9 @@ Requires(postun): gtk3-tools
 Recommends:     libQt5Widgets5
 Recommends:     libQt6Widgets6
 Recommends:     liberation-fonts
-Recommends:     vulkan-loader
+Recommends:     libvulkan1
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 Provides:       www-browser = %{version}-%{release}
 ExclusiveArch:  x86_64
 

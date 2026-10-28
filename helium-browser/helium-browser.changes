@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Oct 28 16:34:26 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommends: `vulkan-loader` is a Fedora package name and resolves to
+  nothing on Tumbleweed (the SRPM is called vulkan-loader, the package
+  is libvulkan1) - zypper silently dropped the weak dep. Use libvulkan1.
+- The shipped binary talks to org.freedesktop.portal.* (file chooser,
+  screen share) with no portal frontend declared; add weak Recommends on
+  xdg-desktop-portal + xdg-desktop-portal-gtk.
+
+-------------------------------------------------------------------
 Wed Oct 28 16:25:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Stay on the stable channel: upstream publishes 0.20.2.1 with

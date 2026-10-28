@@ -1,3 +1,10 @@
+freebuff-desktop (0.0.192-1) unstable; urgency=medium
+
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
+    payload talks to org.freedesktop.portal.* at runtime.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 16:34:14 +0000
+
 freebuff-desktop (0.0.192-2) unstable; urgency=medium
 
   * Add Depends libpulse0 and libpipewire-0.3-0t64 so the declared set matches the spec Requires and the payload references.

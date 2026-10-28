@@ -52,6 +52,8 @@ Requires:       libudev.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description

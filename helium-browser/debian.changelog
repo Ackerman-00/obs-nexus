@@ -1,5 +1,12 @@
 helium-browser (0.20.1.1-1) unstable; urgency=medium
 
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the payload
+    talks to org.freedesktop.portal.* at runtime.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 16:34:26 +0000
+
+helium-browser (0.20.1.1-1) unstable; urgency=medium
+
   * Stay on the stable channel: 0.20.2.1 is a GitHub pre-release, revert
     to the latest stable release 0.20.1.1.
 

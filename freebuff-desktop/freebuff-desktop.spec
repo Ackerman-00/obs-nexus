@@ -56,6 +56,8 @@ Requires:       libuuid.so.1()(64bit)
 Requires:       libXtst.so.6()(64bit)
 Requires:       xdg-utils
 Requires:       hicolor-icon-theme
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description

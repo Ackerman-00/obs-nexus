@@ -39,6 +39,8 @@ Requires:       xdg-utils
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description
