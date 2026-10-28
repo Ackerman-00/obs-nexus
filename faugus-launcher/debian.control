@@ -10,6 +10,7 @@ Homepage: https://github.com/Faugus/faugus-launcher
 Package: faugus-launcher
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python3:Depends}, gir1.2-gtk-4.0, gir1.2-adw-1, gir1.2-manette-0.2, python3-gi, python3-requests, python3-pil, python3-vdf, python3-psutil, python3-icoextract, hicolor-icon-theme
+Recommends: xdg-desktop-portal
 Description: Lightweight app for running Windows games using UMU-Launcher
  Faugus is a simple and lightweight app for running Windows games using
  UMU-Launcher/UMU-Proton. The umu-run component is downloaded and managed

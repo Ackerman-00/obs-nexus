@@ -1,5 +1,12 @@
 faugus-launcher (2.5.4-1) unstable; urgency=medium
 
+  * Recommend xdg-desktop-portal: the app reads portal Settings and sends
+    portal notifications.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 16:42:57 +0000
+
+faugus-launcher (2.5.4-1) unstable; urgency=medium
+
   * New upstream release 2.5.4.
 
  -- Ackerman-00 <noreply@example.com>  Tue, 27 Oct 2026 18:42:10 +0000
