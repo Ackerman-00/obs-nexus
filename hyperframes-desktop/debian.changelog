@@ -1,3 +1,9 @@
+hyperframes-desktop (0.1.0.b515-1) unstable; urgency=medium
+
+  * New upstream release 0.1.0.b515.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 17:36:09 +0000
+
 hyperframes-desktop (0.1.0.b513-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
