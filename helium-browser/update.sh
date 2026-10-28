@@ -9,10 +9,22 @@ PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
-LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+if [ -n "$GITHUB_TOKEN" ]; then
+    RELEASES=$(curl -s --retry 3 --connect-timeout 15 -H "Authorization: token $GITHUB_TOKEN" \
+        "https://api.github.com/repos/$GITHUB_REPO/releases?per_page=30")
+else
+    RELEASES=$(curl -s --retry 3 --connect-timeout 15 \
+        "https://api.github.com/repos/$GITHUB_REPO/releases?per_page=30")
+fi
+LATEST_TAG=$(printf '%s' "$RELEASES" | jq -r '.[] | select(.draft == false and .prerelease == false) | .tag_name' 2>/dev/null \
+    | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
 
 if [ -z "$LATEST_TAG" ]; then
-    echo "  -> ❌ [ERROR] Failed to fetch latest tag."
+    LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$' | sort -V | tail -1)
+fi
+
+if [ -z "$LATEST_TAG" ]; then
+    echo "  -> ❌ [ERROR] Failed to fetch latest stable tag."
     exit 1
 fi
 

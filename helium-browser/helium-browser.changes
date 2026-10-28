@@ -1,7 +1,14 @@
 -------------------------------------------------------------------
-Wed Oct 28 16:13:12 UTC 2026 - Ackerman-00 <noreply@example.com>
+Wed Oct 28 16:25:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
-- Update to upstream release 0.20.2.1
+- Stay on the stable channel: upstream publishes 0.20.2.1 with
+  `prerelease: true` (2026-10-28T12:54Z), so the build shipped here for
+  one cycle was a pre-release. Revert to the latest stable release
+  0.20.1.1 (published 2026-10-21T14:34Z, `prerelease: false`).
+- update.sh: derive the newest NON-prerelease GitHub release from the
+  releases API (`prerelease == false and draft == false`, tag list as
+  fallback) instead of sorting raw `git ls-remote` tags - a pre-release
+  tag can no longer be promoted into the stable channel.
 
 -------------------------------------------------------------------
 Wed Oct 21 16:46:24 UTC 2026 - Ackerman-00 <noreply@example.com>
