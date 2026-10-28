@@ -1,3 +1,9 @@
+hyperframes-desktop (0.1.0.b503-1) unstable; urgency=medium
+
+  * New upstream release 0.1.0.b503.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 08:00:02 +0000
+
 hyperframes-desktop (0.1.0.b502-2) unstable; urgency=medium
 
   * Add Depends libpulse0 and libpipewire-0.3-0t64: the upstream payload references both for Electron audio output.
