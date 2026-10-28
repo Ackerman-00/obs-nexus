@@ -1605,7 +1605,7 @@ def tear_apart(path, distname, tmp):
             sub = tmp / "appimage"
             sub.mkdir()
             import subprocess
-            res = subprocess.run([str(path), "--appimage-extract"], cwd=sub,
+            res = subprocess.run([str(Path(path).resolve()), "--appimage-extract"], cwd=sub,
                                  capture_output=True, timeout=300)
             root = sub / "squashfs-root"
             if root.is_dir():
