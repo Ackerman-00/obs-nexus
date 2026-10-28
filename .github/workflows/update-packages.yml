@@ -362,6 +362,16 @@ jobs:
               case "$remote_file" in
                 *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|cargo_config|vendor*|*.rpm|*.AppImage|*.deb|*.keyring)
                   if [ ! -f "$pkg/$remote_file" ]; then
+                    case "$remote_file" in
+                      "$pkg"-*.tar.gz|"$pkg"-*.tar.xz|"$pkg"-*.tar.bz2|"$pkg"-*.tar.zst)
+                        if ls "$pkg/$pkg"-*.tar.* >/dev/null 2>&1; then
+                          echo "    Deleting superseded tarball from OBS: $remote_file"
+                          obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
+                            || { echo "ERROR: delete of superseded $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
+                          continue
+                        fi
+                        ;;
+                    esac
                     echo "    Keeping remote source artifact (no local copy to re-upload): $remote_file"
                     continue
                   fi
@@ -382,6 +392,33 @@ jobs:
 
             trigger_build "$pkg"
           }
+
+          echo "==> Pruning superseded source tarballs on OBS..."
+          for pkg_dir in */; do
+            pkg="${pkg_dir%/}"
+            ls "$pkg_dir"*.spec >/dev/null 2>&1 || continue
+            have_tar=0
+            for _t in "$pkg_dir"*.tar.gz "$pkg_dir"*.tar.xz "$pkg_dir"*.tar.bz2 "$pkg_dir"*.tar.zst; do
+              if [ -f "$_t" ]; then
+                have_tar=1
+                break
+              fi
+            done
+            [ "$have_tar" = "1" ] || continue
+            OBS_PRUNE=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oP '(?<=<entry name=")[^"]+' || true)
+            for remote_file in $OBS_PRUNE; do
+              case "$remote_file" in
+                "$pkg"-*.tar.gz|"$pkg"-*.tar.xz|"$pkg"-*.tar.bz2|"$pkg"-*.tar.zst)
+                  if [ -f "$pkg_dir$remote_file" ]; then
+                    continue
+                  fi
+                  echo " -> Pruning superseded tarball: $pkg/$remote_file"
+                  obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
+                    || { echo "ERROR: prune of $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
+                  ;;
+              esac
+            done
+          done
 
           PKGS_TO_SYNC=$(collect_pkgs)
 
