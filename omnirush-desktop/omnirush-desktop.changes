@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 28 05:53:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare xdg-utils: the upstream Debian control lists it under Depends
+  (the Electron shell shells out to xdg-open for external links).
+
+-------------------------------------------------------------------
 Wed Oct 28 04:38:05 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 3.8.1-0

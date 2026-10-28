@@ -12,10 +12,17 @@ URL:            https://omnirush.ai
 Source0:        https://github.com/omnirush-ai/omnirush-gui/releases/download/v3.8.1/omnirush-linux-amd64-3.8.1.deb
 Source1:        omnirush-desktop-rpmlintrc
 BuildRequires:  binutils
+BuildRequires:  desktop-file-utils
 BuildRequires:  tar
 BuildRequires:  zstd
-BuildRequires:  desktop-file-utils
 Requires:       at-spi2-core
+Requires:       hicolor-icon-theme
+Requires:       libX11.so.6()(64bit)
+Requires:       libXcomposite.so.1()(64bit)
+Requires:       libXdamage.so.1()(64bit)
+Requires:       libXext.so.6()(64bit)
+Requires:       libXfixes.so.3()(64bit)
+Requires:       libXrandr.so.2()(64bit)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -24,8 +31,8 @@ Requires:       libcairo.so.2()(64bit)
 Requires:       libcups.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
 Requires:       libexpat.so.1()(64bit)
-Requires:       libgcc_s.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
+Requires:       libgcc_s.so.1()(64bit)
 Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
@@ -41,15 +48,9 @@ Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libX11.so.6()(64bit)
 Requires:       libxcb.so.1()(64bit)
-Requires:       libXcomposite.so.1()(64bit)
-Requires:       libXdamage.so.1()(64bit)
-Requires:       libXext.so.6()(64bit)
-Requires:       libXfixes.so.3()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-Requires:       libXrandr.so.2()(64bit)
-Requires:       hicolor-icon-theme
+Requires:       xdg-utils
 ExclusiveArch:  x86_64
 
 %description
@@ -89,11 +90,11 @@ if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
 else
   chmod 0755 /opt/omnirush/chrome-sandbox || true
 fi
-if command -v update-mime-database >/dev/null 2>&1; then update-mime-database /usr/share/mime >/dev/null 2>&1 || true; fi
-if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database /usr/share/applications >/dev/null 2>&1 || true; fi
+if command -v update-mime-database >/dev/null 2>&1; then update-mime-database %{_datadir}/mime >/dev/null 2>&1 || true; fi
+if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi
 if command -v apparmor_status >/dev/null 2>&1 && apparmor_status --enabled >/dev/null 2>&1; then
   if [ -f /opt/omnirush/resources/apparmor-profile ]; then
-    cp -f /opt/omnirush/resources/apparmor-profile /etc/apparmor.d/omnirush
+    cp -f /opt/omnirush/resources/apparmor-profile %{apparmor_profilesdir}/omnirush
   fi
 fi
 

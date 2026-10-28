@@ -1,6 +1,6 @@
 %global debug_package %{nil}
-%global __requires_exclude_from ^/usr/lib/Cline/bin/remote-helpers/
-%global __provides_exclude_from ^/usr/lib/Cline/bin/remote-helpers/
+%global __requires_exclude_from ^%{_prefix}/lib/Cline/bin/remote-helpers/
+%global __provides_exclude_from ^%{_prefix}/lib/Cline/bin/remote-helpers/
 Name:           cline-desktop
 Version:        0.0.49
 # sha256:  3e2c1f824fbdceaf67a8c01404e58218f8534f952318d1689807824b9ca2e2f6
@@ -14,26 +14,26 @@ Source1:        cline-desktop-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  tar
 BuildRequires:  zstd
-Requires:       libgtk-3.so.0()(64bit)
-Requires:       libgdk-3.so.0()(64bit)
-Requires:       libgdk_pixbuf-2.0.so.0()(64bit)
-Requires:       libglib-2.0.so.0()(64bit)
-Requires:       libgobject-2.0.so.0()(64bit)
-Requires:       libgio-2.0.so.0()(64bit)
+Requires:       hicolor-icon-theme
+Requires:       libayatana-appindicator3.so.1()(64bit)
 Requires:       libcairo.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
 Requires:       libgcc_s.so.1()(64bit)
+Requires:       libgdk-3.so.0()(64bit)
+Requires:       libgdk_pixbuf-2.0.so.0()(64bit)
+Requires:       libgio-2.0.so.0()(64bit)
+Requires:       libglib-2.0.so.0()(64bit)
+Requires:       libgobject-2.0.so.0()(64bit)
+Requires:       libgtk-3.so.0()(64bit)
 Requires:       libjavascriptcoregtk-4.1.so.0()(64bit)
 Requires:       libsoup-3.0.so.0()(64bit)
 Requires:       libwebkit2gtk-4.1.so.0()(64bit)
-Requires:       libayatana-appindicator3-1
-Requires:       hicolor-icon-theme
 ExclusiveArch:  x86_64
 
 %description
 Cline desktop (the agentic coding assistant) ships the upstream DEB payload
-as-is: /usr/lib/Cline (Tauri binary bundle), /usr/bin/cline-app and
-cline-cli, and the desktop/metainfo/icons in /usr/share. This spec re-packs
+as-is: %{_prefix}/lib/Cline (Tauri binary bundle), %{_bindir}/cline-app and
+cline-cli, and the desktop/metainfo/icons in %{_prefix}/share. This spec re-packs
 those bytes without recompiling.
 
 %prep
@@ -53,15 +53,15 @@ fi
 %build
 
 %install
-install -d %{buildroot}%{_datadir} %{buildroot}/usr/lib %{buildroot}%{_bindir}
+install -d %{buildroot}%{_datadir} %{buildroot}%{_prefix}/lib %{buildroot}%{_bindir}
 cp -a usr/share/* %{buildroot}%{_datadir}/
-if [ -d usr/lib/Cline ]; then cp -a usr/lib/Cline %{buildroot}/usr/lib/; fi
+if [ -d usr/lib/Cline ]; then cp -a usr/lib/Cline %{buildroot}%{_prefix}/lib/; fi
 for b in usr/bin/*; do install -m 0755 "$b" %{buildroot}%{_bindir}/; done
 
 %files
 %{_bindir}/cline-app
 %{_bindir}/cline-cli
-/usr/lib/Cline/
+%{_prefix}/lib/Cline/
 %{_datadir}/applications/*
 %dir %{_datadir}/icons/hicolor
 %dir %{_datadir}/icons/hicolor/*
@@ -70,4 +70,3 @@ for b in usr/bin/*; do install -m 0755 "$b" %{buildroot}%{_bindir}/; done
 %{_datadir}/metainfo/*
 
 %changelog
-

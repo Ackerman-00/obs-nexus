@@ -29,6 +29,7 @@ Requires:       libcups2
 Requires:       libgbm1
 Requires:       libgcc_s.so.1()(64bit)
 Requires:       libpipewire-0_3-0
+Requires:       libpulse.so.0()(64bit)
 Requires:       libsecret-1-0
 Requires:       libsystemd0
 Requires:       libxcb1

@@ -1,3 +1,9 @@
+stoat-desktop (1.5.4-3) unstable; urgency=medium
+
+  * Add Depends libpulse0: the upstream payload references it for Electron audio output.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 05:53:58 +0000
+
 stoat-desktop (1.5.4-2) unstable; urgency=medium
 
   * Fix Depends: rename libpipewire-0.3-0 to libpipewire-0.3-0t64

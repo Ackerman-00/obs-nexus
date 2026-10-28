@@ -2,8 +2,8 @@
 %global __requires_exclude_from ^/opt/hyperframes/.*$
 %global __provides_exclude_from ^/opt/hyperframes/.*$
 Name:           hyperframes-desktop
-Version:        0.1.0.b501
-# sha256:  4ef0399ff43859cd22d5c2626f2a66ff9ab78f134d779addbd8bc0d7fe19974d
+Version:        0.1.0.b502
+# sha256:  8a3b9717380bee69aeb9fe54b5c8a592fca00007914366f0463ef4fe753e4987
 Release:        0
 Summary:        HyperFrames Studio (Electron)
 License:        Apache-2.0 AND MIT AND BSD-3-Clause
@@ -12,10 +12,17 @@ URL:            https://hyperframes.dev
 Source0:        https://static.heygen.ai/hyperframes-oss/desktop/HyperFrames-amd64.deb
 Source1:        hyperframes-desktop-rpmlintrc
 BuildRequires:  binutils
+BuildRequires:  desktop-file-utils
 BuildRequires:  tar
 BuildRequires:  zstd
-BuildRequires:  desktop-file-utils
 Requires:       at-spi2-core
+Requires:       hicolor-icon-theme
+Requires:       libX11.so.6()(64bit)
+Requires:       libXcomposite.so.1()(64bit)
+Requires:       libXdamage.so.1()(64bit)
+Requires:       libXext.so.6()(64bit)
+Requires:       libXfixes.so.3()(64bit)
+Requires:       libXrandr.so.2()(64bit)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -24,8 +31,8 @@ Requires:       libcairo.so.2()(64bit)
 Requires:       libcups.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
 Requires:       libexpat.so.1()(64bit)
-Requires:       libgcc_s.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
+Requires:       libgcc_s.so.1()(64bit)
 Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
@@ -41,15 +48,9 @@ Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libX11.so.6()(64bit)
 Requires:       libxcb.so.1()(64bit)
-Requires:       libXcomposite.so.1()(64bit)
-Requires:       libXdamage.so.1()(64bit)
-Requires:       libXext.so.6()(64bit)
-Requires:       libXfixes.so.3()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-Requires:       libXrandr.so.2()(64bit)
-Requires:       hicolor-icon-theme
+Requires:       xdg-utils
 ExclusiveArch:  x86_64
 
 %description
@@ -79,22 +80,22 @@ if [ -L usr/bin/hyperframes ] || [ -e usr/bin/hyperframes ]; then ln -sf /opt/hy
 %{_datadir}/pixmaps/*
 
 %post
-if command -v update-mime-database >/dev/null 2>&1; then update-mime-database /usr/share/mime >/dev/null 2>&1 || true; fi
-if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database /usr/share/applications >/dev/null 2>&1 || true; fi
+if command -v update-mime-database >/dev/null 2>&1; then update-mime-database %{_datadir}/mime >/dev/null 2>&1 || true; fi
+if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi
 if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
   chmod 4755 /opt/hyperframes/chrome-sandbox || true
 else
   chmod 0755 /opt/hyperframes/chrome-sandbox || true
 fi
-if [ -f /etc/apparmor.d/abi/4.0 ] && [ -x /sbin/apparmor_parser ] && [ -f /opt/hyperframes/apparmor.d/hyperframes ]; then
-  cp -f /opt/hyperframes/apparmor.d/hyperframes /etc/apparmor.d/hyperframes
-  /sbin/apparmor_parser -r /etc/apparmor.d/hyperframes >/dev/null 2>&1 || true
+if [ -f %{apparmor_profilesdir}/abi/4.0 ] && [ -x /sbin/apparmor_parser ] && [ -f /opt/hyperframes/apparmor.d/hyperframes ]; then
+  cp -f /opt/hyperframes/apparmor.d/hyperframes %{apparmor_profilesdir}/hyperframes
+  /sbin/apparmor_parser -r %{apparmor_profilesdir}/hyperframes >/dev/null 2>&1 || true
 fi
 
 %postun
-if [ "$1" = 0 ] && [ -f /etc/apparmor.d/hyperframes ]; then
-  [ -x /sbin/apparmor_parser ] && /sbin/apparmor_parser -R /etc/apparmor.d/hyperframes >/dev/null 2>&1 || true
-  rm -f /etc/apparmor.d/hyperframes
+if [ "$1" = 0 ] && [ -f %{apparmor_profilesdir}/hyperframes ]; then
+  [ -x /sbin/apparmor_parser ] && /sbin/apparmor_parser -R %{apparmor_profilesdir}/hyperframes >/dev/null 2>&1 || true
+  rm -f %{apparmor_profilesdir}/hyperframes
 fi
 
 %changelog

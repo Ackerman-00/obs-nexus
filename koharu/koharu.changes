@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 28 05:53:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libpulse.so.0 and libpipewire-0.3.so.0: the bundled libcef.so
+  references both for audio output and the payload is excluded from
+  automatic dependency generation.
+
+-------------------------------------------------------------------
 Tue Oct 20 21:00:48 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix macro-in-comment: reword the %license mention in the %install

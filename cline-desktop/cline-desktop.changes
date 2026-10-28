@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Wed Oct 28 05:53:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpmlint: prune the six filters that no longer trip on the 0.0.49
+  payload (binary-or-shlib-defines-rpath, missing-signed-byte-0,
+  missing-hash-section, no-soname, missing-gnu-hash-section,
+  shared-library-not-executable) and filter the immutable upstream
+  Electron classes that do (branding-requires-unversioned,
+  position-independent-executable-suggested, files-duplicate).
+- Requires: use the soname form libayatana-appindicator3.so.1 (the tray
+  dlopen target) so rpmlint no longer reports explicit-lib-dependency.
+
+-------------------------------------------------------------------
 Tue Oct 27 00:00:01 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.0.49-0

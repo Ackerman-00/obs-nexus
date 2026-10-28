@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 28 05:53:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libpulse.so.0: the bundled Electron payload references it for
+  Chromium audio output; the /opt payload is excluded from automatic
+  dependency generation and libpipewire was already listed.
+
+-------------------------------------------------------------------
 Tue Oct 20 23:33:20 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare libgcc_s.so.1: the bundled upstream Electron binary NEEDs it,

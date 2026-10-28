@@ -1,3 +1,9 @@
+openchamber (2.5.2-2) unstable; urgency=medium
+
+  * Add Depends libpulse0, libpipewire-0.3-0t64 and libsecret-1-0: the upstream payload references all three (audio output, keyring).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 05:53:58 +0000
+
 openchamber (2.5.2-1) unstable; urgency=medium
 
   * New upstream release 2.5.2.

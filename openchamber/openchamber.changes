@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 28 05:53:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare libpulse.so.0, libpipewire-0.3.so.0 and libsecret-1.so.0: the
+  bundled Electron payload references all three (audio output, keyring),
+  and /opt payload auto-requires are disabled by __requires_exclude_from.
+
+-------------------------------------------------------------------
 Mon Oct 26 03:42:20 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.5.2-0
