@@ -4,12 +4,6 @@ on:
   schedule:
     - cron: '10 */6 * * *'
   workflow_dispatch:
-    inputs:
-      relay:
-        description: 'Relay continuation run - pick up unfinished work from .opencode-relay.md'
-        required: false
-        default: 'false'
-        type: boolean
 
 permissions:
   artifact-metadata: write
@@ -168,7 +162,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OBS_USER: ${{ secrets.OBS_USER }}
           OBS_PASS: ${{ secrets.OBS_PASS }}
-          RELAY: ${{ github.event.inputs.relay || 'false' }}
           RUN_ID: ${{ github.run_id }}
           GIT_AUTHOR_NAME: opencode-agent[bot]
           GIT_AUTHOR_EMAIL: 41898282+opencode-agent[bot]@users.noreply.github.com
@@ -185,16 +178,14 @@ jobs:
             does NOT, the run is treated as FAILED. NEVER create separate
             completion files; never delete `.opencode-relay.md`.
               a. PICKUP ON START: if `.opencode-relay.md` exists on main with
-                 status "unfinished", or this run was started with relay=true
-                 (env RELAY=1), READ IT FIRST and continue that work FIRST.
+                 status "unfinished", READ IT FIRST and continue that work FIRST.
               b. KEEP STATE CURRENT: as you work, keep `.opencode-relay.md`
                  updated. Commit + push it together with your fixes.
               c. HANDOFF TRIGGER: when the run has been going ~5-5.5 hours,
                  STOP starting new work. Finish and push everything, set
                  `.opencode-relay.md` to status "unfinished" with the precise
-                 continuation plan, commit + push, then trigger the relay:
-                   gh workflow run opencode-schedule.yml --ref main \
-                     --repo Ackerman-00/opensuse-nexus -f relay=true
+                 continuation plan, commit + push - the next scheduled run
+                 picks it up.
               d. COMPLETION: when all work is done, set the relay to
                  `status: complete` and add `run_id: $RUN_ID` (the ACTUAL
                  numeric value, not the literal text) to `.opencode-relay.md`,
@@ -1479,8 +1470,7 @@ jobs:
             (timeout-minutes: 355). NEVER let a run die with work unfinished or
             unrecorded - hand it over to the next runner.
               a. PICKUP ON START: if the relay state file .opencode-relay.md exists
-                 on main with status "unfinished", or this run was started with the
-                 relay=true input (env RELAY=1), READ IT FIRST: it lists exactly
+                 on main with status "unfinished", READ IT FIRST: it lists exactly
                  what the previous run completed, what it left unfinished (package,
                  spec change, triggered OBS build ids), and the exact next steps.
                  Continue that work FIRST, before anything else, and mark items
@@ -1495,15 +1485,12 @@ jobs:
                  workflow clock), STOP starting new work. Finish and push
                  everything in progress, set .opencode-relay.md to status
                  "unfinished" with the precise continuation plan, commit + push
-                 (git fetch origin && git pull --rebase origin main first), then
-                 trigger the relay run BEFORE the timeout kills you:
-                   gh workflow run "opencode-schedule" --ref main \
-                     --repo Ackerman-00/opensuse-nexus -f relay=true
-                 The new run gets a fresh runner and picks up from the state file.
-                 Your run ending after that is fine.
+                 (git fetch origin && git pull --rebase origin main first) BEFORE
+                 the timeout kills you - the next scheduled run picks it up from
+                 the state file.
               d. TIMEOUT SAFETY: if the job timeout is near with work still
-                 pending, do the same handoff immediately (commit state + trigger
-                 relay) - even a partial record is better than losing context.
+                 pending, do the same handoff immediately (commit state) - even a
+                 partial record is better than losing context.
                  Never leave the repo mid-edit: commit or revert everything first.
                  If your run gets cancelled by the next scheduled run, your state
                  file is what keeps the work alive - that is by design.
