@@ -1,5 +1,5 @@
 Name:           zen-browser
-Version:        1.23.4b
+Version:        1.24b
 Release:        0
 %global __provides_exclude_from ^/usr/lib64/zen-browser/.*$
 %global __requires_exclude ^lib(gkcodecs|lgpllibs|mozavcodec|mozavutil|mozgtk|mozsandbox|mozsqlite3|mozwayland|clearkey|freeblpriv3|nss3|nssutil3|ssl3|smime3|nspr4|plc4|plds4)\.so.*$

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 29 22:34:17 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.24b-0
+- Update zen-browser to v1.24b
+
+-------------------------------------------------------------------
 Wed Oct 28 16:34:14 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The shipped binary talks to org.freedesktop.portal.* (file chooser,

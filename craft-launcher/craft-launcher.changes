@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 29 22:32:26 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update craft-launcher to 0.10.0
+
+-------------------------------------------------------------------
 Wed Oct 28 23:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The shipped launcher calls org.freedesktop.portal.FileChooser and

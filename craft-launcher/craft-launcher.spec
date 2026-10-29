@@ -1,12 +1,12 @@
 %global debug_package %{nil}
 Name:           craft-launcher
-Version:        0.9.0
+Version:        0.10.0
 Release:        0
 Summary:        App launcher for the Craft suite
 License:        MIT OR Apache-2.0
 Group:          System/Packages
 URL:            https://github.com/storytold/craft-launcher
-Source0:        https://github.com/storytold/craft-launcher/releases/download/v0.9.0/artcraft-launcher-0.9.0-linux-x86_64.rpm
+Source0:        https://github.com/storytold/craft-launcher/releases/download/v0.10.0/artcraft-launcher-0.10.0-linux-x86_64.rpm
 BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme

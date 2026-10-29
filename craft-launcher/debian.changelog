@@ -1,3 +1,9 @@
+craft-launcher (0.10.0-1) unstable; urgency=medium
+
+  * New upstream release 0.10.0.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 29 Oct 2026 22:32:26 +0000
+
 craft-launcher (0.9.0-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal-gtk as well: the payload calls

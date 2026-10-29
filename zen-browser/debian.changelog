@@ -1,3 +1,9 @@
+zen-browser (1.24b-1) unstable; urgency=medium
+
+  * New upstream release 1.24b.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 29 Oct 2026 22:34:17 +0000
+
 zen-browser (1.23.4b-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
