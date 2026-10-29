@@ -8,7 +8,6 @@ License:        GPL-3.0-only
 Group:          System/GUI/Other
 URL:            https://github.com/vysp3r/ProtonPlus
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
-BuildRequires:  appstream-glib
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
 BuildRequires:  gettext-runtime
@@ -16,6 +15,7 @@ BuildRequires:  meson >= 1.0.0
 BuildRequires:  ninja
 BuildRequires:  pkgconf
 BuildRequires:  pkgconfig
+BuildRequires:  python3
 BuildRequires:  vala
 BuildRequires:  pkgconfig(appstream)
 BuildRequires:  pkgconfig(cairo)
@@ -30,6 +30,8 @@ BuildRequires:  pkgconfig(libnotify)
 BuildRequires:  pkgconfig(libsoup-3.0)
 BuildRequires:  pkgconfig(sdl3) >= 3.2.0
 Requires:       hicolor-icon-theme
+Requires:       libGLESv2.so.2()(64bit)
+Conflicts:      ProtonPlus
 
 %description
 ProtonPlus is a Proton version manager for installing and managing Proton

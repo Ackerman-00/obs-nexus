@@ -1,4 +1,19 @@
 -------------------------------------------------------------------
+Thu Oct 29 23:01:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add BuildRequires python3 (upstream tests/meson.build runs
+  scripts_test.py via python.find_installation, and %check runs
+  %meson_test); drop unused BuildRequires appstream-glib (upstream
+  appstream validation uses optional appstreamcli/appstream-util
+  find_program fallbacks, no hard requirement); add Requires
+  libGLESv2.so.2 (dlopened at startup by the GTK4 GL stack, launch-
+  proven RC=134 abort without it in fedora-nexus); add Conflicts
+  ProtonPlus (openSUSE Factory now ships the same upstream at 0.6.8
+  under a case-different name installing the same /usr/bin/protonplus
+  paths - explicit mutual exclusion replaces a confusing rpm
+  file-conflict abort on co-install).
+
+-------------------------------------------------------------------
 Tue Oct 20 00:13:12 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlint: suppress branding-requires-unversioned for hicolor-icon-theme

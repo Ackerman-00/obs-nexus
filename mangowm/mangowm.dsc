@@ -5,7 +5,7 @@ Architecture: amd64
 Version: 0.18.4
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
- libwayland-dev, libwayland-bin, wayland-protocols, libinput-dev,
+ libwayland-dev (>= 1.23.1), libwayland-bin, wayland-protocols, libinput-dev (>= 1.27.1),
  libxkbcommon-dev, libdrm-dev, libpcre2-dev, libpixman-1-dev,
  libcjson-dev, libpango1.0-dev, libcairo2-dev, libxcb1-dev,
  libxcb-icccm4-dev, libxcb-randr0-dev,

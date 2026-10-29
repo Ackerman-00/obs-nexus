@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Oct 29 23:03:06 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Harden __requires_exclude for the next Gecko sync: add mozinference,
+  onnxruntime, softokn3 and xul to the bundled-mozilla soname exclude
+  (present in the 1.24b tarball and not yet DT_NEEDED; 1.24b runtime
+  soname set otherwise identical to 1.23.4b, 50/50 union unchanged).
+  Fix MFSA acronym typo (FSMA-2026-111 -> MFSA-2026-111) in the
+  1.23.4b changelog entry.
+
+-------------------------------------------------------------------
 Thu Oct 29 22:34:17 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.24b-0
@@ -21,7 +31,7 @@ Wed Oct 21 13:53:38 UTC 2026 - Ackerman-00 <noreply@example.com>
   2026-10-21 13:41 UTC after the morning retraction (release + tag +
   zen.linux-x86_64.tar.xz all live again, HTTP 200, 113405592 B,
   sha256 ba81dd70af70d645f2f0a692f7fa4510f819290abfd8d8e60273d3d5a60d0536).
-  Ships Firefox 158.0.1 with FSMA-2026-111 security fixes.
+  Ships Firefox 158.0.1 with MFSA-2026-111 security fixes.
 
 -------------------------------------------------------------------
 Wed Oct 21 12:42:08 UTC 2026 - Ackerman-00 <noreply@example.com>

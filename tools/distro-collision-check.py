@@ -167,6 +167,17 @@ def main() -> int:
         else:
             warns.append(f"same-name RPM upgrade: {pkg} {tw[pkg]} (Tumbleweed OSS) vs ours {spec_version(pkg)}")
 
+    tw_lower = {name.lower(): name for name in tw}
+    for pkg in packages:
+        if pkg in tw:
+            continue
+        match = tw_lower.get(pkg.lower())
+        if match:
+            warns.append(
+                f"case-collision RPM: ours {pkg} {spec_version(pkg)} vs distro {match} {tw[match]} "
+                f"(Tumbleweed OSS) - distinct RPM names installing overlapping payload paths"
+            )
+
     for label, url in DEB_MIRRORS.items():
         try:
             deb = debian_packages(url)

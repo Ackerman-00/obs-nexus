@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct 29 23:03:06 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- debian.control/dsc: mirror upstream meson version floors on the
+  Debian recipe (libwayland-dev >= 1.23.1 for wayland-server,
+  libinput-dev >= 1.27.1); both satisfied by forky/sid today, the
+  floors document the real requirement.
+
+-------------------------------------------------------------------
 Thu Oct 29 22:34:50 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update mangowm to 0.18.4
