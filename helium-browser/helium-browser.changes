@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 29 04:48:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 0.20.2.1
+
+-------------------------------------------------------------------
 Wed Oct 28 16:34:26 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Recommends: `vulkan-loader` is a Fedora package name and resolves to

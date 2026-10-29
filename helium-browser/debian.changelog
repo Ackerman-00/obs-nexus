@@ -1,3 +1,9 @@
+helium-browser (0.20.2.1-1) unstable; urgency=medium
+
+  * New upstream release 0.20.2.1.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 29 Oct 2026 04:48:59 +0000
+
 helium-browser (0.20.1.1-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the payload
