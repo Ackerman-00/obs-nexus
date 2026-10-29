@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct 29 00:04:32 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- The shipped binary talks to org.freedesktop.portal.* (file chooser,
+  settings), but no portal frontend was declared, so those features
+  fail with "No such interface" on a minimal install. Add weak
+  Recommends on xdg-desktop-portal and xdg-desktop-portal-gtk.
+
+-------------------------------------------------------------------
 Wed Oct 28 05:53:58 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlint: prune the six filters that no longer trip on the 0.0.49

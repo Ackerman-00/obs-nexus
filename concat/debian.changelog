@@ -1,5 +1,12 @@
 concat (0.2.8-1) unstable; urgency=medium
 
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
+    payload talks to org.freedesktop.portal.* at runtime.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 29 Oct 2026 00:04:32 +0000
+
+concat (0.2.8-1) unstable; urgency=medium
+
   * New upstream release 0.2.8.
 
  -- Ackerman-00 <noreply@example.com>  Tue, 20 Oct 2026 11:03:23 +0000

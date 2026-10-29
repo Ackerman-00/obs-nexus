@@ -28,6 +28,8 @@ Requires:       libgtk-3.so.0()(64bit)
 Requires:       libjavascriptcoregtk-4.1.so.0()(64bit)
 Requires:       libsoup-3.0.so.0()(64bit)
 Requires:       libwebkit2gtk-4.1.so.0()(64bit)
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description

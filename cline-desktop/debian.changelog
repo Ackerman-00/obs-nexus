@@ -1,5 +1,12 @@
 cline-desktop (0.0.49-1) unstable; urgency=medium
 
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
+    payload talks to org.freedesktop.portal.* at runtime.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 29 Oct 2026 00:04:32 +0000
+
+cline-desktop (0.0.49-1) unstable; urgency=medium
+
   * Initial release from upstream DEB.
 
  -- Ackerman-00 <noreply@example.com>  Tue, 27 Oct 2026 20:00:00 +0000

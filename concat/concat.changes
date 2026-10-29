@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 29 00:04:32 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- The shipped binary talks to org.freedesktop.portal.* (file chooser,
+  open URI), but no portal frontend was declared. Add weak Recommends
+  on xdg-desktop-portal and xdg-desktop-portal-gtk.
+
+-------------------------------------------------------------------
 Tue Oct 20 20:41:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpmlintrc: also suppress dir-or-file-outside-snapshot, no-soname and

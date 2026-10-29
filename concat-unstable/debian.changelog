@@ -1,5 +1,12 @@
 concat-unstable (0.2.8+git20261028102543.f0c0169-1) unstable; urgency=medium
 
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
+    payload talks to org.freedesktop.portal.* at runtime.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 29 Oct 2026 00:04:32 +0000
+
+concat-unstable (0.2.8+git20261028102543.f0c0169-1) unstable; urgency=medium
+
   * New upstream snapshot f0c0169 (base 0.2.8).
 
  -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 12:23:00 +0000

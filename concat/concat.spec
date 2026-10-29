@@ -22,6 +22,8 @@ Requires:       libgcc_s1
 Requires:       libstdc++6
 Requires:       libxkbcommon-x11-0
 Requires:       libxkbcommon0
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description
