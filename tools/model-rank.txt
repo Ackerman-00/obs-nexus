@@ -2,8 +2,8 @@
 # authority: opencode curated list > live catalog > changelog > published scores
 
 # tier 1 - benchmark leaders
-deepseek-v4.1-flash-free
 mimo-v2.6-flash-free
+deepseek-v4.1-flash-free
 
 # tier 2 - curated free models
 big-pickle

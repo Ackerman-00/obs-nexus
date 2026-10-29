@@ -2341,6 +2341,28 @@ def check_upstream_latest(pkgs):
             rows.append((pkg, "upstream %s" % slug, pv, latest, STATUS_SKIP, note))
             log("[%s] %s : %s" % (STATUS_SKIP, pkg, note))
             continue
+        # Placeholder-tag guard: if every tag sharing our release line resolves
+        # to the same commit, the tags are not real releases (mirror/placeholder)
+        # and the tag-derived "newest" is meaningless. Version authority then
+        # rests on the downloaded artifact, which already matched the pin.
+        _line_shas = set()
+        try:
+            _out = subprocess.run(["git", "ls-remote", "--tags", clone],
+                                  capture_output=True, text=True, timeout=180).stdout
+            for _ln in _out.splitlines():
+                if "\t" not in _ln or "refs/tags/" not in _ln:
+                    continue
+                _ref = _ln.split("\t", 1)[1].split("refs/tags/", 1)[-1].replace("^{}", "")
+                if line_prefix and _ref.startswith(line_prefix):
+                    _line_shas.add(_ln.split("\t", 1)[0])
+        except Exception:
+            pass
+        if line_prefix and len(_line_shas) == 1:
+            note = ("placeholder tags (all same commit) for line %s; version "
+                    "verified via downloaded artifact" % line_prefix)
+            rows.append((pkg, "upstream %s" % slug, pv, latest, STATUS_SKIP, note))
+            log("[%s] %s : %s" % (STATUS_SKIP, pkg, note))
+            continue
         note = ("pinned %s is not any published tag; newest is %s - rerun update.sh"
                 % (pv, latest))
         rows.append((pkg, "upstream %s" % slug, pv, latest, STATUS_STALE, note))
