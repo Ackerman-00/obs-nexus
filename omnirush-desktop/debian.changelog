@@ -1,3 +1,9 @@
+omnirush-desktop (3.8.2-1) unstable; urgency=medium
+
+  * New upstream release 3.8.2.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 30 Oct 2026 04:43:55 +0000
+
 omnirush-desktop (3.8.1-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
