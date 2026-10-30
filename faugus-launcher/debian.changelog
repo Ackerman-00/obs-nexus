@@ -1,3 +1,9 @@
+faugus-launcher (2.5.5-1) unstable; urgency=medium
+
+  * New upstream release 2.5.5.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 30 Oct 2026 22:03:55 +0000
+
 faugus-launcher (2.5.4-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal: the app reads portal Settings and sends

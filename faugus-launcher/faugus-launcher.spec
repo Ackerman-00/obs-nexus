@@ -1,5 +1,5 @@
 Name:           faugus-launcher
-Version:        2.5.4
+Version:        2.5.5
 Release:        0
 Recommends:     xdg-desktop-portal
 ExclusiveArch:  x86_64

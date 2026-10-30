@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Oct 30 22:03:55 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 2.5.5
+
+-------------------------------------------------------------------
 Wed Oct 28 16:42:57 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - faugus/utils.py reads org.freedesktop.portal.Settings (system accent
