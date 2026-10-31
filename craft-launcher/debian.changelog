@@ -1,3 +1,9 @@
+craft-launcher (0.11.1-1) unstable; urgency=medium
+
+  * New upstream release 0.11.1.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 11:49:54 +0000
+
 craft-launcher (0.10.0-1) unstable; urgency=medium
 
   * Revert to 0.10.0: upstream deleted the v0.11.0 release and its

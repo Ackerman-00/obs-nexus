@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Oct 31 11:49:54 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update craft-launcher to 0.11.1
+
+-------------------------------------------------------------------
 Sat Oct 31 05:40:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Revert to 0.10.0: the auto-updater briefly bumped to 0.11.0, but
