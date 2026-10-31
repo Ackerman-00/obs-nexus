@@ -2253,9 +2253,6 @@ def check_upstream_latest(pkgs):
             if all_tags:
                 latest, source = max(all_tags, key=_tagkey), "ls-remote"
 
-        # Multi-product-line repos: releases/latest is repo-wide, so it can
-        # point at a different product line than the one our Source0 pins.
-        # When that happens, re-resolve "latest" inside OUR line only.
         line_prefix = release_line_prefix(srcs) if latest else None
         if latest and source == "releases/latest" and line_prefix is not None:
             if not latest.startswith(line_prefix):
@@ -2341,10 +2338,6 @@ def check_upstream_latest(pkgs):
             rows.append((pkg, "upstream %s" % slug, pv, latest, STATUS_SKIP, note))
             log("[%s] %s : %s" % (STATUS_SKIP, pkg, note))
             continue
-        # Placeholder-tag guard: if every tag sharing our release line resolves
-        # to the same commit, the tags are not real releases (mirror/placeholder)
-        # and the tag-derived "newest" is meaningless. Version authority then
-        # rests on the downloaded artifact, which already matched the pin.
         _line_shas = set()
         try:
             _out = subprocess.run(["git", "ls-remote", "--tags", clone],

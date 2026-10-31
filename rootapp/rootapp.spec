@@ -20,7 +20,6 @@ Requires:       xdg-utils
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 Recommends:     pipewire-pulseaudio
-# --- sonames: DT_NEEDED union (see above) -------------------------------
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
 Requires:       libXdamage.so.1()(64bit)
@@ -51,7 +50,6 @@ Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-# --- sonames: loaded by name at runtime (dlopen / .NET probe table) -----
 Requires:       libEGL.so.1()(64bit)
 Requires:       libGL.so.1()(64bit)
 Requires:       libICE.so.6()(64bit)
