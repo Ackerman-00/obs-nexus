@@ -1,7 +1,10 @@
 -------------------------------------------------------------------
-Sat Oct 31 04:31:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+Sat Oct 31 05:40:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
-- Update craft-launcher to 0.11.0
+- Revert to 0.10.0: the auto-updater briefly bumped to 0.11.0, but
+  upstream deleted the v0.11.0 release (only the tag remains) and its
+  Source0 RPM asset now 404s. v0.10.0 is the latest release with live
+  assets (releases/latest, HTTP 200). Re-bump once upstream republishes.
 
 -------------------------------------------------------------------
 Thu Oct 29 22:32:26 UTC 2026 - Ackerman-00 <noreply@example.com>

@@ -1,8 +1,9 @@
-craft-launcher (0.11.0-1) unstable; urgency=medium
+craft-launcher (0.10.0-1) unstable; urgency=medium
 
-  * New upstream release 0.11.0.
+  * Revert to 0.10.0: upstream deleted the v0.11.0 release and its
+    Source0 asset 404s; v0.10.0 is the latest release with live assets.
 
- -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 04:31:00 +0000
+ -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 05:40:00 +0000
 
 craft-launcher (0.10.0-1) unstable; urgency=medium
 
