@@ -113,6 +113,7 @@ out of scope):
 | **hyperframes-desktop** | HyperFrames Studio video editor (Electron)
 | **omnirush-desktop** | OmniRush.ai desktop shell (Electron)
 | **freebuff-desktop** | Codebuff Freebuff Desktop (Electron)
+| **qoder** | Qoder agent workbench for human and AI software teams (Electron)
 
 ---
 

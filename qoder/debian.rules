@@ -1,0 +1,40 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_strip:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod 4755 debian/qoder/opt/Qoder/chrome-sandbox
+
+override_dh_auto_install:
+	mkdir -p payload
+	cd payload && (ar x ../*.deb data.tar.xz data.tar.zst data.tar.gz 2>/dev/null || true); cd ..
+	if [ -f payload/data.tar.xz ]; then tar -xf payload/data.tar.xz -C payload; \
+	elif [ -f payload/data.tar.zst ]; then tar --zstd -xf payload/data.tar.zst -C payload; \
+	elif [ -f payload/data.tar.gz ]; then tar -xzf payload/data.tar.gz -C payload; \
+	else echo "ERROR: unexpected data.tar compression"; exit 1; fi
+	mkdir -p debian/qoder/opt debian/qoder/usr/share debian/qoder/usr/bin
+	cp -a payload/opt/Qoder debian/qoder/opt/
+	cp -a payload/usr/share/applications debian/qoder/usr/share/
+	cp -a payload/usr/share/icons debian/qoder/usr/share/
+	mkdir -p debian/qoder/usr/share/doc/qoder
+	cp -a payload/usr/share/doc/qoder/. debian/qoder/usr/share/doc/qoder/
+	ln -sf /opt/Qoder/qoder debian/qoder/usr/bin/qoder

@@ -1,0 +1,23 @@
+-------------------------------------------------------------------
+Sat Oct 31 12:37:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.5.1-0
+- Initial packaging of Qoder (Electron 43.1.1 / Chromium 150.0.7871.114) from
+  the upstream .deb, sha256
+  2b46e71e7f8f07a69805525d854a49c19fafb92b888b98cc27da45319c78adaf
+- Keep upstream's epoch as Epoch: 1 in the spec (RPM side only) so installing
+  this repack over upstream's own qoder RPM is an upgrade, not a downgrade. The
+  CI recipe gate requires dsc Version == spec Version, so the Debian side stays
+  unepoch'd and the Debtransform tarball name stays colon-free.
+- Dependency audit is the DT_NEEDED union over the 19 ELF objects in
+  /opt/Qoder plus the dlopen probe table (libnotify, libpipewire, libpulse,
+  libXcursor, libX11-xcb). Dropped from upstream's Debian Depends after finding
+  no reference anywhere in the payload: libxss1, libxtst6, libuuid1 and the
+  libappindicator3-1 Recommends (FPM template leftovers). GPU libraries
+  (libEGL, libGLESv2, libvulkan, libvk_swiftshader, libffmpeg) and libvips are
+  bundled in the payload, so requiring them would only force a second copy.
+- chrome-sandbox keeps mode 4755 root:root via %attr at build time (upstream
+  postinst does the same unconditionally); %exclude + a dedicated %attr line
+  because /opt/Qoder/* already covers it.
+- AppArmor profile from resources/apparmor-profile installed in %post only when
+  apparmor_parser accepts it, removed in %postun on full erase.

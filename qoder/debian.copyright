@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Qoder
+Source: https://download.qoder.com.cn/qoder-app/releases
+
+Files: *
+Copyright: (c) Qoder
+License: (unknown)
+
+Files: opt/Qoder/lib* opt/Qoder/resources.pak opt/Qoder/*.pak
+Copyright: The Chromium and ANGLE authors
+License: BSD-3-Clause
+
+Files: opt/Qoder/LICENSE.electron.txt
+Copyright: Electron contributors
+License: MIT

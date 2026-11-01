@@ -1,0 +1,11 @@
+qoder (0.5.1-1) unstable; urgency=medium
+
+  * Initial release from upstream .deb (Electron 43.1.1 / Chromium 150.0.7871.114).
+  * override_dh_fixperms restores mode 4755 on chrome-sandbox after
+    dh_fixperms clears the setuid bit; override_dh_strip keeps the payload
+    byte-identical to upstream.
+  * Upstream's 1: epoch is deliberately not carried here: the CI recipe gate
+    pins dsc Version == spec Version, and Debian ships no qoder package this
+    repack has to outrank. The RPM keeps it as Epoch: 1.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 12:37:00 +0000
