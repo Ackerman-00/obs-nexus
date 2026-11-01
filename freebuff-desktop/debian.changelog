@@ -1,3 +1,9 @@
+freebuff-desktop (0.0.196-1) unstable; urgency=medium
+
+  * New upstream release 0.0.196.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 01 Nov 2026 21:49:02 +0000
+
 freebuff-desktop (0.0.192-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
