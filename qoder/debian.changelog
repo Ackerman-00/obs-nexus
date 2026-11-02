@@ -1,3 +1,9 @@
+qoder (0.5.2-1) unstable; urgency=medium
+
+  * New upstream release 0.5.2.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 02 Nov 2026 15:00:52 +0000
+
 qoder (0.5.1-1) unstable; urgency=medium
 
   * Initial release from upstream .deb (Electron 43.1.1 / Chromium 150.0.7871.114).
