@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 02 04:54:23 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.6.0-0
+- Update openchamber to v2.6.0
+
+-------------------------------------------------------------------
 Wed Oct 28 16:34:14 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The shipped binary talks to org.freedesktop.portal.* (file chooser,

@@ -1,3 +1,9 @@
+openchamber (2.6.0-1) unstable; urgency=medium
+
+  * New upstream release 2.6.0.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 02 Nov 2026 04:54:23 +0000
+
 openchamber (2.5.3-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
