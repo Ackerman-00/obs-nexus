@@ -1,3 +1,9 @@
+concat-unstable (0.2.8+git20261102184547.f2a2608-1) unstable; urgency=medium
+
+  * New upstream snapshot f2a2608 (base 0.2.8).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 03 Nov 2026 00:47:45 +0000
+
 concat-unstable (0.2.8+git20261028102543.f0c0169-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the

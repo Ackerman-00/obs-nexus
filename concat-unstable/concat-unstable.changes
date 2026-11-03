@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 03 00:47:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.8+git20261102184547.f2a2608-0
+- Update concat-unstable to base 0.2.8 + main f2a2608
+
+-------------------------------------------------------------------
 Thu Oct 29 00:04:32 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The shipped binary talks to org.freedesktop.portal.* (file chooser,

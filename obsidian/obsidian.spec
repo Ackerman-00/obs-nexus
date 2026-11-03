@@ -3,7 +3,7 @@
 %global __requires_exclude_from ^/opt/obsidian/.*$
 %global __provides_exclude_from ^/opt/obsidian/.*$
 Name:           obsidian
-Version:        1.14.5
+Version:        1.15.0
 Release:        0
 Summary:        A powerful knowledge base for plain text Markdown files
 License:        NonFree

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Nov 03 00:46:20 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream version 1.15.0 (bundled Electron AppImage)
+
+-------------------------------------------------------------------
 Wed Oct 28 16:34:14 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The shipped binary talks to org.freedesktop.portal.* (file chooser,
