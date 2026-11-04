@@ -1,3 +1,9 @@
+freebuff-desktop (0.0.200-1) unstable; urgency=medium
+
+  * New upstream release 0.0.200.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 04 Nov 2026 23:20:58 +0000
+
 freebuff-desktop (0.0.199-1) unstable; urgency=medium
 
   * New upstream release 0.0.199.
