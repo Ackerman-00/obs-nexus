@@ -1,3 +1,9 @@
+craft-launcher (0.14.1-1) unstable; urgency=medium
+
+  * New upstream release 0.14.1.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 05 Nov 2026 05:33:47 +0000
+
 craft-launcher (0.14.0-1) unstable; urgency=medium
 
   * New upstream release 0.14.0.
