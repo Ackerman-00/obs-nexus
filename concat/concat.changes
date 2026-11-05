@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 05 14:15:04 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.9-0
+- Update concat to v0.2.9
+
+-------------------------------------------------------------------
 Thu Oct 29 00:04:32 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The shipped binary talks to org.freedesktop.portal.* (file chooser,

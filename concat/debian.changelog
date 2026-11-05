@@ -1,3 +1,9 @@
+concat (0.2.9-1) unstable; urgency=medium
+
+  * New upstream release 0.2.9.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 05 Nov 2026 14:15:04 +0000
+
 concat (0.2.8-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
