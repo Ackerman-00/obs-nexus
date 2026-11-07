@@ -88,7 +88,6 @@ out of scope):
 | Package | Description |
 |---|---|
 | **bibata-cursor-theme** | Open source, compact, material designed cursor set
-| **craft-launcher** | App launcher for the Craft suite
 | **concat** | Free and open source video editor
 | **concat-unstable** | Video editor main-branch snapshot (native source build)
 | **faugus-launcher** | Lightweight app for running Windows games using UMU-Launcher
@@ -119,7 +118,7 @@ out of scope):
 
 ## Build status
 
-Automated OBS builds are triggered by the `update-packages.yml` pipeline (runs every 6h) which syncs changed packages to OBS and rebuilds them, and the autonomous opencode maintainer verifies and repairs failed builds on the same schedule.
+Automated OBS builds are triggered by the `update-packages.yml` pipeline (runs every 15h) which syncs changed packages to OBS and rebuilds them, and the autonomous opencode maintainer verifies and repairs failed builds on the same schedule.
 
 | Project | Status |
 |---|---|
