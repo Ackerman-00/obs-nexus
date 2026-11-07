@@ -1,3 +1,9 @@
+lazyvim-git (16.0.1+git20261107153028.f653596-1) unstable; urgency=medium
+
+  * New upstream snapshot f653596 (base 16.0.1).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 07 Nov 2026 18:56:44 +0000
+
 lazyvim-git (16.0.1+git20261028082036.301a3f7-1) unstable; urgency=medium
 
   * New upstream snapshot 301a3f7 (base 16.0.1).
