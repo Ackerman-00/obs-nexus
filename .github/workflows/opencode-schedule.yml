@@ -88,6 +88,22 @@ jobs:
             *) echo "FATAL: need opencode 2.x, got '$ver'" >&2; exit 1 ;;
           esac
 
+      - name: Import OpenCode account credentials
+        shell: bash
+        env:
+          OPENCODE_AUTH_JSON: ${{ secrets.OPENCODE_AUTH_JSON }}
+        run: |
+          if [ -n "$OPENCODE_AUTH_JSON" ]; then
+            printf '%s\n' "$OPENCODE_AUTH_JSON" > "$RUNNER_TEMP/opencode-auth.json"
+            if opencode auth import "$RUNNER_TEMP/opencode-auth.json"; then
+              echo "OpenCode account credentials imported (authenticated run)"
+            else
+              echo "WARN: opencode auth import failed - falling back to anonymous limits"
+            fi
+          else
+            echo "OPENCODE_AUTH_JSON secret not set - running with anonymous free-tier limits"
+          fi
+
       - name: Run opencode
         shell: bash
         run: |
@@ -111,10 +127,13 @@ jobs:
           echo "free-model cascade: ${CASCADE[*]}"
           [ -n "$MODEL_NOTES" ] && echo "$MODEL_NOTES"
           sleep $((RANDOM % 180))
+          quota_hits=0
+          region_hits=0
           deadline=$(( $(date +%s) + 330 * 60 ))
           for model in "${CASCADE[@]}"; do
             left=$(( deadline - $(date +%s) ))
             [ "$left" -gt 300 ] || break
+            model_skip=""
             echo "=== opencode run attempt with $model (${left}s left) ==="
             exit_code=0
             for attempt_n in 1 2 3; do
@@ -123,17 +142,44 @@ jobs:
                 exit_code=1
                 break
               fi
-              if timeout --signal=TERM --kill-after=60s "$left" env MODEL="$model" opencode run --standalone --model "$model" --agent build "$PROMPT"; then
+              OCLOG="$RUNNER_TEMP/opencode-out.txt"
+              set -o pipefail
+              if timeout --signal=TERM --kill-after=60s "$left" env MODEL="$model" opencode run --standalone --model "$model" --agent build "$PROMPT" 2>&1 | tee "$OCLOG"; then
                 exit_code=0
                 break
+              else
+                exit_code=$?
               fi
-              exit_code=$?
+              set +o pipefail
+              if [ "$exit_code" -ne 0 ]; then
+                # region-blocked: retry can't help - skip, don't burn the attempt budget
+                if grep -qiE 'not available in (your|this) (country|region)|unavailable in (your|this) (country|region)|not supported in (your|this) (country|region)' "$OCLOG" 2>/dev/null; then
+                  echo "=== $model: not available in the runner region - skipping, no retry ==="
+                  region_hits=$((region_hits + 1))
+                  model_skip=region
+                  break
+                fi
+                # free quota: same model can't recover - next model, not run death
+                if grep -qi 'free usage limit reached' "$OCLOG" 2>/dev/null; then
+                  echo "=== $model: OpenCode free usage limit reached - moving to the next model ==="
+                  quota_hits=$((quota_hits + 1))
+                  model_skip=quota
+                  break
+                fi
+              fi
               if [ "$attempt_n" -lt 3 ]; then
                 delay=$((RANDOM % (120 * attempt_n)))
                 echo "=== $model try $attempt_n/3 failed (exit $exit_code) - backing off ${delay}s ==="
                 sleep "$delay"
               fi
             done
+            if [ "$model_skip" = "quota" ]; then
+              sleep 5
+              continue
+            fi
+            if [ "$model_skip" = "region" ]; then
+              continue
+            fi
             if [ "$exit_code" -eq 0 ]; then
               ok=0
               for attempt in $(seq 1 10); do
@@ -154,6 +200,9 @@ jobs:
             fi
             sleep 60
           done
+          if [ "$quota_hits" -ge "${#CASCADE[@]}" ] && [ "${#CASCADE[@]}" -gt 0 ]; then
+            echo "GAP: external - all free models quota-blocked (OpenCode free usage limits)"
+          fi
           exit 1
         env:
           MODEL: opencode/deepseek-v4.1-flash-free
