@@ -2,7 +2,7 @@ name: opencode-schedule
 
 on:
   schedule:
-    - cron: '10 */6 * * *'
+    - cron: '15 */8 * * *'
   workflow_dispatch:
 
 permissions:
