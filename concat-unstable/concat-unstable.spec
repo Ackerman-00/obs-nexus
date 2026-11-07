@@ -1,10 +1,10 @@
 %global debug_package %{nil}
 %global __requires_exclude_from ^/opt/concat-unstable/.*$
 %global __provides_exclude_from ^/opt/concat-unstable/.*$
-%global commit          f2a260814bb7637ddbfe24c9bc94cb2c73121675
-%global shortcommit     f2a2608
-%global gitdate         20261102184547
-%global base_version    0.2.8
+%global commit          443fb2a33648a86733c4360544cd8f291f5aeaae
+%global shortcommit     443fb2a
+%global gitdate         20261107123648
+%global base_version    0.2.9
 Name:           concat-unstable
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
 Release:        0
@@ -61,7 +61,6 @@ export FFMPEG_DIR="%{_builddir}/concat-%{commit}/ffmpeg-dev"
 export ORT_LIB_LOCATION="%{_builddir}/concat-%{commit}/onnxlib"
 export ORT_PREFER_DYNAMIC_LINK=1
 export SKIA_BINARIES_URL="file://%{_builddir}/concat-%{commit}/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
-export SHERPA_ONNX_ARCHIVE_DIR="%{_builddir}/concat-%{commit}/sherpa-cache"
 export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags"
 cd src && cargo build --offline --frozen --release --bin concat
 

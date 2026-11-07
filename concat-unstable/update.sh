@@ -121,16 +121,20 @@ mkdir -p "$SRC/skia-cache"
 cp -a "$TMPD/skia-binaries.tar.gz" "$SRC/skia-cache/skia-binaries-$SKIA_KEY.tar.gz"
 sed -i -E "s|skia-binaries-[^\"']*\.tar\.gz|skia-binaries-$SKIA_KEY.tar.gz|g" "$SPEC_FILE" debian.rules
 
-SHERPA_VER=$(grep -A2 'name = "sherpa-onnx-sys"' "$SRC/src/Cargo.lock" | grep '^version' | head -1 | cut -d'"' -f2)
-[ -n "$SHERPA_VER" ] || { echo "sherpa-onnx-sys version unreadable; spec left untouched."; exit 1; }
-SHERPA_ARCHIVE="sherpa-onnx-v$SHERPA_VER-linux-x64-static-lib.tar.bz2"
-curl -fsSL --retry 3 --connect-timeout 60 \
-    "https://github.com/k2-fsa/sherpa-onnx/releases/download/v$SHERPA_VER/$SHERPA_ARCHIVE" \
-    -o "$TMPD/sherpa.tar.bz2" \
-    || { echo "sherpa-onnx download failed; spec left untouched."; exit 1; }
-mkdir -p "$SRC/sherpa-cache"
-cp -a "$TMPD/sherpa.tar.bz2" "$SRC/sherpa-cache/$SHERPA_ARCHIVE"
-sed -i -E "s|sherpa-onnx-v[0-9.]+-linux-x64-static-lib\.tar\.bz2|$SHERPA_ARCHIVE|g" "$SPEC_FILE" debian.rules
+SHERPA_VER=$(grep -A2 'name = "sherpa-onnx-sys"' "$SRC/src/Cargo.lock" | grep '^version' | head -1 | cut -d'"' -f2 || true)
+if [ -n "$SHERPA_VER" ]; then
+    SHERPA_ARCHIVE="sherpa-onnx-v$SHERPA_VER-linux-x64-static-lib.tar.bz2"
+    curl -fsSL --retry 3 --connect-timeout 60 \
+        "https://github.com/k2-fsa/sherpa-onnx/releases/download/v$SHERPA_VER/$SHERPA_ARCHIVE" \
+        -o "$TMPD/sherpa.tar.bz2" \
+        || { echo "sherpa-onnx download failed; spec left untouched."; exit 1; }
+    mkdir -p "$SRC/sherpa-cache"
+    cp -a "$TMPD/sherpa.tar.bz2" "$SRC/sherpa-cache/$SHERPA_ARCHIVE"
+    sed -i -E "s|sherpa-onnx-v[0-9.]+-linux-x64-static-lib\.tar\.bz2|$SHERPA_ARCHIVE|g" "$SPEC_FILE" debian.rules
+else
+    echo "sherpa-onnx-sys not in Cargo.lock (upstream dropped it); skipping sherpa sidecar."
+    rm -rf "$SRC/sherpa-cache"
+fi
 
 rm -f concat-unstable-*.tar.gz
 tar -czf "$TARBALL" -C "$TMPD" "concat-$HEAD_SHA"
