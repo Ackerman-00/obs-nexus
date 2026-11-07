@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Sat Nov 07 21:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- BuildRequires diet: drop Mesa-libGL-devel, freetype2-devel, gtk3-devel
+  and libxkbcommon-devel. A minimal-set container build of the new
+  snapshot compiled everything and reached the final link with only
+  fontconfig-devel/alsa-devel (both pkg-config'd by yeslogic-fontconfig-sys
+  and alsa-sys), proving these four are vestigial (nothing pkg-configs
+  them; wgpu's GL/EGL path loads libGL/libEGL at runtime, ffmpeg/skia/ort
+  are vendored sidecars). fontconfig-devel transitively pins freetype2.
+  Runtime Requires unchanged (Mesa-libGL1, gtk3, libxkbcommon0,
+  libxkbcommon-x11-0, fontconfig, libfreetype6, libasound2).
+- dsc/debian.control Build-Depends made identical and given the same diet.
+
+-------------------------------------------------------------------
 Sat Nov 07 18:56:28 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.9+git20261107123648.443fb2a-0

@@ -13,18 +13,14 @@ License:        AGPL-3.0-or-later
 Group:          Productivity/Multimedia/Video/Editors and Convertors
 URL:            https://github.com/jub0t/concat
 Source0:        %{name}-%{version}.tar.gz
-BuildRequires:  Mesa-libGL-devel
 BuildRequires:  alsa-devel
 BuildRequires:  cargo
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  fontconfig-devel
-BuildRequires:  freetype2-devel
 BuildRequires:  gcc-c++
-BuildRequires:  gtk3-devel
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  libclang13
-BuildRequires:  libxkbcommon-devel
 BuildRequires:  make
 BuildRequires:  pkgconf
 BuildRequires:  pkgconfig

@@ -1,5 +1,14 @@
 concat-unstable (0.2.9+git20261107123648.443fb2a-1) unstable; urgency=medium
 
+  * Build-Depends diet: drop libgtk-3-dev, libgl1-mesa-dev, libxkbcommon-dev,
+    libfreetype*-dev (nothing pkg-configs them; fontconfig pulls freetype).
+    Keep libfontconfig1-dev, libasound2-dev, libssl-dev, libclang-dev.
+    dsc Build-Depends and debian.control Build-Depends now identical.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 07 Nov 2026 21:20:00 +0000
+
+concat-unstable (0.2.9+git20261107123648.443fb2a-1) unstable; urgency=medium
+
   * New upstream snapshot 443fb2a (base 0.2.9).
 
  -- Ackerman-00 <noreply@example.com>  Sat, 07 Nov 2026 18:56:28 +0000
