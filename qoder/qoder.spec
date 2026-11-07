@@ -137,6 +137,7 @@ fi
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/qoder.png
+%dir %{_docdir}/qoder
 %doc %{_docdir}/qoder/changelog.gz
 %dir /opt/Qoder
 %exclude /opt/Qoder/chrome-sandbox
