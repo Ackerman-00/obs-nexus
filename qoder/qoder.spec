@@ -54,6 +54,8 @@ Requires:       libXcursor.so.1()(64bit)
 Requires:       libnotify.so.4()(64bit)
 Requires:       libpipewire-0.3.so.0()(64bit)
 Requires:       libpulse.so.0()(64bit)
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
 
 %description

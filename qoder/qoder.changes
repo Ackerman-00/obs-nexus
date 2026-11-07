@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Sat Nov 07 21:07:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommends xdg-desktop-portal and xdg-desktop-portal-gtk: the
+  Electron payload talks to org.freedesktop.portal.Desktop/Settings/
+  OpenURI at runtime (theme sync, opening external links), but no
+  portal frontend was declared, so those calls silently failed on
+  minimal installs. Files chooser/OpenURI verified in the payload
+  strings of qoder 0.5.6.
+
+-------------------------------------------------------------------
 Sat Nov 07 18:52:46 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Own /usr/share/doc/packages/qoder in %files: the openSUSE
