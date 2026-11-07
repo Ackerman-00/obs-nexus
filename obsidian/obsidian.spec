@@ -57,6 +57,7 @@ Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
+Recommends:     libayatana-appindicator3.so.1()(64bit)
 ExclusiveArch:  x86_64
 
 %description

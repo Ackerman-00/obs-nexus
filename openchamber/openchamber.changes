@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Sat Nov 07 19:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommends: libayatana-appindicator3.so.1()(64bit) so the tray works
+  on minimal installs via the system ayatana stack (Electron prefers
+  the ayatana soname); previously the tray silently failed on systems
+  without it.
+
+-------------------------------------------------------------------
 Wed Nov 04 05:13:48 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.6.1-0
