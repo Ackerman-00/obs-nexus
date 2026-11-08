@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Nov 08 03:44:05 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.7.0-0
+- Update openchamber to v2.7.0
+
+-------------------------------------------------------------------
 Sat Nov 07 19:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Recommends: libayatana-appindicator3.so.1()(64bit) so the tray works
