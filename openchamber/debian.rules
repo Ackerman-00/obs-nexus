@@ -15,7 +15,7 @@ override_dh_auto_test:
 	:
 
 override_dh_auto_install:
-	chmod +x "$$(ls *.AppImage)" && ./"$$(ls *.AppImage)" --appimage-extract >/dev/null && mv squashfs-root appimage-root
+	chmod +x "$$(ls *.AppImage)" && ./"$$(ls *.AppImage)" --appimage-extract >/dev/null && chmod -R go-w squashfs-root && mv squashfs-root appimage-root
 	mkdir -p debian/openchamber/opt/openchamber debian/openchamber/usr/bin debian/openchamber/usr/share/applications
 	cp -ar appimage-root/* debian/openchamber/opt/openchamber/
 	chmod 0755 debian/openchamber/opt/openchamber/chrome-sandbox

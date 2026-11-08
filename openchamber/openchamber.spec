@@ -67,7 +67,7 @@ variable management, and desktop builds for Linux.
 %setup -q -c -T
 chmod +x %{SOURCE0}
 %{SOURCE0} --appimage-extract
-chmod go-w squashfs-root
+chmod -R go-w squashfs-root
 
 %build
 

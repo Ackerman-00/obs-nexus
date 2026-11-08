@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Sun Nov 08 07:10:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.7.0-1
+- Normalize AppImage payload permissions to remove world-writable
+  files from the package (rpm-lint world-writable errors); chmod -R
+  go-w applied recursively in %prep and dh_auto_install
+
+-------------------------------------------------------------------
 Sun Nov 08 03:44:05 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.7.0-0

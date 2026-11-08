@@ -1,3 +1,10 @@
+openchamber (2.7.0-2) unstable; urgency=medium
+
+  * Normalize AppImage payload permissions to remove world-writable
+    files (dpkg ships them 0666/0777 otherwise).
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 08 Nov 2026 07:10:00 +0000
+
 openchamber (2.7.0-1) unstable; urgency=medium
 
   * New upstream release 2.7.0.
