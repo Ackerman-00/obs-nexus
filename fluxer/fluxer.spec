@@ -3,14 +3,14 @@
 %global __requires_exclude_from ^%{_libdir}/%{name}/.*$
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*$
 Name:           fluxer
-Version:        2026.1107.235046
+Version:        2026.1108.50402
 Release:        0
 Summary:        Free and open source instant messaging and VoIP platform
 License:        AGPL-3.0-or-later AND BSD-3-Clause
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://fluxer.app
 Source0:        fluxer.rpm
-# sha256:  821da653da0e4ed87fc052d41b79e3f2f30b4e20dd7716cfb4a36f49b03593c2
+# sha256:  22020a3620fea45b1b9002b3a4a2a4aef2a1ee8d33aaf0c767652d27e3c5a3ec
 Source1:        fluxer-rpmlintrc
 BuildRequires:  cpio
 BuildRequires:  hicolor-icon-theme

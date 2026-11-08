@@ -3,7 +3,7 @@
 %global __requires_exclude_from ^/opt/rootapp/.*$
 %global __provides_exclude_from ^/opt/rootapp/.*$
 Name:           rootapp
-Version:        0.9.161
+Version:        0.9.162
 Release:        0
 Summary:        Discord alternative for gaming communities and large groups
 License:        SUSE-Freeware
@@ -67,7 +67,7 @@ Requires:       libva.so.2()(64bit)
 Requires:       libvulkan.so.1()(64bit)
 Requires:       libwayland-client.so.0()(64bit)
 Provides:       rootapp = %{version}-%{release}
-# sha256: 2e6f505a6da60952893a511a618544cb1875b12a349d962f48e5006ab2a4d7ad
+# sha256: ffe6af0488a18cfcaa84c43db47e3c80788f85d640192f6a2b5ed3151789a580
 ExclusiveArch:  x86_64
 
 %description
