@@ -1,7 +1,7 @@
-%global commit          f653596f0aee6d0a8a8ed8ba83b35ff3a37abfc4
-%global shortcommit     f653596
-%global gitdate         20261107153028
-%global base_version    16.0.1
+%global commit          5c26fac21fd3896024a23f2dbc62b722f9a731db
+%global shortcommit     5c26fac
+%global gitdate         20261108202129
+%global base_version    16.0.2
 Name:           lazyvim-git
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
 Release:        0
