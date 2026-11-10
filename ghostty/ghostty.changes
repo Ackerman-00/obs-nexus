@@ -6,6 +6,13 @@ Tue Nov 10 22:04:13 UTC 2026 - Ackerman-00 <noreply@example.com>
   (zig-rpm-macros0.17), which Provides zig = 0.17.0. Bump %global
   zig_ver and the BuildRequires floor to 0.17.0, and ZIG_VER in
   update.sh accordingly (the auto-HOLD guard no longer trips).
+- Fix vendor.tar.zst layout for zig 0.17: the deps CDN re-exported its
+  tarballs, so `zig fetch` output must be extracted into
+  vendor/zig/p/<manifest-hash>/ with package contents at the root
+  (strip-components=1, then flatten single-wrapper dirs), not left as
+  raw .tar.gz blobs; zig --system rejects the previous layout
+  ("package not found at .../p/<hash>"). update.sh's
+  fetch_vendor_cache now does the extract+flatten itself.
 
 -------------------------------------------------------------------
 Wed Oct 28 23:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>

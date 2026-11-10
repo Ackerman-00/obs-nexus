@@ -48,7 +48,26 @@ fetch_vendor_cache() {
             || { echo "zig fetch failed: $url"; trap - EXIT; rm -rf "$tmpd"; return 1; }
     done < "$srcdir/build.zig.zon.txt"
     unset ZIG_GLOBAL_CACHE_DIR
+    for pkg in "$srcdir"/vendor/zig/p/*.tar.gz; do
+        [ -e "$pkg" ] || continue
+        name=$(basename "$pkg" .tar.gz)
+        mkdir -p "$srcdir/vendor/zig/p/$name"
+        tar -xzf "$pkg" -C "$srcdir/vendor/zig/p/$name" --strip-components=1 \
+            || { echo "vendor extract failed: $pkg"; trap - EXIT; rm -rf "$tmpd"; return 1; }
+        rm -f "$pkg"
+    done
+    find "$srcdir/vendor/zig/p" -mindepth 1 -maxdepth 1 -type d | while read -r d; do
+        if ! [ -f "$d/build.zig" ] && ! [ -f "$d/build.zig.zon" ]; then
+            shopt -s nullglob dotglob
+            entries=("$d"/*)
+            shopt -u nullglob dotglob
+            if [ "${#entries[@]}" -eq 1 ] && [ -d "${entries[0]}" ]; then
+                (cd "${entries[0]}" && cp -a . ../) && rm -rf "${entries[0]}"
+            fi
+        fi
+    done
     find "$srcdir/vendor/zig" -type d -iname test -print0 | xargs -r0 rm -rf
+    rm -rf "$srcdir/vendor/zig/tmp" "$srcdir/vendor/zig/b" "$srcdir/vendor/zig/h" "$srcdir/vendor/zig/o" "$srcdir/vendor/zig/z"
     tar --zstd -cf "vendor.tar.zst" -C "$srcdir" vendor/zig \
         || { echo "vendor pack failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
     ls -l "vendor.tar.zst"
