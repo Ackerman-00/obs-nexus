@@ -116,6 +116,7 @@ esac
 %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
 
 %files
+%dir %{_licensedir}/%{name}
 %license %{_licensedir}/%{name}/LICENSE
 %license %{_licensedir}/%{name}/LICENSE.ungoogled_chromium
 %{helium_base}/
