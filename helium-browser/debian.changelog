@@ -1,3 +1,9 @@
+helium-browser (0.21.2.1-1) unstable; urgency=medium
+
+  * New upstream release 0.21.2.1.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 10 Nov 2026 21:12:20 +0000
+
 helium-browser (0.21.1.1-1) unstable; urgency=medium
 
   * New upstream release 0.21.1.1.
