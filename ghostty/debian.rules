@@ -22,7 +22,6 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	mkdir -p debian/ghostty && \
-	cd src && \
 	ZIG_GLOBAL_CACHE_DIR=$(ZCACHE) DESTDIR=$(CURDIR)/debian/ghostty $(ZIG) build --prefix /usr --prefix-lib-dir lib/x86_64-linux-gnu $(ZFLAGS) && \
 	rm -rv $(CURDIR)/debian/ghostty/usr/share/terminfo/ && \
 	mv $(CURDIR)/debian/ghostty/usr/share/pkgconfig/ $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/

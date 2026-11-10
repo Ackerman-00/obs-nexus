@@ -1,5 +1,14 @@
 ghostty (1.4.0-1) unstable; urgency=medium
 
+  * Build-Depends: add libfreetype-dev and libfontconfig-dev (freetype2.pc
+    and fontconfig.pc are required by the zig build on current Debian).
+  * debian/rules: run zig build from the package root, not src/
+    (zig 0.17 cannot resolve src/build/main.zig relative to src/).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 10 Nov 2026 23:50:00 +0000
+
+ghostty (1.4.0-1) unstable; urgency=medium
+
   * New upstream release 1.4.0.
 
  -- Ackerman-00 <noreply@example.com>  Tue, 10 Nov 2026 22:04:13 +0000
