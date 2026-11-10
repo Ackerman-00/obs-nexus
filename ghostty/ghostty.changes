@@ -9,6 +9,10 @@ Tue Nov 10 22:04:13 UTC 2026 - Ackerman-00 <noreply@example.com>
 - Add BuildRequires: pkgconfig(egl) (Mesa-libEGL-devel): the zig build
   links -legl via glad_egl.c (226/229 steps passed without it; the
   missing egl soname was the only failure).
+- 1.4.0's zig install places libghostty-vt.pc and libghostty-vt-static.pc
+  at %{_libdir} top level (not only under %{_libdir}/pkgconfig); remove
+  both along with the other libghostty-vt artifacts, as the package
+  ships the application only. Fixes the unpackaged-files check failure.
 - Fix vendor.tar.zst layout for zig 0.17: the deps CDN re-exported its
   tarballs, so `zig fetch` output must be extracted into
   vendor/zig/p/<manifest-hash>/ with package contents at the root

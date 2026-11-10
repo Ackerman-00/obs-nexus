@@ -94,7 +94,9 @@ chmod 0644 \
 rm -f %{buildroot}%{_libdir}/libghostty-vt.so \
       %{buildroot}%{_libdir}/libghostty-vt.so.0 \
       %{buildroot}%{_libdir}/libghostty-vt.so.0.1.0 \
-      %{buildroot}%{_libdir}/pkgconfig/libghostty-vt.pc
+      %{buildroot}%{_libdir}/pkgconfig/libghostty-vt.pc \
+      %{buildroot}%{_libdir}/libghostty-vt.pc \
+      %{buildroot}%{_libdir}/libghostty-vt-static.pc
 rm -rf %{buildroot}%{_libdir}/pkgconfig
 rm -rf %{buildroot}%{_includedir}/ghostty
 
