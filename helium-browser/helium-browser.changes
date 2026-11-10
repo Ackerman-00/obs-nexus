@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add %license for the upstream LICENSE and LICENSE.ungoogled_chromium
+  (new Source3/Source4 at the same tag), Requires: hicolor-icon-theme and
+  Requires: xdg-utils (external handlers exec xdg-open).
+
+-------------------------------------------------------------------
 Tue Nov 10 21:12:20 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 0.21.2.1

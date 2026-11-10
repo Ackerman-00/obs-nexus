@@ -9,7 +9,7 @@ Homepage: https://github.com/vysp3r/ProtonPlus
 
 Package: protonplus
 Architecture: amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}, hicolor-icon-theme, libglvnd0
+Depends: ${shlibs:Depends}, ${misc:Depends}, hicolor-icon-theme, libglvnd0, which
 Description: A Wine and Proton-based compatibility tools manager for GNOME
  ProtonPlus is a Proton version manager for installing and managing
  Proton versions. It works with Steam, Lutris, Heroic Games Launcher

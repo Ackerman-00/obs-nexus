@@ -1,5 +1,11 @@
 lazyvim-git (16.0.2+git20261108202129.5c26fac-1) unstable; urgency=medium
 
+  * Recommends: add fd-find and ripgrep (LazyVim's search/navigation depend on both).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 10 Nov 2026 22:30:00 +0000
+
+lazyvim-git (16.0.2+git20261108202129.5c26fac-1) unstable; urgency=medium
+
   * New upstream snapshot 5c26fac (base 16.0.2).
 
  -- Ackerman-00 <noreply@example.com>  Mon, 09 Nov 2026 03:53:09 +0000

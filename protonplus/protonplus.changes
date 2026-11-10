@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add Requires: which (upstream calls `which` at runtime,
+  src/utils/system.vala).
+
+-------------------------------------------------------------------
 Thu Oct 29 23:01:45 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add BuildRequires python3 (upstream tests/meson.build runs

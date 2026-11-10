@@ -31,6 +31,7 @@ BuildRequires:  pkgconfig(libsoup-3.0)
 BuildRequires:  pkgconfig(sdl3) >= 3.2.0
 Requires:       hicolor-icon-theme
 Requires:       libGLESv2.so.2()(64bit)
+Requires:       which
 Conflicts:      ProtonPlus
 
 %description

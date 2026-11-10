@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add %license/%doc for the bundled Electron license files
+  (LICENSE.electron.txt, LICENSES.chromium.html) and Requires:
+  hicolor-icon-theme.
+
+-------------------------------------------------------------------
 Thu Nov 05 23:27:02 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.6.9-0

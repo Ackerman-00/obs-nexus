@@ -15,6 +15,7 @@ Source1:        fluxer-rpmlintrc
 BuildRequires:  cpio
 BuildRequires:  hicolor-icon-theme
 Requires:       at-spi2-core
+Requires:       hicolor-icon-theme
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
 Requires:       libXdamage.so.1()(64bit)
@@ -110,11 +111,13 @@ if [ "$ICON_COUNT" -eq 0 ]; then echo "No icons found"; exit 1; fi
 %{_bindir}/%{name}
 %exclude %{_libdir}/%{name}/LICENSE.electron.txt
 %exclude %{_libdir}/%{name}/LICENSES.chromium.html
+%exclude %{_libdir}/%{name}/chrome-sandbox
 %{_libdir}/%{name}/
 %{_datadir}/applications/%{appid}.desktop
 %dir %{_datadir}/icons/hicolor
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/%{appid}.png
+%attr(4755, root, root) %{_libdir}/%{name}/chrome-sandbox
 
 %changelog

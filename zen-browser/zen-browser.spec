@@ -23,6 +23,9 @@ BuildRequires:  mozilla-nss-certs
 Requires:       hunspell
 Requires:       hyphen
 Requires:       mozilla-nss-certs
+Requires(post): desktop-file-utils
+Requires(posttrans): gtk3-tools
+Requires(postun): gtk3-tools
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
@@ -77,6 +80,23 @@ fi
 %fdupes %{buildroot}%{_libdir}/zen-browser
 
 %check
+desktop-file-validate %{buildroot}%{_datadir}/applications/zen-browser.desktop
+
+%post
+%{_bindir}/update-desktop-database > /dev/null 2>&1 || :
+/bin/touch --no-create %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
+
+%postun
+%{_bindir}/update-desktop-database > /dev/null 2>&1 || :
+case "$1" in
+    0)
+        /bin/touch --no-create %{_datadir}/icons/hicolor > /dev/null 2>&1
+        %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
+        ;;
+esac
+
+%posttrans
+%{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
 
 %files
 %{_bindir}/zen-browser

@@ -12,8 +12,11 @@ URL:            https://github.com/imputnet/helium-linux
 Source0:        https://github.com/imputnet/helium-linux/releases/download/%{version}/helium-%{version}-x86_64_linux.tar.xz
 Source1:        https://raw.githubusercontent.com/imputnet/helium-linux/%{version}/package/net.imput.helium.metainfo.xml
 Source2:        helium-browser-rpmlintrc
+Source3:        https://raw.githubusercontent.com/imputnet/helium-linux/%{version}/LICENSE
+Source4:        https://raw.githubusercontent.com/imputnet/helium-linux/%{version}/LICENSE.ungoogled_chromium
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
+Requires:       hicolor-icon-theme
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -41,6 +44,7 @@ Requires:       libXfixes.so.3()(64bit)
 Requires:       libXrandr.so.2()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
+Requires:       xdg-utils
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
@@ -68,7 +72,13 @@ mkdir -p %{buildroot}%{helium_base} \
          %{buildroot}%{_bindir} \
          %{buildroot}%{_datadir}/applications \
          %{buildroot}%{_datadir}/metainfo \
-         %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
+         %{buildroot}%{_datadir}/icons/hicolor/256x256/apps \
+         %{buildroot}%{_licensedir}/%{name}
+
+install -m 644 %{SOURCE3} \
+    %{buildroot}%{_licensedir}/%{name}/LICENSE
+install -m 644 %{SOURCE4} \
+    %{buildroot}%{_licensedir}/%{name}/LICENSE.ungoogled_chromium
 
 cp -a . %{buildroot}%{helium_base}
 
@@ -106,6 +116,8 @@ esac
 %{_bindir}/gtk-update-icon-cache %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
 
 %files
+%license %{_licensedir}/%{name}/LICENSE
+%license %{_licensedir}/%{name}/LICENSE.ungoogled_chromium
 %{helium_base}/
 %{_bindir}/helium
 %{_datadir}/applications/helium.desktop

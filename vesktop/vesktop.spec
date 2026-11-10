@@ -14,6 +14,7 @@ BuildRequires:  cpio
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
 Requires:       at-spi2-core
+Requires:       hicolor-icon-theme
 Requires:       libX11.so.6()(64bit)
 Requires:       libXcomposite.so.1()(64bit)
 Requires:       libXdamage.so.1()(64bit)
@@ -93,8 +94,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/vesktop.desktop
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/*.*
+%license /opt/Vesktop/LICENSE.electron.txt
+%doc /opt/Vesktop/LICENSES.chromium.html
 %dir /opt/Vesktop
 %exclude /opt/Vesktop/chrome-sandbox
+%exclude /opt/Vesktop/LICENSE.electron.txt
+%exclude /opt/Vesktop/LICENSES.chromium.html
 /opt/Vesktop/*
 %attr(4755, root, root) /opt/Vesktop/chrome-sandbox
 

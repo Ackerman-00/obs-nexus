@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Ship bundled Electron chrome-sandbox setuid (0755 -> 4755 via %attr)
+  and stop globbing it in; add Requires: hicolor-icon-theme (icons are
+  installed into %{_datadir}/icons/hicolor). Same pattern as vesktop and
+  obsidian.
+
+-------------------------------------------------------------------
 Mon Nov 09 06:39:55 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.1109.42917-0

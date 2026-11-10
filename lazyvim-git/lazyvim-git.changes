@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add weak Recommends: ripgrep and Recommends: fd (LazyVim relies on both
+  for search/navigation).
+
+-------------------------------------------------------------------
 Mon Nov 09 03:53:09 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to base version 16.0.2 (Commit: 5c26fac)
