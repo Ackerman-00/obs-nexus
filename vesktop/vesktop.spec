@@ -48,6 +48,7 @@ Requires:       libudev.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
+Requires(post): desktop-file-utils
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 Provides:       vencorddesktop = %{version}-%{release}
@@ -87,6 +88,14 @@ chmod 0755 %{buildroot}%{_bindir}/vesktop
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/vesktop.desktop
 
+%post
+if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi
+if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
+  chmod 4755 /opt/Vesktop/chrome-sandbox || true
+else
+  chmod 0755 /opt/Vesktop/chrome-sandbox || true
+fi
+
 %files
 %{_bindir}/vesktop
 %{_datadir}/applications/vesktop.desktop
@@ -97,10 +106,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/vesktop.desktop
 %license /opt/Vesktop/LICENSE.electron.txt
 %doc /opt/Vesktop/LICENSES.chromium.html
 %dir /opt/Vesktop
-%exclude /opt/Vesktop/chrome-sandbox
 %exclude /opt/Vesktop/LICENSE.electron.txt
 %exclude /opt/Vesktop/LICENSES.chromium.html
 /opt/Vesktop/*
-%attr(4755, root, root) /opt/Vesktop/chrome-sandbox
 
 %changelog

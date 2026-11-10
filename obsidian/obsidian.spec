@@ -55,6 +55,7 @@ Requires:       libudev.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
+Requires(post): desktop-file-utils
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 Recommends:     libayatana-appindicator3.so.1()(64bit)
@@ -78,7 +79,7 @@ chmod go-w squashfs-root
 install -dm755 %{buildroot}/opt/obsidian
 cp -ar squashfs-root/* %{buildroot}/opt/obsidian/
 if [ -f "%{buildroot}/opt/obsidian/chrome-sandbox" ]; then
-    chmod 4755 %{buildroot}/opt/obsidian/chrome-sandbox
+    chmod 0755 %{buildroot}/opt/obsidian/chrome-sandbox
 fi
 
 install -Dm755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}
@@ -103,6 +104,15 @@ install -Dm644 squashfs-root/%{_datadir}/mime/packages/obsidian.xml \
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
 
+%post
+if command -v update-mime-database >/dev/null 2>&1; then update-mime-database %{_datadir}/mime >/dev/null 2>&1 || true; fi
+if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi
+if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
+  chmod 4755 /opt/obsidian/chrome-sandbox || true
+else
+  chmod 0755 /opt/obsidian/chrome-sandbox || true
+fi
+
 %files
 %license /opt/obsidian/LICENSE.electron.txt
 %doc /opt/obsidian/LICENSES.chromium.html
@@ -115,7 +125,5 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
 %exclude /opt/obsidian/LICENSES.chromium.html
 %exclude /opt/obsidian/AppRun
 /opt/obsidian/
-%exclude /opt/obsidian/chrome-sandbox
-%attr(4755, root, root) /opt/obsidian/chrome-sandbox
 
 %changelog

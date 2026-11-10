@@ -50,6 +50,7 @@ Requires:       libudev.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
+Requires(post): desktop-file-utils
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64
@@ -105,19 +106,25 @@ for iconpath in usr/share/icons/hicolor/*/apps/fluxer*.png usr/share/icons/hicol
 done
 if [ "$ICON_COUNT" -eq 0 ]; then echo "No icons found"; exit 1; fi
 
+%post
+if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi
+if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
+  chmod 4755 %{_libdir}/%{name}/chrome-sandbox || true
+else
+  chmod 0755 %{_libdir}/%{name}/chrome-sandbox || true
+fi
+
 %files
 %license %{_libdir}/%{name}/LICENSE.electron.txt
 %doc %{_libdir}/%{name}/LICENSES.chromium.html
 %{_bindir}/%{name}
 %exclude %{_libdir}/%{name}/LICENSE.electron.txt
 %exclude %{_libdir}/%{name}/LICENSES.chromium.html
-%exclude %{_libdir}/%{name}/chrome-sandbox
 %{_libdir}/%{name}/
 %{_datadir}/applications/%{appid}.desktop
 %dir %{_datadir}/icons/hicolor
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/%{appid}.png
-%attr(4755, root, root) %{_libdir}/%{name}/chrome-sandbox
 
 %changelog

@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Nov 10 23:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Ship the bundled Electron chrome-sandbox again (it was dropped from
+  the package by the %exclude) and handle its mode in %post: 0755 by
+  default, 4755 only when user namespaces are unavailable (same pattern
+  as obsidian/hyperframes-desktop/omnirush-desktop). Add Requires(post):
+  desktop-file-utils.
+
+-------------------------------------------------------------------
 Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Ship bundled Electron chrome-sandbox setuid (0755 -> 4755 via %attr)
