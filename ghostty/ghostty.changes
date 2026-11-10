@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Nov 10 22:04:13 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 1.4.0
+- Upstream 1.4.0 requires zig 0.17.0; Tumbleweed now ships zig0.17
+  (zig-rpm-macros0.17), which Provides zig = 0.17.0. Bump %global
+  zig_ver and the BuildRequires floor to 0.17.0, and ZIG_VER in
+  update.sh accordingly (the auto-HOLD guard no longer trips).
+
+-------------------------------------------------------------------
 Wed Oct 28 23:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The package ships %{_datadir}/nautilus-python/extensions/ghostty.py,

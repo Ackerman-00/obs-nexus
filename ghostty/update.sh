@@ -4,7 +4,7 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="ghostty.spec"
 CHANGES_FILE="ghostty.changes"
 GITHUB_REPO="ghostty-org/ghostty"
-ZIG_VER="0.15.2"
+ZIG_VER="0.17.0"
 PACKAGER="Ackerman-00"
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 

@@ -1,9 +1,9 @@
-%global zig_ver        0.15.2
+%global zig_ver        0.17.0
 %global common_build_flags --system %{_builddir}/%{name}-%{version}/vendor/zig/p -Doptimize=ReleaseFast -Dcpu=baseline -Dpie=true -Dstrip=true -Dversion-string=%{version} -fsys=freetype -fsys=harfbuzz -fsys=fontconfig -fsys=libpng -fsys=zlib -fsys=oniguruma -fsys=glslang -fsys=spirv-cross -fsys=simdutf -fsys=gtk4-layer-shell -fsys=highway %{?_smp_mflags}
 %define site_runtimepath %{_datadir}/vim/site
 
 Name:           ghostty
-Version:        1.3.1
+Version:        1.4.0
 Release:        0
 Summary:        Cross-platform terminal emulator
 License:        MIT AND OFL-1.1
