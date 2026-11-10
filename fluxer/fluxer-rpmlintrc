@@ -1,4 +1,3 @@
-addFilter("invalid-desktopfile")
 
 addFilter("unstripped-binary-or-object")
 

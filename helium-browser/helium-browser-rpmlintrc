@@ -1,3 +1,4 @@
 addFilter("filelist-forbidden-opt /opt/helium")
 addFilter("files-duplicate")
 addFilter("dir-or-file-outside-snapshot /opt/helium")
+addFilter("branding-requires-unversioned")
