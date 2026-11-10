@@ -4,3 +4,4 @@ addFilter("unstripped-binary-or-object")
 
 addFilter("binary-or-shlib-calls-gethostbyname")
 addFilter("missing-call-to-setgroups-before-setuid")
+addFilter("branding-requires-unversioned")
