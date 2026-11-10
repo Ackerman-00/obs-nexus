@@ -76,7 +76,7 @@ zig build %{common_build_flags}
 
 %install
 export DESTDIR=%{buildroot}
-zig build %{common_build_flags} --prefix %{_prefix} --prefix-lib-dir %{_libdir}
+zig build %{common_build_flags} --prefix %{_prefix} --prefix-lib-dir lib64
 mv %{buildroot}%{_datadir}/vim/vimfiles \
   %{buildroot}%{site_runtimepath}
 rm -rv %{buildroot}%{_datadir}/terminfo/

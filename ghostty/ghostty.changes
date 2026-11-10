@@ -9,6 +9,10 @@ Tue Nov 10 22:04:13 UTC 2026 - Ackerman-00 <noreply@example.com>
 - Add BuildRequires: pkgconfig(egl) (Mesa-libEGL-devel): the zig build
   links -legl via glad_egl.c (226/229 steps passed without it; the
   missing egl soname was the only failure).
+- zig 0.17 honors DESTDIR for --prefix but NOT for an absolute
+  --prefix-lib-dir; the lib install stepped to /usr/lib64 directly and the
+  build failed AccessDenied on the OBS workers. Pass a relative
+  --prefix-lib-dir (lib64) so libraries land under %{buildroot}.
 - 1.4.0's zig install places libghostty-vt.pc and libghostty-vt-static.pc
   at %{_libdir} top level (not only under %{_libdir}/pkgconfig); remove
   both along with the other libghostty-vt artifacts, as the package
