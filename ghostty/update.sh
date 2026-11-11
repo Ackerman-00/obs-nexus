@@ -66,7 +66,6 @@ fetch_vendor_cache() {
             fi
         fi
     done
-    find "$srcdir/vendor/zig" -type d -iname test -print0 | xargs -r0 rm -rf
     rm -rf "$srcdir/vendor/zig/tmp" "$srcdir/vendor/zig/b" "$srcdir/vendor/zig/h" "$srcdir/vendor/zig/o" "$srcdir/vendor/zig/z"
     tar --zstd -cf "vendor.tar.zst" -C "$srcdir" vendor/zig \
         || { echo "vendor pack failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
