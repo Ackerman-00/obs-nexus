@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Wed Nov 11 06:26:40 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- fix(autonomous): vendor.tar.zst kept the test/ dirs after all:
+  attempt to slim the cache by deleting 'test' directories broke
+  the OBS build with 'adding build_root .../test/cases.zig to cache
+  failed: FileSystemFailure' (zig 0.17 copies every path declared in
+  the package's build.zig.zon .paths, and translate_c declares
+  test/cases.zig). update.sh no longer prunes them; vendor.tar.zst
+  rebuilt (test/cases.zig present).
+
+-------------------------------------------------------------------
 Tue Nov 10 22:04:13 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 1.4.0
