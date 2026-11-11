@@ -2,15 +2,15 @@
 %global __requires_exclude_from ^/opt/Qoder/.*$
 %global __provides_exclude_from ^/opt/Qoder/.*$
 Name:           qoder
-Version:        0.5.6
-# sha256: 0058d5ff97b71c1e97935595fdcb07613bd20e9d7ba7f672c9efc7b566fc40d4
+Version:        0.5.7
+# sha256: cbfb8e8e01c85246b34210a26e33df29db3ec17d01b0c5e389f0f85746542421
 Release:        0
 Epoch:          1
 Summary:        Agent workbench for human and AI software teams
 License:        SUSE-Freeware
 Group:          Development/Tools/IDE
 URL:            https://qoder.com
-Source0:        https://download.qoder.com.cn/qoder-app/releases/0.5.6/Qoder-linux-amd64.deb
+Source0:        https://download.qoder.com.cn/qoder-app/releases/0.5.7/Qoder-linux-amd64.deb
 Source1:        qoder-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  desktop-file-utils

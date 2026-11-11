@@ -1,3 +1,9 @@
+qoder (0.5.7-1) unstable; urgency=medium
+
+  * New upstream release 0.5.7.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 11 Nov 2026 21:47:50 +0000
+
 qoder (0.5.6-1) unstable; urgency=medium
 
   * Add Recommends: xdg-desktop-portal, xdg-desktop-portal-gtk — the
