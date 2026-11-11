@@ -24,4 +24,14 @@ override_dh_auto_install:
 	mkdir -p debian/ghostty && \
 	ZIG_GLOBAL_CACHE_DIR=$(ZCACHE) DESTDIR=$(CURDIR)/debian/ghostty $(ZIG) build --prefix /usr --prefix-lib-dir lib/x86_64-linux-gnu $(ZFLAGS) && \
 	rm -rv $(CURDIR)/debian/ghostty/usr/share/terminfo/ && \
-	mv $(CURDIR)/debian/ghostty/usr/share/pkgconfig/ $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/
+	rm -v $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/libghostty-vt.a \
+	      $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/libghostty-vt.so \
+	      $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/libghostty-vt.so.0 \
+	      $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/libghostty-vt.so.0.1.0 \
+	      $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/libghostty-vt.pc \
+	      $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/pkgconfig/libghostty-vt.pc \
+	      $(CURDIR)/debian/ghostty/usr/share/pkgconfig/libghostty-vt.pc \
+	      $(CURDIR)/debian/ghostty/usr/share/pkgconfig/libghostty-vt-static.pc \
+	      $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/libghostty-vt-static.pc 2>/dev/null || true && \
+	rm -rv $(CURDIR)/debian/ghostty/usr/include/ghostty 2>/dev/null || true && \
+	mv $(CURDIR)/debian/ghostty/usr/share/pkgconfig/ $(CURDIR)/debian/ghostty/usr/lib/x86_64-linux-gnu/ || true
