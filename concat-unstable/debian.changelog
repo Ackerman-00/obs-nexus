@@ -1,3 +1,9 @@
+concat-unstable (0.2.10+git20261111035932.9ce3c25-1) unstable; urgency=medium
+
+  * New upstream snapshot 9ce3c25 (base 0.2.10).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 11 Nov 2026 04:07:28 +0000
+
 concat-unstable (0.2.9+git20261110211300.817631a-1) unstable; urgency=medium
 
   * New upstream snapshot 817631a (base 0.2.9).
