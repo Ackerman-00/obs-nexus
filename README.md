@@ -23,13 +23,22 @@ Curated packages optimized for minimal Wayland packages. Recipes live in [obs-ne
 ### openSUSE Tumbleweed
 
 ```sh
+sudo rpm --import \
+  https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/repodata/repomd.xml.key
 sudo zypper addrepo --refresh \
-  https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ home:ackerman
+  https://download.opensuse.org/repositories/home:/ackerman/openSUSE_Tumbleweed/ home:ackerman
 sudo zypper refresh
 sudo zypper install <package>
 ```
 
 > [!NOTE]
+> The `rpm --import` of `repodata/repomd.xml.key` (the OBS project's
+> signing key, fingerprint `A281D9E02A7AC72CE79E1CD3643981F122D702BD`)
+> is required once: a plain `zypper addrepo --refresh <baseurl>` stores
+> the baseurl without any key reference and the first `zypper refresh`
+> fails with "Signature verification failed for repomd.xml" (verified in
+> a clean `opensuse/tumbleweed` container, 2026-11-11).
+>
 > Use the repository baseurl form above. The older
 > `.../home:ackerman.repo` file-URL form no longer works: current zypper
 > no longer parses a remote `.repo` file at `addrepo` time and stores the
