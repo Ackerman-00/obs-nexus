@@ -13,10 +13,10 @@ Tue Nov 10 22:04:13 UTC 2026 - Ackerman-00 <noreply@example.com>
   --prefix-lib-dir; the lib install stepped to /usr/lib64 directly and the
   build failed AccessDenied on the OBS workers. Pass a relative
   --prefix-lib-dir (lib64) so libraries land under %{buildroot}.
-- 1.4.0's zig install places libghostty-vt.pc and libghostty-vt-static.pc
-  at %{_libdir} top level (not only under %{_libdir}/pkgconfig); remove
-  both along with the other libghostty-vt artifacts, as the package
-  ships the application only. Fixes the unpackaged-files check failure.
+- 1.4.0's zig install places libghostty-vt.{a,pc}, libghostty-vt-static.pc
+  and the unversioned .so trio at %{_libdir} top level (not only under
+  %{_libdir}/pkgconfig); remove all of them, as the package ships the
+  application only. Fixes the unpackaged-files check failure.
 - Fix vendor.tar.zst layout for zig 0.17: the deps CDN re-exported its
   tarballs, so `zig fetch` output must be extracted into
   vendor/zig/p/<manifest-hash>/ with package contents at the root
