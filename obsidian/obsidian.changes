@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Nov 12 21:45:23 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream version 1.15.1 (bundled Electron AppImage)
+
+-------------------------------------------------------------------
 Tue Nov 10 23:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Ship the bundled Electron chrome-sandbox again (the %install chmod

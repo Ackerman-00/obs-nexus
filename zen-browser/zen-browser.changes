@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 12 21:41:30 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.24.2b-0
+- Update zen-browser to v1.24.2b
+
+-------------------------------------------------------------------
 Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add %check (desktop-file-validate), Requires(post): desktop-file-utils,

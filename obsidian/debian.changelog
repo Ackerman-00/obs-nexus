@@ -1,3 +1,9 @@
+obsidian (1.15.1-1) unstable; urgency=medium
+
+  * New upstream release 1.15.1.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 12 Nov 2026 21:45:23 +0000
+
 obsidian (1.15.0-1) unstable; urgency=medium
 
   * New upstream release 1.15.0.
