@@ -1,4 +1,3 @@
-%global debug_package %{nil}
 %global _lto_cflags %{nil}
 %global __requires_exclude_from ^/opt/ladybird/.*$
 %global __provides_exclude_from ^/opt/ladybird/.*$
