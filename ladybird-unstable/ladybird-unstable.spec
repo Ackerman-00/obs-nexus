@@ -2,9 +2,9 @@
 %global __requires_exclude_from ^/opt/ladybird/.*$
 %global __provides_exclude_from ^/opt/ladybird/.*$
 %global __brp_mangle_shebangs_exclude_from ^/opt/ladybird/.*$
-%global commit         c243027ab53e98c9f180d000267df448983e8c50
-%global shortcommit     c243027
-%global gitdate        20261113140610
+%global commit         ea3dc927bdb30a60a75c5004a88e3547b8c1a270
+%global shortcommit     ea3dc92
+%global gitdate         20261113173302
 %global base_version   0.0.0
 
 Name:           ladybird-unstable
