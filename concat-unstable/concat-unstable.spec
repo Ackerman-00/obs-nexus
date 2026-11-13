@@ -79,7 +79,7 @@ cat > %{buildroot}%{_datadir}/applications/concat-unstable.desktop <<'EOF'
 Type=Application
 Name=Concat (Unstable)
 Comment=Video editor - main branch snapshot
-Exec=/usr/bin/concat-unstable %U
+Exec=%{_bindir}/concat-unstable %U
 Icon=concat-unstable
 Terminal=false
 Categories=AudioVideo;Video;

@@ -84,7 +84,7 @@ exec /opt/Heroic/heroic "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/heroic
 
-sed -i -e 's|^Exec=.*|Exec=/usr/bin/heroic %U|' \
+sed -i -e 's|^Exec=.*|Exec=%{_bindir}/heroic %U|' \
     %{buildroot}%{_datadir}/applications/heroic.desktop
 
 %check

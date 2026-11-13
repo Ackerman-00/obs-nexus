@@ -6,7 +6,7 @@ Version:        3.8.4
 # sha256:  5749b6a3d838856d7a619b2054da35082ca9b49251e506488e80aef528f9b2b7
 Release:        0
 Summary:        OmniRush.ai desktop shell (Electron)
-License:        SUSE-Freeware
+License:        LicenseRef-SUSE-Freeware
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://omnirush.ai
 Source0:        https://github.com/omnirush-ai/omnirush-gui/releases/download/v3.8.4/omnirush-linux-amd64-3.8.4.deb

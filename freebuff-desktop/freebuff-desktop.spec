@@ -6,7 +6,7 @@ Version:        0.0.202
 # sha256:  18710810039ec71e02ee8cabb76d9920af93ea5852199a2fcd9b2fff34d2fe8a
 Release:        0
 Summary:        Freebuff Desktop (Electron)
-License:        SUSE-Freeware
+License:        LicenseRef-SUSE-Freeware
 Group:          Development/Tools/IDE
 URL:            https://freebuff.com
 Source0:        https://github.com/CodebuffAI/codebuff-community/releases/download/freebuff-desktop-v0.0.202/Freebuff-0.0.202-linux-amd64.deb

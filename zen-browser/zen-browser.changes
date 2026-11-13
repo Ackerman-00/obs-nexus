@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 13 17:10:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.24.2b-0
+- Use %{_libdir} instead of a hardcoded /usr/lib64 path in the provides exclusion
+
+-------------------------------------------------------------------
 Thu Nov 12 21:41:30 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.24.2b-0

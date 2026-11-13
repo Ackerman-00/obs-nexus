@@ -1,7 +1,7 @@
 Name:           zen-browser
 Version:        1.24.2b
 Release:        0
-%global __provides_exclude_from ^/usr/lib64/zen-browser/.*$
+%global __provides_exclude_from ^%{_libdir}/zen-browser/.*$
 %global __requires_exclude ^lib(gkcodecs|lgpllibs|mozavcodec|mozavutil|mozgtk|mozinference|mozsandbox|mozsqlite3|mozwayland|onnxruntime|clearkey|freeblpriv3|softokn3|xul|nss3|nssutil3|ssl3|smime3|nspr4|plc4|plds4)\.so.*$
 Summary:        Minimal browser focused on privacy and calm browsing
 License:        MPL-2.0

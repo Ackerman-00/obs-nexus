@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 13 17:10:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version -0
+- License tag: use the SPDX LicenseRef-SUSE-Freeware form flagged by spec-cleaner
+
+-------------------------------------------------------------------
 Mon Nov 09 03:58:46 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to 0.9.163 (sha256: af8ede1ca91a51e9f363e0e9f8229946412a98ac21ab13be272fbe7794f6a260)

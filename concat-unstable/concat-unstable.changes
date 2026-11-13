@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 13 17:10:59 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.11+git20261112230140.6584d34-0
+- Write the desktop Exec entry with %{_bindir} instead of a hardcoded /usr/bin path
+
+-------------------------------------------------------------------
 Fri Nov 13 04:33:18 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.11+git20261112230140.6584d34-0

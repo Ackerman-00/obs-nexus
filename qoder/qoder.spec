@@ -7,7 +7,7 @@ Version:        0.5.7
 Release:        0
 Epoch:          1
 Summary:        Agent workbench for human and AI software teams
-License:        SUSE-Freeware
+License:        LicenseRef-SUSE-Freeware
 Group:          Development/Tools/IDE
 URL:            https://qoder.com
 Source0:        https://download.qoder.com.cn/qoder-app/releases/0.5.7/Qoder-linux-amd64.deb
