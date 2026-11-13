@@ -98,6 +98,10 @@ branch. This package is unstable by construction: it tracks upstream main.
 
 %build
 export VCPKG_FORCE_SYSTEM_BINARIES=1
+if ! curl -fsS --max-time 20 -o /dev/null https://github.com/ ; then
+  echo 'ERROR: no outbound network in this build container - vcpkg downloads its ports' >&2
+  exit 1
+fi
 python3 Meta/ladybird.py vcpkg --preset Release
 cmake --preset Release -S . -B Build/release -DBUILD_TESTING=OFF -DENABLE_INSTALL_FREEDESKTOP_FILES=OFF -DCMAKE_INSTALL_PREFIX=/opt/ladybird -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=OFF -DENABLE_CI_BASELINE_CPU=ON
 if grep -q -- '-march=native' Build/release/build.ninja; then

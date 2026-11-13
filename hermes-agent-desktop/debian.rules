@@ -8,6 +8,9 @@ override_dh_auto_configure:
 override_dh_auto_build:
 	cd hermes-agent-* && \
 	export PATH="$$PWD/.tools/node/bin:$$PWD/.tools/pnpm/package:$$PATH" && \
+	if ! curl -fsS --max-time 20 -o /dev/null https://registry.npmjs.org/ ; then \
+	    echo 'ERROR: no outbound network in this build container - pnpm install needs the npm registry' >&2; exit 1; \
+	fi && \
 	pnpm install --frozen-lockfile && \
 	pnpm --filter hermes run build && \
 	node scripts/build/electron-runtime.mjs --source . && \

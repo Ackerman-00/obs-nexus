@@ -24,6 +24,7 @@ Source3:        hermes-agent-desktop-rpmlintrc
 ExclusiveArch:  x86_64
 
 BuildRequires:  binutils
+BuildRequires:  curl
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -100,6 +101,10 @@ pnpm --version
 
 %build
 export PATH="$PWD/.tools/node/bin:$PWD/.tools/pnpm/package:$PATH"
+if ! curl -fsS --max-time 20 -o /dev/null https://registry.npmjs.org/ ; then
+  echo 'ERROR: no outbound network in this build container - pnpm install needs the npm registry' >&2
+  exit 1
+fi
 pnpm install --frozen-lockfile
 pnpm --filter hermes run build
 node scripts/build/electron-runtime.mjs --source .

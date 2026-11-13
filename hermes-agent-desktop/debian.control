@@ -2,7 +2,7 @@ Source: hermes-agent-desktop
 Section: devel
 Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
-Build-Depends: debhelper-compat (= 13), ca-certificates, git, gcc, g++, make, python3, xz-utils, zstd
+Build-Depends: debhelper-compat (= 13), ca-certificates, curl, git, gcc, g++, make, python3, xz-utils, zstd
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/NousResearch/hermes-agent
