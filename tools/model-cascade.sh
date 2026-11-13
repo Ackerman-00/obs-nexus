@@ -4,6 +4,7 @@ set -uo pipefail
 CATALOG="${OC_MODELS_URL:-https://opencode.ai/inference/v1/models}"
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 RANK_FILE="${OC_MODEL_RANK:-$HERE/model-rank.txt}"
+# veto: glm-5.3-flash-free, jev-1.13-free
 EXCLUDE=" glm-5.3-flash-free jev-1.13-free "
 
 live=$(curl -sS --max-time 30 "$CATALOG" 2>/dev/null | python3 -c '
@@ -20,9 +21,10 @@ for m in data:
 
 rank=()
 if [ -f "$RANK_FILE" ]; then
-  while IFS= read -r id; do
-    id=${id%%#*}
-    id=$(printf '%s' "$id" | tr -d '[:space:]')
+  while IFS= read -r line; do
+    id=${line%%#*}
+    id=${id%%(*}
+    id=$(printf '%s' "$id" | awk '{print $1}')
     [ -n "$id" ] && rank+=("$id")
   done < "$RANK_FILE"
 fi

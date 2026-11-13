@@ -66,21 +66,51 @@ jobs:
         shell: bash
         run: |
           export PATH="$HOME/.opencode/bin:$PATH"
-          for model in "opencode/mimo-v2.6-flash-free" "opencode/deepseek-v4.1-flash-free" "opencode/glm-5.3-flash-free" "opencode/nemotron-3.5-super-vl-free" "opencode/nemotron-3.5-lightning-free" "opencode/flint-40b-free" "opencode/beam-free" "opencode/jev-1.13-free" "opencode/big-pickle"; do
+          NOTES="$RUNNER_TEMP/cascade-notes.txt"
+          mapfile -t CASCADE < <(bash tools/model-cascade.sh 2>"$NOTES") || true
+          if [ "${#CASCADE[@]}" -eq 0 ]; then
+            CASCADE=(opencode/deepseek-v4.1-flash-free)
+          fi
+          MODEL_NOTES="$(cat "$NOTES" 2>/dev/null || true)"
+          echo "free-model cascade: ${CASCADE[*]}"
+          [ -n "$MODEL_NOTES" ] && echo "$MODEL_NOTES"
+          for model in "${CASCADE[@]}"; do
             echo "=== opencode run attempt with $model ==="
             exit_code=0
+            model_skip=""
             for attempt_n in 1 2 3; do
-              if MODEL="$model" opencode run -m "$model" --dangerously-skip-permissions --agent=build --print-logs "$PROMPT"; then
+              OCLOG="$RUNNER_TEMP/oc-out.txt"
+              set -o pipefail
+              if MODEL="$model" opencode run -m "$model" --dangerously-skip-permissions --agent=build --print-logs "$PROMPT" 2>&1 | tee "$OCLOG"; then
                 exit_code=0
+                set +o pipefail
                 break
               fi
               exit_code=$?
+              set +o pipefail
+              if grep -qiE 'not available in (your|this) (country|region)|unavailable in (your|this) (country|region)' "$OCLOG" 2>/dev/null; then
+                model_skip=region
+                break
+              fi
+              if grep -qi 'free usage limit reached' "$OCLOG" 2>/dev/null; then
+                model_skip=quota
+                break
+              fi
               if [ "$attempt_n" -lt 3 ]; then
                 delay=$((RANDOM % (60 * attempt_n)))
                 echo "=== $model try $attempt_n/3 failed (exit $exit_code) - backing off ${delay}s ==="
                 sleep "$delay"
               fi
             done
+            if [ "$model_skip" = "quota" ]; then
+              echo "=== $model: free usage limit reached - moving to the next model ==="
+              sleep 5
+              continue
+            fi
+            if [ "$model_skip" = "region" ]; then
+              echo "=== $model: not available in the runner region - skipping ==="
+              continue
+            fi
             if [ "$exit_code" -eq 0 ]; then
               git fetch origin main >/dev/null 2>&1
               if git show origin/main:.opencode-relay.md 2>/dev/null | grep -qx "run_id: $RUN_ID" && git show origin/main:.opencode-relay.md 2>/dev/null | grep -qi "status: complete"; then
@@ -96,6 +126,7 @@ jobs:
           exit 1
         env:
           MODEL: opencode/deepseek-v4.1-flash-free
+          OPENCODE_CONFIG_CONTENT: '{"agents":{"title":{"model":"opencode/deepseek-v4.1-flash-free"}},"websearch":{"provider":"random"}}'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OBS_USER: ${{ secrets.OBS_USER }}

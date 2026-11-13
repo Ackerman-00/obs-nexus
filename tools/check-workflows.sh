@@ -36,6 +36,30 @@ else
   FAIL=1
 fi
 
+echo "== prompt sync =="
+if python3 - <<'PY'
+import pathlib, sys, yaml
+doc = yaml.safe_load(open(".github/workflows/opencode-schedule.yml"))
+prompt = None
+for step in doc["jobs"]["opencode"]["steps"]:
+    env = step.get("env") or {}
+    if "PROMPT" in env:
+        prompt = env["PROMPT"]
+standalone = pathlib.Path("tools/sweep-prompt.md").read_text()
+if prompt is None:
+    print("FAIL: no PROMPT found in opencode-schedule.yml")
+    sys.exit(1)
+if prompt.strip() != standalone.strip():
+    print("FAIL: embedded PROMPT differs from tools/sweep-prompt.md - sync them")
+    sys.exit(1)
+print("OK   embedded PROMPT == tools/sweep-prompt.md")
+PY
+then
+  :
+else
+  FAIL=1
+fi
+
 echo "== permission scopes =="
 if python3 tools/workflow-valid.py .github/workflows/*.yml; then
   :

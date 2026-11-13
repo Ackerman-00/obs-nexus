@@ -43,13 +43,17 @@ anything. Act like an experienced open-source maintainer.
 NO COMMENTS (MANDATORY): never add a comment to any file except a
 short #title/topic of a few words when it is strictly necessary.
 If any other comment exists anywhere in the repo, remove it fully.
+EXCEPTION - machine-read markers are NOT comments and MUST survive:
+the `# sha256:` pins in the specs (parsed by tools/teardown-sweep.py
+and by every update.sh - deleting one silently disables checksum
+verification), shebang lines, and `#` inside strings.
 
 CONTEXT
 - Each package lives in its own directory with a .spec file, a .changes
   file (openSUSE changelog), often an update.sh (an upstream-check script)
   and a _service file. update-packages.yml (GitHub Actions, "Nexus
-  Auto-Updater (OBS Pipeline)") runs every 6 hours (cron '0 */6 * * *',
-  minute 0), i.e. 10 minutes before this workflow ('10 */6'): it runs update.sh for
+  Auto-Updater (OBS Pipeline)") runs every 15 hours (cron '0 */15 * * *',
+  minute 0), i.e. 15 minutes before this workflow ('15 */15 * * *'): it runs update.sh for
   packages that have one and scans the rest against GitHub release tags,
   bumping spec versions and committing to main directly, then syncs changed
   packages to OBS via its API (using OBS_USER/OBS_PASS) and triggers a
@@ -120,15 +124,6 @@ CONTEXT
   packages in point releases, and a repo copy that shadows the
   distro's is a latent collision, never a feature.
   PACKAGER IDENTITY rules below apply unchanged.
-  Verified repo URLs (HTTP 200, do not guess variants):
-  home:ackerman TW = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/,
-  Tumbleweed OSS = https://download.opensuse.org/tumbleweed/repo/oss/.
-  README.md Installation section is the single source of truth for
-  these URLs - if they ever differ, README wins: follow README and
-  correct this prompt text to match. NOTE (README, verified
-  2026-10-14): the `.../home:ackerman.repo` file-URL form no
-  longer works with current zypper - use the baseurl form
-  `zypper addrepo --refresh <dir-url> home:ackerman`.
   Verified repo URLs (HTTP 200, do not guess variants):
   home:ackerman TW = https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/,
   Tumbleweed OSS = https://download.opensuse.org/tumbleweed/repo/oss/.
@@ -491,7 +486,7 @@ from upstream, then reconcile - never trust either alone.
      (high/medium/low) for any package you could not fully verify,
      and why.
   h. 2026 AUTOMATED EXCELLENCE CHECKS (MANDATORY - August 2026 openSUSE - excellent .spec aka excellent specfile):
-     For EVERY spec you touched (and for at least a 5-sample of the full STEP A inventory - derive the count via `ls */*.spec`, currently 13, NEVER hardcode the number), run the modern openSUSE toolchain locally and paste output. This is how an "excellent spec" (openSUSE:Specfile_guidelines Aug 2026) is proven:
+     For EVERY spec you touched (and for at least a 5-sample of the full STEP A inventory - derive the count via `ls */*.spec`, NEVER hardcode the number), run the modern openSUSE toolchain locally and paste output. This is how an "excellent spec" (openSUSE:Specfile_guidelines Aug 2026) is proven:
      - `spec-cleaner` (openSUSE:Tools, Factory dos/donts) -- run `spec-cleaner <spec>`; must be clean or diff justified (one BuildRequires per line, macros not hard-coded `/usr/bin` etc.)
      - `rpmlint <spec>` + `rpmlint <rpm>` + `brp-check-suse`/`post-build-checks` -- fix E: errors, handle badness score; OBS runs these as `rpmlint.log` after build -- must be clean. See `openSUSE:Packaging_checks` for suppressing false positives via `*rpmlintrc`
      - `rpmspec -P --define "_topdir /tmp" <spec>` -- macro expansion must exit 0; `rpmbuild -bs` must produce SRPM
@@ -1262,9 +1257,26 @@ Then work autonomously, in this priority order:
    muse-spark-1.3-contributor-free,
    muse-spark-1.2-contributor-free) is removed THAT run:
    patch tools/model-rank.txt
-   and opencode.json to live equivalents, keeping the order
-   mimo-v2.6-flash-free first, then the remaining verified
-   *-free IDs. Same pass:
+   and opencode.json to live equivalents.
+   ORDER IS BENCHMARK-DRIVEN: the workflow runs the FIRST entry of
+   the cascade, so tools/model-rank.txt must stay sorted best-first
+   by published benchmark evidence. Every run, research the current
+   scores for the live free models (Artificial Analysis Intelligence
+   Index, Vals Index, agentic-coding leaderboards) and re-sort
+   tools/model-rank.txt: one line per model, `<model-id> (<source>
+   <score> / ...)`, best first, every score naming its source.
+   A live model with no published score stays in the file (unscored)
+   until one appears - never drop it just because it is unscored.
+   Keep the EXCLUDE list in tools/model-cascade.sh OUT of
+   tools/model-rank.txt even while the catalog lists those IDs
+   (glm-5.3-flash-free is catalogued but its free endpoint answers
+   "Endpoint is unavailable" / 403 region errors - it burns an
+   attempt window).
+   deepseek-v4.1-flash-free leads today (AA 45, top agentic-coding
+   score, OpenCode's most-used free model); a model that outranks it
+   on fresh evidence moves to the top for the NEXT run - this run's
+   own pick was fixed when the workflow started.
+   Same pass:
    `python3 -m py_compile tools/*.py`, `bash -n` on
    tools/verify-opensuse.sh, and confirm the pinned action
    versions in .github/workflows/* are still the latest majors
