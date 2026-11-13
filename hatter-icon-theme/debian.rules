@@ -1,14 +1,17 @@
 #!/usr/bin/make -f
 SHELL := /bin/bash
 HATTER_SRC := $(shell dirname "$$(find . -maxdepth 2 -name Build-Hatter.sh -not -path './debian/*' | head -n1)")
+SHIM := $(CURDIR)/debian/.icon-cache-shim
 %:
 	dh $@
 
 override_dh_auto_configure:
-	:
+	mkdir -p "$(SHIM)"
+	printf '#!/bin/sh\nexit 0\n' > "$(SHIM)/gtk-update-icon-cache"
+	chmod 755 "$(SHIM)/gtk-update-icon-cache"
 
 override_dh_auto_build:
-	cd "$(HATTER_SRC)" && echo 2 | bash ./Build-Hatter.sh
+	cd "$(HATTER_SRC)" && PATH="$(SHIM):$$PATH" bash -c 'echo 2 | bash ./Build-Hatter.sh'
 
 override_dh_auto_test:
 	:
@@ -26,4 +29,4 @@ override_dh_installchangelogs:
 
 override_dh_clean:
 	dh_clean
-	rm -rf "$(HATTER_SRC)/Build"
+	rm -rf "$(HATTER_SRC)/Build" "$(SHIM)"
