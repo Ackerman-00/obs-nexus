@@ -1,0 +1,16 @@
+-------------------------------------------------------------------
+Fri Nov 13 23:50:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.1+git20261113141540.5c1abd2-0
+- Reworked from a network-at-build-time source build (which OBS cannot
+  run) into the repo's standard pattern: the payload is built by the
+  package's CI-side build.sh (docker fedora, upstream commit pinned in
+  the spec) and OBS repacks the tarball instead of compiling. Same git
+  snapshot tracking as the other packaged builds; update.sh now only
+  detects upstream movement and rebuilds the payload in CI.
+
+-------------------------------------------------------------------
+Fri Nov 13 14:43:03 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.1+git20261113131118.a5af509-0
+- New package hermes-agent-desktop (upstream git snapshot)

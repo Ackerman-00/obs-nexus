@@ -36,6 +36,8 @@ jobs:
         id: updater
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OBS_USER: ${{ secrets.OBS_USER }}
+          OBS_PASS: ${{ secrets.OBS_PASS }}
         run: |
           echo "==> Phase 1: Running Custom Modules (update.sh)..."
           for script in $(find . -mindepth 2 -name "update.sh"); do

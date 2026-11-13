@@ -1,0 +1,36 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_strip:
+	:
+
+override_dh_auto_install:
+	mkdir -p debian/hermes-agent-desktop/opt/HermesDesktop debian/hermes-agent-desktop/usr/bin debian/hermes-agent-desktop/usr/share/applications debian/hermes-agent-desktop/usr/share/icons/hicolor/512x512/apps
+	cp -a linux-unpacked/* debian/hermes-agent-desktop/opt/HermesDesktop/
+	install -Dm0644 "$$(find linux-unpacked -name 'hermes.png' | head -n1)" debian/hermes-agent-desktop/usr/share/icons/hicolor/512x512/apps/hermes-agent-desktop.png
+	printf '#!/bin/sh\nexec /opt/HermesDesktop/Hermes "$$@"\n' > debian/hermes-agent-desktop/usr/bin/hermes-agent-desktop
+	chmod 0755 debian/hermes-agent-desktop/usr/bin/hermes-agent-desktop
+	printf '[Desktop Entry]\nType=Application\nName=Hermes Agent Desktop\nComment=Native desktop shell for Hermes Agent\nExec=hermes-agent-desktop %%U\nTerminal=false\nCategories=Development;\nIcon=hermes-agent-desktop\n' > debian/hermes-agent-desktop/usr/share/applications/hermes-agent-desktop.desktop
+	chmod 4755 debian/hermes-agent-desktop/opt/HermesDesktop/chrome-sandbox
+
+override_dh_installchangelogs:
+	dh_installchangelogs --no-trim
+
+override_dh_clean:
+	dh_clean
