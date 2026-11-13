@@ -1,6 +1,11 @@
+ladybird-unstable (0.0.0+git20261113140610.c243027-1) unstable; urgency=medium
+
+  * New upstream snapshot c243027.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 14:43:57 +0000
+
 ladybird-unstable (0.0.0+git20261113125931.3548021-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (upstream git master build).
 
  -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 20:30:00 +0000
-

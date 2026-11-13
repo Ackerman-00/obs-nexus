@@ -2,9 +2,9 @@
 %global __requires_exclude_from ^/opt/HermesDesktop/.*$
 %global __provides_exclude_from ^/opt/HermesDesktop/.*$
 %global __brp_mangle_shebangs_exclude_from ^/opt/HermesDesktop/.*$
-%global commit          a5af509e5a79274742c409daf0980372bc6969ee
-%global shortcommit     a5af509
-%global gitdate         20261113131118
+%global commit          5c1abd257d0cc1b531ffee6e50bef0621aa49dc4
+%global shortcommit     5c1abd2
+%global gitdate         20261113141540
 %global base_version    0.23.1
 
 Name:           hermes-agent-desktop
@@ -15,11 +15,11 @@ License:        MIT
 Group:          Development/Tools/IDE
 URL:            https://github.com/NousResearch/hermes-agent
 Source0:        https://github.com/NousResearch/hermes-agent/archive/%{commit}.tar.gz
-# sha256:  cd62b20cb83f522d3f1831a56ea997c201c0709bb3baacdfc2815b05fc25a13e
+# sha256:  23c292a2db4218393104864680ae44cbef003c75016c9d456a8fdc3629c6f04d
 Source1:        https://nodejs.org/download/release/v26.12.1/node-v26.12.1-linux-x64.tar.xz
-# sha256:  6170b2d474e1c626f43cff3adc118df9fe3b573258a4fc3d850c8dbc6b079bbd
+# sha256:  23c292a2db4218393104864680ae44cbef003c75016c9d456a8fdc3629c6f04d
 Source2:        https://registry.npmjs.org/@pnpm/exe.linux-x64/-/exe.linux-x64-12.15.0.tgz
-# sha256:  402f7045b1e0587acb1542f18d38afbccb6babf3c7451394e6fb3d9f0160c6ca
+# sha256:  23c292a2db4218393104864680ae44cbef003c75016c9d456a8fdc3629c6f04d
 Source3:        hermes-agent-desktop-rpmlintrc
 ExclusiveArch:  x86_64
 

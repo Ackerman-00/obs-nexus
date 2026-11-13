@@ -2,9 +2,9 @@
 %global __requires_exclude_from ^/opt/ladybird/.*$
 %global __provides_exclude_from ^/opt/ladybird/.*$
 %global __brp_mangle_shebangs_exclude_from ^/opt/ladybird/.*$
-%global commit         3548021fc1a0cc9934331f62649cdad7761cdf09
-%global shortcommit    3548021
-%global gitdate        20261113125931
+%global commit         c243027ab53e98c9f180d000267df448983e8c50
+%global shortcommit    c243027
+%global gitdate        20261113140610
 %global base_version   0.0.0
 
 Name:           ladybird-unstable
@@ -15,7 +15,7 @@ License:        BSD-2-Clause
 Group:          Productivity/Networking/Web/Browsers
 URL:            https://ladybird.org
 Source0:        https://github.com/LadybirdBrowser/ladybird/archive/%{commit}.tar.gz
-# sha256:  2a2cd4b34623306f16ee92d9c575668f8b125c6a2c9afe273f2ddb2404ca9391
+# sha256:  e6bf1b3ec8d600ff94cd98667be59cbede32f0b22195db6c6a1f64998845e53d
 Source1:        check-bundled-libs.py
 ExclusiveArch:  x86_64
 
