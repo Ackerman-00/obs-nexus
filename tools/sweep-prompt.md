@@ -1258,24 +1258,30 @@ Then work autonomously, in this priority order:
    muse-spark-1.2-contributor-free) is removed THAT run:
    patch tools/model-rank.txt
    and opencode.json to live equivalents.
-   ORDER IS BENCHMARK-DRIVEN: the workflow runs the FIRST entry of
-   the cascade, so tools/model-rank.txt must stay sorted best-first
-   by published benchmark evidence. Every run, research the current
-   scores for the live free models (Artificial Analysis Intelligence
-   Index, Vals Index, agentic-coding leaderboards) and re-sort
-   tools/model-rank.txt: one line per model, `<model-id> (<source>
-   <score> / ...)`, best first, every score naming its source.
-   A live model with no published score stays in the file (unscored)
-   until one appears - never drop it just because it is unscored.
-   Keep the EXCLUDE list in tools/model-cascade.sh OUT of
-   tools/model-rank.txt even while the catalog lists those IDs
-   (glm-5.3-flash-free is catalogued but its free endpoint answers
-   "Endpoint is unavailable" / 403 region errors - it burns an
-   attempt window).
-   deepseek-v4.1-flash-free leads today (AA 45, top agentic-coding
-   score, OpenCode's most-used free model); a model that outranks it
-   on fresh evidence moves to the top for the NEXT run - this run's
-   own pick was fixed when the workflow started.
+   MODEL RANKING (your job, every run - prompt only, nothing else checks
+   it): tools/model-cascade.sh builds the CI cascade from the live
+   free-model catalog and tools/model-rank.txt holds the order that
+   decides which model leads. Do not trust yesterday's order: on EVERY
+   run, check the web for the current strongest free coding models and
+   put the best one first.
+     1. Search the web for today's free-model coding scores and rankings
+        (the AA coding index, Vals, Bito, vendor evals). Independent
+        published scores beat vendor claims; a model with no independent
+        score ranks below one that has a score.
+     2. Cross-check the live catalog
+        (https://opencode.ai/inference/v1/models) and the changelog
+        (https://opencode.ai/changelog) for ids that were added or retired.
+     3. Rewrite tools/model-rank.txt: strongest first, one id per line,
+        grouped in tiers, each model preceded by a single `#` line giving
+        its score, source and the date you checked. Keep the owner veto
+        in tools/model-cascade.sh EXCLUDE out of the file, drop ids the
+        catalog no longer serves, give every new free id a tier, and add
+        new ids to opencode.json so the CLI can resolve them.
+     4. Commit it and say one relay line: which model leads and why.
+   The leader is whatever the web says today, not whatever the file said
+   last run - a cascade that starts a weak model spends the run filling
+   in tables instead of fixing the repo. The next run reads the file you
+   wrote. This run's own pick was fixed when the workflow started.
    Same pass:
    `python3 -m py_compile tools/*.py`, `bash -n` on
    tools/verify-opensuse.sh, and confirm the pinned action

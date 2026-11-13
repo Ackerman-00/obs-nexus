@@ -116,3 +116,25 @@ If the agent skips the table, the job fails and retries with stronger model.
 - **Defense-in-depth**: even if one layer misses, the next catches it.
   Fork detection, template version detection, libyear budget, and
   Trivy CVE scanning prevent the known false positive classes.
+
+## Model selection (free-model cascade)
+
+- `bash tools/model-cascade.sh` — the free-model chain for this run, derived
+  from the live catalog (`https://opencode.ai/inference/v1/models`); the first
+  entry is the model that runs, the rest are fallbacks for quota/region
+  blocks. Both workflows (`opencode.yml`, `opencode-schedule.yml`) read it —
+  no model list is hardcoded anywhere.
+- `tools/model-rank.txt` — the strength order, one id per line, best first,
+  each id preceded by a `#` line giving its published score, source and the
+  date it was checked. The order is set by the per-run web check in
+  `tools/sweep-prompt.md` (step 8, MODEL RANKING), not by hand: independent
+  published scores beat vendor claims, and a model with no score ranks below
+  one that has a score.
+- `tools/model-cascade.sh` EXCLUDE — the owner veto (`glm-5.3-flash-free`,
+  `jev-1.13-free`). Vetoed ids stay out of `tools/model-rank.txt` even while
+  the catalog lists them: `glm-5.3-flash-free` answers "Endpoint is
+  unavailable" / 403 region errors and burns an attempt window.
+- `tools/model-cascade.sh` prints NEW and RETIRED ids on stderr — a new free
+  id must be scored and ranked by the next run, a retired one dropped.
+- `opencode.json` carries the same ids so the CLI can resolve them, and
+  enables the websearch provider the benchmark check needs.
