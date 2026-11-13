@@ -1,4 +1,6 @@
 #!/usr/bin/make -f
+SHELL := /bin/bash
+HATTER_SRC := $(shell dirname "$$(find . -maxdepth 2 -name Build-Hatter.sh -not -path './debian/*' | head -n1)")
 %:
 	dh $@
 
@@ -6,24 +8,22 @@ override_dh_auto_configure:
 	:
 
 override_dh_auto_build:
-	:
+	cd "$(HATTER_SRC)" && echo 2 | bash ./Build-Hatter.sh
 
 override_dh_auto_test:
 	:
 
 override_dh_auto_install:
-	cd Hatter-4.0 && echo 2 | bash ./Build-Hatter.sh
 	mkdir -p debian/hatter-icon-theme/usr/share/icons
-	shopt -s nullglob
-	for t in Hatter-4.0/Build/*/; do
-	    [ -d "$$t" ] || continue
-	    cp -a "$$t" "debian/hatter-icon-theme/usr/share/icons/$$(basename "$$t")"
+	for t in "$(HATTER_SRC)"/Build/*/; do \
+	    [ -d "$$t" ] || continue; \
+	    cp -a "$$t" "debian/hatter-icon-theme/usr/share/icons/$$(basename "$$t")"; \
 	done
-	shopt -u nullglob
+	find debian/hatter-icon-theme/usr/share/icons -xtype l -delete
 
 override_dh_installchangelogs:
 	dh_installchangelogs --no-trim
 
 override_dh_clean:
 	dh_clean
-	rm -rf Hatter-4.0/Build
+	rm -rf "$(HATTER_SRC)/Build"

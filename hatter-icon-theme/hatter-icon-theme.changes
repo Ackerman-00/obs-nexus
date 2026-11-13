@@ -1,6 +1,19 @@
 -------------------------------------------------------------------
+Fri Nov 13 15:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 4.0-0
+- Build fix: drop the 36 dangling weather-clear-night symlinks that the
+  upstream V4.0 KDE variant ships (their target weather-clear-night.svg
+  does not exist), which made the RPM link check fail the build
+- Build fix: locate the upstream source directory instead of a hardcoded
+  Hatter-4.0 path, and run the Debian rules under bash
+- Add gtk-update-icon-cache (RPM: gtk3-tools) to the build dependencies
+  and to the RPM post/postun requirements
+- Deduplicate identical icons across the 21 theme variants with fdupes
+  (the duplicated payload was 95 MB in the RPM)
+
+-------------------------------------------------------------------
 Fri Nov 13 20:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 4.0-0
 - New package hatter-icon-theme 4.0 (upstream V4.0 icon theme build)
-

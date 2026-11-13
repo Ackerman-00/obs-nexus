@@ -1,4 +1,6 @@
 #!/usr/bin/make -f
+SHELL := /bin/bash
+WS_SRC := $(shell dirname "$$(find . -maxdepth 2 -name install.sh -not -path './debian/*' | head -n1)")
 %:
 	dh $@
 
@@ -13,7 +15,7 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	mkdir -p debian/whitesur-icon-theme/usr/share/icons
-	cd WhiteSur-icon-theme-2026-09-10 && bash ./install.sh --dest ../../debian/whitesur-icon-theme/usr/share/icons --theme all
+	cd "$(WS_SRC)" && bash ./install.sh --dest "$(CURDIR)/debian/whitesur-icon-theme/usr/share/icons" --theme all
 
 override_dh_installchangelogs:
 	dh_installchangelogs --no-trim

@@ -9,9 +9,11 @@ Group:          System/GUI/Other
 URL:            https://github.com/vinceliuice/WhiteSur-icon-theme
 Source0:        https://github.com/vinceliuice/WhiteSur-icon-theme/archive/refs/tags/2026-09-10.tar.gz
 # sha256:  406c9cd59705583f1754b0eaca96cc48bafda042b88ef143f16d8ae1820ecd95
+Source1:        whitesur-icon-theme-rpmlintrc
 BuildArch:      noarch
 BuildRequires:  bash
 BuildRequires:  coreutils
+BuildRequires:  fdupes
 BuildRequires:  gtk3-tools
 BuildRequires:  sed
 ExclusiveArch:  x86_64
@@ -35,6 +37,7 @@ bash ./install.sh --dest %{buildroot}%{_datadir}/icons --theme all
 for t in %{buildroot}%{_datadir}/icons/WhiteSur*; do
     gtk-update-icon-cache -q "$t" 2>/dev/null || true
 done
+%fdupes %{buildroot}%{_datadir}/icons
 
 %files
 %license COPYING

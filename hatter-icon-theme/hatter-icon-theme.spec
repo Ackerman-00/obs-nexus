@@ -9,15 +9,19 @@ Group:          System/GUI/Other
 URL:            https://github.com/Mibea/Hatter
 Source0:        https://github.com/Mibea/Hatter/archive/refs/tags/V4.0.tar.gz
 # sha256:  74fae86c677809198497e735fd3a50c4ff192327bec4ce7bbe35c6844cfaf5fa
+Source1:        hatter-icon-theme-rpmlintrc
 BuildArch:      noarch
 BuildRequires:  bash
 BuildRequires:  coreutils
+BuildRequires:  fdupes
 BuildRequires:  findutils
 BuildRequires:  gtk3-tools
 BuildRequires:  rsync
 BuildRequires:  sed
 ExclusiveArch:  x86_64
 Requires:       hicolor-icon-theme
+Requires(post):   gtk3-tools
+Requires(postun): gtk3-tools
 
 %description
 Hatter is a modern, colorful and customizable icon theme for Linux desktops.
@@ -39,9 +43,11 @@ for t in Build/*/; do
     cp -a "$t" "%{buildroot}%{_datadir}/icons/$(basename "$t")"
 done
 shopt -u nullglob
+find %{buildroot}%{_datadir}/icons -xtype l -delete
 for t in %{buildroot}%{_datadir}/icons/*/; do
     gtk-update-icon-cache -q "$t" 2>/dev/null || true
 done
+%fdupes %{buildroot}%{_datadir}/icons
 
 %files
 %license COPYING
