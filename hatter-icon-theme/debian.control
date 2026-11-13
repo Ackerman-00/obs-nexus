@@ -1,0 +1,16 @@
+Source: hatter-icon-theme
+Section: x11
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), bash, coreutils, findutils, rsync, sed
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/Mibea/Hatter
+
+Package: hatter-icon-theme
+Architecture: all
+Depends: ${misc:Depends}, hicolor-icon-theme
+Description: Colorful and customizable icon theme for Linux desktops
+ Hatter is a modern, colorful and customizable icon theme for Linux desktops.
+ This package ships the upstream V4.0 build: the base Hatter theme plus the
+ Hatter-kde and Hatter-kde-dark variants and 19 color variants.

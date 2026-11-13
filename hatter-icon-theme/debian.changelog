@@ -1,0 +1,6 @@
+hatter-icon-theme (4.0-1) unstable; urgency=medium
+
+  * Initial Debian_Testing recipe (upstream V4.0 icon theme build).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 20:05:00 +0000
+

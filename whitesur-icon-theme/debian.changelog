@@ -1,0 +1,6 @@
+whitesur-icon-theme (2026.09.10-1) unstable; urgency=medium
+
+  * Initial Debian_Testing recipe (upstream 2026-09-10 icon theme).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 20:10:00 +0000
+

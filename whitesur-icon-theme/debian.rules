@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p debian/whitesur-icon-theme/usr/share/icons
+	cd WhiteSur-icon-theme-2026-09-10 && bash ./install.sh --dest ../../debian/whitesur-icon-theme/usr/share/icons --theme all
+
+override_dh_installchangelogs:
+	dh_installchangelogs --no-trim
+
+override_dh_clean:
+	dh_clean

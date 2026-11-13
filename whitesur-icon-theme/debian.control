@@ -1,0 +1,15 @@
+Source: whitesur-icon-theme
+Section: x11
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), bash, coreutils, sed
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/vinceliuice/WhiteSur-icon-theme
+
+Package: whitesur-icon-theme
+Architecture: all
+Depends: ${misc:Depends}, hicolor-icon-theme
+Description: WhiteSur macOS-like icon theme
+ WhiteSur is a macOS-like icon theme for Linux desktops. This package ships
+ the upstream 2026-09-10 release with every color variant.

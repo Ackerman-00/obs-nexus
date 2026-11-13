@@ -1,0 +1,29 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	cd Hatter-4.0 && echo 2 | bash ./Build-Hatter.sh
+	mkdir -p debian/hatter-icon-theme/usr/share/icons
+	shopt -s nullglob
+	for t in Hatter-4.0/Build/*/; do
+	    [ -d "$$t" ] || continue
+	    cp -a "$$t" "debian/hatter-icon-theme/usr/share/icons/$$(basename "$$t")"
+	done
+	shopt -u nullglob
+
+override_dh_installchangelogs:
+	dh_installchangelogs --no-trim
+
+override_dh_clean:
+	dh_clean
+	rm -rf Hatter-4.0/Build

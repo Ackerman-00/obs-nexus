@@ -43,7 +43,8 @@ DEB_MIRRORS = {
     "unstable/sid": "https://deb.debian.org/debian/dists/sid/main/binary-amd64/Packages.gz",
 }
 
-ARCH_ALL_OK = {"bibata-cursor-theme", "lazyvim-git", "faugus-launcher"}
+ARCH_ALL_OK = {"bibata-cursor-theme", "lazyvim-git", "faugus-launcher",
+               "hatter-icon-theme", "whitesur-icon-theme"}
 RPM_ONLY = {"scenefx"}
 FORBIDDEN = {"wlroots"}
 

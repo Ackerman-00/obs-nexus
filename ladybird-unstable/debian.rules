@@ -1,0 +1,46 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	cd ladybird-* && \
+	export VCPKG_FORCE_SYSTEM_BINARIES=1 && \
+	python3 Meta/ladybird.py vcpkg --preset Release && \
+	cmake --preset Release -S . -B Build/release -DBUILD_TESTING=OFF -DENABLE_INSTALL_FREEDESKTOP_FILES=OFF -DCMAKE_INSTALL_PREFIX=/opt/ladybird -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=OFF -DENABLE_CI_BASELINE_CPU=ON && \
+	if grep -q -- '-march=native' Build/release/build.ninja; then echo 'ERROR: -march=native leaked into the build' >&2; exit 1; fi && \
+	cmake --build Build/release --parallel $(nproc)
+
+override_dh_auto_test:
+	:
+
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_strip:
+	:
+
+override_dh_auto_install:
+	cd ladybird-* && \
+	DESTDIR=$(CURDIR)/debian/ladybird-unstable cmake --install Build/release --component ladybird_Runtime && \
+	DESTDIR=$(CURDIR)/debian/ladybird-unstable cmake --install Build/release --component Lagom_Runtime && \
+	DESTDIR=$(CURDIR)/debian/ladybird-unstable cmake --install Build/release --component ladybird_SystemIntegration && \
+	mkdir -p $(CURDIR)/debian/ladybird-unstable/opt/ladybird/lib64 && \
+	VCPKG_LIBS=$$(find Build/release/vcpkg_installed/*-linux-dynamic/lib -maxdepth 1 -name '*.so*' -print) && \
+	[ -n "$$VCPKG_LIBS" ] || { echo "FATAL: no vcpkg shared libraries found to bundle" >&2; exit 1; } && \
+	cp -a $$VCPKG_LIBS $(CURDIR)/debian/ladybird-unstable/opt/ladybird/lib64/ && \
+	chmod -R u+w $(CURDIR)/debian/ladybird-unstable/opt/ladybird && \
+	rm -f $(CURDIR)/debian/ladybird-unstable/opt/ladybird/lib64/libicu*.so* && \
+	python3 check-bundled-libs.py $(CURDIR)/debian/ladybird-unstable/opt/ladybird/lib64
+
+override_dh_installchangelogs:
+	dh_installchangelogs --no-trim
+
+override_dh_clean:
+	dh_clean
+	rm -rf ladybird-*/Build ladybird-*/vcpkg_installed

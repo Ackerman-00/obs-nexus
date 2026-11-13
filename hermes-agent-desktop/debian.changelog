@@ -1,0 +1,6 @@
+hermes-agent-desktop (0.23.1+git20261113131118.a5af509-1) unstable; urgency=medium
+
+  * Initial Debian_Testing recipe (upstream git snapshot, Electron build).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 20:20:00 +0000
+
