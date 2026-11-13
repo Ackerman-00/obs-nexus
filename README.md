@@ -96,35 +96,35 @@ out of scope):
 
 | Package | Description |
 |---|---|
-| **bibata-cursor-theme** | Open source, compact, material designed cursor set
-| **concat** | Free and open source video editor
-| **concat-unstable** | Video editor main-branch snapshot (native source build)
-| **faugus-launcher** | Lightweight app for running Windows games using UMU-Launcher
-| **fluxer** | Free and open source messaging & VoIP platform
+| **bibata-cursor-theme** | Open source, compact, material designed cursor set |
+| **concat** | Free and open source video editor |
+| **concat-unstable** | Video editor main-branch snapshot (native source build) |
+| **faugus-launcher** | Lightweight app for running Windows games using UMU-Launcher |
+| **fluxer** | Free and open source messaging & VoIP platform |
 | **ghostty** | Cross-platform terminal emulator |
-| **hatter-icon-theme** | Colorful and customizable icon theme for Linux desktops
-| **helium-browser** | Private, fast, and honest Chromium-based browser
-| **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher (Debian binary package name is `heroic`; install with `apt-get install heroic`)
-| **hermes-agent-desktop** | Native desktop shell for Hermes Agent (git snapshot; CI-built payload, OBS repack)
-| **koharu** | Local-first ML-powered manga translator
-| **localsend** | Open source cross-platform alternative to AirDrop
-| **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot)
-| **mangowm** | Scrollable-tiling Wayland compositor (dwm-like, wlroots-based)
-| **matugen** | Material You color generation tool
-| **obsidian** | Knowledge base for plain-text Markdown notes
-| **openchamber** | Agentic development environment boards for issues and pull requests
-| **protonplus** | Wine and Proton-based compatibility tools manager
-| **rootapp** | Discord alternative for gaming communities and large groups
-| **scenefx** | Wayland compositor effects library (for wlroots 0.20) - RPM only; DEB builds take it from the distro's `libscenefx-0.5`
-| **stoat-desktop** | Open source, user-first chat platform desktop client
-| **vesktop** | Custom Discord client with Vencord preinstalled
+| **hatter-icon-theme** | Colorful and customizable icon theme for Linux desktops |
+| **helium-browser** | Private, fast, and honest Chromium-based browser |
+| **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher (Debian binary package name is `heroic`; install with `apt-get install heroic`) |
+| **hermes-agent-desktop** | Native desktop shell for Hermes Agent (git snapshot; CI-built payload, OBS repack) |
+| **koharu** | Local-first ML-powered manga translator |
+| **localsend** | Open source cross-platform alternative to AirDrop |
+| **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot) |
+| **mangowm** | Scrollable-tiling Wayland compositor (dwm-like, wlroots-based) |
+| **matugen** | Material You color generation tool |
+| **obsidian** | Knowledge base for plain-text Markdown notes |
+| **openchamber** | Agentic development environment boards for issues and pull requests |
+| **protonplus** | Wine and Proton-based compatibility tools manager |
+| **rootapp** | Discord alternative for gaming communities and large groups |
+| **scenefx** | Wayland compositor effects library (for wlroots 0.20) - RPM only; DEB builds take it from the distro's `libscenefx-0.5` |
+| **stoat-desktop** | Open source, user-first chat platform desktop client |
+| **vesktop** | Custom Discord client with Vencord preinstalled |
 | **whitesur-icon-theme** | WhiteSur macOS-like icon theme |
-| **zen-browser** | Minimal browser focused on privacy and calm browsing
-| **cline-desktop** | Agentic AI coding agent desktop app (Tauri)
-| **hyperframes-desktop** | HyperFrames Studio video editor (Electron)
-| **omnirush-desktop** | OmniRush.ai desktop shell (Electron)
-| **freebuff-desktop** | Codebuff Freebuff Desktop (Electron)
-| **qoder** | Qoder agent workbench for human and AI software teams (Electron)
+| **zen-browser** | Minimal browser focused on privacy and calm browsing |
+| **cline-desktop** | Agentic AI coding agent desktop app (Tauri) |
+| **hyperframes-desktop** | HyperFrames Studio video editor (Electron) |
+| **omnirush-desktop** | OmniRush.ai desktop shell (Electron) |
+| **freebuff-desktop** | Codebuff Freebuff Desktop (Electron) |
+| **qoder** | Qoder agent workbench for human and AI software teams (Electron) |
 
 ---
 

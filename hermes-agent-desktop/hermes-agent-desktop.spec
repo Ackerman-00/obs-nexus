@@ -111,6 +111,11 @@ DESKTOP_EOF
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
 /usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
+if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
+    chmod 4755 /opt/HermesDesktop/chrome-sandbox || :
+else
+    chmod 0755 /opt/HermesDesktop/chrome-sandbox || :
+fi
 
 %postun
 case "$1" in
@@ -123,10 +128,11 @@ esac
 %posttrans
 /usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/hermes-agent-desktop.desktop
+
 %files
 /opt/HermesDesktop/
-%exclude /opt/HermesDesktop/chrome-sandbox
-%attr(4755, root, root) /opt/HermesDesktop/chrome-sandbox
 %license LICENSE
 %{_bindir}/hermes-agent-desktop
 %{_datadir}/applications/hermes-agent-desktop.desktop

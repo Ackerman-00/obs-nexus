@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Nov 13 19:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.1+git20261113175838.8f442ba-0
+- Ship the upstream chrome-sandbox helper again: the previous revision
+  excluded it from the /opt glob, which removed the SUID sandbox from
+  the package instead of deduplicating the filelist. The file is now
+  packaged once by the directory glob with its upstream mode 0755, and
+  the post-install scriptlet raises it to 4755 only on kernels without
+  unprivileged user namespaces (the same probe vesktop uses), so the
+  packaged filelist stays rpm -V clean on Tumbleweed, Debian testing and
+  sid.
+
+-------------------------------------------------------------------
 Fri Nov 13 19:15:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.23.1+git20261113175838.8f442ba-0
