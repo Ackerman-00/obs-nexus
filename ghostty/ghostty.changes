@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Nov 13 21:35:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- declare the minimum versions upstream 1.4.0 enforces:
+  pkgconfig(gtk4) >= 4.18 (src/apprt/gtk/gtk_version.zig
+  minimum_version, @compileError below it) and
+  pkgconfig(libadwaita-1) >= 1.7
+  (src/apprt/gtk/build/gresource.zig minimum_adwaita).
+  Tumbleweed ships gtk4 4.24.1 + libadwaita 1.10.0, so this is
+  a floor-documenting change, no version change.
+
+-------------------------------------------------------------------
 Wed Nov 11 06:26:40 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - fix(autonomous): vendor.tar.zst kept the test/ dirs after all:

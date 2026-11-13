@@ -1,5 +1,8 @@
 ghostty (1.4.0-1) unstable; urgency=medium
 
+  * debian/control: declare the minimum versions upstream 1.4.0
+    enforces - libgtk-4-dev (>= 4.18) and libadwaita-1-dev (>= 1.7).
+
   * debian/rules: drop the vendored libghostty-vt artifacts from the
     package (static/shared lib, pkg-config files, headers) like the RPM
     recipe does; dh_strip fails on the zig-generated 1.4.0 archive
