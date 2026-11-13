@@ -7,6 +7,11 @@ GITHUB_REPO="NousResearch/hermes-agent"
 PACKAGER="Ackerman-00"
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
+BK=$(mktemp -d)
+BK_FILES="$SPEC_FILE $CHANGES_FILE hermes-agent-desktop.dsc debian.changelog"
+for f in $BK_FILES; do [ -f "$f" ] && cp -p "$f" "$BK/"; done
+trap 'rc=$?; if [ "$rc" != "0" ]; then for f in $BK_FILES; do if [ -f "$f" ] && [ -f "$BK/$(basename "$f")" ]; then cp -p "$BK/$(basename "$f")" "$f"; fi; done; fi; rm -rf "$BK"' EXIT
+
 echo "Checking for upstream updates on $GITHUB_REPO..."
 
 LATEST_COMMIT=$(git ls-remote "https://github.com/$GITHUB_REPO.git" HEAD 2>/dev/null | awk '{print $1}')

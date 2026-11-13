@@ -19,6 +19,7 @@ Source1:        hermes-agent-desktop-rpmlintrc
 ExclusiveArch:  x86_64
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  hicolor-icon-theme
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
 Requires:       mozilla-nss
@@ -124,6 +125,7 @@ esac
 
 %files
 /opt/HermesDesktop/
+%exclude /opt/HermesDesktop/chrome-sandbox
 %attr(4755, root, root) /opt/HermesDesktop/chrome-sandbox
 %license LICENSE
 %{_bindir}/hermes-agent-desktop

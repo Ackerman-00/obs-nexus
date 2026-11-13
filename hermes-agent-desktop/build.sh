@@ -20,7 +20,7 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 TXDIR=$(mktemp -d)
-trap 'rm -rf "$TXDIR"' EXIT
+trap 'chmod -R u+w "$TXDIR" 2>/dev/null || :; rm -rf "$TXDIR" 2>/dev/null || :' EXIT
 echo "Downloading upstream source at $COMMIT..."
 curl -fsSL --retry 3 --connect-timeout 60 "https://github.com/NousResearch/hermes-agent/archive/$COMMIT.tar.gz" -o "$TXDIR/main.tar.gz"
 tar -xzf "$TXDIR/main.tar.gz" -C "$TXDIR"

@@ -1,5 +1,15 @@
 -------------------------------------------------------------------
-Fri Nov 13 23:50:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+Fri Nov 13 19:15:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.1+git20261113175838.8f442ba-0
+- New upstream snapshot 8f442ba (base 0.23.1); the Debian recipe now
+  names the same payload as the spec.
+- BuildRequires hicolor-icon-theme so the icon directories are owned
+  in the build root, and chrome-sandbox excluded from the /opt glob
+  so it is listed exactly once.
+
+-------------------------------------------------------------------
+Fri Nov 13 17:54:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.23.1+git20261113141540.5c1abd2-0
 - Reworked from a network-at-build-time source build (which OBS cannot
