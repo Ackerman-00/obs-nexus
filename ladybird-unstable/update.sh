@@ -18,6 +18,36 @@ fi
 
 SHORT=${LATEST_COMMIT:0:7}
 CURRENT_COMMIT=$(grep -E "^%global commit" "$SPEC_FILE" | awk '{print $3}')
+CURRENT_GITDATE=$(grep -E "^%global gitdate" "$SPEC_FILE" | awk '{print $3}')
+CURRENT_SHORT=$(grep -E "^%global shortcommit" "$SPEC_FILE" | awk '{print $3}')
+CURRENT_BASE=$(grep -E "^%global base_version" "$SPEC_FILE" | awk '{print $3}')
+CURRENT_VER="$CURRENT_BASE+git$CURRENT_GITDATE.$CURRENT_SHORT"
+
+build_debian_orig() {
+    local ver="$1" commit="$2" url="$3" tmpd
+    tmpd=$(mktemp -d)
+    trap 'rm -rf "$tmpd"' EXIT
+    curl -fsSL --retry 3 --connect-timeout 60 "$url" -o "$tmpd/main.tar.gz" \
+        || { echo "upstream source download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -xzf "$tmpd/main.tar.gz" -C "$tmpd" \
+        || { echo "upstream source corrupt."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    [ -d "$tmpd/ladybird-$commit" ] \
+        || { echo "unexpected source layout."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    tar -czf "ladybird-unstable-$ver.tar.gz" -C "$tmpd" "ladybird-$commit" \
+        || { echo "orig tarball pack failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    for old in ladybird-unstable-*.tar.gz; do
+        [ "$old" = "ladybird-unstable-$ver.tar.gz" ] || rm -f "$old"
+    done
+    ls -l "ladybird-unstable-$ver.tar.gz"
+    trap - EXIT
+    rm -rf "$tmpd"
+}
+
+if [ ! -f "ladybird-unstable-$CURRENT_VER.tar.gz" ]; then
+    echo "  -> Orig tarball missing locally; rebuilding..."
+    build_debian_orig "$CURRENT_VER" "$CURRENT_COMMIT" "https://github.com/$GITHUB_REPO/archive/$CURRENT_COMMIT.tar.gz" \
+        || echo "  -> WARNING: orig tarball rebuild failed; continuing version check."
+fi
 
 if [ "$CURRENT_COMMIT" = "$LATEST_COMMIT" ]; then
     echo "Package is already at main $SHORT. No update needed."
@@ -38,25 +68,7 @@ TARBALL_URL="https://github.com/$GITHUB_REPO/archive/$LATEST_COMMIT.tar.gz"
 echo "   Current: $CURRENT_COMMIT"
 echo "   Latest:  $LATEST_COMMIT ($NEW_VER)"
 
-build_debian_orig() {
-    local ver="$1" commit="$2" tmpd
-    tmpd=$(mktemp -d)
-    trap 'rm -rf "$tmpd"' EXIT
-    curl -fsSL --retry 3 --connect-timeout 60 "$TARBALL_URL" -o "$tmpd/main.tar.gz" \
-        || { echo "upstream source download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -tzf "$tmpd/main.tar.gz" > /dev/null \
-        || { echo "upstream source corrupt."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    tar -czf "ladybird-unstable-$ver.tar.gz" -C "$tmpd" "ladybird-$commit" \
-        || { echo "orig tarball pack failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
-    for old in ladybird-unstable-*.tar.gz; do
-        [ "$old" = "ladybird-unstable-$ver.tar.gz" ] || rm -f "$old"
-    done
-    ls -l "ladybird-unstable-$ver.tar.gz"
-    trap - EXIT
-    rm -rf "$tmpd"
-}
-
-build_debian_orig "$NEW_VER" "$LATEST_COMMIT" || exit 1
+build_debian_orig "$NEW_VER" "$LATEST_COMMIT" "$TARBALL_URL" || exit 1
 
 NEW_SHA=$(curl -fsSL --retry 3 --connect-timeout 60 "$TARBALL_URL" | sha256sum | awk '{print $1}')
 

@@ -33,30 +33,12 @@ CURRENT_BASE=$(grep -E "^%global base_version" "$SPEC_FILE" | awk '{print $3}')
 CURRENT_GITDATE=$(grep -E "^%global gitdate" "$SPEC_FILE" | awk '{print $3}')
 CURRENT_SHORT=$(grep -E "^%global shortcommit" "$SPEC_FILE" | awk '{print $3}')
 CURRENT_VER="$CURRENT_BASE+git$CURRENT_GITDATE.$CURRENT_SHORT"
-TARBALL_URL="https://github.com/$GITHUB_REPO/archive/$LATEST_COMMIT.tar.gz"
-
-if [ "$CURRENT_COMMIT" = "$LATEST_COMMIT" ] && [ "$CURRENT_BASE" = "$BASE_VER" ]; then
-    echo "Package is already at main $SHORT (base $BASE_VER). No update needed."
-    exit 0
-fi
-
-COMMIT_DATE_RAW=$(curl -sL -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPO/commits/$LATEST_COMMIT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('commit',{}).get('committer',{}).get('date',''))" 2>/dev/null)
-if [ -z "$COMMIT_DATE_RAW" ]; then
-    echo "Error: Failed to fetch the commit date."
-    exit 1
-fi
-GIT_DATE=$(echo "$COMMIT_DATE_RAW" | sed 's/[-T:Z]//g')
-NEW_VER="$BASE_VER+git$GIT_DATE.$SHORT"
-TARBALL_URL="https://github.com/$GITHUB_REPO/archive/$LATEST_COMMIT.tar.gz"
-
-echo "   Current: $CURRENT_BASE+git.$CURRENT_COMMIT"
-echo "   Latest:  $NEW_VER"
 
 build_debian_orig() {
-    local ver="$1" commit="$2" tmpd
+    local ver="$1" commit="$2" url="$3" tmpd
     tmpd=$(mktemp -d)
     trap 'rm -rf "$tmpd"' EXIT
-    curl -fsSL --retry 3 --connect-timeout 60 "$TARBALL_URL" -o "$tmpd/main.tar.gz" \
+    curl -fsSL --retry 3 --connect-timeout 60 "$url" -o "$tmpd/main.tar.gz" \
         || { echo "upstream source download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
     tar -xzf "$tmpd/main.tar.gz" -C "$tmpd" \
         || { echo "upstream source corrupt."; trap - EXIT; rm -rf "$tmpd"; return 1; }
@@ -83,7 +65,30 @@ build_debian_orig() {
     rm -rf "$tmpd"
 }
 
-build_debian_orig "$NEW_VER" "$LATEST_COMMIT" || exit 1
+if [ ! -f "hermes-agent-desktop-$CURRENT_VER.tar.gz" ]; then
+    echo "  -> Orig tarball missing locally; rebuilding..."
+    build_debian_orig "$CURRENT_VER" "$CURRENT_COMMIT" "https://github.com/$GITHUB_REPO/archive/$CURRENT_COMMIT.tar.gz" \
+        || echo "  -> WARNING: orig tarball rebuild failed; continuing version check."
+fi
+
+if [ "$CURRENT_COMMIT" = "$LATEST_COMMIT" ] && [ "$CURRENT_BASE" = "$BASE_VER" ]; then
+    echo "Package is already at main $SHORT (base $BASE_VER). No update needed."
+    exit 0
+fi
+
+COMMIT_DATE_RAW=$(curl -sL -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/repos/$GITHUB_REPO/commits/$LATEST_COMMIT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('commit',{}).get('committer',{}).get('date',''))" 2>/dev/null)
+if [ -z "$COMMIT_DATE_RAW" ]; then
+    echo "Error: Failed to fetch the commit date."
+    exit 1
+fi
+GIT_DATE=$(echo "$COMMIT_DATE_RAW" | sed 's/[-T:Z]//g')
+NEW_VER="$BASE_VER+git$GIT_DATE.$SHORT"
+TARBALL_URL="https://github.com/$GITHUB_REPO/archive/$LATEST_COMMIT.tar.gz"
+
+echo "   Current: $CURRENT_BASE+git.$CURRENT_COMMIT"
+echo "   Latest:  $NEW_VER"
+
+build_debian_orig "$NEW_VER" "$LATEST_COMMIT" "$TARBALL_URL" || exit 1
 
 NEW_SHA=$(curl -fsSL --retry 3 --connect-timeout 60 "$TARBALL_URL" | sha256sum | awk '{print $1}')
 
