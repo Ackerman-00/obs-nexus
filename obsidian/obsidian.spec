@@ -6,7 +6,7 @@ Name:           obsidian
 Version:        1.15.1
 Release:        0
 Summary:        A powerful knowledge base for plain text Markdown files
-License:        NonFree
+License:        LicenseRef-SUSE-Freeware
 Group:          Productivity/Text/Editors
 URL:            https://obsidian.md/
 Source0:        Obsidian-%{version}.AppImage

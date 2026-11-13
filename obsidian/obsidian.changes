@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Nov 13 22:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- License: NonFree is not a valid license token (it is an OBS repo
+  name, not a license). Use LicenseRef-SUSE-Freeware, the same token
+  the repo already uses for its other redistributable proprietary
+  payloads (rootapp, qoder, freebuff-desktop, omnirush-desktop).
+
+-------------------------------------------------------------------
 Thu Nov 12 21:45:23 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream version 1.15.1 (bundled Electron AppImage)
