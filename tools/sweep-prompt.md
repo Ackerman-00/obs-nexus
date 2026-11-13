@@ -293,14 +293,28 @@ the spec files, .changes files, _service files and update.sh scripts
 (version/source URLs/checksums/macros), and understand update-packages.yml
 before touching anything.
 
-WEB SEARCH IS YOUR PRIMARY VERIFICATION TOOL. Use it thoroughly and
-constantly: for every package you touch, every issue you triage, every PR
-you review, and every version/URL/checksum you rely on, web-search the
-upstream project (GitHub repo, releases/tags, homepage) and the broader
-internet. Confirm the latest version actually exists, source URLs return
-200 (`curl -sI`), checksums match (download + sha256sum), and look for known
-build fixes/patches upstream. NEVER trust a version, URL, checksum, or fix
-you have not verified online.
+ALWAYS WEBSEARCH - FOR EVERY PACKAGE, EVERY RUN, EVERY TIME. This is the
+single most-used tool in this repo and it is mandatory, not optional.
+Websearch is not only for verifying a version, URL or checksum: it is how
+you find IMPROVEMENTS and the LATEST things. For every package, on every
+run - including the ones you end up not touching - search the web for:
+  - the latest release notes and what actually changed (not just the
+    version string), upstream bugs fixed since, and security advisories
+  - new upstream build flags, build-system requirements and toolchain
+    floors, and upstream's own packaging guidance (CI workflows, install
+    docs, packaging/ dirs, the .spec/.deb files they ship)
+  - how other distros package it today (official spec, OBS/COPR copies,
+    AUR PKGBUILD, Debian rules) - to spot what we are missing
+  - newer dependencies superseding the ones we pin, and newer stable
+    channels (a successor project, a -latest line, a prebuilt artifact)
+  - fixes for the exact error the build log showed - search the error
+    string itself, upstream issues, and the fix commit
+  - new packages upstream released that this repo lacks entirely
+Artifacts that count as "searched": a link, a version, a flag, a commit
+sha, a build-log fix. Independent published sources beat vendor claims;
+one empty result is never evidence of "nothing changed" - widen the
+query and search again. NEVER trust a version, URL, checksum, fix or
+"this is how it works" you have not verified online in THIS run.
 - GITHUB API RATE LIMITS (2026 community best practice - docs.github.com/rest/using-the-rest-api/rate-limits-for-the-rest-api + dev.to 2026-08-19): unauthenticated = 60/hour (IP-shared, 304 still costs 1), GITHUB_TOKEN via `gh api` = 1000/hour per repo (Actions) / PAT = 5000/hour / GitHub App = 15000/hour. Modern way to avoid 60/hr:
   * NEVER use `curl -sI https://github.com/.../releases/tag/...` or `curl https://api.github.com/...` without token -- ALWAYS use `gh api repos/<owner>/<repo>/releases/tags/<tag> --jq .tag_name` or `gh api repos/<owner>/<repo>/releases/latest --jq .tag_name` -- it authenticates via GITHUB_TOKEN/GH_TOKEN (both set), gets 5000/hour, handles `Authorization` + `If-None-Match` (304 free ONLY with token), pagination, and `--cache 3600s`.
   * If you must use `curl` for GitHub API, ALWAYS add `-H "Authorization: token $GITHUB_TOKEN"` -- unauthenticated 304 does NOT save quota. Prefer `gh api --cache 3600s --jq` and check `x-ratelimit-remaining` (`gh api rate_limit` is free).
