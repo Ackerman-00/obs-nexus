@@ -107,7 +107,6 @@ out of scope):
 | **heroic-games-launcher** | Open source GOG, Epic and Amazon games launcher (Debian binary package name is `heroic`; install with `apt-get install heroic`)
 | **hermes-agent-desktop** | Native desktop shell for Hermes Agent (git snapshot; CI-built payload, OBS repack)
 | **koharu** | Local-first ML-powered manga translator
-| **ladybird-unstable** | Truly independent web browser (git master; unstable; CI-built payload, OBS repack)
 | **localsend** | Open source cross-platform alternative to AirDrop
 | **lazyvim-git** | Neovim setup for lazy people (rolling git snapshot)
 | **mangowm** | Scrollable-tiling Wayland compositor (dwm-like, wlroots-based)
