@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Sat Nov 14 16:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- debian.control: Recommend libayatana-appindicator3-1 (tray support).
+
+-------------------------------------------------------------------
 Sat Nov 14 14:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - debian.rules: strip the payload's resources/app-update.yml and
