@@ -624,7 +624,10 @@ def parse_fedora(spec):
             if p1.exists() or p2.exists():
                 p = p1 if p1.exists() else p2
                 if re.search(r"\.(tar|tar\.gz|tgz|tar\.xz|txz|tar\.zst|tar\.bz2|tbz2|zip|7z|gz|bz2|xz|zst|crate|whl|deb|rpm|appimage|exe|dmg|asar|jar|bin)$", name, re.I):
-                    srcs.append(("local:%s" % p, name, None))
+                    # keep the spec's pinned digest: a local payload must be
+                    # checksum-verified too (dropping it here silently
+                    # downgraded fluxer.rpm to version-only evidence)
+                    srcs.append(("local:%s" % p, name, sha))
                 else:
                     srcs.append(("local:aux", name, None))
                 continue
@@ -1828,6 +1831,45 @@ def check_deps_in_dir(pkg, root):
 
 
 
+# Files whose change cannot alter a built payload. Deliberately narrow: any
+# path not listed here keeps the package STALE, so a real code change can
+# never be mistaken for documentation.
+DOCS_ONLY_RE = re.compile(
+    r"^(docs?|documentation|\.github|licenses?)/"
+    r"|\.(md|mdx|rst)$"
+    r"|^(LICEN[CS]E|CHANGELOG|CHANGES|CODEOWNERS|CONTRIBUTING|SECURITY)"
+    r"|^(\.gitignore|\.editorconfig|\.mailmap)$",
+    re.I)
+
+
+def docs_only_drift(repo, pin, head):
+    """True only when the compare API proves every commit between pin and
+    upstream HEAD touches documentation/metadata alone. Any doubt (API
+    failure, truncated list, unknown path) returns False."""
+    if repo.startswith("http") or "/" not in repo:
+        return False
+    try:
+        url = "https://api.github.com/repos/%s/compare/%s...%s" % (repo, pin, head)
+        data = json.loads(fetch(url, timeout=60).decode())
+    except Exception:
+        return False
+    if not isinstance(data, dict):
+        return False
+    files = data.get("files") or []
+    if not files or len(files) >= 300:
+        return False
+    if data.get("status") not in ("ahead", "diverged", "identical"):
+        return False
+    stray = [f.get("filename", "") for f in files
+             if not DOCS_ONLY_RE.search(f.get("filename", "") or "")]
+    if stray:
+        log("  [live-drift] %s: %d non-doc file(s), e.g. %s"
+            % (repo, len(stray), ", ".join(stray[:3])))
+        return False
+    log("  [live-drift] %s: %d docs/metadata file(s) only" % (repo, len(files)))
+    return True
+
+
 def check_live(pkg, live):
     repo, pin = live[0], live[1]
     head = upstream_head(repo)
@@ -1837,6 +1879,12 @@ def check_live(pkg, live):
         log("[%s] %s : live, upstream unreachable" % (STATUS_SKIP, pkg))
         return True
     ok = (normalize(pin[:12]) == normalize(head[:12]))
+    if not ok and docs_only_drift(repo, pin, head):
+        rows.append((pkg, "live %s" % repo, pin[:12], head[:12], STATUS_OK,
+                     "upstream drift %s..%s is docs/metadata only - payload "
+                     "unchanged, rebuild not warranted" % (pin[:12], head[:12])))
+        log("[%s] %s : docs-only drift %s..%s" % (STATUS_OK, pkg, pin[:12], head[:12]))
+        return True
     status = STATUS_OK if ok else STATUS_STALE
     note = "live %s pin %s vs upstream %s" % (repo, pin[:12], head[:12])
     rows.append((pkg, "live %s" % repo, pin[:12], head[:12], status, note))
