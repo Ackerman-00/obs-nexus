@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 14 19:59:10 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 3.8.5-0
+- Update omnirush-desktop to v3.8.5
+
+-------------------------------------------------------------------
 Sat Nov 14 14:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - debian.rules: strip the payload's resources/app-update.yml and
