@@ -1,5 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
+curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="bibata-cursor-theme.spec"
 CHANGES_FILE="bibata-cursor-theme.changes"

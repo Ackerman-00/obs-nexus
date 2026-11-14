@@ -1,5 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
+curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="hatter-icon-theme.spec"
 DSC_FILE="hatter-icon-theme.dsc"
