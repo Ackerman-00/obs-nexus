@@ -1115,16 +1115,18 @@ def looks_like_source(tree):
     return False
 
 
-DOC_NAMES = {"license", "license.txt", "license.md", "copying", "copying.txt",
-             "readme", "readme.md", "readme.txt", "changelog", "news", "notice"}
+DOC_STEMS = {"license", "licence", "copying", "readme", "changelog", "news", "notice",
+             "authors", "patents", "contributors"}
 DOC_EXT = {".md", ".txt", ".patch", ".diff"}
 AUX_EXT = {".png", ".svg", ".ico", ".jpg", ".jpeg", ".gif", ".webp", ".xml",
            ".plist", ".metainfo"}
 
 
 def looks_like_doc(distname):
-    base = distname.lower().rsplit(".", 1)[0] if distname.lower().rsplit(".", 1)[-1] in DOC_EXT else distname.lower()
-    return base in DOC_NAMES or distname.lower().endswith(tuple(DOC_EXT))
+    low = distname.lower()
+    if low.endswith(tuple(DOC_EXT)):
+        return True
+    return any(tok in DOC_STEMS for tok in re.split(r"[._\-]+", low))
 
 
 def looks_like_aux(distname):
