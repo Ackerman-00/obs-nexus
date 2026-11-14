@@ -65,6 +65,7 @@ Requires:       libuuid.so.1()(64bit)
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
 Recommends:     ffmpeg
+Recommends:     libayatana-appindicator3.so.1()(64bit)
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 
