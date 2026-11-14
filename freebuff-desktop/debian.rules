@@ -28,3 +28,4 @@ override_dh_auto_install:
 	cp -a payload/opt/Freebuff debian/freebuff-desktop/opt/
 	cp -a payload/usr/share/* debian/freebuff-desktop/usr/share/
 	ln -sf /opt/Freebuff/freebuff debian/freebuff-desktop/usr/bin/freebuff
+	find debian/freebuff-desktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

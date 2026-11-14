@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Nov 14 14:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- debian.rules: strip the payload's resources/app-update.yml and
+  resources/package-type so the Debian package disables the in-app
+  self-updater exactly like the RPM recipe does.
+
+-------------------------------------------------------------------
 Tue Nov 10 23:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Ship the bundled Electron chrome-sandbox again (it was dropped from

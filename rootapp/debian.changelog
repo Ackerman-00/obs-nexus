@@ -1,5 +1,13 @@
 rootapp (0.9.163-1) unstable; urgency=medium
 
+  * debian/rules: strip the payload's resources/app-update.yml and
+    resources/package-type to disable the in-app self-updater,
+    matching the RPM recipe.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 14:32:00 +0000
+
+rootapp (0.9.163-1) unstable; urgency=medium
+
   * New upstream release 0.9.163.
 
  -- Ackerman-00 <noreply@example.com>  Mon, 09 Nov 2026 03:58:46 +0000

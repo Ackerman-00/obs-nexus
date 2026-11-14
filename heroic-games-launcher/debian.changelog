@@ -1,5 +1,13 @@
 heroic-games-launcher (2.22.4-1) unstable; urgency=medium
 
+  * debian/rules: strip the payload's resources/app-update.yml and
+    resources/package-type to disable the in-app self-updater,
+    matching the RPM recipe.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 14:20:00 +0000
+
+heroic-games-launcher (2.22.4-1) unstable; urgency=medium
+
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
     payload talks to org.freedesktop.portal.* at runtime.
 

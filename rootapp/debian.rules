@@ -27,3 +27,4 @@ override_dh_auto_install:
 	install -Dm644 appimage-root/Root.png debian/rootapp/usr/share/pixmaps/rootapp.png
 	install -Dm644 appimage-root/Root.png debian/rootapp/usr/share/icons/hicolor/512x512/apps/rootapp.png
 	printf '[Desktop Entry]\nType=Application\nName=Root\nComment=Root App is a new Discord alternative, designed for gaming communities and large online groups\nExec=rootapp %%U\nIcon=rootapp\nTerminal=false\nStartupWMClass=Root\nCategories=Network;InstantMessaging;\nMimeType=x-scheme-handler/rootapp;\n' > debian/rootapp/usr/share/applications/rootapp-app.desktop
+	find debian/rootapp \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

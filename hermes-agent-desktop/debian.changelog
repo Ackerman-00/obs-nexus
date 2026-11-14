@@ -1,8 +1,12 @@
 hermes-agent-desktop (0.23.1+git20261114130208.cd582ed-1) unstable; urgency=medium
 
   * New upstream snapshot cd582ed (base 0.23.1).
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk.
+  * debian/rules: strip the payload's resources/app-update.yml and
+    resources/package-type to disable the in-app self-updater,
+    matching the RPM recipe.
 
- -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 13:36:14 +0000
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 14:20:00 +0000
 
 hermes-agent-desktop (0.23.1+git20261114034817.422ad18-1) unstable; urgency=medium
 

@@ -36,3 +36,4 @@ override_dh_auto_install:
 	cp -a payload/usr/share/icons debian/concat/usr/share/
 	cp -a payload/usr/share/doc debian/concat/usr/share/
 	sed -i 's|^Exec=.*|Exec=/usr/bin/concat %U|' debian/concat/usr/share/applications/concat.desktop
+	find debian/concat \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

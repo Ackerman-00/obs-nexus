@@ -28,3 +28,4 @@ override_dh_auto_install:
 	cp -a payload/opt/hyperframes debian/hyperframes-desktop/opt/
 	cp -a payload/usr/share/* debian/hyperframes-desktop/usr/share/
 	if [ -L payload/usr/bin/hyperframes ] || [ -e payload/usr/bin/hyperframes ]; then ln -sf /opt/hyperframes/HyperFrames debian/hyperframes-desktop/usr/bin/hyperframes; fi
+	find debian/hyperframes-desktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

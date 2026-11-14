@@ -24,6 +24,7 @@ override_dh_auto_install:
 	sed -e 's|^Exec=.*|Exec=/usr/bin/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
 	    appimage-root/openchamber.desktop > debian/openchamber/usr/share/applications/openchamber.desktop
 	install -Dm644 appimage-root/openchamber.png debian/openchamber/usr/share/icons/hicolor/256x256/apps/openchamber.png
+	find debian/openchamber \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete
 
 override_dh_shlibdeps:
 	:

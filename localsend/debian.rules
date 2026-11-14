@@ -32,3 +32,4 @@ override_dh_auto_install:
 	cp -a payload/opt/localsend_app debian/localsend/opt/
 	printf '#!/bin/sh\nexec /opt/localsend_app/localsend_app "$$@"\n' > debian/localsend/usr/bin/localsend_app
 	chmod 0755 debian/localsend/usr/bin/localsend_app
+	find debian/localsend \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

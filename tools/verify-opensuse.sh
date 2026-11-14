@@ -34,6 +34,34 @@ if [[ -f "$RELAY" ]]; then
   else
     echo "PASS: Correctness contract present on $unproven_rows rows"
   fi
+  spec_missing=$( { grep -L "resources/app-update\.yml" */*.spec 2>/dev/null || true; } | wc -l )
+  spec_missing=${spec_missing:-0}
+  if [[ "$spec_missing" -ne 0 ]]; then
+    echo "FAIL: $spec_missing specs lack the in-app updater strip: $( { grep -L 'resources/app-update\.yml' */*.spec 2>/dev/null || true; } | tr '\n' ' ')"
+    FAIL=1
+  else
+    echo "PASS: in-app updater strip present in all $expected specs"
+  fi
+  rules_gap=""
+  for rules in */debian.rules; do
+    [[ -f "$rules" ]] || continue
+    pkgdir=$(dirname "$rules")
+    if grep -qE 'payload/opt/|squashfs-root|linux-unpacked' "$rules" && ! grep -q "app-update\.yml" "$rules"; then
+      rules_gap="$rules_gap $pkgdir"
+    fi
+  done
+  if [[ -n "$rules_gap" ]]; then
+    echo "FAIL: Electron Debian recipes missing the in-app updater strip:$rules_gap"
+    FAIL=1
+  else
+    echo "PASS: Electron Debian recipes carry the in-app updater strip"
+  fi
+  if ! grep -qi "debian updater markers: 0" "$RELAY"; then
+    echo "FAIL: NOT COMPLETE -- relay missing the Debian in-app updater marker sweep evidence (expects 'Debian updater markers: 0')"
+    FAIL=1
+  else
+    echo "PASS: Debian in-app updater marker sweep recorded with zero markers"
+  fi
   if ! grep -q "| package | packaged version |" "$RELAY"; then
     echo "FAIL: NOT COMPLETE -- version accuracy table (priority 2 deliverable) missing in relay"
     FAIL=1

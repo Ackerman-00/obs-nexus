@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Nov 14 14:32:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- debian.rules: strip the payload's resources/app-update.yml and
+  resources/package-type so the Debian package disables the in-app
+  self-updater exactly like the RPM recipe does.
+
+-------------------------------------------------------------------
 Sat Nov 14 08:13:36 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.18.2-0

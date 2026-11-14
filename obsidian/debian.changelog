@@ -1,5 +1,13 @@
 obsidian (1.15.1-1) unstable; urgency=medium
 
+  * debian/rules: strip the payload's resources/app-update.yml and
+    resources/package-type to disable the in-app self-updater,
+    matching the RPM recipe.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 14:32:00 +0000
+
+obsidian (1.15.1-1) unstable; urgency=medium
+
   * New upstream release 1.15.1.
 
  -- Ackerman-00 <noreply@example.com>  Thu, 12 Nov 2026 21:45:23 +0000

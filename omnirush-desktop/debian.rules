@@ -31,3 +31,4 @@ override_dh_auto_install:
 	cp -a payload/opt/omnirush debian/omnirush-desktop/opt/
 	cp -a payload/usr/share/* debian/omnirush-desktop/usr/share/
 	ln -sf /opt/omnirush/omnirush debian/omnirush-desktop/usr/bin/omnirush
+	find debian/omnirush-desktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

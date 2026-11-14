@@ -38,3 +38,4 @@ override_dh_auto_install:
 	chmod 0755 debian/heroic/usr/bin/heroic
 	sed -e 's|^Exec=.*|Exec=/usr/bin/heroic %U|' \
 	    payload/usr/share/applications/heroic.desktop > debian/heroic/usr/share/applications/heroic.desktop
+	find debian/heroic \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

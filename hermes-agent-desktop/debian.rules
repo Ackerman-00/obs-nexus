@@ -27,6 +27,7 @@ override_dh_auto_install:
 	printf '#!/bin/sh\nexec /opt/HermesDesktop/Hermes "$$@"\n' > debian/hermes-agent-desktop/usr/bin/hermes-agent-desktop
 	chmod 0755 debian/hermes-agent-desktop/usr/bin/hermes-agent-desktop
 	printf '[Desktop Entry]\nType=Application\nName=Hermes Agent Desktop\nComment=Native desktop shell for Hermes Agent\nExec=hermes-agent-desktop %%U\nTerminal=false\nCategories=Development;\nIcon=hermes-agent-desktop\n' > debian/hermes-agent-desktop/usr/share/applications/hermes-agent-desktop.desktop
+	find debian/hermes-agent-desktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete
 
 override_dh_installchangelogs:
 	dh_installchangelogs --no-trim

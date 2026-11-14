@@ -27,3 +27,4 @@ override_dh_auto_install:
 	chmod 0755 debian/vesktop/usr/bin/vesktop
 	sed -i 's|^Exec=.*|Exec=/usr/bin/vesktop %U|' debian/vesktop/usr/share/applications/vesktop.desktop
 	chmod 4755 debian/vesktop/opt/Vesktop/chrome-sandbox
+	find debian/vesktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete
