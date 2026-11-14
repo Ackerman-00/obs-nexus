@@ -79,6 +79,7 @@ fi
 
 %fdupes %{buildroot}%{_libdir}/zen-browser
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/zen-browser.desktop
 

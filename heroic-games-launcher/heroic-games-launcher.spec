@@ -87,6 +87,7 @@ chmod 0755 %{buildroot}%{_bindir}/heroic
 sed -i -e 's|^Exec=.*|Exec=%{_bindir}/heroic %U|' \
     %{buildroot}%{_datadir}/applications/heroic.desktop
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/heroic.desktop
 

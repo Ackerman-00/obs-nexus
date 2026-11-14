@@ -93,6 +93,7 @@ install -Dm644 squashfs-root/openchamber.png %{buildroot}%{_datadir}/icons/hicol
 
 %fdupes %{buildroot}/opt/openchamber
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/openchamber.desktop
 

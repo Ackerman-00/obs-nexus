@@ -81,6 +81,7 @@ if [ -L usr/bin/hyperframes ] || [ -e usr/bin/hyperframes ]; then ln -sf /opt/hy
 %{_datadir}/applications/*
 %{_datadir}/pixmaps/*
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %post
 if command -v update-mime-database >/dev/null 2>&1; then update-mime-database %{_datadir}/mime >/dev/null 2>&1 || true; fi
 if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi

@@ -101,4 +101,5 @@ cp -a usr/share/icons %{buildroot}%{_datadir}/
 /opt/koharu/*
 %attr(4755, root, root) /opt/koharu/chrome-sandbox
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

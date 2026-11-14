@@ -71,6 +71,7 @@ install -d %{buildroot}%{_datadir}/applications
 install -Dpm0644 usr/share/applications/OpenClaw.desktop %{buildroot}%{_datadir}/applications/OpenClaw.desktop
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_prefix}/lib/OpenClaw/LICENSE
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/OpenClaw.desktop
 

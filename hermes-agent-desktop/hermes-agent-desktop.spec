@@ -108,6 +108,7 @@ Categories=Development;
 Icon=hermes-agent-desktop
 DESKTOP_EOF
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
 /usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :

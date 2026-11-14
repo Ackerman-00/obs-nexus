@@ -96,6 +96,7 @@ install -m 644 %{SOURCE1} \
 
 ln -sf %{helium_base}/helium-wrapper %{buildroot}%{_bindir}/helium
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/helium.desktop
 

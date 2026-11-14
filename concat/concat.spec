@@ -54,6 +54,7 @@ cp -a usr/share/doc %{buildroot}%{_datadir}/
 sed -i 's|^Exec=.*|Exec=%{_bindir}/concat %U|' \
     %{buildroot}%{_datadir}/applications/concat.desktop
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/concat.desktop
 

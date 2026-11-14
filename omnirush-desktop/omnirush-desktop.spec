@@ -89,6 +89,7 @@ ln -sf /opt/omnirush/omnirush %{buildroot}%{_bindir}/omnirush
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/*/omnirush.png
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %post
 if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
   chmod 4755 /opt/omnirush/chrome-sandbox || true

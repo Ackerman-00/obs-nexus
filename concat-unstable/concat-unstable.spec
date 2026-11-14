@@ -97,6 +97,7 @@ install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
 install -m 0644 assets/icons/concat_logo_256.png \
     %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/concat-unstable.png
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/concat-unstable.desktop
 

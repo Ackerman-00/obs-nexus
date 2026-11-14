@@ -59,6 +59,7 @@ chmod +x %{buildroot}%{python3_sitelib}/faugus/launcher.py
 %find_lang faugus-launcher
 %fdupes %{buildroot}
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/io.github.Faugus.faugus-launcher.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/io.github.Faugus.faugus-launcher.shortcut.desktop

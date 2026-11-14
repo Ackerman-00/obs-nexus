@@ -43,6 +43,7 @@ done
 %license COPYING
 %{_datadir}/icons/WhiteSur*
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %post
 gtk-update-icon-cache -q %{_datadir}/icons/WhiteSur 2>/dev/null || :
 for t in %{_datadir}/icons/WhiteSur*; do gtk-update-icon-cache -q "$t" 2>/dev/null || :; done

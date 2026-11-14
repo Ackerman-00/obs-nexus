@@ -106,6 +106,7 @@ for iconpath in usr/share/icons/hicolor/*/apps/fluxer*.png usr/share/icons/hicol
 done
 if [ "$ICON_COUNT" -eq 0 ]; then echo "No icons found"; exit 1; fi
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %post
 if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi
 if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then

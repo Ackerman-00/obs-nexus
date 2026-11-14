@@ -101,6 +101,7 @@ install -Dm644 squashfs-root/%{_datadir}/mime/packages/obsidian.xml \
 
 %fdupes %{buildroot}/opt/obsidian
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
 

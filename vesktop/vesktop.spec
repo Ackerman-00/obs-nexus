@@ -85,6 +85,7 @@ exec /opt/Vesktop/vesktop "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/vesktop
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/vesktop.desktop
 

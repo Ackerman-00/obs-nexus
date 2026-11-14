@@ -122,4 +122,5 @@ DESKTOP_EOF
 %{_datadir}/icons/hicolor/*/apps/rootapp.png
 %{_datadir}/pixmaps/rootapp.png
 
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

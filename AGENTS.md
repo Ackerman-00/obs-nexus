@@ -3,6 +3,9 @@
 > (each package's update.sh no-ops unless NEXUS_OWNER_UPDATE=1, set only by
 > Ackerman-00). Workflows keep their schedules; the autonomous maintainer must
 > never bump a package. Every mention of auto-updating below is historical.
+> In-app updaters: every desktop-app spec strips the payload's update
+> manifest (resources/app-update.yml) and package-type marker at build time;
+> never remove that find line from %install.
 
 Work-notes for AI agents and humans maintaining this repo.
 
