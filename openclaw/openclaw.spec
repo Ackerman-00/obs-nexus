@@ -33,7 +33,7 @@ Requires:       libcairo.so.2()(64bit)
 Requires:       libX11.so.6()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
 Requires:       libgcc_s.so.1()(64bit)
-Requires:       libayatana-appindicator3-1
+Requires:       libayatana-appindicator3.so.1()(64bit)
 Requires:       gstreamer-plugins-good
 Requires:       gstreamer-plugins-bad
 Requires:       gstreamer-plugins-libav
@@ -55,10 +55,11 @@ tar xzf data.tar.gz || { echo "ERROR: unexpected data.tar compression in upstrea
 %build
 
 %install
-install -d -m 0755 %{buildroot}%{_libdir}/OpenClaw
-cp -a usr/lib/OpenClaw/desktop-runtime %{buildroot}%{_libdir}/OpenClaw/
-install -Dpm0755 usr/lib/OpenClaw/install-cli.sh %{buildroot}%{_libdir}/OpenClaw/install-cli.sh
+install -d -m 0755 %{buildroot}%{_prefix}/lib/OpenClaw
+cp -a usr/lib/OpenClaw/desktop-runtime %{buildroot}%{_prefix}/lib/OpenClaw/
+install -Dpm0755 usr/lib/OpenClaw/install-cli.sh %{buildroot}%{_prefix}/lib/OpenClaw/install-cli.sh
 install -Dpm0755 usr/bin/openclaw-desktop %{buildroot}%{_bindir}/openclaw-desktop
+sed -i '1s|^#!/usr/bin/env bash$|#!/usr/bin/bash|' %{buildroot}%{_prefix}/lib/OpenClaw/install-cli.sh
 
 install -d %{buildroot}%{_datadir}/icons/hicolor
 for d in usr/share/icons/hicolor/*/apps/openclaw-desktop.png; do
@@ -68,15 +69,22 @@ done
 
 install -d %{buildroot}%{_datadir}/applications
 install -Dpm0644 usr/share/applications/OpenClaw.desktop %{buildroot}%{_datadir}/applications/OpenClaw.desktop
-install -Dpm0644 %{SOURCE2} %{buildroot}%{_libdir}/OpenClaw/LICENSE
+install -Dpm0644 %{SOURCE2} %{buildroot}%{_prefix}/lib/OpenClaw/LICENSE
+
+%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/OpenClaw.desktop
 
 %files
-%license %{_libdir}/OpenClaw/LICENSE
+%license %{_prefix}/lib/OpenClaw/LICENSE
 %{_bindir}/openclaw-desktop
-%{_libdir}/OpenClaw/
+%{_prefix}/lib/OpenClaw/
 %{_datadir}/applications/OpenClaw.desktop
 %dir %{_datadir}/icons/hicolor/*
+%dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/openclaw-desktop.png
+
+%post
+if command -v update-mime-database >/dev/null 2>&1; then update-mime-database %{_datadir}/mime >/dev/null 2>&1 || true; fi
+if command -v update-desktop-database >/dev/null 2>&1; then update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || true; fi
 
 %changelog

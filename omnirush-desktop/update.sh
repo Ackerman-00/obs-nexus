@@ -6,8 +6,20 @@ PACKAGER="Ackerman-00"
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 REPO="omnirush-ai/omnirush-gui"
 
+gh_api() {
+  local url="$1" out=""
+  local -a auth=()
+  [ -n "$GITHUB_TOKEN" ] && auth=(-H "Authorization: token $GITHUB_TOKEN")
+  for _ in 1 2 3; do
+    out=$(curl -s --retry 3 --connect-timeout 15 "${auth[@]}" "$url")
+    printf '%s' "$out" | grep -q '"message": "API rate limit' || { printf '%s' "$out"; return 0; }
+    sleep 5
+  done
+  printf '%s' "$out"
+}
+
 echo "Checking for OmniRush updates..."
-LATEST=$(curl -s -m 20 "https://api.github.com/repos/$REPO/releases/latest")
+LATEST=$(gh_api "https://api.github.com/repos/$REPO/releases/latest")
 LATEST_TAG=$(printf '%s' "$LATEST" | grep -oP '"tag_name":\s*"\K[^"]+')
 if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then echo "Error fetching version."; exit 1; fi
 LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's/^v//;s@-@.@g')
@@ -27,7 +39,7 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
     fi
   else
     echo "Already up to date ($CURRENT_VERSION); ensuring source artifacts for OBS sync."
-    ASSET_URL=$(curl -s -m 20 "https://api.github.com/repos/$REPO/releases/tags/$LATEST_TAG" \
+    ASSET_URL=$(gh_api "https://api.github.com/repos/$REPO/releases/tags/$LATEST_TAG" \
       | grep -oP '"browser_download_url":\s*"\K[^"]+omnirush-linux-amd64-[^"]+\.deb' | head -1)
     if [ -n "$ASSET_URL" ]; then
       HTTP2=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$ASSET_URL")
@@ -48,7 +60,7 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
   fi
 fi
 
-ASSET_URL=$(curl -s -m 20 "https://api.github.com/repos/$REPO/releases/tags/$LATEST_TAG" \
+ASSET_URL=$(gh_api "https://api.github.com/repos/$REPO/releases/tags/$LATEST_TAG" \
   | grep -oP '"browser_download_url":\s*"\K[^"]+omnirush-linux-amd64-[^"]+\.deb' | head -1)
 if [ -z "$ASSET_URL" ]; then echo "Asset not found."; exit 1; fi
 HTTP=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$ASSET_URL")

@@ -4,37 +4,26 @@ cd "$(dirname "$0")" || exit 1
 SPEC_FILE="openclaw.spec"
 DSC_FILE="openclaw.dsc"
 CHANGES_FILE="openclaw.changes"
+GITHUB_REPO="openclaw/openclaw"
 PACKAGER="Ackerman-00"
 PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
-MANIFEST_URL="https://github.com/openclaw/openclaw/releases/latest/download/latest.json"
 
-echo "Checking for upstream companion-app updates..."
+echo "Checking for upstream updates on $GITHUB_REPO..."
 
-LATEST_JSON=$(curl -fsSL -m 60 "$MANIFEST_URL") || {
-    echo "Error: failed to fetch $MANIFEST_URL" >&2
-    exit 1
-}
+LATEST_TAG=$(git ls-remote --tags "https://github.com/$GITHUB_REPO.git" 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v([0-9]+[.])+[0-9]+$' | sort -V | tail -1)
 
-read LATEST_VERSION LATEST_SHA < <(python3 -c "
-import json, sys
-d = json.loads(sys.argv[1])
-v = d['version']
-sha = next((a['sha256'] for a in d.get('linuxPublication', {}).get('assets', []) if a['name'] == f'OpenClaw-{v}-amd64.deb'), '')
-print(v, sha)
-" "$LATEST_JSON")
-
-if [ -z "$LATEST_VERSION" ] || [ -z "$LATEST_SHA" ]; then
-    echo "Error: no linux x86_64 .deb asset in the latest companion manifest (version=$LATEST_VERSION sha=$LATEST_SHA)." >&2
-    echo "Upstream likely shipped a macOS-only release; keeping the current pin." >&2
+if [ -z "$LATEST_TAG" ]; then
+    echo "Error: Failed to fetch latest tag."
     exit 1
 fi
 
+LATEST_VERSION="${LATEST_TAG#v}"
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
 echo "   Current Local: $CURRENT_VERSION"
 echo "   Latest Online: $LATEST_VERSION"
 
-DEB_URL="https://github.com/openclaw/openclaw/releases/download/v$LATEST_VERSION/OpenClaw-$LATEST_VERSION-amd64.deb"
+DEB_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/OpenClaw-${LATEST_VERSION}-amd64.deb"
 
 build_orig_wrapper() {
     local ver="$1" url="$2" tmpd
@@ -51,22 +40,16 @@ build_orig_wrapper() {
 
 if [ ! -f "openclaw-$CURRENT_VERSION.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
-    build_orig_wrapper "$CURRENT_VERSION" "https://github.com/openclaw/openclaw/releases/download/v$CURRENT_VERSION/OpenClaw-${CURRENT_VERSION}-amd64.deb" || \
+    build_orig_wrapper "$CURRENT_VERSION" "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VERSION/OpenClaw-${CURRENT_VERSION}-amd64.deb" || \
         echo "WARNING: orig wrapper rebuild failed; continuing version check."
 fi
 
 if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
-    CURRENT_SHA=$(grep -E "^# sha256:" "$SPEC_FILE" | head -1 | awk '{print $3}')
-    if [ "$CURRENT_SHA" != "$LATEST_SHA" ]; then
-        echo "Upstream respinned $LATEST_VERSION (sha256 $CURRENT_SHA -> $LATEST_SHA); re-pinning."
-        sed -i -E "s|^# sha256:.*|# sha256:  $LATEST_SHA|" "$SPEC_FILE"
-    else
-        echo "Package is already up to date ($CURRENT_VERSION)."
-    fi
+    echo "Package is already up to date ($CURRENT_VERSION)."
     exit 0
 fi
 
-HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -I -L --max-time 60 "$DEB_URL")
+HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 60 "$DEB_URL")
 if [ "$HTTP_CODE" != "200" ]; then
     echo "Release asset returns HTTP $HTTP_CODE (not 200); not bumping to avoid a broken spec."
     exit 0
@@ -74,9 +57,16 @@ fi
 
 echo "Update found: $CURRENT_VERSION -> $LATEST_VERSION"
 
+NEW_SHA=$(curl -fsSL --retry 3 --connect-timeout 60 "$DEB_URL" -o /tmp/openclaw-check.deb && sha256sum /tmp/openclaw-check.deb | awk '{print $1}')
+if [ -z "$NEW_SHA" ]; then
+    echo "Error: could not download $DEB_URL to compute its sha256; aborting bump."
+    exit 1
+fi
+
 sed -i -E "s/^Version:.*/Version:        $LATEST_VERSION/" "$SPEC_FILE"
 sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
-sed -i -E "s|^# sha256:.*|# sha256:  $LATEST_SHA|" "$SPEC_FILE"
+sed -i -E "s|download/[^/]+/OpenClaw-[^/]+\\.deb|download/$LATEST_TAG/OpenClaw-${LATEST_VERSION}-amd64.deb|g" "$SPEC_FILE"
+sed -i -E "s|^# sha256:.*|# sha256:  $NEW_SHA|" "$SPEC_FILE"
 
 build_orig_wrapper "$LATEST_VERSION" "$DEB_URL" || exit 1
 

@@ -1,6 +1,11 @@
 -------------------------------------------------------------------
-Sat Nov 14 12:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+Sat Nov 14 06:03:31 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.11.2-1
 - New package openclaw 2026.11.2 (upstream prebuilt Linux companion
   .deb repackaged; GTK3/WebKitGTK app + bundled Bun runtime)
+- Install the bundled runtime under /usr/lib/OpenClaw exactly as the
+  upstream .deb does, and register the desktop entry plus the
+  openclaw:// URL-scheme handler in %post
+- Require the dlopened tray library by soname and give the CLI helper a
+  distribution shebang; validate the desktop entry in %check
