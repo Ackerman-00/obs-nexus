@@ -1,0 +1,6 @@
+-------------------------------------------------------------------
+Sat Nov 14 12:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2026.11.2-1
+- New package openclaw 2026.11.2 (upstream prebuilt Linux companion
+  .deb repackaged; GTK3/WebKitGTK app + bundled Bun runtime)

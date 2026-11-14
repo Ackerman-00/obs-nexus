@@ -1,0 +1,41 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	:
+
+override_dh_auto_test:
+	:
+
+override_dh_shlibdeps:
+	:
+
+override_dh_dwz:
+	:
+
+override_dh_strip:
+	:
+
+override_dh_auto_install:
+	mkdir -p payload debian/openclaw/usr/lib/OpenClaw debian/openclaw/usr/bin debian/openclaw/usr/share/applications debian/openclaw/usr/share/icons debian/openclaw/usr/share/doc/openclaw
+	cd payload && ar x ../*.deb data.tar.gz && tar xzf data.tar.gz && cd ..
+	cp -a payload/usr/lib/OpenClaw/desktop-runtime debian/openclaw/usr/lib/OpenClaw/
+	install -Dm0755 payload/usr/lib/OpenClaw/install-cli.sh debian/openclaw/usr/lib/OpenClaw/install-cli.sh
+	install -Dm0755 payload/usr/bin/openclaw-desktop debian/openclaw/usr/bin/openclaw-desktop
+	for d in payload/usr/share/icons/hicolor/*/apps/openclaw-desktop.png; do \
+	    size=$$(basename $$(dirname $$(dirname "$$d"))); \
+	    install -Dm0644 "$$d" "debian/openclaw/usr/share/icons/hicolor/$${size}/apps/openclaw-desktop.png"; \
+	done
+	install -Dm0644 payload/usr/share/applications/OpenClaw.desktop debian/openclaw/usr/share/applications/OpenClaw.desktop
+	install -Dm0644 openclaw-LICENSE debian/openclaw/usr/share/doc/openclaw/LICENSE
+	rm -rf payload
+
+override_dh_installchangelogs:
+	dh_installchangelogs --no-trim
+
+override_dh_clean:
+	dh_clean

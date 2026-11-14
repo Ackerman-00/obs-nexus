@@ -1,0 +1,18 @@
+Source: openclaw
+Section: utils
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), binutils, tar, desktop-file-utils
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/openclaw/openclaw
+
+Package: openclaw
+Architecture: amd64
+Depends: ${misc:Depends}, gstreamer1.0-libav, gstreamer1.0-plugins-good, gstreamer1.0-plugins-bad, libayatana-appindicator3-1, libwebkit2gtk-4.1-0, libgtk-3-0
+Recommends: xdg-desktop-portal, xdg-desktop-portal-gtk
+Description: Your AI assistant, running on your own devices and chats
+ OpenClaw is an open-source personal AI assistant that runs on your own
+ computer and answers in the chats you already use. This package ships the
+ upstream prebuilt Linux companion app (a GTK3/WebKitGTK window plus the
+ bundled Bun runtime) repackaged from the upstream .deb payload as-is.

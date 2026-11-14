@@ -112,6 +112,7 @@ out of scope):
 | **mangowm** | Scrollable-tiling Wayland compositor (dwm-like, wlroots-based) |
 | **matugen** | Material You color generation tool |
 | **obsidian** | Knowledge base for plain-text Markdown notes |
+| **openclaw** | Open-source personal AI assistant (Linux companion .deb; GTK3/WebKitGTK)
 | **openchamber** | Agentic development environment boards for issues and pull requests |
 | **protonplus** | Wine and Proton-based compatibility tools manager |
 | **rootapp** | Discord alternative for gaming communities and large groups |
