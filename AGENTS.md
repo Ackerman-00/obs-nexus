@@ -1,4 +1,8 @@
 # AGENTS.md — opensuse-nexus
+> **Owner rule (2026-11-14):** the scheduled auto-update workflows are disabled;
+> package versions change only when Ackerman-00 pushes them, and the autonomous
+> maintainer must never bump a package. Every mention of auto-updating in the
+> sweep architecture below is historical, not a running process.
 
 Work-notes for AI agents and humans maintaining this repo.
 
@@ -90,7 +94,7 @@ It must:
    - Repology freshness (outdated vs 120+ repos)
    - Libyear drift (years behind upstream, budget=20yr)
    - Auto-update tool hints (livecheck, autocopr, nix-update)
-3. For each OUTDATED: use the suggested auto-update tool to fix it
+3. For each OUTDATED: do NOT update it - open/refresh an issue; Ackerman-00 applies updates (owner rule 2026-11-14)
 4. For each FAIL/MISMATCH: re-download, verify checksum, update if re-released
 5. LIBYEAR ENFORCEMENT: if >20 yr, prioritize highest-drift packages
 6. Never close a teardown issue without passing sweep + evidence
