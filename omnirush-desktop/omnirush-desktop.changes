@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 14 08:09:29 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 3.8.4-0
+- scriptlets: use the literal /etc/apparmor.d instead of %{apparmor_profilesdir}, which is undefined on openSUSE and left the path unexpanded in %post
+
+-------------------------------------------------------------------
 Fri Nov 13 17:10:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 3.8.4-0

@@ -90,15 +90,15 @@ if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
 else
   chmod 0755 /opt/hyperframes/chrome-sandbox || true
 fi
-if [ -f %{apparmor_profilesdir}/abi/4.0 ] && [ -x /sbin/apparmor_parser ] && [ -f /opt/hyperframes/apparmor.d/hyperframes ]; then
-  cp -f /opt/hyperframes/apparmor.d/hyperframes %{apparmor_profilesdir}/hyperframes
-  /sbin/apparmor_parser -r %{apparmor_profilesdir}/hyperframes >/dev/null 2>&1 || true
+if [ -f /etc/apparmor.d/abi/4.0 ] && [ -x /sbin/apparmor_parser ] && [ -f /opt/hyperframes/apparmor.d/hyperframes ]; then
+  cp -f /opt/hyperframes/apparmor.d/hyperframes /etc/apparmor.d/hyperframes
+  /sbin/apparmor_parser -r /etc/apparmor.d/hyperframes >/dev/null 2>&1 || true
 fi
 
 %postun
-if [ "$1" = 0 ] && [ -f %{apparmor_profilesdir}/hyperframes ]; then
-  [ -x /sbin/apparmor_parser ] && /sbin/apparmor_parser -R %{apparmor_profilesdir}/hyperframes >/dev/null 2>&1 || true
-  rm -f %{apparmor_profilesdir}/hyperframes
+if [ "$1" = 0 ] && [ -f /etc/apparmor.d/hyperframes ]; then
+  [ -x /sbin/apparmor_parser ] && /sbin/apparmor_parser -R /etc/apparmor.d/hyperframes >/dev/null 2>&1 || true
+  rm -f /etc/apparmor.d/hyperframes
 fi
 
 %changelog
