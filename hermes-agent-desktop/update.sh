@@ -14,19 +14,26 @@ trap 'rc=$?; if [ "$rc" != "0" ]; then for f in $BK_FILES; do if [ -f "$f" ] && 
 
 echo "Checking for upstream updates on $GITHUB_REPO..."
 
-LATEST_COMMIT=$(git ls-remote "https://github.com/$GITHUB_REPO.git" HEAD 2>/dev/null | awk '{print $1}')
-if [ -z "$LATEST_COMMIT" ]; then
-    echo "Error: Failed to fetch HEAD commit."
-    exit 1
-fi
+TAGS_RAW=$(git ls-remote --tags "https://github.com/$GITHUB_REPO.git" 2>/dev/null)
 
-LATEST_TAG=$(git ls-remote --tags "https://github.com/$GITHUB_REPO.git" 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v0\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+LATEST_TAG=$(echo "$TAGS_RAW" | awk '{print $2}' \
+    | sed 's|refs/tags/||;s/\^{}//' \
+    | grep -E '^v0\.[0-9]+\.[0-9]+(\+canary\.[0-9]{8}T[0-9]{6}Z)?$' \
+    | sort -uV | tail -1)
 if [ -z "$LATEST_TAG" ]; then
     echo "Error: no stable v0.x.y tag found upstream."
     exit 1
 fi
 
+LATEST_COMMIT=$(echo "$TAGS_RAW" | awk -v t="refs/tags/$LATEST_TAG" '$2==t"^{}"{print $1}')
+[ -z "$LATEST_COMMIT" ] && LATEST_COMMIT=$(echo "$TAGS_RAW" | awk -v t="refs/tags/$LATEST_TAG" '$2==t{print $1}')
+if [ -z "$LATEST_COMMIT" ]; then
+    echo "Error: Failed to resolve commit for tag $LATEST_TAG."
+    exit 1
+fi
+
 BASE_VER="${LATEST_TAG#v}"
+BASE_VER="${BASE_VER%%+*}"
 SHORT=${LATEST_COMMIT:0:7}
 CURRENT_COMMIT=$(grep -E "^%global commit" "$SPEC_FILE" | awk '{print $3}')
 CURRENT_BASE=$(grep -E "^%global base_version" "$SPEC_FILE" | awk '{print $3}')
@@ -47,6 +54,17 @@ if [ "$need_bump" = "1" ]; then
     fi
     GIT_DATE=$(echo "$COMMIT_DATE_RAW" | sed 's/[-T:Z]//g')
     NEW_VER="$BASE_VER+git$GIT_DATE.$SHORT"
+
+    if ! python3 - "$CURRENT_VER" "$NEW_VER" <<'PY'
+import re, sys
+def key(v):
+    return [int(x) for x in re.findall(r"\d+", v)]
+sys.exit(0 if key(sys.argv[2]) > key(sys.argv[1]) else 1)
+PY
+    then
+        echo "Already ahead of newest tag $LATEST_TAG ($CURRENT_VER >= $NEW_VER); no downgrade."
+        exit 0
+    fi
 
     sed -i -E "s/^%global commit.*/%global commit          $LATEST_COMMIT/" "$SPEC_FILE"
     sed -i -E "s/^%global shortcommit.*/%global shortcommit     $SHORT/" "$SPEC_FILE"

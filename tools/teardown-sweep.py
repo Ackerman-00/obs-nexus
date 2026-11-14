@@ -1842,6 +1842,31 @@ DOCS_ONLY_RE = re.compile(
     re.I)
 
 
+def tag_commit(repo, tag):
+    """Commit a tag points at (dereferenced for annotated tags)."""
+    import subprocess
+    if repo.startswith("http"):
+        url = repo.rstrip("/") + ".git"
+    else:
+        url = "https://github.com/%s.git" % repo
+    try:
+        out = subprocess.run(["git", "ls-remote", "--tags", url,
+                              "refs/tags/%s" % tag, "refs/tags/%s^{}" % tag],
+                             capture_output=True, text=True, timeout=90).stdout
+    except Exception:
+        return None
+    peeled = plain = None
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        if parts[1].endswith("^{}"):
+            peeled = parts[0]
+        elif parts[1] == "refs/tags/%s" % tag:
+            plain = parts[0]
+    return peeled or plain
+
+
 def docs_only_drift(repo, pin, head):
     """True only when the compare API proves every commit between pin and
     upstream HEAD touches documentation/metadata alone. Any doubt (API
@@ -1870,6 +1895,42 @@ def docs_only_drift(repo, pin, head):
     return True
 
 
+def contains_latest_release(repo, pin):
+    """True when `pin` already contains everything the newest upstream
+    release/tag contains (tag is an ancestor of pin, or pin IS the tag).
+
+    A HEAD-tracking snapshot is by definition ahead of every tag, so the
+    exact-equality test alone can never converge: upstream pushes land
+    every few minutes and the package would be "stale" seconds after it
+    is built. This checks the property we actually care about - the
+    shipped snapshot is not missing released work - and still flags the
+    package the moment upstream cuts a tag we do not contain.
+    """
+    if repo.startswith("http") or "/" not in repo:
+        return False
+    tag = upstream_latest_tag(repo)
+    if not tag:
+        return False
+    full = tag_commit(repo, tag)
+    if not full:
+        return False
+    try:
+        url = "https://api.github.com/repos/%s/compare/%s...%s" % (repo, full, pin)
+        data = json.loads(fetch(url, timeout=60).decode())
+    except Exception:
+        return False
+    if not isinstance(data, dict):
+        return False
+    status = data.get("status")
+    if status in ("ahead", "identical"):
+        log("  [live-drift] %s: pin %s contains newest tag %s (%s)"
+            % (repo, pin[:12], tag, full[:12]))
+        return True
+    log("  [live-drift] %s: pin %s does NOT contain newest tag %s (%s)"
+        % (repo, pin[:12], tag, full[:12]))
+    return False
+
+
 def check_live(pkg, live):
     repo, pin = live[0], live[1]
     head = upstream_head(repo)
@@ -1879,6 +1940,13 @@ def check_live(pkg, live):
         log("[%s] %s : live, upstream unreachable" % (STATUS_SKIP, pkg))
         return True
     ok = (normalize(pin[:12]) == normalize(head[:12]))
+    if not ok and contains_latest_release(repo, pin):
+        rows.append((pkg, "live %s" % repo, pin[:12], head[:12], STATUS_OK,
+                     "snapshot %s is ahead of HEAD-tracked pin but already "
+                     "contains the newest upstream release (no rebuild)"
+                     % pin[:12]))
+        log("[%s] %s : snapshot contains newest release" % (STATUS_OK, pkg))
+        return True
     if not ok and docs_only_drift(repo, pin, head):
         rows.append((pkg, "live %s" % repo, pin[:12], head[:12], STATUS_OK,
                      "upstream drift %s..%s is docs/metadata only - payload "
