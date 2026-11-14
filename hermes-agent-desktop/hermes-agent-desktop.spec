@@ -65,6 +65,8 @@ Requires:       libuuid.so.1()(64bit)
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
 Recommends:     ffmpeg
+Recommends:     xdg-desktop-portal
+Recommends:     xdg-desktop-portal-gtk
 
 %description
 Hermes Agent desktop: chat sessions, background agent work, file browsing and
