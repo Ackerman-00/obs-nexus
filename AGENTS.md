@@ -1,12 +1,4 @@
 # AGENTS.md — opensuse-nexus
-> **Owner rule (2026-11-14):** package auto-update is disabled per-package
-> (each package's update.sh no-ops unless NEXUS_OWNER_UPDATE=1, set only by
-> Ackerman-00). Workflows keep their schedules; the autonomous maintainer must
-> never bump a package. Every mention of auto-updating below is historical.
-> In-app updaters: every desktop-app spec strips the payload's update
-> manifest (resources/app-update.yml) and package-type marker at build time;
-> never remove that find line from %install.
-
 Work-notes for AI agents and humans maintaining this repo.
 
 ## Self-healing sweep architecture (added 2026-08-21)
@@ -97,7 +89,7 @@ It must:
    - Repology freshness (outdated vs 120+ repos)
    - Libyear drift (years behind upstream, budget=20yr)
    - Auto-update tool hints (livecheck, autocopr, nix-update)
-3. For each OUTDATED: do NOT update it - open/refresh an issue; Ackerman-00 applies updates (owner rule 2026-11-14)
+3. For each OUTDATED: use the suggested auto-update tool to fix it
 4. For each FAIL/MISMATCH: re-download, verify checksum, update if re-released
 5. LIBYEAR ENFORCEMENT: if >20 yr, prioritize highest-drift packages
 6. Never close a teardown issue without passing sweep + evidence

@@ -30,41 +30,6 @@ NEVER pass --author/--committer, and NEVER add ANY trailer
 NEVER invent or guess any email address.
 Always `git fetch origin && git pull --rebase origin main` before pushing.
 
-OWNER RULE (2026-11-14, binding - overrides every other
-instruction in this prompt, including every MANDATORY and
-"you must" section below):
-PACKAGE AUTO-UPDATE IS DISABLED REPO-WIDE, BY ACKERMAN-00.
-Your FIRST TASK on every run until it is done: disarm every
-package's auto-update, in this repo, without changing
-anything else. A package directory is a top-level directory
-containing exactly one *.spec (count them with
-`find . -mindepth 2 -maxdepth 2 -name '*.spec' -exec dirname {} \; | sort -u`;
-NEVER touch `tools/`, `.github/`, or any other non-package
-directory for this task; NEVER create update.sh in one of them).
-For EVERY package directory, ensure update.sh exists and
-starts with this owner guard (insert after the shebang line; if the file is
-missing, create it containing only the guard):
-
-    # owner 2026-11-14: auto-update disabled; updates are published by Ackerman-00
-    if [ -z "${NEXUS_OWNER_UPDATE:-}" ]; then
-        echo "auto-update disabled (owner rule 2026-11-14); updates are published manually by Ackerman-00"
-        exit 0
-    fi
-
-Skip a package whose update.sh already contains "NEXUS_OWNER_UPDATE".
-Verification: run every package's update.sh; each must print
-the disabled message and exit 0 (e.g.
-`find . -mindepth 2 -maxdepth 2 -name '*.spec' -exec dirname {} \; -print | sort -u | while read d; do bash "$d/update.sh" | grep -q 'auto-update disabled' || echo "NOT DISARMED: $d"; done`
-must print nothing). The diff from this task is confined to
-package update.sh files.
-Beyond that, FOREVER: NEVER change any package's version, release,
-source URLs, checksum pins, .deb URLs, tags, or license files to a
-newer upstream release. Updates are applied only by Ackerman-00
-(he sets NEXUS_OWNER_UPDATE=1 when he wants an updater to run).
-You may still verify, install-test, security/bug-fix the repo and
-repair specs/tooling for the CURRENT pinned versions. If a package
-is outdated, record an issue and STOP - do not update it. Every
-mention of auto-update below is historical.
 IN-APP UPDATERS (owner rule, same binding): every desktop-app
 spec strips its payload's update manifest and package-type marker at
 build time - the single find line ending in -delete inside %install,
@@ -95,11 +60,12 @@ CONTEXT
 - Each package lives in its own directory with a .spec file, a .changes
   file (openSUSE changelog), often an update.sh (an upstream-check script)
   and a _service file. update-packages.yml (GitHub Actions, "Nexus
-  Auto-Updater (OBS Pipeline)", cron '0 */15 * * *') keeps running
-  on schedule, but auto-update is disabled per-package: every
-  update.sh no-ops (owner rule 2026-11-14) unless
-  NEXUS_OWNER_UPDATE=1 is set, which only Ackerman-00 does.
-  Updates are applied by Ackerman-00 only.
+  Auto-Updater (OBS Pipeline)") runs every 15 hours (cron '0 */15 * * *',
+  minute 0), i.e. 15 minutes before this workflow ('15 */15 * * *'): it runs update.sh for
+  packages that have one and scans the rest against GitHub release tags,
+  bumping spec versions and committing to main directly, then syncs changed
+  packages to OBS via its API (using OBS_USER/OBS_PASS) and triggers a
+  rebuild.
 - The repo serves users on THREE targets from one source tree:
   openSUSE Tumbleweed (RPMs via `*.spec`) plus Debian
   Testing/Forky + Unstable/Sid (DEBs via `<pkg>.dsc` + flat

@@ -131,7 +131,7 @@ out of scope):
 
 ## Build status
 
-Package version bumps are published only by Ackerman-00: each package's updater no-ops unless he enables it (NEXUS_OWNER_UPDATE=1, owner rule 2026-11-14). The workflows still run on their usual schedules.
+Automated OBS builds are triggered by the `update-packages.yml` pipeline (runs every 15h) which syncs changed packages to OBS and rebuilds them, and the autonomous opencode maintainer verifies and repairs failed builds on the same schedule.
 
 | Project | Status |
 |---|---|
