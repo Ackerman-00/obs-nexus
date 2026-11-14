@@ -78,6 +78,7 @@ if [ -d opt/omnirush ]; then cp -a opt/omnirush %{buildroot}/opt/; fi
 if [ -d usr/share ]; then cp -a usr/share/* %{buildroot}%{_datadir}/; fi
 if [ -d usr/share/applications ]; then install -d %{buildroot}%{_datadir}/applications; fi
 ln -sf /opt/omnirush/omnirush %{buildroot}%{_bindir}/omnirush
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 /opt/omnirush/
@@ -89,7 +90,6 @@ ln -sf /opt/omnirush/omnirush %{buildroot}%{_bindir}/omnirush
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/*/omnirush.png
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %post
 if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
   chmod 4755 /opt/omnirush/chrome-sandbox || true

@@ -70,6 +70,7 @@ cat <<-'EOF' > %{buildroot}%{_bindir}/localsend_app
 exec /opt/localsend_app/localsend_app "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/localsend_app
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 %{_bindir}/localsend_app
@@ -80,5 +81,4 @@ chmod 0755 %{buildroot}%{_bindir}/localsend_app
 %{_datadir}/icons/hicolor/*/apps/localsend_app.png
 /opt/localsend_app/
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

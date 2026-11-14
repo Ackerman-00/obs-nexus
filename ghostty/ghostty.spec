@@ -100,6 +100,7 @@ rm -f %{buildroot}%{_libdir}/libghostty-vt.so \
       %{buildroot}%{_libdir}/libghostty-vt-static.pc
 rm -rf %{buildroot}%{_libdir}/pkgconfig
 rm -rf %{buildroot}%{_includedir}/ghostty
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 %license LICENSE src/font/res/OFL.txt
@@ -178,5 +179,4 @@ rm -rf %{buildroot}%{_includedir}/ghostty
 
 %files lang -f com.mitchellh.ghostty.lang
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

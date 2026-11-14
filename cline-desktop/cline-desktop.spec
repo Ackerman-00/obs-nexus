@@ -59,6 +59,7 @@ install -d %{buildroot}%{_datadir} %{buildroot}%{_prefix}/lib %{buildroot}%{_bin
 cp -a usr/share/* %{buildroot}%{_datadir}/
 if [ -d usr/lib/Cline ]; then cp -a usr/lib/Cline %{buildroot}%{_prefix}/lib/; fi
 for b in usr/bin/*; do install -m 0755 "$b" %{buildroot}%{_bindir}/; done
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 %{_bindir}/cline-app
@@ -71,5 +72,4 @@ for b in usr/bin/*; do install -m 0755 "$b" %{buildroot}%{_bindir}/; done
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/metainfo/*
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

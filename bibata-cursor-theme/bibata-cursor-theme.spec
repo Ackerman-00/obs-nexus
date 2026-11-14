@@ -25,10 +25,10 @@ tar xf %{SOURCE0}
 install -d -m 0755 %{buildroot}%{_datadir}/icons
 mv Bibata-* %{buildroot}%{_datadir}/icons/
 %fdupes %{buildroot}%{_datadir}/icons
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 %license LICENSE
 %{_datadir}/icons/Bibata-*
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

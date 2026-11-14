@@ -80,6 +80,7 @@ if [ -d opt/Freebuff ]; then cp -a opt/Freebuff %{buildroot}/opt/; fi
 if [ -d usr/share ]; then cp -a usr/share/* %{buildroot}%{_datadir}/; fi
 if [ -d usr/share/applications ]; then install -d %{buildroot}%{_datadir}/applications; fi
 ln -sf /opt/Freebuff/freebuff %{buildroot}%{_bindir}/freebuff
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 /opt/Freebuff/
@@ -91,5 +92,4 @@ ln -sf /opt/Freebuff/freebuff %{buildroot}%{_bindir}/freebuff
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/*/freebuff.png
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

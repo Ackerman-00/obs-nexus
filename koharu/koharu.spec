@@ -84,6 +84,7 @@ install -d -m 0755 %{buildroot}%{_datadir}
 cp -a usr/share/applications %{buildroot}%{_datadir}/
 cp -a usr/share/icons %{buildroot}%{_datadir}/
 %fdupes %{buildroot}/opt/koharu
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 %license /opt/koharu/LICENSE-MIT
@@ -101,5 +102,4 @@ cp -a usr/share/icons %{buildroot}%{_datadir}/
 /opt/koharu/*
 %attr(4755, root, root) /opt/koharu/chrome-sandbox
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

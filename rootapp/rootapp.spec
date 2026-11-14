@@ -114,6 +114,7 @@ StartupWMClass=Root
 Categories=Network;InstantMessaging;
 MimeType=x-scheme-handler/rootapp;
 DESKTOP_EOF
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 %{_bindir}/rootapp
@@ -122,5 +123,4 @@ DESKTOP_EOF
 %{_datadir}/icons/hicolor/*/apps/rootapp.png
 %{_datadir}/pixmaps/rootapp.png
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %changelog

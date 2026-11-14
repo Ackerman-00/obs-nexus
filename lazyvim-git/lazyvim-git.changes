@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Sat Nov 14 08:13:36 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 16.0.2+git20261108202129.5c26fac-0
+- %install: strip the payload's resources/app-update.yml and resources/package-type
+  before packaging. The find line had landed after the %files file list, where rpm
+  reads it as a file path and aborts with "File must begin with /", so the package
+  could not be rebuilt at all.
+
+-------------------------------------------------------------------
 Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add weak Recommends: ripgrep and Recommends: fd (LazyVim relies on both

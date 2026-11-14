@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Sat Nov 14 08:13:36 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 4.2.0-0
+- %install: strip the payload's resources/app-update.yml and resources/package-type
+  before packaging. The find line had landed after the %files file list, where rpm
+  reads it as a file path and aborts with "File must begin with /", so the package
+  could not be rebuilt at all.
+
+-------------------------------------------------------------------
 Fri Oct  9 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add Debian_Testing build recipe (.dsc + debian.* reusing the vendored

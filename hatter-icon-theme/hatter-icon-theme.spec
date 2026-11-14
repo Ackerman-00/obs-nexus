@@ -48,12 +48,12 @@ for t in %{buildroot}%{_datadir}/icons/*/; do
     gtk-update-icon-cache -q "$t" 2>/dev/null || true
 done
 %fdupes %{buildroot}%{_datadir}/icons
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
 %license COPYING
 %{_datadir}/icons/Hatter*/
 
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %post
 for t in %{_datadir}/icons/Hatter*/; do
     gtk-update-icon-cache -q "$t" 2>/dev/null || :
