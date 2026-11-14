@@ -1,4 +1,4 @@
-freebuff-desktop (0.0.202-2) unstable; urgency=medium
+freebuff-desktop (0.0.202-1) unstable; urgency=medium
 
   * Add libdrm2 to Depends (the bundled libGLESv2.so NEEDs
     libdrm.so.2; the RPM recipe already requires it).
