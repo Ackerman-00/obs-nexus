@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 14 22:40:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommend libayatana-appindicator3: the installed payload registers a
+  StatusNotifierItem (org.kde.StatusNotifier found in the payload tree).
+
+-------------------------------------------------------------------
 Wed Oct 28 16:34:14 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - The shipped binary talks to org.freedesktop.portal.* (file chooser,

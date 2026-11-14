@@ -39,6 +39,7 @@ Requires:       xdg-utils
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
+Recommends:     libayatana-appindicator3.so.1()(64bit)
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64

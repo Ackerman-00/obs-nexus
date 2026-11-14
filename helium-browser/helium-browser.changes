@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 14 22:40:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommend libayatana-appindicator3: the installed payload registers a
+  StatusNotifierItem (org.kde.StatusNotifier found in the payload tree).
+
+-------------------------------------------------------------------
 Fri Nov 13 14:40:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 0.21.3.1

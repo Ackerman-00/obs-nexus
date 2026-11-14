@@ -52,6 +52,7 @@ Recommends:     libQt5Widgets5
 Recommends:     libQt6Widgets6
 Recommends:     liberation-fonts
 Recommends:     libvulkan1
+Recommends:     libayatana-appindicator3.so.1()(64bit)
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 Provides:       www-browser = %{version}-%{release}
