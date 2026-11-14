@@ -21,6 +21,8 @@ Requires:       libXdamage.so.1()(64bit)
 Requires:       libXext.so.6()(64bit)
 Requires:       libXfixes.so.3()(64bit)
 Requires:       libXrandr.so.2()(64bit)
+Requires:       libXss.so.1()(64bit)
+Requires:       libXtst.so.6()(64bit)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -45,10 +47,12 @@ Requires:       libpulse.so.0()(64bit)
 Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libudev.so.1()(64bit)
+Requires:       libuuid.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
 Requires:       xdg-utils
 Requires(post): desktop-file-utils
+Recommends:     libayatana-appindicator3.so.1()(64bit)
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 Provides:       vencorddesktop = %{version}-%{release}
