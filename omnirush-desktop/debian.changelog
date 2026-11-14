@@ -1,3 +1,9 @@
+omnirush-desktop (3.8.5-2) unstable; urgency=medium
+
+  * Recommend libayatana-appindicator3-1 (StatusNotifierItem tray host).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 22:10:00 +0000
+
 omnirush-desktop (3.8.5-1) unstable; urgency=medium
 
   * New upstream release 3.8.5.

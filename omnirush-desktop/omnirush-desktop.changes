@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Nov 14 22:10:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommend libayatana-appindicator3: the payload registers a
+  StatusNotifierItem (org.kde.StatusNotifier in the binary), the tray
+  needs a host library to render it.
+
+-------------------------------------------------------------------
 Sat Nov 14 19:59:10 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 3.8.5-0
