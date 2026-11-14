@@ -1,3 +1,9 @@
+fluxer (2026.1114.183423-2) unstable; urgency=medium
+
+  * Depends libxss1, libxtst6, libuuid1 to match the payload's declared deps.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 21:55:00 +0000
+
 fluxer (2026.1114.183423-1) unstable; urgency=medium
 
   * New upstream release 2026.1114.183423.

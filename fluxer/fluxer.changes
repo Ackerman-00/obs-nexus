@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 14 21:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Requires libXss.so.1, libXtst.so.6, libuuid.so.1: the payload's own
+  RPM declares libXScrnSaver/libXtst/libuuid and the spec lacked them.
+
+-------------------------------------------------------------------
 Sat Nov 14 20:41:27 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.1114.183423-0
