@@ -131,7 +131,7 @@ out of scope):
 
 ## Build status
 
-Package version bumps are published only when Ackerman-00 pushes them; the scheduled auto-updater pipeline is disabled (owner rule, 2026-11-14). Builds and verification run on push and manual dispatch.
+Package version bumps are published only by Ackerman-00: each package's updater no-ops unless he enables it (NEXUS_OWNER_UPDATE=1, owner rule 2026-11-14). The workflows still run on their usual schedules.
 
 | Project | Status |
 |---|---|

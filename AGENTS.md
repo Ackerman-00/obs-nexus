@@ -1,8 +1,8 @@
 # AGENTS.md — opensuse-nexus
-> **Owner rule (2026-11-14):** the scheduled auto-update workflows are disabled;
-> package versions change only when Ackerman-00 pushes them, and the autonomous
-> maintainer must never bump a package. Every mention of auto-updating in the
-> sweep architecture below is historical, not a running process.
+> **Owner rule (2026-11-14):** package auto-update is disabled per-package
+> (each package's update.sh no-ops unless NEXUS_OWNER_UPDATE=1, set only by
+> Ackerman-00). Workflows keep their schedules; the autonomous maintainer must
+> never bump a package. Every mention of auto-updating below is historical.
 
 Work-notes for AI agents and humans maintaining this repo.
 

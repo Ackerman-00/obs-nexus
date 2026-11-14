@@ -252,16 +252,34 @@ jobs:
             OWNER RULE (2026-11-14, binding - overrides every other
             instruction in this prompt, including every MANDATORY and
             "you must" section below):
-            Package updates are applied ONLY by Ackerman-00. You must
-            NEVER change any package's version, release, source URLs,
-            checksum pins, .deb URLs, tags, or license files to a newer
-            upstream release - for ANY package in this repo (openclaw
-            included, but this is repo-wide, always). You may still
-            verify, install-test, security/bug-fix the repo and repair
-            specs/tooling for the CURRENT pinned versions, and you may
-            keep the updaters correct for manual use. If a package is
-            outdated vs upstream, record an issue and STOP - do not
-            update it. Every mention of auto-update below is historical.
+            PACKAGE AUTO-UPDATE IS DISABLED REPO-WIDE, BY ACKERMAN-00.
+            Your FIRST TASK on every run until it is done: disarm every
+            package's auto-update, in this repo, without changing
+            anything else. For EVERY package directory (count them with
+            `ls -d */`), ensure update.sh exists and starts with this
+            owner guard (insert after the shebang line; if the file is
+            missing, create it containing only the guard):
+
+                # owner 2026-11-14: auto-update disabled; updates are published by Ackerman-00
+                if [ -z "${NEXUS_OWNER_UPDATE:-}" ]; then
+                    echo "auto-update disabled (owner rule 2026-11-14); updates are published manually by Ackerman-00"
+                    exit 0
+                fi
+
+            Skip a package whose update.sh already contains "NEXUS_OWNER_UPDATE".
+            Verification: run every package's update.sh; each must print
+            the disabled message and exit 0 (e.g.
+            `for d in */; do bash "$d/update.sh" | grep -q 'auto-update disabled' || echo "NOT DISARMED: $d"; done`
+            must print nothing). The diff from this task is confined to
+            update.sh files.
+            Beyond that, FOREVER: NEVER change any package's version, release,
+            source URLs, checksum pins, .deb URLs, tags, or license files to a
+            newer upstream release. Updates are applied only by Ackerman-00
+            (he sets NEXUS_OWNER_UPDATE=1 when he wants an updater to run).
+            You may still verify, install-test, security/bug-fix the repo and
+            repair specs/tooling for the CURRENT pinned versions. If a package
+            is outdated, record an issue and STOP - do not update it. Every
+            mention of auto-update below is historical.
 
             You are the FULLY AUTONOMOUS maintainer of opensuse-nexus
             (https://github.com/Ackerman-00/opensuse-nexus), a self-updating RPM
@@ -285,10 +303,11 @@ jobs:
             - Each package lives in its own directory with a .spec file, a .changes
               file (openSUSE changelog), often an update.sh (an upstream-check script)
               and a _service file. update-packages.yml (GitHub Actions, "Nexus
-              Auto-Updater (OBS Pipeline)", cron '0 */15 * * *') is DISABLED as
-              of 2026-11-14 (schedule removed by owner order; manual
-              workflow_dispatch only). It no longer bumps or syncs anything
-              automatically. Updates are applied by Ackerman-00 only.
+              Auto-Updater (OBS Pipeline)", cron '0 */15 * * *') keeps running
+              on schedule, but auto-update is disabled per-package: every
+              update.sh no-ops (owner rule 2026-11-14) unless
+              NEXUS_OWNER_UPDATE=1 is set, which only Ackerman-00 does.
+              Updates are applied by Ackerman-00 only.
             - The repo serves users on THREE targets from one source tree:
               openSUSE Tumbleweed (RPMs via `*.spec`) plus Debian
               Testing/Forky + Unstable/Sid (DEBs via `<pkg>.dsc` + flat
