@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Nov 14 22:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Requires libXss.so.1 and Recommends libayatana-appindicator3: the
+  payload's own deb depends on libxss1 and recommends libappindicator3-1,
+  and the binary registers a StatusNotifierItem.
+
+-------------------------------------------------------------------
 Sat Nov 14 16:40:21 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - debian.control: add libdrm2 (bundled libGLESv2.so NEEDs libdrm.so.2).

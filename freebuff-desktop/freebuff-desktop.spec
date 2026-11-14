@@ -53,9 +53,11 @@ Requires:       libXrandr.so.2()(64bit)
 Requires:       libcurl.so.4()(64bit)
 Requires:       libz.so.1()(64bit)
 Requires:       libuuid.so.1()(64bit)
+Requires:       libXss.so.1()(64bit)
 Requires:       libXtst.so.6()(64bit)
 Requires:       xdg-utils
 Requires:       hicolor-icon-theme
+Recommends:     libayatana-appindicator3.so.1()(64bit)
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64

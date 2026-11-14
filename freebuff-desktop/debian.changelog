@@ -1,3 +1,9 @@
+freebuff-desktop (0.0.202-2) unstable; urgency=medium
+
+  * Recommend libayatana-appindicator3-1 (payload-declared tray dependency).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 22:30:00 +0000
+
 freebuff-desktop (0.0.202-1) unstable; urgency=medium
 
   * Add libdrm2 to Depends (the bundled libGLESv2.so NEEDs
