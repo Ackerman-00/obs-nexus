@@ -1,3 +1,9 @@
+concat-unstable (0.2.11+git20261113004333.6c9558a-1) unstable; urgency=medium
+
+  * New upstream snapshot 6c9558a (base 0.2.11).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 04:24:44 +0000
+
 concat-unstable (0.2.11+git20261112230140.6584d34-2) unstable; urgency=medium
 
   * Depends: drop libgtk-3-0t64 (dead since upstream's Slint/winit

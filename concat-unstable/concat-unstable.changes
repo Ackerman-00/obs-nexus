@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 14 04:24:44 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.11+git20261113004333.6c9558a-0
+- Update concat-unstable to base 0.2.11 + main 6c9558a
+
+-------------------------------------------------------------------
 Fri Nov 13 19:50:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - deps: drop the dead gtk3 Requires (upstream's Slint/winit rewrite

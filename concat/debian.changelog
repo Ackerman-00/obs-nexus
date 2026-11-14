@@ -1,3 +1,9 @@
+concat (0.2.11-1) unstable; urgency=medium
+
+  * New upstream release 0.2.11.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 04:30:04 +0000
+
 concat (0.2.10-1) unstable; urgency=medium
 
   * New upstream release 0.2.10.
