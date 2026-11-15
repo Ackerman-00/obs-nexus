@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Nov 15 09:23:26 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix desktop file/metainfo/icon file names: upstream spells the app ID
+  com.pocoguy.Muse (not com.pocuguy.Muse); the mis-spelled paths made
+  the %install step fail with "No such file or directory"
+
+-------------------------------------------------------------------
 Sun Nov 15 08:53:40 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix offline RPM build: pass CARGO_NET_OFFLINE and RUSTY_V8_ARCHIVE to

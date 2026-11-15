@@ -78,30 +78,30 @@ export RUSTY_V8_ARCHIVE=%{_builddir}/Mixtapes-%{commit}/%{v8_archive}
 ln -s mixtapes %{buildroot}%{_bindir}/muse
 
 desktop-file-install --dir %{buildroot}%{_datadir}/applications \
-    com.pocuguy.Muse.desktop
+    com.pocoguy.Muse.desktop
 
 mkdir -p %{buildroot}%{_datadir}/metainfo
-install -Dm644 com.pocuguy.Muse.metainfo.xml \
-    %{buildroot}%{_datadir}/metainfo/com.pocuguy.Muse.metainfo.xml
+install -Dm644 com.pocoguy.Muse.metainfo.xml \
+    %{buildroot}%{_datadir}/metainfo/com.pocoguy.Muse.metainfo.xml
 
-install -Dm644 assets/icons/hicolor/scalable/apps/com.pocuguy.Muse.svg \
-    %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/com.pocuguy.Muse.svg
-install -Dm644 assets/icons/hicolor/symbolic/apps/com.pocuguy.Muse-symbolic.svg \
-    %{buildroot}%{_datadir}/icons/hicolor/symbolic/apps/com.pocuguy.Muse-symbolic.svg
+install -Dm644 assets/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg \
+    %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg
+install -Dm644 assets/icons/hicolor/symbolic/apps/com.pocoguy.Muse-symbolic.svg \
+    %{buildroot}%{_datadir}/icons/hicolor/symbolic/apps/com.pocoguy.Muse-symbolic.svg
 
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/com.pocuguy.Muse.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/com.pocoguy.Muse.desktop
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/mixtapes
 %{_bindir}/muse
-%{_datadir}/applications/com.pocuguy.Muse.desktop
-%{_datadir}/metainfo/com.pocuguy.Muse.metainfo.xml
-%{_datadir}/icons/hicolor/scalable/apps/com.pocuguy.Muse.svg
-%{_datadir}/icons/hicolor/symbolic/apps/com.pocuguy.Muse-symbolic.svg
+%{_datadir}/applications/com.pocoguy.Muse.desktop
+%{_datadir}/metainfo/com.pocoguy.Muse.metainfo.xml
+%{_datadir}/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg
+%{_datadir}/icons/hicolor/symbolic/apps/com.pocoguy.Muse-symbolic.svg
 
 %changelog

@@ -28,13 +28,13 @@ override_dh_auto_install:
 	install -Dm755 target/release/mixtapes debian/mixtapes/usr/bin/mixtapes
 	ln -s mixtapes debian/mixtapes/usr/bin/muse
 	desktop-file-install --dir=debian/mixtapes/usr/share/applications \
-		com.pocuguy.Muse.desktop
-	install -Dm644 com.pocuguy.Muse.metainfo.xml \
-		debian/mixtapes/usr/share/metainfo/com.pocuguy.Muse.metainfo.xml
-	install -Dm644 assets/icons/hicolor/scalable/apps/com.pocuguy.Muse.svg \
-		debian/mixtapes/usr/share/icons/hicolor/scalable/apps/com.pocuguy.Muse.svg
-	install -Dm644 assets/icons/hicolor/symbolic/apps/com.pocuguy.Muse-symbolic.svg \
-		debian/mixtapes/usr/share/icons/hicolor/symbolic/apps/com.pocuguy.Muse-symbolic.svg
+		com.pocoguy.Muse.desktop
+	install -Dm644 com.pocoguy.Muse.metainfo.xml \
+		debian/mixtapes/usr/share/metainfo/com.pocoguy.Muse.metainfo.xml
+	install -Dm644 assets/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg \
+		debian/mixtapes/usr/share/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg
+	install -Dm644 assets/icons/hicolor/symbolic/apps/com.pocoguy.Muse-symbolic.svg \
+		debian/mixtapes/usr/share/icons/hicolor/symbolic/apps/com.pocoguy.Muse-symbolic.svg
 
 override_dh_clean:
 	dh_clean

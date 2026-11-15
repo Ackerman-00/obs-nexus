@@ -97,7 +97,7 @@ curl -fsSL --retry 3 --connect-timeout 30 \
     || { echo "V8 archive is not gzip data; spec left untouched."; exit 1; }
 V8_SHA=$(sha256sum "$TMPD/$TOPD/$V8_ARCHIVE" | awk '{print $1}')
 
-BASE_VERSION=$(grep -oP '(?<=<release version=")[^"]+' "$TMPD/$TOPD/com.pocuguy.Muse.metainfo.xml" 2>/dev/null | head -1 | tr '-' '.' | tr -cd '0-9.')
+BASE_VERSION=$(grep -oP '(?<=<release version=")[^"]+' "$TMPD/$TOPD/com.pocoguy.Muse.metainfo.xml" 2>/dev/null | head -1 | tr '-' '.' | tr -cd '0-9.')
 [ -n "$BASE_VERSION" ] \
     || { echo "Cannot determine upstream release version; spec left untouched."; exit 1; }
 
