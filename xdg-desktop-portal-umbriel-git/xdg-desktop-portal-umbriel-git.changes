@@ -1,0 +1,6 @@
+-------------------------------------------------------------------
+Sun Nov 15 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261106143557.5695142-0
+- Port xdg-desktop-portal-umbriel-git from fedora-nexus; source build
+  for Tumbleweed; xdg-desktop-portal-umbriel fork

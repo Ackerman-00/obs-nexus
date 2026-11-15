@@ -1,0 +1,28 @@
+Source: umbriel-git
+Section: x11
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
+ libwlroots-0.20-dev (>= 0.20.1), libwayland-dev (>= 1.24),
+ libwayland-bin, wayland-protocols (>= 1.47), libxkbcommon-dev,
+ libinput-dev (>= 1.29), libeis-dev (>= 1.3), libudev-dev,
+ libpixman-1-dev (>= 0.43), libdrm-dev (>= 2.4.129),
+ libdisplay-info-dev (>= 0.3.0), libcairo2-dev, libpango1.0-dev,
+ libtomlplusplus-dev, nlohmann-json3-dev, libxcb1-dev,
+ libxcb-icccm4-dev, libxcb-ewmh-dev, libxcb-shape0-dev,
+ libxcb-randr0-dev, libegl-dev, libgles-dev, libgbm-dev,
+ liblcms2-dev, libjemalloc-dev, systemd-dev
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/noctalia-dev/umbriel
+
+Package: umbriel-git
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ xdg-desktop-portal-umbriel-git, xdg-desktop-portal-gnome
+Recommends: kitty | alacritty | foot, nautilus | nemo
+Description: Wayland compositor with scrolling and dwindle layouts
+ Umbriel is a Wayland compositor designed for daily use, with scrolling
+ and dwindle layouts, per-output workspaces, window rules, blur, shadows,
+ and fluid animations. Built in C++23 on wlroots with the Noctalia SceneFX
+ fork vendored in-tree (umbrielfx).

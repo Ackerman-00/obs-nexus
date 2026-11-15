@@ -1,0 +1,6 @@
+xdg-desktop-portal-umbriel-git (0.1.0+git20261106143557.5695142-1) unstable; urgency=medium
+
+  * Package xdg-desktop-portal-umbriel-git for OBS (Tumbleweed RPM,
+    Debian Forky/Sid).
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 12:00:00 +0000

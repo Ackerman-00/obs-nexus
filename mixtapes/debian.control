@@ -1,0 +1,23 @@
+Source: mixtapes
+Section: sound
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), cargo, rustc, meson, ninja-build, pkg-config,
+ libglib2.0-dev, libgtk-4-dev, libadwaita-1-dev, libwebkitgtk-6.0-dev,
+ libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libsqlite3-dev,
+ libssl-dev, libdbus-1-dev, libgstreamer-check-1.0-dev
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/m-obeid/Mixtapes
+
+Package: mixtapes
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ yt-dlp, nodejs, gstreamer1.0-plugins-good,
+ gstreamer1.0-plugins-bad, libgtk-4-1, libadwaita-1-0,
+ libwebkitgtk-6.0-4
+Recommends: ffmpeg
+Description: Cross-platform YouTube Music client (GTK4, Libadwaita, GStreamer)
+ Mixtapes is a cross-platform desktop application for streaming
+ YouTube Music, built with GTK4, Libadwaita and GStreamer. The codebase
+ was rewritten from Python to Rust in October 2026.

@@ -1,0 +1,25 @@
+Source: noctalia-greeter
+Section: x11
+Priority: optional
+Maintainer: Ackerman-00 <noreply@example.com>
+Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
+ libstb-dev, libinput-dev, libwlroots-0.20-dev,
+ wayland-protocols, libdrm-dev, libgbm-dev, libcairo2-dev,
+ libcairo-ft-dev, libfontconfig-dev, libfreetype-dev, libjxl-dev,
+ libwebp-dev, librsvg2-dev, libxml2-dev,
+ libxkbcommon-dev, libudev-dev, libxcb1-dev,
+ libxcb-ewmh-dev, libxcb-randr0-dev, libxcb-render0-dev,
+ libxcb-shape0-dev, libxcb-xfixes0-dev, libgles-dev, libegl-dev,
+ libglib2.0-dev, libpango1.0-dev
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://github.com/noctalia-dev/noctalia-greeter
+
+Package: noctalia-greeter
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ dbus, greetd
+Recommends: polkit
+Description: Login greeter for greetd with the Noctalia Shell look and feel
+ A minimal login greeter for greetd that matches the look and feel of
+ Noctalia Shell, built with wlroots. Compiled from the git snapshot.

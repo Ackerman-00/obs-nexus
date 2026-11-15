@@ -1,0 +1,28 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	:
+
+override_dh_auto_build:
+	CARGO_NET_OFFLINE=true cargo build --release --frozen --offline --bin mixtapes
+
+override_dh_auto_test:
+	:
+
+override_dh_auto_install:
+	mkdir -p debian/mixtapes/usr/bin debian/mixtapes/usr/share/applications \
+	         debian/mixtapes/usr/share/metainfo \
+	         debian/mixtapes/usr/share/icons/hicolor/scalable/apps
+	install -Dm755 target/release/mixtapes debian/mixtapes/usr/bin/mixtapes
+	ln -s mixtapes debian/mixtapes/usr/bin/muse
+	desktop-file-install --dir=debian/mixtapes/usr/share/applications \
+		com.pocoguy.Muse.desktop
+	install -Dm644 com.pocoguy.Muse.metainfo.xml \
+		debian/mixtapes/usr/share/metainfo/com.pocoguy.Muse.metainfo.xml
+	install -Dm644 assets/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg \
+		debian/mixtapes/usr/share/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg
+
+override_dh_clean:
+	dh_clean

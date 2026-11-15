@@ -1,0 +1,12 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: noctalia-greeter
+Upstream-Contact: Noctalia Developers <https://github.com/noctalia-dev/noctalia-greeter/issues>
+Source: https://github.com/noctalia-dev/noctalia-greeter
+
+Files: src/*.h src/*.cpp src/*.c meson.build src/wuffs*
+Copyright: 2025-2026 Noctalia Developers
+License: MIT AND Apache-2.0
+
+Files: third_party/wuffs/* third_party/stb/*
+Copyright: 2015-2026 Noctalia Developers
+License: Apache-2.0 OR MIT

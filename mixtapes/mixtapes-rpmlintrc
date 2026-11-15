@@ -1,0 +1,4 @@
+addFilter("unstripped-binary-or-object")
+addFilter("statically-linked-binary")
+addFilter("binary-or-shlib-defines-rpath")
+addFilter("binary-or-shlib-calls-gethostbyname")

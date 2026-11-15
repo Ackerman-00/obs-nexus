@@ -120,6 +120,10 @@ out of scope):
 | **stoat-desktop** | Open source, user-first chat platform desktop client |
 | **vesktop** | Custom Discord client with Vencord preinstalled |
 | **whitesur-icon-theme** | WhiteSur macOS-like icon theme |
+| **umbriel-git** | Wayland compositor with scrolling and dwindle layouts (Umbriel; nightly git snapshot) |
+| **xdg-desktop-portal-umbriel-git** | XDG Desktop Portal backend for Umbriel; screen-capture picker (git snapshot) |
+| **noctalia-greeter** | Login greeter for greetd with the Noctalia Shell look and feel (git snapshot) |
+| **mixtapes** | Cross-platform YouTube Music client (GTK4/Libadwaita; git snapshot) |
 | **zen-browser** | Minimal browser focused on privacy and calm browsing |
 | **cline-desktop** | Agentic AI coding agent desktop app (Tauri) |
 | **hyperframes-desktop** | HyperFrames Studio video editor (Electron) |

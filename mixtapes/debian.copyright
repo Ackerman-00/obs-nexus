@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: mixtapes
+Upstream-Contact: m-obeid <https://github.com/m-obeid/Mixtapes/issues>
+Source: https://github.com/m-obeid/Mixtapes
+
+Files: *
+Copyright: 2025-2026 m-obeid
+License: GPL-3.0-or-later
