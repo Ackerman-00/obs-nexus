@@ -2,11 +2,14 @@
 %:
 	dh $@
 
+export CARGO_NET_OFFLINE=true
+export RUSTY_V8_ARCHIVE=$(CURDIR)/librusty_v8_release_x86_64-unknown-linux-gnu.a.gz
+
 override_dh_auto_configure:
 	:
 
 override_dh_auto_build:
-	CARGO_NET_OFFLINE=true cargo build --release --frozen --offline --bin mixtapes
+	cargo build --release --frozen --offline --bin mixtapes
 
 override_dh_auto_test:
 	:
@@ -14,15 +17,18 @@ override_dh_auto_test:
 override_dh_auto_install:
 	mkdir -p debian/mixtapes/usr/bin debian/mixtapes/usr/share/applications \
 	         debian/mixtapes/usr/share/metainfo \
-	         debian/mixtapes/usr/share/icons/hicolor/scalable/apps
+	         debian/mixtapes/usr/share/icons/hicolor/scalable/apps \
+	         debian/mixtapes/usr/share/icons/hicolor/symbolic/apps
 	install -Dm755 target/release/mixtapes debian/mixtapes/usr/bin/mixtapes
 	ln -s mixtapes debian/mixtapes/usr/bin/muse
 	desktop-file-install --dir=debian/mixtapes/usr/share/applications \
-		com.pocoguy.Muse.desktop
-	install -Dm644 com.pocoguy.Muse.metainfo.xml \
-		debian/mixtapes/usr/share/metainfo/com.pocoguy.Muse.metainfo.xml
-	install -Dm644 assets/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg \
-		debian/mixtapes/usr/share/icons/hicolor/scalable/apps/com.pocoguy.Muse.svg
+		com.pocuguy.Muse.desktop
+	install -Dm644 com.pocuguy.Muse.metainfo.xml \
+		debian/mixtapes/usr/share/metainfo/com.pocuguy.Muse.metainfo.xml
+	install -Dm644 assets/icons/hicolor/scalable/apps/com.pocuguy.Muse.svg \
+		debian/mixtapes/usr/share/icons/hicolor/scalable/apps/com.pocuguy.Muse.svg
+	install -Dm644 assets/icons/hicolor/symbolic/apps/com.pocuguy.Muse-symbolic.svg \
+		debian/mixtapes/usr/share/icons/hicolor/symbolic/apps/com.pocuguy.Muse-symbolic.svg
 
 override_dh_clean:
 	dh_clean

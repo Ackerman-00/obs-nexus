@@ -4,3 +4,5 @@ Sun Nov 15 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 - version 0.1.0+git20261115031617.ae3472d-0
 - Port umbriel-git from fedora-nexus: nightly snapshot build, links
   wlroots-0.20 in Tumbleweed; vendored umbrielfx (no external SceneFX)
+- Align BuildRequires floors with upstream meson.build: libinput >= 1.29,
+  xkbcommon >= 1.10.0, explicit pkgconfig(wayland-client)

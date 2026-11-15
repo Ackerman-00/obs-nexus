@@ -19,9 +19,10 @@ BuildRequires:  ninja
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  pkgconfig(wlroots-0.20) >= 0.20.1
 BuildRequires:  pkgconfig(wayland-server) >= 1.24
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.47
-BuildRequires:  pkgconfig(xkbcommon)
-BuildRequires:  pkgconfig(libinput) >= 1.27
+BuildRequires:  pkgconfig(xkbcommon) >= 1.10.0
+BuildRequires:  pkgconfig(libinput) >= 1.29
 BuildRequires:  pkgconfig(libeis-1.0) >= 1.3
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libsystemd) >= 243

@@ -11,7 +11,7 @@ Group:          System/Boot/Other
 URL:            https://github.com/noctalia-dev/noctalia-greeter
 Source0:        noctalia-greeter-%{shortcommit}.tar.gz
 Source3:        stb_image_resize2-git-2026-11-01-703100c5f8a0.h
-# sha256: 6965f5c5c50aa1d5af670148814ce9559d5d06328099437686aa3d934708e04b
+# sha256: 7420ce124ccd746e47f66d85235eb22838b339ae0689a72d6eb2e3d32dc657d1
 Source1:        https://raw.githubusercontent.com/google/wuffs/a14745aa458fd2b2785034efa04eab3c7b5b91e0/LICENSE-APACHE
 # sha256: 0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594
 Source2:        https://raw.githubusercontent.com/google/wuffs/a14745aa458fd2b2785034efa04eab3c7b5b91e0/LICENSE-MIT
@@ -19,9 +19,10 @@ Source2:        https://raw.githubusercontent.com/google/wuffs/a14745aa458fd2b27
 
 BuildRequires:  meson >= 1.3
 BuildRequires:  gcc-c++
+BuildRequires:  python3
 BuildRequires:  diffutils
-BuildRequires:  libinput-devel
-BuildRequires:  wlroots-devel
+BuildRequires:  pkgconfig(libinput)
+BuildRequires:  pkgconfig(wlroots-0.20)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(cairo)

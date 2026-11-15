@@ -3,10 +3,5 @@ Sun Nov 15 05:37:06 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.7.0+git20261115034454.936473c-0
 - Port from fedora-nexus; greeter built with Tumbleweed system wlroots and vendored wuffs/stb_image_resize2 headers
-
--------------------------------------------------------------------
-Sun Nov 15 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
-
-- version 1.7.0+git20261115034454.936473c-0
-- Port noctalia-greeter from fedora-nexus; source build for Tumbleweed,
-  links system wlroots-0.20; vendored wuffs and stb_image_resize2
+- BuildRequires python3 (meson probes it unconditionally), pkgconfig(libinput) and pkgconfig(wlroots-0.20) instead of raw -devel names
+- Correct the stb_image_resize2 header sha256 pin

@@ -37,7 +37,7 @@ fi
 SHORT_COMMIT=${LATEST_COMMIT:0:7}
 GITDATE=$(echo "$LATEST_DATE_RAW" | sed 's/[-T:Z]//g')
 CURRENT_COMMIT=$(grep -E "^%global commit" "$SPEC_FILE" | awk '{print $3}')
-CURRENT_BASE=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}' | sed 's/\^.*//;s/+git.*//')
+CURRENT_BASE=$(grep -E "^%global base_version" "$SPEC_FILE" | awk '{print $3}')
 
 COMMIT_CHANGED=$([ "$CURRENT_COMMIT" != "$LATEST_COMMIT" ] && echo true || echo false)
 BASE_VER_CHANGED=$([ "$CURRENT_BASE" != "$BASE_VER" ] && echo true || echo false)

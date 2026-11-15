@@ -2,10 +2,12 @@ Source: mixtapes
 Section: sound
 Priority: optional
 Maintainer: Ackerman-00 <noreply@example.com>
-Build-Depends: debhelper-compat (= 13), cargo, rustc, meson, ninja-build, pkg-config,
- libglib2.0-dev, libgtk-4-dev, libadwaita-1-dev, libwebkitgtk-6.0-dev,
- libgstreamer1.0-dev, libgstreamer-plugins-base1.0-dev, libsqlite3-dev,
- libssl-dev, libdbus-1-dev
+Build-Depends: debhelper-compat (= 13), cargo, rustc, cmake, make, pkg-config, gcc, g++,
+ libglib2.0-dev, libgtk-4-dev (>= 4.18), libadwaita-1-dev (>= 1.8),
+ libwebkitgtk-6.0-dev (>= 2.44), libjavascriptcoregtk-6.0-dev, libsoup-3.0-dev,
+ libgstreamer1.0-dev (>= 1.24), libgstreamer-plugins-base1.0-dev,
+ libsqlite3-dev (>= 3.34.1), libssl-dev, libgdk-pixbuf-2.0-dev,
+ libpango1.0-dev, libgraphene-1.0-dev, desktop-file-utils
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/m-obeid/Mixtapes
@@ -14,9 +16,9 @@ Package: mixtapes
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
  yt-dlp, nodejs, gstreamer1.0-plugins-good,
- gstreamer1.0-plugins-bad, libgtk-4-1, libadwaita-1-0,
- libwebkitgtk-6.0-4
-Recommends: ffmpeg
+ gstreamer1.0-plugins-bad, gstreamer1.0-libav, libgtk-4-1,
+ libadwaita-1-0, libwebkitgtk-6.0-4, hicolor-icon-theme
+Recommends: ffmpeg, xdg-desktop-portal, xdg-desktop-portal-gtk
 Description: Cross-platform YouTube Music client (GTK4, Libadwaita, GStreamer)
  Mixtapes is a cross-platform desktop application for streaming
  YouTube Music, built with GTK4, Libadwaita and GStreamer. The codebase
