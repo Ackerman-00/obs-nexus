@@ -60,8 +60,8 @@ CONTEXT
 - Each package lives in its own directory with a .spec file, a .changes
   file (openSUSE changelog), often an update.sh (an upstream-check script)
   and a _service file. update-packages.yml (GitHub Actions, "Nexus
-  Auto-Updater (OBS Pipeline)") runs every 15 hours (cron '0 */15 * * *',
-  minute 0), i.e. 15 minutes before this workflow ('15 */15 * * *'): it runs update.sh for
+  Auto-Updater (OBS Pipeline)") runs every 7 hours (cron '0 */7 * * *',
+  minute 0), i.e. 20 minutes before this workflow ('20 */7 * * *'): it runs update.sh for
   packages that have one and scans the rest against GitHub release tags,
   bumping spec versions and committing to main directly, then syncs changed
   packages to OBS via its API (using OBS_USER/OBS_PASS) and triggers a
