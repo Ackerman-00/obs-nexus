@@ -72,6 +72,8 @@ export RUSTY_V8_ARCHIVE=%{_builddir}/Mixtapes-%{commit}/%{v8_archive}
 %{cargo_build}
 
 %install
+export CARGO_NET_OFFLINE=true
+export RUSTY_V8_ARCHIVE=%{_builddir}/Mixtapes-%{commit}/%{v8_archive}
 %{cargo_install}
 ln -s mixtapes %{buildroot}%{_bindir}/muse
 

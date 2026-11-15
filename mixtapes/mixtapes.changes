@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Sun Nov 15 08:53:40 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix offline RPM build: pass CARGO_NET_OFFLINE and RUSTY_V8_ARCHIVE to
+  the %{cargo_install} step too; without them the v8 crate build script
+  re-ran on env change and tried to download the prebuilt V8 archive,
+  which the OBS build host cannot reach
+
+-------------------------------------------------------------------
 Sun Nov 15 05:38:57 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.10.31.1+git20261031223600.a50a75d-0
