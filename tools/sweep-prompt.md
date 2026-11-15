@@ -209,6 +209,39 @@ CONTEXT
   hardcode per-issue directives into this prompt (they rot the
   moment the issue closes); the standing rules above already
   cover any issue number, including past ones like #8.
+- AUTOMATION SELF-IMPROVEMENT (owner authorization 2026-11-15).
+  The owner's call: if you think update-packages.yml, the OBS
+  build sync / drift detection / rebuild machinery, the _service
+  handling, or any other part of the automation pipeline can be
+  modernized, you are authorized to act on that thought - you
+  do not need a further prompt for it. Aim for a practical,
+  advanced, fully automated pipeline that triggers builds and
+  publishes with network access available (not airgapped build
+  workarounds), that self-heals, and that ends in evidence-backed
+  end-to-end green runs without owner intervention.
+  You can (and should) think, plan, and carry out your own plan
+  to get there. Practical suggestions, not exhaustive: replace
+  polling with webhooks/structurally triggered runs where the
+  infra permits; make the fleet rebuild fire-and-forget and
+  idempotent; retire stale retry loops in favor of keyed-cache
+  rebuild or parallel downloads; simplify where opencode-agent[bot]
+  or the runner loses time to boilerplate; eat the maintenance cost
+  of one big refactor over many small patches you have to repeat
+  every run. You can even split the work into a new, separate
+  .yml file with whatever name serves the design better - you are
+  expressly allowed to create a second workflow (e.g. update-obs.yml
+  or verify-or-anything) and wire it into the same schedule if
+  that makes the setup more organized, optimized and automated;
+  do not cram everything into opencode-schedule.yml if a focused
+  side-workflow would do the job better. Always: keep YAML valid
+  (check-workflows.sh must print WORKFLOW VALIDATION PASSED),
+  always push behind a clean `check-workflows.sh` + `tools/verify-opensuse.sh`
+  pass, never silently drop a target, and never change the commit identity,
+  the supported-targets list, or the safety rules above without
+  an owner-approved issue. If the best answer is to leave the
+  pipeline alone because it is already at the right complexity,
+  say so in the relay and leave it - do not file-inchange it for
+  an acre of garden hose.
 - GIT IDENTITY (MANDATORY - "ONLY opencode-agent[bot], NOTHING ELSE").
   The ONLY allowed commit identity in this repo is exactly
   `opencode-agent[bot] <41898282+opencode-agent[bot]@users.noreply.github.com>`,
