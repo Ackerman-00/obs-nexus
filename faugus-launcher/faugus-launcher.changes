@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Sun Nov 15 13:52:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare runtime python modules the code imports directly:
+  faugus/core.py imports urllib3.util.retry.Retry (hard import) so add
+  Requires python3-urllib3; faugus/utils.py imports pefile inside
+  try/except for the optional EXE title probe so add Recommends
+  python3-pefile. Both names resolve on Tumbleweed via capability
+  (python313-urllib3 2.8.0, python313-pefile 2024.8.26). Mirror both in
+  debian.control Depends/Recommends.
+
+-------------------------------------------------------------------
 Tue Nov 03 23:02:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 2.5.7

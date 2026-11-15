@@ -1,3 +1,12 @@
+faugus-launcher (2.5.7-2) unstable; urgency=medium
+
+  * Declare python modules imported directly by the payload: python3-urllib3
+    in Depends (faugus/core.py imports urllib3.util.retry.Retry),
+    python3-pefile in Recommends (optional EXE title probe in
+    faugus/utils.py, guarded by try/except).
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 13:52:00 +0000
+
 faugus-launcher (2.5.7-1) unstable; urgency=medium
 
   * New upstream release 2.5.7.

@@ -1,31 +1,33 @@
 Name:           faugus-launcher
 Version:        2.5.7
 Release:        0
-Recommends:     xdg-desktop-portal
-ExclusiveArch:  x86_64
 Summary:        Lightweight app for running Windows games using UMU-Launcher
 License:        MIT
 Group:          System/GUI/Other
 URL:            https://github.com/Faugus/faugus-launcher
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
-BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
 BuildRequires:  gettext-runtime
 BuildRequires:  gtk3-tools
 BuildRequires:  meson >= 1.2.0
 BuildRequires:  ninja
-BuildRequires:  python3-rpm-macros
 BuildRequires:  python3
-Requires:       python3-gobject
-Requires:       python3-requests
+BuildRequires:  python3-rpm-macros
 Requires:       python3-Pillow
-Requires:       python3-vdf
-Requires:       python3-psutil
+Requires:       python3-gobject
 Requires:       python3-icoextract
-Requires:       typelib-1_0-Gtk-4_0
+Requires:       python3-psutil
+Requires:       python3-requests
+Requires:       python3-urllib3
+Requires:       python3-vdf
 Requires:       typelib-1_0-Adw-1
+Requires:       typelib-1_0-Gtk-4_0
 Requires:       typelib-1_0-Manette-0_2-0
+Recommends:     python3-pefile
+Recommends:     xdg-desktop-portal
+BuildArch:      noarch
+ExclusiveArch:  x86_64
 
 %description
 Faugus is a simple and lightweight app for running Windows games using
@@ -60,6 +62,7 @@ chmod +x %{buildroot}%{python3_sitelib}/faugus/launcher.py
 %fdupes %{buildroot}
 
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
+
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/io.github.Faugus.faugus-launcher.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/io.github.Faugus.faugus-launcher.shortcut.desktop
