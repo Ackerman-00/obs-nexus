@@ -1,5 +1,11 @@
 noctalia-greeter (1.7.0+git20261115034454.936473c-1) unstable; urgency=medium
 
+  * New upstream snapshot 936473c (base 1.7.0).
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 05:37:06 +0000
+
+noctalia-greeter (1.7.0+git20261115034454.936473c-1) unstable; urgency=medium
+
   * Package noctalia-greeter for OBS (Tumbleweed RPM, Debian Forky/Sid).
 
  -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 12:00:00 +0000
