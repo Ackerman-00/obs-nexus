@@ -1,3 +1,9 @@
+umbriel-git (0.1.0+git20261115111441.2572005-1) unstable; urgency=medium
+
+  * New upstream snapshot 2572005 (base 0.1.0).
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 12:24:51 +0000
+
 umbriel-git (0.1.0+git20261115031617.ae3472d-1) unstable; urgency=medium
 
   * Package umbriel-git for OBS (Tumbleweed RPM, Debian Forky/Sid).
