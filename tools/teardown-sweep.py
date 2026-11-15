@@ -2158,8 +2158,8 @@ def sweep_package(pkg, pv, srcs, live, repo_type, workdir):
                     while dst.exists():
                         dst = dl / ("%s_%d.%s" % (base, idx, ext)) if ext else dl / "%s_%d" % (base, idx)
                         idx += 1
+        fresh_download = False
         if not dst.exists():
-            fresh_download = False
             try:
                 log("  downloading %s (%s)" % (name, url))
                 data, cd_name = fetch_with_name(url)

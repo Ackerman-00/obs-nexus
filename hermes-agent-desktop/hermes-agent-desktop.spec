@@ -6,7 +6,6 @@
 %global shortcommit     d1b46d7
 %global gitdate         20261115053135
 %global base_version    0.23.1
-
 Name:           hermes-agent-desktop
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
 Release:        0
@@ -16,14 +15,19 @@ Group:          Development/Tools/IDE
 URL:            https://github.com/NousResearch/hermes-agent
 Source0:        hermes-agent-desktop-%{version}.tar.gz
 Source1:        hermes-agent-desktop-rpmlintrc
-ExclusiveArch:  x86_64
-
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
-Requires:       mozilla-nss
-Requires:       xdg-utils
+Requires:       libX11.so.6()(64bit)
+Requires:       libXcomposite.so.1()(64bit)
+Requires:       libXdamage.so.1()(64bit)
+Requires:       libXext.so.6()(64bit)
+Requires:       libXfixes.so.3()(64bit)
+Requires:       libXi.so.6()(64bit)
+Requires:       libXrandr.so.2()(64bit)
+Requires:       libXss.so.1()(64bit)
+Requires:       libXtst.so.6()(64bit)
 Requires:       libasound.so.2()(64bit)
 Requires:       libatk-1.0.so.0()(64bit)
 Requires:       libatk-bridge-2.0.so.0()(64bit)
@@ -39,10 +43,10 @@ Requires:       libgio-2.0.so.0()(64bit)
 Requires:       libglib-2.0.so.0()(64bit)
 Requires:       libgobject-2.0.so.0()(64bit)
 Requires:       libgtk-3.so.0()(64bit)
+Requires:       libnotify.so.4()(64bit)
 Requires:       libnspr4.so()(64bit)
 Requires:       libnss3.so()(64bit)
 Requires:       libnssutil3.so()(64bit)
-Requires:       libnotify.so.4()(64bit)
 Requires:       libpango-1.0.so.0()(64bit)
 Requires:       libpipewire-0.3.so.0()(64bit)
 Requires:       libpulse.so.0()(64bit)
@@ -50,24 +54,18 @@ Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libXi.so.6()(64bit)
-Requires:       libX11.so.6()(64bit)
-Requires:       libxcb.so.1()(64bit)
-Requires:       libXcomposite.so.1()(64bit)
-Requires:       libXdamage.so.1()(64bit)
-Requires:       libXext.so.6()(64bit)
-Requires:       libXfixes.so.3()(64bit)
-Requires:       libXrandr.so.2()(64bit)
-Requires:       libXss.so.1()(64bit)
-Requires:       libXtst.so.6()(64bit)
-Requires:       libxkbcommon.so.0()(64bit)
 Requires:       libuuid.so.1()(64bit)
+Requires:       libxcb.so.1()(64bit)
+Requires:       libxkbcommon.so.0()(64bit)
+Requires:       mozilla-nss
+Requires:       xdg-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
 Recommends:     ffmpeg
 Recommends:     libayatana-appindicator3.so.1()(64bit)
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
+ExclusiveArch:  x86_64
 
 %description
 Hermes Agent desktop: chat sessions, background agent work, file browsing and
@@ -112,9 +110,10 @@ Icon=hermes-agent-desktop
 DESKTOP_EOF
 
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
+
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
-/usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
+%{_bindir}/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
 if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
     chmod 4755 /opt/HermesDesktop/chrome-sandbox || :
 else
@@ -125,12 +124,12 @@ fi
 case "$1" in
     0)
         /bin/touch --no-create %{_datadir}/icons/hicolor >/dev/null 2>&1
-        /usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
+        %{_bindir}/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
         ;;
 esac
 
 %posttrans
-/usr/bin/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
+%{_bindir}/gtk-update-icon-cache -q %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/hermes-agent-desktop.desktop

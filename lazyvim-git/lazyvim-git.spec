@@ -10,13 +10,13 @@ License:        Apache-2.0
 Group:          Productivity/Text/Editors
 URL:            https://github.com/LazyVim/LazyVim
 Source0:        lazyvim-%{shortcommit}.tar.gz
-BuildArch:      noarch
-ExclusiveArch:  x86_64
 Requires:       git >= 2.19.0
 Requires:       neovim >= 0.11.2
 Recommends:     fd
 Recommends:     gcc
 Recommends:     ripgrep
+BuildArch:      noarch
+ExclusiveArch:  x86_64
 
 %description
 LazyVim is a Neovim setup powered by lazy.nvim to make it easy to
