@@ -1,3 +1,9 @@
+hermes-agent-desktop (0.23.1+git20261115053135.d1b46d7-1) unstable; urgency=medium
+
+  * New upstream snapshot d1b46d7 (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 07:35:14 +0000
+
 hermes-agent-desktop (0.23.1+git20261114155028.71e07ef-2) unstable; urgency=medium
 
   * Recommend libayatana-appindicator3-1 (StatusNotifierItem tray host).

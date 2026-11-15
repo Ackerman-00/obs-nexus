@@ -2,8 +2,8 @@ Format: 3.0 (quilt)
 Source: hermes-agent-desktop
 Binary: hermes-agent-desktop
 Architecture: amd64
-Version: 0.23.1+git20261114155028.71e07ef
+Version: 0.23.1+git20261115053135.d1b46d7
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13)
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: hermes-agent-desktop-0.23.1+git20261114155028.71e07ef.tar.gz
+Debtransform-Tar: hermes-agent-desktop-0.23.1+git20261115053135.d1b46d7.tar.gz

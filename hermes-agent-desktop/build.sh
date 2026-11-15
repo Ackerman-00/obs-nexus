@@ -37,7 +37,7 @@ tar -xzf "$TXDIR/pnpm.tgz" -C "$TXDIR/tools/pnpm"
 
 echo "Building hermes-agent-desktop in Tumbleweed container..."
 docker run --rm -v "$TXDIR":/work -w /work registry.opensuse.org/opensuse/tumbleweed:latest bash -ec "
-  zypper --non-interactive --gpg-auto-import-keys install -y git curl xz zstd make gcc-c++ python3 libX11-devel libXi-devel libatomic-devel &&
+  zypper --non-interactive --gpg-auto-import-keys install -y git curl xz zstd make gcc-c++ python3 libX11-devel libXi-devel &&
   export PATH=\"/work/tools/node/bin:/work/tools/pnpm/package:\$PATH\" &&
   node --version && pnpm --version &&
   cd '/work/hermes-agent-$COMMIT' &&

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Nov 15 07:35:14 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.1+git20261115053135.d1b46d7-0
+- Update hermes-agent-desktop to base 0.23.1 + main d1b46d7
+
+-------------------------------------------------------------------
 Sun Nov 15 14:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - build.sh: switch the upstream payload-build container from
