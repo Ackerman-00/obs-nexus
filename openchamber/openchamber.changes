@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Sun Nov 15 13:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix the 2.7.2 recipes after the AppImage-to-.deb switch: the RPM
+  %files now packages the upstream /usr/share/doc/openchamber/
+  changelog.gz (it was installed but unlisted, so the build died with
+  "Installed (but unpackaged) file(s) found") and excludes the three
+  entries already covered by the /opt/OpenChamber glob, ending the
+  "File listed twice" warnings. The .dsc Build-Depends now mirrors
+  debian.control (binutils, xz-utils, zstd), which the Debian build
+  needs to unpack data.tar.xz/zst and which OBS only installs from the
+  .dsc list.
+
+-------------------------------------------------------------------
 Sun Nov 15 13:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Switch the RPM recipe from the AppImage payload to the native

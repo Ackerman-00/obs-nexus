@@ -106,8 +106,14 @@ fi
 %doc /opt/OpenChamber/LICENSES.chromium.html
 %{_datadir}/applications/openchamber.desktop
 %{_datadir}/icons/hicolor/512x512/apps/openchamber.png
+%dir %{_datadir}/doc/openchamber
+%doc %{_datadir}/doc/openchamber/changelog.gz
+%dir /opt/OpenChamber
+%exclude /opt/OpenChamber/chrome-sandbox
+%exclude /opt/OpenChamber/LICENSE.electron.txt
+%exclude /opt/OpenChamber/LICENSES.chromium.html
 %attr(4755, root, root) /opt/OpenChamber/chrome-sandbox
-/opt/OpenChamber/
+/opt/OpenChamber/*
 
 %changelog
 * Sun Nov 15 2026 Ackerman-00 <no-reply> - 2.7.2-0
