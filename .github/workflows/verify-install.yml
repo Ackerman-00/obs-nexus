@@ -1,0 +1,110 @@
+name: Nexus Install Verification (RPM + DEB)
+
+on:
+  schedule:
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Space separated package names (empty = rotating slice)'
+        required: false
+        default: ''
+  workflow_run:
+    workflows: ["Nexus Auto-Updater (OBS Pipeline)"]
+    types: [completed]
+
+concurrency:
+  group: install-verification
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  select:
+    runs-on: ubuntu-24.04
+    outputs:
+      deb_matrix: ${{ steps.pick.outputs.deb_matrix }}
+      rpm_matrix: ${{ steps.pick.outputs.rpm_matrix }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Pick the rotation slice
+        id: pick
+        run: |
+          python3 - "${{ github.event.inputs.packages }}" <<'PY'
+          import glob, json, os, sys
+          explicit = (sys.argv[1] if len(sys.argv) > 1 else "").split()
+          specs = sorted(os.path.dirname(p) for p in glob.glob("*/*.spec"))
+          dsc = set(os.path.dirname(p) for p in glob.glob("*/*.dsc"))
+          shards = 6
+          day = int(os.environ.get("DAY_OF_YEAR", "1"))
+          out = {}
+          if explicit:
+              deb = [p for p in explicit if p in dsc]
+              rpm = [p for p in explicit]
+          else:
+              deb = [p for p in specs if p in dsc]
+              deb = [p for i, p in enumerate(deb) if i % shards == day % shards]
+              rpm = [p for i, p in enumerate(specs) if i % shards == day % shards]
+          out["deb_matrix"] = json.dumps(deb)
+          out["rpm_matrix"] = json.dumps(rpm)
+          for k, v in out.items():
+              print(f"{k}={v}")
+              with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+                  fh.write(f"{k}={v}\n")
+          PY
+        env:
+          DAY_OF_YEAR: ${{ github.run_number }}
+
+  rpm:
+    needs: select
+    if: needs.select.outputs.rpm_matrix != '[]'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        package: ${{ fromJson(needs.select.outputs.rpm_matrix) }}
+    steps:
+      - name: Install from the published Tumbleweed repository
+        run: |
+          docker run --rm -e PKG="${{ matrix.package }}" registry.opensuse.org/opensuse/tumbleweed:latest bash -lc '
+            set -u
+            zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/tumbleweed/repo/oss/ oss >/dev/null 2>&1
+            zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus >/dev/null 2>&1
+            zypper --non-interactive --gpg-auto-import-keys refresh >/dev/null 2>&1
+            zypper --non-interactive install --no-recommends "$PKG" || exit 1
+            rpm -q "$PKG"
+            echo "updater_markers=$(find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | wc -l)"
+          '
+
+  deb:
+    needs: select
+    if: needs.select.outputs.deb_matrix != '[]'
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        package: ${{ fromJson(needs.select.outputs.deb_matrix) }}
+        suite: [testing, sid]
+    steps:
+      - name: Install from the published Debian repository
+        env:
+          SUITE: ${{ matrix.suite }}
+          PKG: ${{ matrix.package }}
+        run: |
+          if [ "$SUITE" = "testing" ]; then REPO=Debian_Testing; else REPO=Debian_Unstable; fi
+          docker run --rm -e PKG="$PKG" -e REPO="$REPO" "debian:$SUITE" bash -lc '
+            set -u
+            apt-get update -qq
+            apt-get install -y -qq ca-certificates curl gnupg
+            mkdir -p /etc/apt/keyrings
+            curl -fsSL "https://download.opensuse.org/repositories/home:ackerman/$REPO/Release.key" | gpg --dearmor > /etc/apt/keyrings/obs-nexus.gpg
+            echo "deb [signed-by=/etc/apt/keyrings/obs-nexus.gpg] https://download.opensuse.org/repositories/home:ackerman/$REPO/ /" > /etc/apt/sources.list.d/nexus.list
+            apt-get update -qq
+            apt-get install -y --no-install-recommends "$PKG"
+            dpkg -s "$PKG" | grep -E "^(Status|Version)"
+            apt-cache policy "$PKG" | grep -q download.opensuse.org || { echo "installed from the wrong repository"; exit 1; }
+            find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | head
+          '
