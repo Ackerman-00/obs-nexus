@@ -95,6 +95,67 @@ for spec in */*.spec; do
 done
 if [[ "$bad" -gt 0 ]]; then echo "FAIL: $bad specs malformed"; FAIL=1; fi
 
+debdrift=$(python3 - <<'PY'
+import glob, os, re, sys
+def field(text, name):
+    lines = text.splitlines()
+    out, grab = [], False
+    for ln in lines:
+        if grab:
+            out.append(ln.strip())
+            grab = ln.rstrip().endswith(',')
+            if not grab:
+                break
+            continue
+        if ln.startswith(name + ':'):
+            out.append(ln.split(':', 1)[1].strip())
+            grab = ln.rstrip().endswith(',')
+            if not grab:
+                break
+    return ' '.join(out)
+def toks(s):
+    return [t.strip() for t in s.replace('\n', ' ').split(',') if t.strip()]
+bad = []
+for dsc in sorted(glob.glob('*/*.dsc')):
+    pkg = os.path.dirname(dsc)
+    ctl = os.path.join(pkg, 'debian.control')
+    spec = os.path.join(pkg, os.path.basename(pkg) + '.spec')
+    d = open(dsc, encoding='utf-8', errors='replace').read()
+    if not os.path.exists(ctl) or not os.path.exists(spec):
+        continue
+    c = open(ctl, encoding='utf-8', errors='replace').read()
+    s = open(spec, encoding='utf-8', errors='replace').read()
+    dsc_deps = toks(field(d, 'Build-Depends'))
+    ctl_deps = toks(field(c, 'Build-Depends'))
+    missing = [t for t in ctl_deps if t not in dsc_deps]
+    if missing:
+        bad.append(f'{pkg}: .dsc Build-Depends lacks {missing} (OBS installs only the .dsc list)')
+    m = re.search(r'^Version:\s*(\S+)', s, re.M)
+    dv = re.search(r'^Version:\s*(\S+)', d, re.M)
+    if m and dv:
+        ver = m.group(1)
+        for mac in ('base_version', 'gitdate', 'shortcommit'):
+            g = re.search(r'^%global\s+' + mac + r'\s+(\S+)', s, re.M)
+            if g:
+                ver = ver.replace('%{' + mac + '}', g.group(1))
+        if not ver.startswith('%') and ver != dv.group(1):
+            bad.append(f'{pkg}: .dsc Version {dv.group(1)} != spec Version {ver}')
+    db = re.search(r'^Binary:\s*(\S+)', d, re.M)
+    cp = re.search(r'^Package:\s*(\S+)', c, re.M)
+    if db and cp and db.group(1) != cp.group(1):
+        bad.append(f'{pkg}: .dsc Binary {db.group(1)} != debian.control Package {cp.group(1)}')
+for b in bad:
+    print(b)
+PY
+)
+if [[ -n "$debdrift" ]]; then
+  echo "FAIL: Debian recipe drift (3-target contract):"
+  printf '%s\n' "$debdrift"
+  FAIL=1
+else
+  echo "PASS: .dsc/debian.control/spec version+binary+Build-Depends agree for every Debian recipe"
+fi
+
 for tgt in "Tumbleweed" "Debian_Testing" "Debian_Unstable"; do
   if grep -qi "$tgt" "$RELAY" 2>/dev/null; then
     echo "PASS: relay mentions target $tgt"

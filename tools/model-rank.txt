@@ -1,28 +1,27 @@
-
 # free-model cascade ranking - strongest first, in tiers
 # authority: opencode curated list > live catalog > published independent scores > vendor claims
 # order is set by the per-run web check in tools/sweep-prompt.md, not by hand
 
 # tier 1 - independently scored leaders (re-checked 2026-11-15)
-# AA Intelligence Index 45 (max) and DeepSWE v1.1 77.0% - source: venturebeat.com MiniMax M3.1 Flash launch coverage quoting Artificial Analysis + orcarouter.ai comparison, 2026-11-15
+# AA Intelligence Index 33 (max variant) - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15; highest free id on the board
 deepseek-v4.1-flash-free
-# AA Intelligence Index 42-43 (max), DeepSWE v1.1 73.7% - source: venturebeat.com 2026-11-15 + kie.ai/blog/minimax-m3-1-flash-vs-deepseek-v4-1
-minimax-m3.1-flash-free
-# AA Intelligence Index 31 - source: artificialanalysis.ai/leaderboards/models, Inkling 2 Small
+# AA Intelligence Index 31 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
 inkling-2-small-free
-# AA Intelligence Index 27 - source: artificialanalysis.ai/leaderboards/models, MiMo-V2.6-Flash
+# AA Intelligence Index 29 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
+minimax-m3.1-flash-free
+# AA Intelligence Index 27 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
 mimo-v2.6-flash-free
 
 # tier 2 - scored, lower index or single-source
-# AA Intelligence Index 18 - source: artificialanalysis.ai/leaderboards/models, Beam 1.0
+# AA Intelligence Index 18 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
 beam-free
-# AA Intelligence Index 14 - source: artificialanalysis.ai/leaderboards/models, Nemotron 3.5 Super VL
+# AA Intelligence Index 14 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
 nemotron-3.5-super-vl-free
 # AA Coding Index 48.3 estimated, medium confidence; SWE-bench Verified 74.2 vendor - source: Benchgap
 flint-40b-free
 
 # tier 3 - no independent coding score (live catalog re-verified 2026-11-15)
-# AA Intelligence Index 6 - source: artificialanalysis.ai/leaderboards/models, Nemotron 3.5 Lightning
+# AA Intelligence Index 6 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
 nemotron-3.5-lightning-free
 # no independent coding score; DeepSWE 64.6, Terminal-Bench 4.0 38.5 vendor - source: Meituan launch evals
 longcat-2.5-free
@@ -33,4 +32,4 @@ big-pickle
 
 # vetoed by owner (2026-10-22): glm-5.3-flash-free, jev-1.13-free (probabilistic classifier, not a coding model)
 # retired from the live catalog: crouton-alpha-free (2026-11-10), Pulse Alpha Free (2026-11-06)
-# leader re-checked 2026-11-15: live catalog serves 12 free ids, all 11 ranked ids live; DeepSeek V4.1 Flash 1017 still leads the free set on the published AA index (45) and DeepSWE (77.0%), MiniMax M3.1 Flash (42-43) moves above Inkling 2 Small (31) on today's independent scores
+# leader re-checked 2026-11-15: live catalog serves 11 free ids plus big-pickle, all 11 ranked ids live; DeepSeek V4.1 Flash (AA 33) still leads the free set, Inkling 2 Small (31) moves above MiniMax M3.1 Flash (29) on today's independent scores
