@@ -8,6 +8,9 @@ Sun Nov 15 13:52:00 UTC 2026 - Ackerman-00 <noreply@example.com>
   python3-pefile. Both names resolve on Tumbleweed via capability
   (python313-urllib3 2.8.0, python313-pefile 2024.8.26). Mirror both in
   debian.control Depends/Recommends.
+  Note: python3-icoextract (already a hard Requires) itself pulls
+  python3-pefile in transitively, so the Recommends records the direct
+  import rather than changing what gets installed.
 
 -------------------------------------------------------------------
 Tue Nov 03 23:02:59 UTC 2026 - Ackerman-00 <noreply@example.com>
