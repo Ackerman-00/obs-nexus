@@ -242,6 +242,35 @@ CONTEXT
   pipeline alone because it is already at the right complexity,
   say so in the relay and leave it - do not file-inchange it for
   an acre of garden hose.
+- OBS SOURCE HYGIENE (owner rule 2026-11-15, ALL packages).
+  Stale source artifacts on OBS (superseded *.tar.*, leftover
+  AppImages, superseded .deb/.rpm repacks no longer referenced by
+  the repo) are YOUR job, never the owner's. Never ask the owner to
+  delete files on OBS by hand, and never wait for the owner to clean
+  the source list for you. Any remote artifact not still referenced
+  by the local recipe - expanded spec Source0 (macros resolved from
+  %global/%define), the .dsc `Debtransform-Tar:`, update.sh, or
+  _service - is superseded and must be removed by the pipeline
+  automatically, for EVERY package in `*/`, with NO per-package
+  hardcoded name lists. (The 2026-11-15 bug was a `"$pkg"-*.tar.*`
+  prefix match: umbriel-git ships `umbriel-<shortcommit>.tar.gz`, so
+  `umbriel-git-*.tar.*` never matched and `umbriel-ae3472d.tar.gz`
+  lived on next to `umbriel-2572005.tar.gz`.) The helper in
+  .github/workflows/update-packages.yml (`keep_tar_names`, used by
+  the two stale-tar deletion branches) is the current implementation
+  - extend IT generically for other artifact classes (AppImages,
+  .deb/.rpm leftovers, stray *.AppImage from pre-.deb days) instead
+  of adding special cases or new hardcoded lists. Rule of thumb:
+  keep the set referenced by the local recipe, delete everything
+  else that looks like a source artifact, keep anything you cannot
+  prove is unreferenced and open an issue with exactly what you see
+  and your proposed rule. Never delete on a guess. Changes to the
+  prune logic must keep `tools/check-workflows.sh` passing and must
+  be dry-run verifiable (print the keep-set and the deletion
+  candidates before deleting). Do the same check for updates you
+  push: after every update-packages.yml change, one full run must
+  list what it deleted (or "kept"), so stale files visibly
+  disappear from the OBS source list without owner intervention.
 - GIT IDENTITY (MANDATORY - "ONLY opencode-agent[bot], NOTHING ELSE").
   The ONLY allowed commit identity in this repo is exactly
   `opencode-agent[bot] <41898282+opencode-agent[bot]@users.noreply.github.com>`,

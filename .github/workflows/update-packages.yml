@@ -293,6 +293,50 @@ jobs:
             return 1
           }
 
+          keep_tar_names() {
+            python3 - "$1" <<'PYKEEP'
+          import glob, os, re, sys
+          pkg = sys.argv[1]
+          keep = set()
+
+          def tarlike(s):
+              return s.lower().endswith(('.tar.gz', '.tar.xz', '.tar.bz2', '.tar.zst'))
+
+          for f in (glob.glob(os.path.join(pkg, '*.tar.gz')) + glob.glob(os.path.join(pkg, '*.tar.xz'))
+                    + glob.glob(os.path.join(pkg, '*.tar.bz2')) + glob.glob(os.path.join(pkg, '*.tar.zst'))):
+              keep.add(os.path.basename(f))
+
+          for dsc in glob.glob(os.path.join(pkg, '*.dsc')):
+              txt = open(dsc, encoding='utf-8', errors='replace').read()
+              m = re.search(r'^Debtransform-Tar:\s*(\S+)', txt, re.M)
+              if m and tarlike(m.group(1)):
+                  keep.add(m.group(1))
+
+          for spec in glob.glob(os.path.join(pkg, '*.spec')):
+              txt = open(spec, encoding='utf-8', errors='replace').read()
+              macros = {}
+              for m in re.finditer(r'^%(?:global|define)\s+(\w+)\s+(\S+)', txt, re.M):
+                  macros.setdefault(m.group(1), m.group(2))
+              m = re.search(r'^Name:\s*(\S+)', txt, re.M)
+              if m: macros.setdefault('name', m.group(1))
+              m = re.search(r'^Version:\s*(\S+)', txt, re.M)
+              if m: macros.setdefault('version', m.group(1))
+              for m in re.finditer(r'^Source\d+:\s*(\S+)', txt, re.M):
+                  base = os.path.basename(m.group(1).split('?', 1)[0])
+                  cur = base
+                  for _ in range(4):
+                      new = re.sub(r'%\{(\w+)\}', lambda mm: macros.get(mm.group(1), mm.group(0)), cur)
+                      if new == cur:
+                          break
+                      cur = new
+                  if '%' not in cur and tarlike(cur):
+                      keep.add(cur)
+
+          for k in sorted(keep):
+              print(k)
+          PYKEEP
+          }
+
           ensure_package() {
             local pkg="$1"
             if curl -s -u "$OBS_USER:$OBS_PASS" \
@@ -365,13 +409,16 @@ jobs:
                 *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|cargo_config|vendor*|*.rpm|*.AppImage|*.deb|*.keyring)
                   if [ ! -f "$pkg/$remote_file" ]; then
                     case "$remote_file" in
-                      "$pkg"-*.tar.gz|"$pkg"-*.tar.xz|"$pkg"-*.tar.bz2|"$pkg"-*.tar.zst)
-                        if ls "$pkg/$pkg"-*.tar.* >/dev/null 2>&1; then
-                          echo "    Deleting superseded tarball from OBS: $remote_file"
-                          obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
-                            || { echo "ERROR: delete of superseded $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
+                      *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst)
+                        KEEP=$(keep_tar_names "$pkg")
+                        if [ -z "$KEEP" ] || printf '%s\n' "$KEEP" | grep -qxF "$remote_file"; then
+                          echo "    Keeping tar referenced by local recipe: $remote_file"
                           continue
                         fi
+                        echo "    Deleting superseded tarball from OBS: $remote_file"
+                        obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
+                          || { echo "ERROR: delete of superseded $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
+                        continue
                         ;;
                     esac
                     echo "    Keeping remote source artifact (no local copy to re-upload): $remote_file"
@@ -399,19 +446,13 @@ jobs:
           for pkg_dir in */; do
             pkg="${pkg_dir%/}"
             ls "$pkg_dir"*.spec >/dev/null 2>&1 || continue
-            have_tar=0
-            for _t in "$pkg_dir"*.tar.gz "$pkg_dir"*.tar.xz "$pkg_dir"*.tar.bz2 "$pkg_dir"*.tar.zst; do
-              if [ -f "$_t" ]; then
-                have_tar=1
-                break
-              fi
-            done
-            [ "$have_tar" = "1" ] || continue
+            KEEP=$(keep_tar_names "$pkg")
+            [ -n "$KEEP" ] || continue
             OBS_PRUNE=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oP '(?<=<entry name=")[^"]+' || true)
             for remote_file in $OBS_PRUNE; do
               case "$remote_file" in
-                "$pkg"-*.tar.gz|"$pkg"-*.tar.xz|"$pkg"-*.tar.bz2|"$pkg"-*.tar.zst)
-                  if [ -f "$pkg_dir$remote_file" ]; then
+                *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst)
+                  if printf '%s\n' "$KEEP" | grep -qxF "$remote_file"; then
                     continue
                   fi
                   echo " -> Pruning superseded tarball: $pkg/$remote_file"
