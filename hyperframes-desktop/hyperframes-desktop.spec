@@ -75,7 +75,7 @@ install -d %{buildroot}/opt %{buildroot}%{_datadir} %{buildroot}%{_bindir} %{bui
 if [ -d opt/hyperframes ]; then cp -a opt/hyperframes %{buildroot}/opt/; fi
 if [ -d usr/share ]; then cp -a usr/share/* %{buildroot}%{_datadir}/; fi
 if [ -L usr/bin/hyperframes ] || [ -e usr/bin/hyperframes ]; then ln -sf /opt/hyperframes/HyperFrames %{buildroot}%{_bindir}/hyperframes; fi
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' -o -path '*/resources/build.json' \) -delete 2>/dev/null || true
 
 %files
 /opt/hyperframes/

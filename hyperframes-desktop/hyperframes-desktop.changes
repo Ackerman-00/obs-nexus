@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Sun Nov 15 20:05:06 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- strip the payload update manifest: resources/build.json carries
+  HFInstall=deb, which arms the app's own updater (debInstall.mjs runs
+  /usr/bin/apt-get through pkexec on the Debian targets and would
+  replace this package with the upstream .deb). The asar reads that
+  file and bails with "no build commit" when it is absent, so removing
+  it disables the in-app updater the same way the app-update.yml strip
+  does everywhere else
+
+-------------------------------------------------------------------
 Sun Nov 15 19:36:05 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0.b1028-0
