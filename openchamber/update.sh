@@ -38,7 +38,7 @@ CURRENT_VER=$(grep "^Version:" "$SPEC_FILE" | awk '{print $2}')
 echo "   Current Local: $CURRENT_VER"
 echo "   Latest Online: $NEW_VER"
 
-X86_APPIMAGE="OpenChamber-$NEW_VER-linux-x86_64.AppImage"
+X86_DEB="OpenChamber-$NEW_VER-linux-amd64.deb"
 
 build_orig_wrapper() {
     local ver="$1"; shift
@@ -51,10 +51,10 @@ build_orig_wrapper() {
 
 if [ ! -f "openchamber-$CURRENT_VER.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
-    CUR_IMG="OpenChamber-$CURRENT_VER-linux-x86_64.AppImage"
+    CUR_DEB="OpenChamber-$CURRENT_VER-linux-amd64.deb"
     curl -fsSL --retry 3 --connect-timeout 30 \
-        "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VER/$CUR_IMG" \
-        -o "$CUR_IMG" && build_orig_wrapper "$CURRENT_VER" "$CUR_IMG" || \
+        "https://github.com/$GITHUB_REPO/releases/download/v$CURRENT_VER/$CUR_DEB" \
+        -o "$CUR_DEB" && build_orig_wrapper "$CURRENT_VER" "$CUR_DEB" || \
         echo "WARNING: orig wrapper rebuild failed; continuing version check."
 fi
 
@@ -64,43 +64,49 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
 fi
 
 ASSET_NAMES=$(echo "$LATEST_JSON" | jq -r '.assets[]?.name // empty')
-if ! echo "$ASSET_NAMES" | grep -qx "$X86_APPIMAGE"; then
-    echo "HOLD: $LATEST_TAG has no Linux x86_64 AppImage ($X86_APPIMAGE missing). Spec stays on $CURRENT_VER."
+if ! echo "$ASSET_NAMES" | grep -qx "$X86_DEB"; then
+    echo "HOLD: $LATEST_TAG has no amd64 .deb ($X86_DEB missing). Spec stays on $CURRENT_VER."
     exit 0
 fi
-echo "Linux x86_64 AppImage asset present; proceeding."
+echo "amd64 .deb asset present; proceeding."
 
-echo "New version found! Downloading $X86_APPIMAGE for verification..."
+echo "New version found! Downloading $X86_DEB for verification..."
 
-X86_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$X86_APPIMAGE"
-curl -fsSL --retry 3 --connect-timeout 60 "$X86_URL" -o "$X86_APPIMAGE" \
-    || { echo "AppImage download failed; spec left untouched."; exit 1; }
-if ! [ -s "$X86_APPIMAGE" ] || ! head -c4 "$X86_APPIMAGE" | grep -q $'\x7fELF'; then
-    echo "$X86_APPIMAGE is missing, empty, or not an ELF AppImage; spec left untouched."
-    rm -f "$X86_APPIMAGE"
+X86_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_TAG/$X86_DEB"
+curl -fsSL --retry 3 --connect-timeout 60 "$X86_URL" -o "$X86_DEB" \
+    || { echo ".deb download failed; spec left untouched."; exit 1; }
+if ! [ -s "$X86_DEB" ]; then
+    echo "$X86_DEB is empty; spec left untouched."
+    rm -f "$X86_DEB"
     exit 1
 fi
 
-chmod +x "$X86_APPIMAGE"
-
-ICON_TMP=$(mktemp -d)
-APPIMG="$PWD/$X86_APPIMAGE"
-(cd "$ICON_TMP" && "$APPIMG" --appimage-extract >/dev/null) || \
-    { echo "AppImage extraction failed; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
-for ref in $(grep -ho -E '(squashfs-root|appimage-root)/[A-Za-z0-9._-]+' "$SPEC_FILE" debian.rules | sort -u); do
-    rel="${ref#*/}"
-    [ -e "$ICON_TMP/squashfs-root/$rel" ] || \
-        { echo "HOLD: recipe references $ref but the $NEW_VER payload lacks it; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
-done
-[ -f "$ICON_TMP/squashfs-root/AppRun" ] || \
-    { echo "HOLD: $NEW_VER payload lacks AppRun; spec left untouched."; rm -rf "$ICON_TMP"; exit 1; }
-rm -rf "$ICON_TMP"
+DEB_TMP=$(mktemp -d)
+( ar x "$X86_DEB" --output "$DEB_TMP" >/dev/null 2>&1 || rm -rf "$DEB_TMP" ) || \
+    { echo ".deb is not an ar archive; spec left untouched."; rm -f "$X86_DEB"; exit 1; }
+if [ ! -s "$DEB_TMP/data.tar.xz" ] && [ ! -s "$DEB_TMP/data.tar.zst" ] && [ ! -s "$DEB_TMP/data.tar.gz" ]; then
+    echo ".deb has no data.tar member; spec left untouched."; rm -rf "$DEB_TMP" "$X86_DEB"; exit 1
+fi
+if [ ! -s "$DEB_TMP/control.tar.xz" ] && [ ! -s "$DEB_TMP/control.tar.zst" ] && [ ! -s "$DEB_TMP/control.tar.gz" ]; then
+    echo ".deb has no control.tar member; spec left untouched."; rm -rf "$DEB_TMP" "$X86_DEB"; exit 1
+fi
+PAYLOAD_TMP=$(mktemp -d)
+if [ -s "$DEB_TMP/data.tar.xz" ]; then tar -xpf "$DEB_TMP/data.tar.xz" -C "$PAYLOAD_TMP"; \
+elif [ -s "$DEB_TMP/data.tar.zst" ]; then tar --zstd -xpf "$DEB_TMP/data.tar.zst" -C "$PAYLOAD_TMP"; \
+else tar -xzf "$DEB_TMP/data.tar.gz" -C "$PAYLOAD_TMP"; fi
+[ -x "$PAYLOAD_TMP/opt/OpenChamber/openchamber" ] || \
+    { echo "Binary missing from .deb payload (expected opt/OpenChamber/openchamber); spec left untouched."; rm -rf "$DEB_TMP" "$PAYLOAD_TMP" "$X86_DEB"; exit 1; }
+[ -f "$PAYLOAD_TMP/usr/share/applications/openchamber.desktop" ] || \
+    { echo "Desktop file missing from .deb payload; spec left untouched."; rm -rf "$DEB_TMP" "$PAYLOAD_TMP" "$X86_DEB"; exit 1; }
+[ -f "$PAYLOAD_TMP/usr/share/icons/hicolor/512x512/apps/openchamber.png" ] || \
+    { echo "Icon missing from .deb payload; spec left untouched."; rm -rf "$DEB_TMP" "$PAYLOAD_TMP" "$X86_DEB"; exit 1; }
+rm -rf "$DEB_TMP" "$PAYLOAD_TMP"
 
 echo "All guards passed; updating $SPEC_FILE..."
 sed -i "s|^Version:.*|Version:        $NEW_VER|" "$SPEC_FILE"
 sed -i "s|^Release:.*|Release:        0|" "$SPEC_FILE"
 
-build_orig_wrapper "$NEW_VER" "$X86_APPIMAGE"
+build_orig_wrapper "$NEW_VER" "$X86_DEB"
 DSC_FILE="openchamber.dsc"
 sed -i "s/^Version: .*/Version: $NEW_VER/" "$DSC_FILE"
 sed -i "s|^Debtransform-Tar:.*|Debtransform-Tar: openchamber-$NEW_VER.tar.gz|" "$DSC_FILE"

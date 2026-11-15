@@ -1,16 +1,21 @@
 %global debug_package %{nil}
-%global __os_install_post %{nil}
-%global __requires_exclude_from ^/opt/openchamber/.*$
-%global __provides_exclude_from ^/opt/openchamber/.*$
+%global __requires_exclude_from ^/opt/OpenChamber/.*$
+%global __provides_exclude_from ^/opt/OpenChamber/.*$
 Name:           openchamber
 Version:        2.7.2
 Release:        0
 Summary:        Agentic development environment boards for issues and pull requests
 License:        MIT
+Group:          Development/Tools/IDE
 URL:            https://github.com/openchamber/openchamber
-Source0:        https://github.com/openchamber/openchamber/releases/download/v%{version}/OpenChamber-%{version}-linux-x86_64.AppImage
+Source0:        %{url}/releases/download/v%{version}/OpenChamber-%{version}-linux-amd64.deb
+# sha256:  d991ee6ade4c203ff200c7314ff7e1f8ad50c6a1ddfd0d647a681cd1bd9aa28d
+Source1:        openchamber-rpmlintrc
+BuildRequires:  binutils
+BuildRequires:  tar
+BuildRequires:  zstd
+BuildRequires:  xz
 BuildRequires:  desktop-file-utils
-BuildRequires:  fdupes
 BuildRequires:  hicolor-icon-theme
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
@@ -29,8 +34,6 @@ Requires:       libatspi.so.0()(64bit)
 Requires:       libcairo.so.2()(64bit)
 Requires:       libcups.so.2()(64bit)
 Requires:       libdbus-1.so.3()(64bit)
-Requires:       libdbusmenu-glib.so.4()(64bit)
-Requires:       libexpat.so.1()(64bit)
 Requires:       libgbm.so.1()(64bit)
 Requires:       libgcc_s.so.1()(64bit)
 Requires:       libgdk_pixbuf-2.0.so.0()(64bit)
@@ -49,10 +52,8 @@ Requires:       libsecret-1.so.0()(64bit)
 Requires:       libsmime3.so()(64bit)
 Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
-Requires:       libutil.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
-Requires:       xdg-utils
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 Recommends:     libayatana-appindicator3.so.1()(64bit)
@@ -65,46 +66,55 @@ variable management, and desktop builds for Linux.
 
 %prep
 %setup -q -c -T
-chmod +x %{SOURCE0}
-%{SOURCE0} --appimage-extract
-chmod -R go-w squashfs-root
+ar x %{SOURCE0}
+if [ -f data.tar.xz ]; then
+  tar -xpf data.tar.xz
+elif [ -f data.tar.zst ]; then
+  tar --zstd -xpf data.tar.zst
+elif [ -f data.tar.gz ]; then
+  tar -xzf data.tar.gz
+else
+  echo "ERROR: unexpected data.tar compression in upstream DEB" >&2
+  exit 1
+fi
 
 %build
 
 %install
-install -dm755 %{buildroot}/opt/openchamber
-cp -ar squashfs-root/* %{buildroot}/opt/openchamber/
+install -d -m 0755 %{buildroot}/opt
+cp -a opt/OpenChamber %{buildroot}/opt/
+find %{buildroot}/opt/OpenChamber -type f | xargs chmod go-w 2>/dev/null || true
+chmod 0755 %{buildroot}/opt/OpenChamber/chrome-sandbox
 
-chmod 0755 %{buildroot}/opt/openchamber/chrome-sandbox
+install -d -m 0755 %{buildroot}%{_datadir}
+cp -a usr/share/applications %{buildroot}%{_datadir}/
+cp -a usr/share/icons %{buildroot}%{_datadir}/
+cp -a usr/share/doc %{buildroot}%{_datadir}/ 2>/dev/null || true
 
-install -dm755 %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/openchamber <<'WRAPPER_EOF'
-#!/bin/sh
-export APPDIR="/opt/openchamber"
-exec /opt/openchamber/AppRun "$@"
-WRAPPER_EOF
-chmod 755 %{buildroot}%{_bindir}/openchamber
-
-install -dm755 %{buildroot}%{_datadir}/applications/
-sed -e 's|^Exec=.*|Exec=%{_bindir}/openchamber %U|' -e 's|^Icon=.*|Icon=openchamber|' \
-    squashfs-root/openchamber.desktop > %{buildroot}%{_datadir}/applications/openchamber.desktop
-
-install -Dm644 squashfs-root/openchamber.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/openchamber.png
-
-%fdupes %{buildroot}/opt/openchamber
-
-find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
-%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/openchamber.desktop
+find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
+
+%post
+if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
+  chmod 4755 /opt/OpenChamber/chrome-sandbox || true
+else
+  chmod 0755 /opt/OpenChamber/chrome-sandbox || true
+fi
 
 %files
-%license /opt/openchamber/LICENSE.electron.txt
-%doc /opt/openchamber/LICENSES.chromium.html
-%{_bindir}/openchamber
+%license /opt/OpenChamber/LICENSE.electron.txt
+%doc /opt/OpenChamber/LICENSES.chromium.html
 %{_datadir}/applications/openchamber.desktop
-%{_datadir}/icons/hicolor/256x256/apps/openchamber.png
-%exclude /opt/openchamber/LICENSE.electron.txt
-%exclude /opt/openchamber/LICENSES.chromium.html
-/opt/openchamber/
+%{_datadir}/icons/hicolor/512x512/apps/openchamber.png
+%attr(4755, root, root) /opt/OpenChamber/chrome-sandbox
+/opt/OpenChamber/
 
 %changelog
+* Sun Nov 15 2026 Ackerman-00 <no-reply> - 2.7.2-0
+- Switch the RPM recipe from the AppImage payload to the native
+  upstream .deb (OpenChamber-2.7.2-linux-amd64.deb), repacked the same
+  way as qoder/cline-desktop; matches how the DEB recipe feeds off the
+  same .deb. The upstream Electron runtime now installs flat under
+  /opt/OpenChamber and the desktop entry execs it directly, so there
+  is no /usr/bin/openchamber link - the openchamber name on PATH is the
+  web CLI from @openchamber/web.

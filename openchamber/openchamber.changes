@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Sun Nov 15 13:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Switch the RPM recipe from the AppImage payload to the native
+  upstream .deb (OpenChamber-2.7.2-linux-amd64.deb, sha256 pinned).
+  The upstream .deb uses the same Electron payload layout as the
+  AppImage did (/opt/OpenChamber, 256x256 PNG icon, desktop file),
+  but without the AppRun/squashfs wrappers; the recipe now mirrors
+  qoder/cline-desktop: ar + tar extraction in %prep, direct copy of
+  /opt/OpenChamber and /usr/share, the desktop entry execs
+  /opt/OpenChamber/openchamber, and there is no /usr/bin/openchamber
+  link (upstream keeps that name for the web CLI).
+  The DEB recipe's Debtransform-Tar moves to the same .deb.
+
+-------------------------------------------------------------------
 Sun Nov 15 03:50:36 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2.7.2-0
