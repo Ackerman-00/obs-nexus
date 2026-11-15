@@ -5,5 +5,5 @@ Architecture: amd64
 Version: 2.7.2
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), desktop-file-utils
-DEBTRANSFORM-RELEASE: 1
+DEBTRANSFORM-RELEASE: 2
 Debtransform-Tar: openchamber-2.7.2.tar.gz
