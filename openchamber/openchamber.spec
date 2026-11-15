@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/OpenChamber/.*$
 Name:           openchamber
 Version:        2.7.2
-Release:        0
+Release:        1
 Summary:        Agentic development environment boards for issues and pull requests
 License:        MIT
 Group:          Development/Tools/IDE
