@@ -63,6 +63,8 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 %{_libexecdir}/umbriel-share-picker
 %{_libexecdir}/xdg-desktop-portal-umbriel
 %{_datadir}/dbus-1/services/org.freedesktop.impl.portal.desktop.umbriel.service
+%dir %{_datadir}/xdg-desktop-portal
+%dir %{_datadir}/xdg-desktop-portal/portals
 %{_datadir}/xdg-desktop-portal/portals/umbriel.portal
 %config(noreplace) %{_datadir}/xdg-desktop-portal/umbriel-portals.conf
 

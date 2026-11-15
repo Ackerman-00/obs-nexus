@@ -66,9 +66,9 @@ mkdir -p stb
 cp %{SOURCE3} stb/stb_image_resize2.h
 
 %build
-export CFLAGS="-I%{_builddir}/noctalia-greeter-%{commit} -I%{_builddir}/noctalia-greeter-%{commit}/stb $CFLAGS"
-export CXXFLAGS="-I%{_builddir}/noctalia-greeter-%{commit} -I%{_builddir}/noctalia-greeter-%{commit}/stb $CXXFLAGS"
-%meson -Db_pie=true
+%meson -Db_pie=true \
+  -Dc_args="%{optflags} -I%{_builddir}/noctalia-greeter-%{commit} -I%{_builddir}/noctalia-greeter-%{commit}/stb" \
+  -Dcpp_args="%{optflags} -I%{_builddir}/noctalia-greeter-%{commit} -I%{_builddir}/noctalia-greeter-%{commit}/stb"
 %meson_build
 
 %install
@@ -100,6 +100,7 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 %{_bindir}/%{name}-print-greetd-config
 %{_bindir}/%{name}-session
 %{_bindir}/%{name}-xsession
+%dir %{_datadir}/%{name}
 %{_datadir}/%{name}/*
 %{_datadir}/polkit-1/actions/org.noctalia.greeter.apply-appearance.policy
 

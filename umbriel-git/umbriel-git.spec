@@ -91,6 +91,7 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 %dir %{_datadir}/umbriel
 %config(noreplace) %{_datadir}/umbriel/config.toml
 %{_datadir}/umbriel/effects/
+%dir %{_datadir}/wayland-sessions
 %{_datadir}/wayland-sessions/umbriel.desktop
 %{_userunitdir}/umbriel.service
 %{_userunitdir}/umbriel-session.target
