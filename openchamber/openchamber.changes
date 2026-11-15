@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Nov 15 03:50:36 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.7.2-0
+- Update openchamber to v2.7.2
+
+-------------------------------------------------------------------
 Sat Nov 14 16:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - debian.control: Recommend libayatana-appindicator3-1 (tray support).
