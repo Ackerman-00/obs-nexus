@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Sun Nov 15 13:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare the one direct NEEDED soname the .deb payload links that the
+  spec was missing: libexpat.so.1 (readelf -d on opt/OpenChamber/
+  openchamber; provider libexpat1, verified with zypper se --provides).
+  The other dlopen-only libs (libsecret, libnotify, libpipewire,
+  libpulse, libgdk_pixbuf) stay declared, and libXss/libXtst stay
+  because upstream's own debian/control Depends names them.
+
+-------------------------------------------------------------------
 Sun Nov 15 13:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix the 2.7.2 recipes after the AppImage-to-.deb switch: the RPM
