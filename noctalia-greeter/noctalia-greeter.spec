@@ -20,7 +20,6 @@ Source2:        https://raw.githubusercontent.com/google/wuffs/a14745aa458fd2b27
 BuildRequires:  meson >= 1.3
 BuildRequires:  gcc-c++
 BuildRequires:  diffutils
-BuildRequires:  pkgconfig(stb_image_resize2) >= 2.0
 BuildRequires:  libinput-devel
 BuildRequires:  wlroots-devel
 BuildRequires:  pkgconfig(wayland-scanner)
