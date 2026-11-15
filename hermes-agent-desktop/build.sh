@@ -35,9 +35,9 @@ curl -fsSL --retry 3 --connect-timeout 120 "$PNPM_URL" -o "$TXDIR/pnpm.tgz"
 echo "$PNPM_SHA256  $TXDIR/pnpm.tgz" | sha256sum -c --status
 tar -xzf "$TXDIR/pnpm.tgz" -C "$TXDIR/tools/pnpm"
 
-echo "Building hermes-agent-desktop in fedora container..."
-docker run --rm -v "$TXDIR":/work -w /work fedora:latest bash -ec "
-  dnf install -y --quiet git curl xz zstd make gcc-c++ python3 libX11-devel libXi-devel libatomic &&
+echo "Building hermes-agent-desktop in Tumbleweed container..."
+docker run --rm -v "$TXDIR":/work -w /work registry.opensuse.org/opensuse/tumbleweed:latest bash -ec "
+  zypper --non-interactive --gpg-auto-import-keys install -y git curl xz zstd make gcc-c++ python3 libX11-devel libXi-devel libatomic-devel &&
   export PATH=\"/work/tools/node/bin:/work/tools/pnpm/package:\$PATH\" &&
   node --version && pnpm --version &&
   cd '/work/hermes-agent-$COMMIT' &&

@@ -53,7 +53,7 @@ def detect_type(root):
     if (root / "debian" / "control").exists() or list(root.rglob("debian/control")):
         return "debian"
     if list(root.rglob("*.spec")):
-        return "fedora"
+        return "opensuse"
     if (root / "pkgs").is_dir():
         return "nix"
     if (root / "srcpkgs").is_dir():

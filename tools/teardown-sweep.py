@@ -425,11 +425,8 @@ def detect_type(root):
         return "nix"
     specs = list(root.rglob("*.spec"))
     if specs:
-        for s in specs:
-            content = s.read_text(errors="ignore")
-            if "obs_" in content or "SUSE" in content or "OBS" in content:
-                return "opensuse"
-        return "fedora"
+        # this repo is openSUSE; never classify it as fedora
+        return "opensuse"
     return None
 
 

@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Sun Nov 15 14:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- build.sh: switch the upstream payload-build container from
+  fedora:latest (dnf) to the repo's target: registry.opensuse.org/
+  opensuse/tumbleweed:latest with zypper. obs-nexus is an openSUSE
+  build forge; no Fedora bytes ever reach the payload, but pulling
+  the Fedora image inside this repository was wrong.
+
+-------------------------------------------------------------------
 Sat Nov 14 22:50:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Recommend libayatana-appindicator3: the installed payload registers a
