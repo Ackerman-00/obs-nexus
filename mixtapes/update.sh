@@ -63,6 +63,28 @@ echo "Vendoring cargo dependencies so the build works offline..."
 [ -d "$TMPD/$TOPD/vendor-crates" ] && [ -s "$TMPD/$TOPD/.cargo/config.toml" ] \
     || { echo "Vendored tree incomplete; spec left untouched."; exit 1; }
 
+python3 - "$TMPD/$TOPD/vendor-crates" <<'PYEOF'
+import json, os, sys
+vroot = sys.argv[1]
+removed = 0
+for root, dirs, files in os.walk(vroot):
+    for f in files:
+        if f.endswith('.orig'):
+            os.remove(os.path.join(root, f))
+            removed += 1
+filtered = 0
+for root, dirs, files in os.walk(vroot):
+    if '.cargo-checksum.json' in files:
+        p = os.path.join(root, '.cargo-checksum.json')
+        d = json.load(open(p))
+        n = len(d.get('files', {}))
+        d['files'] = {k: v for k, v in d.get('files', {}).items() if os.path.isfile(os.path.join(root, k))}
+        if len(d['files']) != n:
+            filtered += 1
+            json.dump(d, open(p, 'w'), separators=(',', ':'))
+print(f"dh_clean guard: removed {removed} .orig files, filtered {filtered} checksum manifests")
+PYEOF
+
 V8_VERSION=$(awk '/^name = "v8"$/{f=1} f&&/^version = /{gsub(/"/,"",$3); print $3; exit}' "$TMPD/$TOPD/Cargo.lock")
 [ -n "$V8_VERSION" ] \
     || { echo "Cannot determine the v8 crate version; spec left untouched."; exit 1; }
