@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/OpenChamber/.*$
 Name:           openchamber
 Version:        2.7.2
-Release:        1
+Release:        0
 Summary:        Agentic development environment boards for issues and pull requests
 License:        MIT
 Group:          Development/Tools/IDE
@@ -12,11 +12,11 @@ Source0:        %{url}/releases/download/v%{version}/OpenChamber-%{version}-linu
 # sha256:  d991ee6ade4c203ff200c7314ff7e1f8ad50c6a1ddfd0d647a681cd1bd9aa28d
 Source1:        openchamber-rpmlintrc
 BuildRequires:  binutils
-BuildRequires:  tar
-BuildRequires:  zstd
-BuildRequires:  xz
 BuildRequires:  desktop-file-utils
 BuildRequires:  hicolor-icon-theme
+BuildRequires:  tar
+BuildRequires:  xz
+BuildRequires:  zstd
 Requires:       at-spi2-core
 Requires:       hicolor-icon-theme
 Requires:       libX11.so.6()(64bit)
@@ -55,9 +55,9 @@ Requires:       libstdc++.so.6()(64bit)
 Requires:       libudev.so.1()(64bit)
 Requires:       libxcb.so.1()(64bit)
 Requires:       libxkbcommon.so.0()(64bit)
+Recommends:     libayatana-appindicator3.so.1()(64bit)
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
-Recommends:     libayatana-appindicator3.so.1()(64bit)
 ExclusiveArch:  x86_64
 
 %description

@@ -155,6 +155,33 @@ jobs:
                   bad.append(f'{dsc}: dsc Version {v} != spec Version {sv}')
               if not tar_ok:
                   bad.append(f'{dsc}: Debtransform-Tar {t} embeds neither {v} nor shortcommit')
+              ctl = dsc.parent / 'debian.control'
+              if ctl.exists():
+                  def field(text, name):
+                      out, grab = [], False
+                      for ln in text.splitlines():
+                          if grab:
+                              out.append(ln.strip())
+                              grab = ln.rstrip().endswith(',')
+                              if not grab:
+                                  break
+                              continue
+                          if ln.startswith(name + ':'):
+                              out.append(ln.split(':', 1)[1].strip())
+                              grab = ln.rstrip().endswith(',')
+                              if not grab:
+                                  break
+                      return ' '.join(out)
+                  def toks(s):
+                      return [x.strip() for x in s.replace('\n', ' ').split(',') if x.strip()]
+                  ctxt = ctl.read_text(encoding='utf-8')
+                  missing = [d for d in toks(field(ctxt, 'Build-Depends')) if d not in toks(field(txt, 'Build-Depends'))]
+                  if missing:
+                      bad.append(f'{dsc}: Build-Depends lacks {missing} (OBS installs only the .dsc list, so the deb build fails)')
+                  cpkg = re.search(r'^Package:\s*(\S+)', ctxt, re.M)
+                  dbin = re.search(r'^Binary:\s*(\S+)', txt, re.M)
+                  if cpkg and dbin and cpkg.group(1) != dbin.group(1):
+                      bad.append(f'{dsc}: Binary {dbin.group(1)} != debian.control Package {cpkg.group(1)}')
           if bad:
               print('RECIPE MISMATCH:')
               print('\n'.join(f'  - {b}' for b in bad))

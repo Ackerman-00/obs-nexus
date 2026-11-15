@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Sun Nov 15 13:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- spec-cleaner pass: Release back to the repo norm 0 (was 1 after the
+  manual bump), BuildRequires and Recommends sorted alphabetically.
+  No functional change; keeps the recipe identical to what update.sh
+  regenerates on the next upstream bump.
+
+-------------------------------------------------------------------
 Sun Nov 15 13:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare the one direct NEEDED soname the .deb payload links that the
