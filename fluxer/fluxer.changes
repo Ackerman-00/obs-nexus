@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Sun Nov 15 20:08:24 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- keep the desktop action arguments: the Exec rewrite replaced every
+  line starting with Exec=, including the two [Desktop Action] entries,
+  so open-settings and new-dm both became "just open the app". The
+  /opt/Fluxer paths are now rewritten in place instead, which leaves
+  --fluxer-task=open-settings / =new-dm intact and points the main
+  launcher (fluxer-launcher, not shipped here) at our /usr/bin wrapper.
+  Same fix applied to the Debian recipe
+-------------------------------------------------------------------
 Sat Nov 14 21:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Requires libXss.so.1, libXtst.so.6, libuuid.so.1: the payload's own

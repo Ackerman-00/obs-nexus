@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Sun Nov 15 20:07:04 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- build the release binary without the test harness: openSUSE %meson
+  passes --auto-features=enabled, which turns the harness option's
+  "auto" into "enabled", so -DUMBRIEL_HARNESS was defined and 12
+  test-only IPC commands (clock-freeze, renderer-recover, plane-cursor,
+  ...) shipped in the release package. Upstream compiles them out of
+  anything but a debug build
+- require xwayland instead of xwayland-satellite: upstream PACKAGING.md
+  needs the Xwayland binary on PATH for wlroots' Xwayland (zero
+  references to xwayland-satellite anywhere in the tree); added to the
+  Debian recipe's Depends as well
+
+-------------------------------------------------------------------
 Sun Nov 15 19:35:45 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261115142928.70b3724-0

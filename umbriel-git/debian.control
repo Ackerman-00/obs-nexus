@@ -19,7 +19,7 @@ Homepage: https://github.com/noctalia-dev/umbriel
 Package: umbriel-git
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends},
- xdg-desktop-portal-umbriel-git, xdg-desktop-portal-gnome
+ xdg-desktop-portal-umbriel-git, xdg-desktop-portal-gnome, xwayland
 Recommends: kitty | alacritty | foot, nautilus | nemo
 Description: Wayland compositor with scrolling and dwindle layouts
  Umbriel is a Wayland compositor designed for daily use, with scrolling

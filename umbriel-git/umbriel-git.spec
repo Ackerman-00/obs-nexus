@@ -45,7 +45,7 @@ BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(jemalloc)
 
-Requires:       xwayland-satellite
+Requires:       xwayland
 Requires:       xdg-desktop-portal-umbriel-git
 Requires:       xdg-desktop-portal-gnome
 Requires:       x11-tools
@@ -69,7 +69,7 @@ Compiled specifically for the Nexus repository via automated Git snapshot.
 %autosetup -n umbriel-%{commit}
 
 %build
-%meson -Db_lto=true -Dtests=disabled -Dlocaled=enabled -Dtracy=disabled
+%meson -Db_lto=true -Dtests=disabled -Dharness=disabled -Dlocaled=enabled -Dtracy=disabled
 %meson_build
 
 %install

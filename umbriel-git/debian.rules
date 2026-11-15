@@ -3,7 +3,7 @@
 	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure --buildsystem=meson -- -Db_lto=true -Dtests=disabled -Dlocaled=enabled -Dtracy=disabled
+	dh_auto_configure --buildsystem=meson -- -Db_lto=true -Dtests=disabled -Dharness=disabled -Dlocaled=enabled -Dtracy=disabled
 
 override_dh_auto_build:
 	dh_auto_build --buildsystem=meson

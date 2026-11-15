@@ -94,7 +94,7 @@ if [ -z "$DESKTOP_SRC" ]; then echo "No desktop file found"; exit 1; fi
 install -Dm0644 "$DESKTOP_SRC" \
     %{buildroot}%{_datadir}/applications/%{appid}.desktop
 
-sed -i 's|^Exec=.*|Exec=%{_bindir}/%{name} %U|' \
+sed -i 's|/opt/Fluxer/fluxer-launcher|%{_bindir}/%{name}|g; s|/opt/Fluxer/fluxer|%{_bindir}/%{name}|g' \
     %{buildroot}%{_datadir}/applications/%{appid}.desktop
 sed -i 's|^Icon=.*|Icon=%{appid}|' \
     %{buildroot}%{_datadir}/applications/%{appid}.desktop

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Sun Nov 15 20:08:24 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- launch through the packaged wrapper: the payload desktop entry runs
+  /opt/Vesktop/vesktop directly, bypassing /usr/bin/vesktop, which is
+  the only place ELECTRON_OZONE_PLATFORM_HINT is set. Menu launches
+  therefore never got the Wayland hint the package advertises. Exec now
+  points at %{_bindir}/vesktop (the Debian recipe already did this)
+-------------------------------------------------------------------
 Sat Nov 14 22:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Requires libXss.so.1, libXtst.so.6, libuuid.so.1 and Recommends

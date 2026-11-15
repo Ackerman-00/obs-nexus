@@ -78,6 +78,8 @@ cp -a opt/Vesktop/* %{buildroot}/opt/Vesktop/
 install -d -m 0755 %{buildroot}%{_datadir}
 cp -a usr/share/applications %{buildroot}%{_datadir}/
 cp -a usr/share/icons %{buildroot}%{_datadir}/
+sed -i '0,/^Exec=/ s|^Exec=.*|Exec=%{_bindir}/%{name} %U|' \
+    %{buildroot}%{_datadir}/applications/vesktop.desktop
 
 install -d -m 0755 %{buildroot}%{_bindir}
 cat <<-'EOF' > %{buildroot}%{_bindir}/vesktop
