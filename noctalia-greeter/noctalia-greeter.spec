@@ -11,6 +11,7 @@ Group:          System/Boot/Other
 URL:            https://github.com/noctalia-dev/noctalia-greeter
 Source0:        noctalia-greeter-%{shortcommit}.tar.gz
 Source3:        stb_image_resize2-git-2026-11-01-703100c5f8a0.h
+ExclusiveArch:  x86_64
 # sha256: 7420ce124ccd746e47f66d85235eb22838b339ae0689a72d6eb2e3d32dc657d1
 Source1:        https://raw.githubusercontent.com/google/wuffs/a14745aa458fd2b2785034efa04eab3c7b5b91e0/LICENSE-APACHE
 # sha256: 0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594

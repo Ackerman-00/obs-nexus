@@ -5,3 +5,4 @@ Sun Nov 15 05:37:06 UTC 2026 - Ackerman-00 <noreply@example.com>
 - Port from fedora-nexus; greeter built with Tumbleweed system wlroots and vendored wuffs/stb_image_resize2 headers
 - BuildRequires python3 (meson probes it unconditionally), pkgconfig(libinput) and pkgconfig(wlroots-0.20) instead of raw -devel names
 - Correct the stb_image_resize2 header sha256 pin
+- Restrict to x86_64 (ExclusiveArch), the only architecture this repository builds

@@ -11,6 +11,7 @@ Group:          System/Libraries/Other
 URL:            https://github.com/noctalia-dev/xdg-desktop-portal-umbriel
 Source0:        xdg-desktop-portal-umbriel-%{shortcommit}.tar.gz
 Source1:        xdg-desktop-portal-umbriel-git-rpmlintrc
+ExclusiveArch:  x86_64
 
 BuildRequires:  meson >= 1.3
 BuildRequires:  gcc-c++

@@ -11,6 +11,7 @@ Group:          System/GUI/Other
 URL:            https://github.com/noctalia-dev/umbriel
 Source0:        umbriel-%{shortcommit}.tar.gz
 Source1:        umbriel-git-rpmlintrc
+ExclusiveArch:  x86_64
 
 BuildRequires:  meson >= 1.3
 BuildRequires:  gcc-c++

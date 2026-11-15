@@ -6,3 +6,4 @@ Sun Nov 15 12:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
   wlroots-0.20 in Tumbleweed; vendored umbrielfx (no external SceneFX)
 - Align BuildRequires floors with upstream meson.build: libinput >= 1.29,
   xkbcommon >= 1.10.0, explicit pkgconfig(wayland-client)
+- Restrict to x86_64 (ExclusiveArch), the only architecture this repository builds
