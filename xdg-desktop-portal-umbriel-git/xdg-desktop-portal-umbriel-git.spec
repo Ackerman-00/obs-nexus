@@ -30,7 +30,7 @@ BuildRequires:  pkgconfig(nlohmann_json)
 BuildRequires:  pkgconfig(gtk4) >= 4.12
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gio-2.0)
-BuildRequires:  pkgconfig(libeis-1.0) >= 1.3
+BuildRequires:  pkgconfig(libei-1.0) >= 1.3
 
 Requires:       xdg-desktop-portal
 Recommends:     slurp

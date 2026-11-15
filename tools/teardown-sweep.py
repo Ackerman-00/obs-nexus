@@ -2783,8 +2783,21 @@ def check_rpm_dependencies(root, repo_type):
             except Exception:
                 pass
         build_script = "\n".join(re.findall(r"^%(?:build|install|check)\b.*?(?=^%|\Z)", txt, re.M | re.S))
+        # A build tool only counts when it is invoked as a command: at the start
+        # of a line or right after a shell separator, optionally preceded by
+        # VAR=value env assignments, and either as the binary or its rpm macro
+        # (%meson, %cargo_build, %ninja_build, ...).  A bare word search matched
+        # `chmod go-w` (openchamber), comments and path components, and claimed a
+        # missing BuildRequires: golang for a repack that builds no Go at all,
+        # while missing macro-only invocations.
+        cmd = r"(?:^|[;&|(]\s*)(?:\s*[A-Za-z_][A-Za-z0-9_]*=\S*\s*)*\s*"
         for tool, br_atom in BUILD_TOOL_BRS.items():
-            if re.search(r"\b%s\b" % re.escape(tool), build_script):
+            if tool == "go":
+                pat = (cmd + r"(?:go\s+(?:build|install|mod|run|test|generate|vet|tool|env|work|list|get|clean)"
+                       r"|%go(?:build|install|prep|test))\b")
+            else:
+                pat = cmd + r"(?:%?" + re.escape(tool) + r"(?:_[a-z]+)?)\b"
+            if re.search(pat, build_script, re.M):
                 if br_atom not in br and "pkgconfig" not in " ".join(br):
                     br_missing.append("RPM324: %s -> BuildRequires: %s" % (tool, br_atom))
         for r in list(req):
