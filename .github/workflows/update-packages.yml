@@ -182,6 +182,14 @@ jobs:
                   dbin = re.search(r'^Binary:\s*(\S+)', txt, re.M)
                   if cpkg and dbin and cpkg.group(1) != dbin.group(1):
                       bad.append(f'{dsc}: Binary {dbin.group(1)} != debian.control Package {cpkg.group(1)}')
+              cl = dsc.parent / 'debian.changelog'
+              if cl.exists():
+                  lines = cl.read_text(encoding='utf-8', errors='replace').splitlines()
+                  m = re.match(r'^\S+\s+\(([^)]+)\)', lines[0]) if lines else None
+                  if not m:
+                      bad.append(f'{dsc}: debian.changelog head is not a dpkg changelog header')
+                  elif not (m.group(1) == v or m.group(1).startswith(v + '-')):
+                      bad.append(f'{dsc}: debian.changelog head {m.group(1)} != dsc Version {v}')
           if bad:
               print('RECIPE MISMATCH:')
               print('\n'.join(f'  - {b}' for b in bad))
@@ -320,18 +328,21 @@ jobs:
             return 1
           }
 
-          keep_tar_names() {
+          keep_artifact_names() {
             python3 - "$1" <<'PYKEEP'
           import glob, os, re, sys
           pkg = sys.argv[1]
           keep = set()
 
-          def tarlike(s):
-              return s.lower().endswith(('.tar.gz', '.tar.xz', '.tar.bz2', '.tar.zst'))
+          ART_EXTS = ('.tar.gz', '.tar.xz', '.tar.bz2', '.tar.zst', '.tgz',
+                      '.appimage', '.deb', '.rpm', '.zip')
 
-          for f in (glob.glob(os.path.join(pkg, '*.tar.gz')) + glob.glob(os.path.join(pkg, '*.tar.xz'))
-                    + glob.glob(os.path.join(pkg, '*.tar.bz2')) + glob.glob(os.path.join(pkg, '*.tar.zst'))):
-              keep.add(os.path.basename(f))
+          def tarlike(s):
+              return s.lower().endswith(ART_EXTS)
+
+          for f in glob.glob(os.path.join(pkg, '*')):
+              if os.path.isfile(f) and tarlike(os.path.basename(f)):
+                  keep.add(os.path.basename(f))
 
           for dsc in glob.glob(os.path.join(pkg, '*.dsc')):
               txt = open(dsc, encoding='utf-8', errors='replace').read()
@@ -353,15 +364,99 @@ jobs:
                   cur = base
                   for _ in range(4):
                       new = re.sub(r'%\{(\w+)\}', lambda mm: macros.get(mm.group(1), mm.group(0)), cur)
+                      new = re.sub(r'%([A-Za-z_]\w*)', lambda mm: macros.get(mm.group(1), mm.group(0)), new)
                       if new == cur:
                           break
                       cur = new
                   if '%' not in cur and tarlike(cur):
                       keep.add(cur)
 
+          for svc in glob.glob(os.path.join(pkg, '_service')):
+              txt = open(svc, encoding='utf-8', errors='replace').read()
+              for m in re.finditer(r'<param\s+name="filename">\s*([^<]+?)\s*</param>', txt):
+                  keep.add(m.group(1))
+
           for k in sorted(keep):
               print(k)
           PYKEEP
+          }
+
+          artifact_verdict() {
+            python3 - "$1" "$2" "$3" <<'PYVERDICT'
+          import glob, os, re, sys
+          pkg, remote, keepfile = sys.argv[1], sys.argv[2], sys.argv[3]
+          keep = [l.strip() for l in open(keepfile, encoding='utf-8', errors='replace') if l.strip()]
+          ART_EXTS = ('.tar.gz', '.tar.xz', '.tar.bz2', '.tar.zst', '.tgz',
+                      '.appimage', '.deb', '.rpm', '.zip')
+
+          def stem(name):
+              n = name
+              for ext in ART_EXTS:
+                  if n.lower().endswith(ext):
+                      n = n[:-len(ext)]
+                      break
+              n = re.sub(r'[0-9a-f]{7,40}', '', n, flags=re.I)
+              n = re.sub(r'\d+(?:[._+~-][0-9A-Za-z]+)*', '', n)
+              return re.sub(r'[-_.+]+', '-', n).strip('-').lower()
+
+          if not remote.lower().endswith(ART_EXTS):
+              print('KEEP:not-a-source-artifact')
+              sys.exit(0)
+          if remote in keep:
+              print('KEEP:referenced-by-recipe')
+              sys.exit(0)
+          if not keep:
+              print('KEEP:no-keep-set')
+              sys.exit(0)
+          rs = stem(remote)
+          twin = next((k for k in keep if stem(k) == rs), None)
+          if rs and twin:
+              print(f'DELETE:superseded-by-{twin}')
+              sys.exit(0)
+          spec_leftover = False
+          for spec in glob.glob(os.path.join(pkg, '*.spec')):
+              txt = open(spec, encoding='utf-8', errors='replace').read()
+              macros = {}
+              for m in re.finditer(r'^%(?:global|define)\s+(\w+)\s+(\S+)', txt, re.M):
+                  macros.setdefault(m.group(1), m.group(2))
+              m = re.search(r'^Name:\s*(\S+)', txt, re.M)
+              if m: macros.setdefault('name', m.group(1))
+              m = re.search(r'^Version:\s*(\S+)', txt, re.M)
+              if m: macros.setdefault('version', m.group(1))
+              for m in re.finditer(r'^Source\d+:\s*(\S+)', txt, re.M):
+                  cur = m.group(1)
+                  for _ in range(4):
+                      new = re.sub(r'%\{(\w+)\}', lambda mm: macros.get(mm.group(1), mm.group(0)), cur)
+                      new = re.sub(r'%([A-Za-z_]\w*)', lambda mm: macros.get(mm.group(1), mm.group(0)), new)
+                      if new == cur:
+                          break
+                      cur = new
+                  if '%' in cur:
+                      spec_leftover = True
+          if spec_leftover:
+              print('KEEP:unexpanded-source-macro')
+          else:
+              print('DELETE:unreferenced-artifact')
+          PYVERDICT
+          }
+
+          artifact_referenced() {
+            local pkg="$1" name="$2" entry body
+            if grep -rqF -- "$name" "$pkg" 2>/dev/null; then
+              return 0
+            fi
+            for entry in $(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" \
+                            | grep -oP '(?<=<entry name=")[^"]+'); do
+              case "$entry" in
+                *.spec|*.dsc|debian.*|_service|*.sh|*.rules|*.patch|*.rpmlintrc) ;;
+                *) continue ;;
+              esac
+              body=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg/$entry")
+              if printf '%s' "$body" | grep -qF -- "$name"; then
+                return 0
+              fi
+            done
+            return 1
           }
 
           ensure_package() {
@@ -431,24 +526,30 @@ jobs:
               done < <(find "$pkg" -maxdepth 1 -type f ! -name "update.sh" ! -name ".*")
             done
 
+            KEEP_FILE=$(mktemp)
+            keep_artifact_names "$pkg" > "$KEEP_FILE"
             for remote_file in $OBS_FILES; do
               case "$remote_file" in
-                *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|cargo_config|vendor*|*.rpm|*.AppImage|*.deb|*.keyring)
+                *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst|*.tgz|*.AppImage|*.appimage|*.rpm|*.deb|*.zip|cargo_config|vendor*|*.keyring)
                   if [ ! -f "$pkg/$remote_file" ]; then
                     case "$remote_file" in
-                      *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst)
-                        KEEP=$(keep_tar_names "$pkg")
-                        if [ -z "$KEEP" ] || printf '%s\n' "$KEEP" | grep -qxF "$remote_file"; then
-                          echo "    Keeping tar referenced by local recipe: $remote_file"
-                          continue
-                        fi
-                        echo "    Deleting superseded tarball from OBS: $remote_file"
-                        obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
-                          || { echo "ERROR: delete of superseded $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
+                      cargo_config|vendor*|*.keyring)
+                        echo "    Keeping remote source artifact (no local copy to re-upload): $remote_file"
                         continue
                         ;;
                     esac
-                    echo "    Keeping remote source artifact (no local copy to re-upload): $remote_file"
+                    verdict=$(artifact_verdict "$pkg" "$remote_file" "$KEEP_FILE")
+                    if [ "${verdict%%:*}" = "DELETE" ]; then
+                      if artifact_referenced "$pkg" "$remote_file"; then
+                        echo "    Keeping $remote_file (still referenced by the OBS recipe)"
+                        continue
+                      fi
+                      echo "    Deleting superseded artifact from OBS: $remote_file (${verdict#*:})"
+                      obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
+                        || { echo "ERROR: delete of superseded $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
+                      continue
+                    fi
+                    echo "    Keeping remote source artifact: $remote_file (${verdict#*:})"
                     continue
                   fi
                   ;;
@@ -469,25 +570,27 @@ jobs:
             trigger_build "$pkg"
           }
 
-          echo "==> Pruning superseded source tarballs on OBS..."
+          echo "==> Pruning superseded source artifacts on OBS..."
           for pkg_dir in */; do
             pkg="${pkg_dir%/}"
             ls "$pkg_dir"*.spec >/dev/null 2>&1 || continue
-            KEEP=$(keep_tar_names "$pkg")
-            [ -n "$KEEP" ] || continue
+            KEEP_FILE=$(mktemp)
+            keep_artifact_names "$pkg" > "$KEEP_FILE"
+            [ -s "$KEEP_FILE" ] || { rm -f "$KEEP_FILE"; continue; }
+            echo " -> $pkg keep-set: $(tr '\n' ' ' < "$KEEP_FILE")"
             OBS_PRUNE=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" | grep -oP '(?<=<entry name=")[^"]+' || true)
             for remote_file in $OBS_PRUNE; do
-              case "$remote_file" in
-                *.tar.gz|*.tar.xz|*.tar.bz2|*.tar.zst)
-                  if printf '%s\n' "$KEEP" | grep -qxF "$remote_file"; then
-                    continue
-                  fi
-                  echo " -> Pruning superseded tarball: $pkg/$remote_file"
-                  obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
-                    || { echo "ERROR: prune of $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
-                  ;;
-              esac
+              verdict=$(artifact_verdict "$pkg" "$remote_file" "$KEEP_FILE")
+              [ "${verdict%%:*}" = "DELETE" ] || continue
+              if artifact_referenced "$pkg" "$remote_file"; then
+                echo " -> Keeping $remote_file (still referenced by the OBS recipe)"
+                continue
+              fi
+              echo " -> Pruning superseded artifact: $pkg/$remote_file (${verdict#*:})"
+              obs_mutate DELETE "https://api.opensuse.org/source/home:ackerman/$pkg/$remote_file" \
+                || { echo "ERROR: prune of $pkg/$remote_file failed (stale weight only, retried next run)."; exit 1; }
             done
+            rm -f "$KEEP_FILE"
           done
 
           PKGS_TO_SYNC=$(collect_pkgs)
