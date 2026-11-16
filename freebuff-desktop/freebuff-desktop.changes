@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 16 16:44:50 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.0.203-0
+- Update freebuff-desktop to v0.0.203
+
+-------------------------------------------------------------------
 Sat Nov 14 22:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Requires libXss.so.1 and Recommends libayatana-appindicator3: the

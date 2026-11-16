@@ -1,3 +1,9 @@
+openclaw (2026.11.4-1) unstable; urgency=medium
+
+  * New upstream release 2026.11.4.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 16 Nov 2026 16:41:38 +0000
+
 openclaw (2026.11.2-1) unstable; urgency=medium
 
   * Initial Debian_Testing recipe (upstream prebuilt .deb payload).

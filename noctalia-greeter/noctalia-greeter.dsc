@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: noctalia-greeter
 Binary: noctalia-greeter
 Architecture: amd64
-Version: 1.7.0+git20261115034454.936473c
+Version: 1.7.0+git20261116083605.b8f95e0
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, python3, pkg-config,
  libstb-dev, libinput-dev, libwlroots-0.20-dev,
@@ -15,4 +15,4 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, python3, pkg-config,
  libxcb-xfixes0-dev, libgles-dev, libegl-dev, libglib2.0-dev,
  libpango1.0-dev
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: noctalia-greeter-936473c.tar.gz
+Debtransform-Tar: noctalia-greeter-b8f95e0.tar.gz
