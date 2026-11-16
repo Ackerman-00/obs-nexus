@@ -15,7 +15,6 @@ BuildRequires:  bash
 BuildRequires:  coreutils
 BuildRequires:  fdupes
 BuildRequires:  findutils
-BuildRequires:  gtk3-tools
 BuildRequires:  rsync
 BuildRequires:  sed
 ExclusiveArch:  x86_64
@@ -25,28 +24,24 @@ Requires(postun): gtk3-tools
 
 %description
 Hatter is a modern, colorful and customizable icon theme for Linux desktops.
-This package ships the upstream V4.0 build: the base Hatter theme plus the
-Hatter-kde and Hatter-kde-dark variants and 19 color variants.
+This package ships the full upstream V4.1 build: the base Hatter theme, the
+nine Hatter color variants and the nine Hatter-Yaru color variants.
 
 %prep
 %setup -q -n Hatter-4.1
-find . -depth -name '* *' -exec bash -c 'for f; do mv -- "$f" "${f// /-}"; done' _ {} +
+find . -depth -name '* *' -exec bash -c 'for f; do d=$(dirname -- "$f"); b=$(basename -- "$f"); mv -- "$f" "$d/${b// /-}"; done' _ {} +
 
 %build
-echo 2 | bash ./Build-Hatter.sh
+mkdir -p %{_builddir}/icon-cache-shim
+printf '#!/bin/sh\nexit 0\n' > %{_builddir}/icon-cache-shim/gtk-update-icon-cache
+chmod 755 %{_builddir}/icon-cache-shim/gtk-update-icon-cache
+PATH="%{_builddir}/icon-cache-shim:$PATH" bash ./build.sh --all --dest dist
 
 %install
 install -d -m 0755 %{buildroot}%{_datadir}/icons
-shopt -s nullglob
-for t in Build/*/; do
-    [ -d "$t" ] || continue
-    cp -a "$t" "%{buildroot}%{_datadir}/icons/$(basename "$t")"
-done
-shopt -u nullglob
+cp -a dist/* %{buildroot}%{_datadir}/icons/
+find %{buildroot}%{_datadir}/icons -name icon-theme.cache -delete
 find %{buildroot}%{_datadir}/icons -xtype l -delete
-for t in %{buildroot}%{_datadir}/icons/*/; do
-    gtk-update-icon-cache -q "$t" 2>/dev/null || true
-done
 %fdupes %{buildroot}%{_datadir}/icons
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
