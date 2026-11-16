@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 16 00:28:01 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261115223140.1bbbf15-0
+- Port from fedora-nexus; umbriel builds from git snapshot with Tumbleweed system wlroots and vendored umbrielfx
+
+-------------------------------------------------------------------
 Sun Nov 15 20:07:04 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - build the release binary without the test harness: openSUSE %meson

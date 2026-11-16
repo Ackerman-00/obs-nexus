@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 16 00:36:13 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261115220706.116e948-0
+- Port from fedora-nexus; portal built for Tumbleweed and Debian Forky/Sid
+
+-------------------------------------------------------------------
 Sun Nov 15 14:15:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - BuildRequires: name the module upstream actually calls. meson.build:122

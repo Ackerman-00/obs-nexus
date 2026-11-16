@@ -1,3 +1,9 @@
+xdg-desktop-portal-umbriel-git (0.1.0+git20261115220706.116e948-1) unstable; urgency=medium
+
+  * New upstream snapshot 116e948 (base 0.1.0).
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 16 Nov 2026 00:36:13 +0000
+
 xdg-desktop-portal-umbriel-git (0.1.0+git20261106143557.5695142-1) unstable; urgency=medium
 
   * Package xdg-desktop-portal-umbriel-git for OBS (Tumbleweed RPM,
