@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 16 00:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommend libavcodec-full (RPM) and libavcodec-extra (Debian) so the
+  bundled libxul.so can load a system libavcodec for H.264/HEVC playback;
+  mirrors MozillaFirefox's Recommends on Tumbleweed and firefox-esr's on Debian.
+
+-------------------------------------------------------------------
 Fri Nov 13 17:10:59 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.24.2b-0

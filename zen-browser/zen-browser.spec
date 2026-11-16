@@ -26,6 +26,7 @@ Requires:       mozilla-nss-certs
 Requires(post): desktop-file-utils
 Requires(posttrans): gtk3-tools
 Requires(postun): gtk3-tools
+Recommends:     libavcodec-full >= 0.10.16
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 ExclusiveArch:  x86_64

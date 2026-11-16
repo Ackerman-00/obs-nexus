@@ -50,6 +50,12 @@ if [ ! -f "hatter-icon-theme-$CURRENT_VER.tar.gz" ]; then
         echo "  -> WARNING: orig tarball rebuild failed; continuing version check."
 fi
 
+if [ -f "hatter-icon-theme-$CURRENT_VER.tar.gz" ]; then
+    if ! tar -tzf "hatter-icon-theme-$CURRENT_VER.tar.gz" 2>/dev/null | grep -qE '(^|/)build\.sh$'; then
+        echo "  -> [WARN] upstream tarball has no ./build.sh; the spec %build and debian.rules calls it (V4.1 dropped Build-Hatter.sh for build.sh). Re-check both recipes before the next bump."
+    fi
+fi
+
 if [ "$CURRENT_VER" = "$NEW_VER" ]; then
     echo "  -> [OK] Hatter is already on latest ($CURRENT_VER)."
     exit 0
