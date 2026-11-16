@@ -6,7 +6,7 @@ Version: 0.1.0+git20261115223140.1bbbf15
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libwlroots-0.20-dev (>= 0.20.1), libwayland-dev (>= 1.24),
- libwayland-bin, wayland-protocols (>= 1.47), libxkbcommon-dev,
+ libwayland-bin, wayland-protocols (>= 1.47), libxkbcommon-dev (>= 1.10.0),
  libinput-dev (>= 1.29), libeis-dev (>= 1.3), libudev-dev,
  libpixman-1-dev (>= 0.43), libdrm-dev (>= 2.4.129),
  libdisplay-info-dev (>= 0.3.0), libcairo2-dev, libpango1.0-dev,
@@ -16,3 +16,7 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  liblcms2-dev, libjemalloc-dev, systemd-dev
 DEBTRANSFORM-RELEASE: 1
 Debtransform-Tar: umbriel-1bbbf15.tar.gz
+Checksums-Sha256:
+ 22e167ca7919fa6d6f9ec1afc1738860c4c370465f623853e90d7d7b59f9c866 2281864 umbriel-1bbbf15.tar.gz
+Files:
+ d827156294368823dfd1dd3d9c531089 2281864 umbriel-1bbbf15.tar.gz

@@ -35,7 +35,6 @@ BuildRequires:  pkgconfig(libei-1.0) >= 1.3
 Requires:       xdg-desktop-portal
 Recommends:     slurp
 Conflicts:      xdg-desktop-portal-umbriel
-Provides:       xdg-desktop-portal
 
 %description
 An xdg-desktop-portal backend for the Umbriel compositor, providing

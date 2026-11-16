@@ -13,8 +13,11 @@ umbriel-git (0.1.0+git20261115142928.70b3724-1) unstable; urgency=medium
 umbriel-git (0.1.0+git20261115111441.2572005-1) unstable; urgency=medium
 
   * New upstream snapshot 2572005 (base 0.1.0).
+  * Add Conflicts/Replaces/Provides: umbriel
+  * Raise xkbcommon-dev floor to >= 1.10.0
+  * Recommend xwayland
 
- -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 12:24:51 +0000
+ -- Ackerman-00 <noreply@example.com>  Mon, 16 Nov 2026 06:55:00 +0000
 
 umbriel-git (0.1.0+git20261115031617.ae3472d-1) unstable; urgency=medium
 

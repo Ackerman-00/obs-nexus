@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Nov 16 06:55:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Debian: add Conflicts/Replaces/Provides umbriel
+- Debian: raise xkbcommon-dev floor to >= 1.10.0
+- xwayland as Recommends in both targets (was Requires xwayland-satellite in rpm)
+- dsc: add Checksums-Sha256/Files; update.sh maintains them now
+
+-------------------------------------------------------------------
 Mon Nov 16 00:28:01 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261115223140.1bbbf15-0

@@ -63,6 +63,12 @@ DSC_FILE="xdg-desktop-portal-umbriel-git.dsc"
 DSC_VER="${BASE_VER}+git${GITDATE}.${SHORT_COMMIT}"
 sed -i -E "s/^Version: .*/Version: ${DSC_VER}/" "$DSC_FILE"
 sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: xdg-desktop-portal-umbriel-${SHORT_COMMIT}.tar.gz|" "$DSC_FILE"
+TARBALL_NAME="xdg-desktop-portal-umbriel-${SHORT_COMMIT}.tar.gz"
+SHA256=$(sha256sum "$TARBALL_NAME" | awk '{print $1}')
+MD5=$(md5sum "$TARBALL_NAME" | awk '{print $1}')
+SIZE=$(stat -c%s "$TARBALL_NAME")
+sed -i -E '/^(Checksums-Sha256|Checksums-Md5|Files):/,$d' "$DSC_FILE"
+printf 'Checksums-Sha256:\n %s %s %s\nFiles:\n %s %s %s\n' "$SHA256" "$SIZE" "$TARBALL_NAME" "$MD5" "$SIZE" "$TARBALL_NAME" >> "$DSC_FILE"
 
 DEB_DATE=$(date -R -u)
 DEB_ENTRY="xdg-desktop-portal-umbriel-git (${DSC_VER}-1) unstable; urgency=medium\n\n  * New upstream snapshot $SHORT_COMMIT (base $BASE_VER).\n\n -- $PACKAGER <noreply@example.com>  $DEB_DATE\n\n"

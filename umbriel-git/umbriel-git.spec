@@ -45,10 +45,10 @@ BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(jemalloc)
 
-Requires:       xwayland
 Requires:       xdg-desktop-portal-umbriel-git
 Requires:       xdg-desktop-portal-gnome
 Requires:       x11-tools
+Recommends:     xwayland
 Recommends:     noctalia
 Recommends:     (kitty or alacritty or foot)
 Recommends:     (nautilus or nemo)
@@ -60,7 +60,7 @@ Provides:       wayland-compositor
 Umbriel is a Wayland compositor designed for daily use, with scrolling and
 dwindle layouts, per-output workspaces, window rules, blur, shadows, and
 fluid animations. Built in C++23 on wlroots and the Noctalia SceneFX fork,
-with Xwayland satellite and portal screen capture and sharing by
+with Xwayland and portal screen capture and sharing by
 xdg-desktop-portal-umbriel.
 
 Compiled specifically for the Nexus repository via automated Git snapshot.

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+-------------------------------------------------------------------
+Mon Nov 16 07:10:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Debian: add Conflicts/Replaces/Provides xdg-desktop-portal-umbriel
+- RPM: drop Provides: xdg-desktop-portal (backend claims the frontend)
+- dsc: add Checksums-Sha256/Files; update.sh maintains them now
+
+-------------------------------------------------------------------
 Mon Nov 16 00:36:13 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261115220706.116e948-0

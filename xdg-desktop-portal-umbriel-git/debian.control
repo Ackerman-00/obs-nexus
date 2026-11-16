@@ -15,6 +15,9 @@ Package: xdg-desktop-portal-umbriel-git
 Architecture: amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, xdg-desktop-portal
 Recommends: slurp
+Conflicts: xdg-desktop-portal-umbriel
+Replaces: xdg-desktop-portal-umbriel
+Provides: xdg-desktop-portal-umbriel
 Description: XDG desktop portal backend for the Umbriel compositor
  Implements xdg-desktop-portal screencast, screenshot, and input-capture
  interfaces for the Umbriel Wayland compositor, with a GTK4 share picker.
