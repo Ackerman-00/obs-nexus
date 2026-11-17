@@ -3,7 +3,7 @@
 	dh $@
 
 override_dh_auto_configure:
-	dh_auto_configure --buildsystem=meson -- -Db_lto=true -Dpicker=enabled
+	dh_auto_configure --buildsystem=meson -- -Db_lto=true -Dpicker=true
 
 override_dh_auto_build:
 	dh_auto_build --buildsystem=meson

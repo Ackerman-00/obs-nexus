@@ -46,7 +46,7 @@ Compiled specifically for the Nexus repository via automated Git snapshot.
 %autosetup -n xdg-desktop-portal-umbriel-%{commit}
 
 %build
-%meson -Db_lto=true -Dpicker=enabled
+%meson -Db_lto=true -Dpicker=true
 %meson_build
 
 %install

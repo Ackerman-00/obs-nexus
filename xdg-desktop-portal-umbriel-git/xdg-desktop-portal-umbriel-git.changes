@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Nov 17 17:00:02 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix the build: upstream ed91d04 turned the meson `picker` option from a
+  feature into a boolean (meson_options.txt), so `-Dpicker=enabled` now
+  aborts with 'Option "picker" value enabled is not boolean'. Pass
+  `-Dpicker=true` in the spec and in debian.rules; the option still
+  defaults to true, so the share picker stays built.
+
+-------------------------------------------------------------------
 Tue Nov 17 16:39:20 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261117160213.ed91d04-0
