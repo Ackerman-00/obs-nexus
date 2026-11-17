@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Nov 17 04:18:34 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Add BuildRequires pkgconfig(epoxy): upstream meson.build resolves
+  egl and glesv2 with required:false and falls back to dependency('epoxy')
+  for either one. Declare the documented fallback so the build still
+  configures if mesa's EGL/GLES pkgconfig files are ever absent, instead
+  of relying on epoxy being pulled in transitively by another -devel
+  package.
+
+-------------------------------------------------------------------
 Mon Nov 16 16:37:56 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.7.0+git20261116083605.b8f95e0-0
