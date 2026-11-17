@@ -78,6 +78,8 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 %dir %{_datadir}/xdg-desktop-portal
 %dir %{_datadir}/xdg-desktop-portal/portals
 %{_datadir}/xdg-desktop-portal/portals/umbriel.portal
+%dir %{_datadir}/xdg-desktop-portal-umbriel
+%{_datadir}/xdg-desktop-portal-umbriel/assets/
 %config(noreplace) %{_datadir}/xdg-desktop-portal/umbriel-portals.conf
 
 %changelog

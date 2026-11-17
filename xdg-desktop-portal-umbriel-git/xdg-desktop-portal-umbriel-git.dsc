@@ -8,7 +8,9 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libsdbus-c++-dev, libpipewire-0.3-dev, libwayland-dev,
  libwayland-bin, wayland-protocols (>= 1.39),
  libdrm-dev, libgbm-dev, libcairo2-dev, nlohmann-json3-dev,
- libtomlplusplus-dev, libgtk-4-dev, libglib2.0-dev, libei-dev
+ libtomlplusplus-dev, libgtk-4-dev, libglib2.0-dev, libei-dev,
+ libegl-dev, libgles-dev, libfontconfig-dev, libfreetype-dev,
+ libharfbuzz-dev, libpango1.0-dev, libxkbcommon-dev, libstb-dev
 DEBTRANSFORM-RELEASE: 1
 Debtransform-Tar: xdg-desktop-portal-umbriel-ed91d04.tar.gz
 Checksums-Sha256:

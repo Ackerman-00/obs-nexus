@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Nov 17 17:16:52 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Ship the noctalia-ui font assets upstream installs
+  (/usr/share/xdg-desktop-portal-umbriel/assets/fonts: the tabler icon font,
+  its json map and license); the RPM refused to build with them unpackaged.
+- Mirror the new Build-Depends into the .dsc: OBS assembles the Debian build
+  root from the .dsc list, so libstb-dev and the EGL/GL/pango/xkbcommon
+  -dev packages only exist for dpkg-checkbuilddeps when the .dsc carries them.
+
+-------------------------------------------------------------------
 Tue Nov 17 17:09:48 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare the noctalia-ui dependencies the bundled lib/ actually requires:
