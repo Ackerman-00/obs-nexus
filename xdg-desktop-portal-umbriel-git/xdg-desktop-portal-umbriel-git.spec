@@ -1,6 +1,6 @@
-%global commit          116e9485b39552a39e4e6088ff7cbe50e7504829
-%global shortcommit     116e948
-%global gitdate         20261115220706
+%global commit          baa83d0d8ce77187712fa4bf6912b8df75b0c724
+%global shortcommit     baa83d0
+%global gitdate         20261117013244
 %global base_version    0.1.0
 Name:           xdg-desktop-portal-umbriel-git
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
