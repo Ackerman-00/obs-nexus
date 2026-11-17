@@ -7,8 +7,6 @@
 deepseek-v4.1-flash-free
 # AA Intelligence Index 31 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
 inkling-2-small-free
-# AA Intelligence Index 29 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
-minimax-m3.1-flash-free
 # AA Intelligence Index 27 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
 mimo-v2.6-flash-free
 
@@ -25,11 +23,13 @@ flint-40b-free
 nemotron-3.5-lightning-free
 # no independent coding score; DeepSWE 64.6, Terminal-Bench 4.0 38.5 vendor - source: Meituan launch evals
 longcat-2.5-free
+# no independent score for the Flash variant (only base Hy4 scored, AA 35); DeepSWE 64.6 rank 60/121, Terminal-Bench 4.0 19.2 rank 73/135, APEX-Agents 63.1 - source: datalearner.com hy4-flash, live catalog 2026-11-17
+hy4-flash-free
 # no independent score; stealth model - source: OpenCode Zen catalog
 iceman-free
 # no independent score; anonymous stealth id - source: OpenCode Zen catalog
 big-pickle
 
 # vetoed by owner (2026-10-22): glm-5.3-flash-free, jev-1.13-free (probabilistic classifier, not a coding model)
-# retired from the live catalog: crouton-alpha-free (2026-11-10), Pulse Alpha Free (2026-11-06)
-# leader re-checked 2026-11-15: live catalog serves 11 free ids plus big-pickle, all 11 ranked ids live; DeepSeek V4.1 Flash (AA 33) still leads the free set, Inkling 2 Small (31) moves above MiniMax M3.1 Flash (29) on today's independent scores
+# retired from the live catalog: crouton-alpha-free (2026-11-10), Pulse Alpha Free (2026-11-06), minimax-m3.1-flash-free (2026-11-17)
+# leader re-checked 2026-11-17: live catalog serves 11 free ids plus big-pickle, all ranked ids live; DeepSeek V4.1 Flash (AA 33) still leads the free set. hy4-flash-free added at the bottom of tier 3 because only the base Hy4 has an independent score (AA 35) and the Flash variant ships vendor numbers only (DeepSWE 64.6 / TB4.0 19.2)
