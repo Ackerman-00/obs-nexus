@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Tue Nov 17 17:09:48 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Declare the noctalia-ui dependencies the bundled lib/ actually requires:
+  egl/glesv2 (Mesa-libEGL-devel/Mesa-libGLESv2-devel, epoxy is only the
+  fallback), wayland-egl, freetype2, fontconfig, cairo-ft, pango >= 1.50,
+  pangocairo, pangoft2, harfbuzz, xkbcommon and the stb_image_resize2 header
+  (stb-devel). Without them the share picker aborted at
+  'lib/meson.build:39: Dependency "epoxy" not found'.
+- Debian: the same list as libegl-dev, libgles-dev, libfontconfig-dev,
+  libfreetype-dev, libharfbuzz-dev, libpango1.0-dev, libxkbcommon-dev and
+  libstb-dev; both suites resolve every pkgconfig module.
+
+-------------------------------------------------------------------
 Tue Nov 17 17:00:02 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Fix the build: upstream ed91d04 turned the meson `picker` option from a

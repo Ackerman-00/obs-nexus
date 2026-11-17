@@ -6,7 +6,9 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libsdbus-c++-dev, libpipewire-0.3-dev, libwayland-dev,
  libwayland-bin, wayland-protocols (>= 1.39),
  libdrm-dev, libgbm-dev, libcairo2-dev, nlohmann-json3-dev,
- libtomlplusplus-dev, libgtk-4-dev, libglib2.0-dev, libei-dev
+ libtomlplusplus-dev, libgtk-4-dev, libglib2.0-dev, libei-dev,
+ libegl-dev, libgles-dev, libfontconfig-dev, libfreetype-dev,
+ libharfbuzz-dev, libpango1.0-dev, libxkbcommon-dev, libstb-dev
 Standards-Version: 4.7.0
 Rules-Requires-Root: no
 Homepage: https://github.com/noctalia-dev/xdg-desktop-portal-umbriel

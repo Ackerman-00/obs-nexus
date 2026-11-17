@@ -22,9 +22,21 @@ BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.39
 BuildRequires:  pkgconfig(wayland-scanner)
+BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(cairo)
+BuildRequires:  pkgconfig(cairo-ft)
+BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(fontconfig)
+BuildRequires:  pkgconfig(freetype2)
+BuildRequires:  pkgconfig(glesv2)
+BuildRequires:  pkgconfig(harfbuzz)
+BuildRequires:  pkgconfig(pango) >= 1.50
+BuildRequires:  pkgconfig(pangocairo)
+BuildRequires:  pkgconfig(pangoft2)
+BuildRequires:  pkgconfig(xkbcommon)
+BuildRequires:  stb-devel
 BuildRequires:  pkgconfig(tomlplusplus)
 BuildRequires:  pkgconfig(nlohmann_json)
 BuildRequires:  pkgconfig(gtk4) >= 4.12
