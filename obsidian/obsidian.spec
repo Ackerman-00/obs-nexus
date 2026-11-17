@@ -59,6 +59,10 @@ Requires(post): desktop-file-utils
 Recommends:     xdg-desktop-portal
 Recommends:     xdg-desktop-portal-gtk
 Recommends:     libayatana-appindicator3.so.1()(64bit)
+Recommends:     libdbus-glib-1.so.2()(64bit)
+Recommends:     libdbusmenu-glib.so.4()(64bit)
+Recommends:     libdbusmenu-gtk.so.4()(64bit)
+Recommends:     libgtk-x11-2.0.so.0()(64bit)
 ExclusiveArch:  x86_64
 
 %description

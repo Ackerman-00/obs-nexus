@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Nov 17 04:15:26 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Recommends the legacy tray stack the bundled libappindicator.so.1
+  links against (libdbusmenu-glib4, libdbusmenu-gtk4, libdbus-glib-1-2,
+  libgtk-2_0-0). The 1.15.1 payload re-tear showed these NEEDED entries
+  were undeclared, so the StatusNotifier tray path failed to load on a
+  clean install.
+
+-------------------------------------------------------------------
 Sat Nov 14 14:32:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - debian.rules: strip the payload's resources/app-update.yml and
