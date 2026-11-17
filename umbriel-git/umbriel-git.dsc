@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: umbriel-git
 Binary: umbriel-git
 Architecture: amd64
-Version: 0.1.0+git20261117013840.d132933
+Version: 0.1.0+git20261117160400.9223fa4
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libwlroots-0.20-dev (>= 0.20.1), libwayland-dev (>= 1.24),
@@ -15,8 +15,8 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libxcb-randr0-dev, libegl-dev, libgles-dev, libgbm-dev,
  liblcms2-dev, libjemalloc-dev, systemd-dev
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: umbriel-d132933.tar.gz
+Debtransform-Tar: umbriel-9223fa4.tar.gz
 Checksums-Sha256:
- f7b8f90648d497943d13561be79f804f71cd514c766015d79182bba831b10b35 2339085 umbriel-d132933.tar.gz
+ e83885fb6566639b3ddb73ec03a1de8fa811d0215dcdeeded2ee6de8464a2514 2340152 umbriel-9223fa4.tar.gz
 Files:
- 8b9eb411d1d48b7a820464a93ccd49c3 2339085 umbriel-d132933.tar.gz
+ 9415d4ebe99e265c8d35d7607b794c02 2340152 umbriel-9223fa4.tar.gz
