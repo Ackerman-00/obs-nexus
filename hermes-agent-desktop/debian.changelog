@@ -1,3 +1,10 @@
+hermes-agent-desktop (0.23.2+git20261117033945.40d1e95-2) unstable; urgency=medium
+
+  * Bake external update mechanism into the build stamp; updates are managed
+    by the home:ackerman OBS package, not the app.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 06:28:12 +0000
+
 hermes-agent-desktop (0.23.2+git20261117033945.40d1e95-1) unstable; urgency=medium
 
   * New upstream snapshot 40d1e95 (base 0.23.2).

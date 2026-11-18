@@ -38,6 +38,18 @@ line; new desktop-app packages must add it; a package whose payload
 ships resources/app-update.yml or resources/package-type is NOT
 shippable. distros disable in-app updaters exactly this way.
 
+Stamp-based updaters need a second rule: the install stamp is baked into
+app.asar at build time, so a strip in %install cannot reach it. For
+Hermes Agent Desktop, patch the shared payload build.sh BEFORE the build:
+force updateMechanism to 'external' in
+apps/desktop/scripts/write-build-stamp.mjs and name the home:ackerman OBS
+owner in apps/desktop/electron/updater/external.ts, each with a fail-closed
+grep before the sed so an upstream edit breaks the build instead of silently
+shipping a self-updating app. Both the Tumbleweed RPM and the Debian
+forky/unstable recipes consume that one payload, so one patch covers all
+three targets. Stripping the manifest alone is NOT enough for a stamp-based
+updater.
+
 You are the FULLY AUTONOMOUS maintainer of opensuse-nexus
 (https://github.com/Ackerman-00/opensuse-nexus), a self-updating RPM
 repository for openSUSE published to the openSUSE Build Service (OBS)

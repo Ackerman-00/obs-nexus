@@ -35,12 +35,23 @@ curl -fsSL --retry 3 --connect-timeout 120 "$PNPM_URL" -o "$TXDIR/pnpm.tgz"
 echo "$PNPM_SHA256  $TXDIR/pnpm.tgz" | sha256sum -c --status
 tar -xzf "$TXDIR/pnpm.tgz" -C "$TXDIR/tools/pnpm"
 
+# Nexus-owned updates
+cat > "$TXDIR/patch-updater.sh" <<'PATCH_EOF'
+#!/bin/bash
+set -euo pipefail
+grep -q "updateMechanism: commitBuild ? 'external' : updateMechanism" apps/desktop/scripts/write-build-stamp.mjs
+sed -i "s|updateMechanism: commitBuild ? 'external' : updateMechanism,|updateMechanism: 'external',|" apps/desktop/scripts/write-build-stamp.mjs
+grep -q "Updates are managed by the package owner outside this app" apps/desktop/electron/updater/external.ts
+sed -i "s|Updates are managed by the package owner outside this app|Updates are managed by the home:ackerman OBS package|" apps/desktop/electron/updater/external.ts
+PATCH_EOF
+
 echo "Building hermes-agent-desktop in Tumbleweed container..."
 docker run --rm -v "$TXDIR":/work -w /work registry.opensuse.org/opensuse/tumbleweed:latest bash -ec "
   zypper --non-interactive --gpg-auto-import-keys install -y git curl xz zstd make gcc-c++ python3 libX11-devel libXi-devel &&
   export PATH=\"/work/tools/node/bin:/work/tools/pnpm/package:\$PATH\" &&
   node --version && pnpm --version &&
   cd '/work/hermes-agent-$COMMIT' &&
+  bash /work/patch-updater.sh &&
   export CI=true PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 ELECTRON_SKIP_BINARY_DOWNLOAD=0 &&
   pnpm install --frozen-lockfile &&
   pnpm --filter hermes run build &&

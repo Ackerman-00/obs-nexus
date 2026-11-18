@@ -8,7 +8,7 @@
 %global base_version    0.23.2
 Name:           hermes-agent-desktop
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        0
+Release:        1
 Summary:        Native desktop shell for Hermes Agent (git snapshot)
 License:        MIT
 Group:          Development/Tools/IDE
@@ -142,3 +142,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/hermes-agent-desktop.
 %{_datadir}/icons/hicolor/512x512/apps/hermes-agent-desktop.png
 
 %changelog
+* Wed Nov 18 2026 Ackerman-00 <noreply@example.com> - 0.23.2+git20261117033945.40d1e95-1
+- Bake external update mechanism into the build stamp; updates come from the
+  home:ackerman OBS package, not the app.
