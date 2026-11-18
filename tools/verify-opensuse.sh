@@ -98,6 +98,10 @@ hunt_cats=$(grep -oE '^[[:space:]]*hunt: [a-z0-9-]+' <<< "$content" | sort -u | 
 [[ "$hunt_cats" -ge 8 ]] || fail "only $hunt_cats hunt categories, need >= 8"
 web_line=$(grep -m1 -E "^[[:space:]]*websearch: .*($today|$yest)" <<< "$content" || true)
 [[ -n "$web_line" ]] && grep -qiE 'https?://' <<< "$web_line" && pass "websearch receipt dated $today/$yest with URL" || fail "websearch: token missing, stale or URL-less"
+skills_line=$(grep -m1 -E "^[[:space:]]*skills:" <<< "$content" || true)
+[[ -n "$skills_line" ]] || fail "skills: token missing"
+skills_n=$(printf '%s\n' "$skills_line" | grep -oE '\b(web-research|linux-packaging|rpm-copr|security-audit|code-review|systematic-debugging|verification-before-completion|github-ops|container-validation|python-tooling|writing-for-agents|fedora-triage|repo-improvement|why-from-record)\b' | sort -u | wc -l || true)
+[[ "$skills_n" -ge 14 ]] || fail "skills: names only $skills_n of 14 ids"
 for cpkg in $changed_pkgs; do
   grep -qE "^[[:space:]]*plan: $cpkg " <<< "$content" || fail "changed package $cpkg missing plan: line"
   grep -qE "^[[:space:]]*deps: $cpkg " <<< "$content" || fail "changed package $cpkg missing deps: line"

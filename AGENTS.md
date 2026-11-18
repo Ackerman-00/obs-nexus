@@ -273,3 +273,22 @@ not ship as a PROBE-BUG rather than a package failure.
   `SOURCE_DATE_EPOCH` reproducibility (debian policy 4.15). On the RPM side,
   `rpmlint` on the SRPM has better coverage than on a bare spec; `spec-cleaner`
   enforces the openSUSE style (en.opensuse.org/openSUSE:Package_Cleaning).
+
+## Tools in this repo (call these, do not hand-roll)
+
+- `bash tools/check-workflows.sh` - YAML parse, actionlint, permission scopes,
+  embedded-PROMPT sync, gate/verifier drift, argv guard and the 15-case
+  verifier self-test. Run before pushing any workflow or contract change.
+- `bash tools/verify-opensuse.sh` - external completion verifier; exit 1 means
+  the relay is not done. Reads the current run's section only.
+- `python3 tools/obs-api-check.py` - live OBS build state and published NVRs
+  across Tumbleweed/Forky/Sid; 401 is UNVERIFIED, never clean.
+- `bash tools/install-sweep.sh tools/probes.txt` - install + rpm -V/dpkg -V +
+  ldd on all three targets; writes relay-ready PASS/FAIL rows.
+- `bash tools/desktop-audit.sh <pkg> [tumbleweed|testing|sid]` - Icon/Exec
+  resolution for shipped .desktop files.
+- `bash tools/obs-drift.sh` - spec in git vs spec OBS built (needs OBS creds).
+- `bash tools/spec-lint.sh` - rpmspec -P, rpmlint, spec-cleaner and debian.rules
+  sanity in a clean Tumbleweed container.
+- `python3 tools/hunt-obs.py` is NOT present; use obs-api-check.py plus live
+  websearch for the hunt categories.

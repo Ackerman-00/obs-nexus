@@ -29,6 +29,8 @@ patterns = [
     ("improve token", r"improve:"),
     ("why token", r"why:"),
     ("owner wait ban", r"needs-owner"),
+    ("skills token", r"skills:"),
+    ("skills count", r"why-from-record"),
 ]
 
 bad = []

@@ -200,6 +200,11 @@ jobs:
             web_line=$(grep -m1 -E "^[[:space:]]*websearch: .*($today|$yest)" <<< "$content" || true)
             [ -n "$web_line" ] || return 1
             grep -qiE 'https?://' <<< "$web_line" || return 1
+            local skills_line skills_n
+            skills_line=$(grep -m1 -E "^[[:space:]]*skills:" <<< "$content" || true)
+            [ -n "$skills_line" ] || return 1
+            skills_n=$(printf '%s\n' "$skills_line" | grep -oE '\b(web-research|linux-packaging|rpm-copr|security-audit|code-review|systematic-debugging|verification-before-completion|github-ops|container-validation|python-tooling|writing-for-agents|fedora-triage|repo-improvement|why-from-record)\b' | sort -u | wc -l || true)
+            [ "$skills_n" -ge 14 ] || return 1
             local plan_pkg deps_pkg art_pkg
             for plan_pkg in $changed_pkgs; do
               grep -qE "^[[:space:]]*plan: $plan_pkg " <<< "$content" || return 1
@@ -386,8 +391,18 @@ jobs:
             three targets. Stripping the manifest alone is NOT enough for a stamp-based
             updater.
 
+            SKILL REGISTRY: at the start of every run load these with the skill tool
+            (bodies live in .opencode/skills/<id>/SKILL.md) and follow them throughout:
+            @web-research @linux-packaging @rpm-copr @security-audit @code-review
+            @systematic-debugging @verification-before-completion @github-ops
+            @container-validation @python-tooling @writing-for-agents @fedora-triage
+            @repo-improvement @why-from-record
+            Never work on a package, build failure, issue or workflow change without
+            them. Load a skill again after a compacted or handed-off run.
+
             MANDATORY RUN TOKENS (the inline gate AND tools/verify-opensuse.sh read these;
             a missing or stale token fails the run - write them into .opencode-relay.md):
+            skills: <all fourteen ids from the registry above>
             websearch: <N live queries, M primary-source URLs, YYYY-MM-DD - include at least one https:// URL on this line>
             why: <subject> - source: <commit | AGENTS.md#section | issue #N | relay run_id> - inference: <none | what you inferred>
             improve: <N candidates, >= 5> - <top pick> - landed: <commit or issue #>
@@ -404,7 +419,11 @@ jobs:
             row is a contradiction and fails the run. Record at least 8 distinct hunt
             categories; a run with no hunt lines is incomplete. Run
             `python3 tools/obs-api-check.py` for the builds, published-nvr and sources
-            categories; an OBS API HTTP 401 is UNVERIFIED, never a clean receipt.
+            categories; an OBS API HTTP 401 is UNVERIFIED, never a clean receipt. Use
+            `bash tools/install-sweep.sh tools/probes.txt` for observed install verdicts,
+            `bash tools/desktop-audit.sh <pkg> [target]` for menu entries,
+            `bash tools/spec-lint.sh` for rpmspec/rpmlint/spec-cleaner and
+            `bash tools/obs-drift.sh` for spec drift; record what you actually ran.
 
             GAP AND HOLD CLASSIFICATION (MANDATORY):
             Every gap or HOLD must be a line starting with the marker, classified as either
@@ -439,6 +458,17 @@ jobs:
             with unchanged Release/DEBTRANSFORM-RELEASE produces NO new binary. Bump the
             RPM Release and DEBTRANSFORM-RELEASE plus both changelogs for every recipe
             change; a spec/changelog edit with no bump is not shipped.
+
+            BLOCKED OR DEAD HOSTS - WEBSEARCH DEEPLY, FIX IT YOURSELF
+            (MANDATORY, for every package and every issue). When OBS, an artifact host or
+            an upstream release refuses or breaks for anonymous agents (CDN 403,
+            Cloudflare challenge, 404, moved path, JS-only download, missing credentials),
+            do NOT write it off as blocked: external. Websearch deeply until you find a
+            workable path: alternate Git host archive endpoints (gitea/gitlab
+            `archive/` tarballs often answer 200 where the CDN 403s), git-clone plus
+            checkout instead of a tarball, release APIs instead of HTML pages, and
+            public mirrors. Quote the exact status/URL of every probe. A 401 on the OBS
+            build API is UNVERIFIED, never clean, and never a reason to stop hunting.
 
             You are the FULLY AUTONOMOUS maintainer of opensuse-nexus
             (https://github.com/Ackerman-00/opensuse-nexus), a self-updating RPM

@@ -38,6 +38,7 @@ changed: probe1
 plan: probe1 - probes run before edit
 deps: probe1 - Cargo.toml compared with spec BuildRequires
 artifact: probe1 - url: https://example.com/src.tar.gz format: tar upstream-deps: none improvements: none
+skills: web-research linux-packaging rpm-copr security-audit code-review systematic-debugging verification-before-completion github-ops container-validation python-tooling writing-for-agents fedora-triage repo-improvement why-from-record
 defects-found: 2
 defects-fixed: 2
 websearch: 3 queries, 3 URLs, $today https://example.com
@@ -93,6 +94,9 @@ run_case "dependency row count short" fail
 make_good; sed -i '/^defects-found:/d' "$GOOD"
 run_case "missing defects-found" fail
 
+make_good; sed -i '/^skills:/d' "$GOOD"
+run_case "missing skills token" fail
+
 make_good; sed -i '0,/^hunt: /d' "$GOOD"
 run_case "only seven hunt categories" fail
 
@@ -112,5 +116,5 @@ if [ "$FAILED" -ne 0 ]; then
   echo "FAIL: verifier self-test found a hole"
   exit 1
 fi
-echo "PASS: verifier self-test ($expected specs, 14 cases) stopped every forged relay"
+echo "PASS: verifier self-test ($expected specs, 15 cases) stopped every forged relay"
 exit 0

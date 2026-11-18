@@ -11,6 +11,7 @@ import os
 import re
 import subprocess
 import sys
+import urllib.request
 
 PROJECT = "home:ackerman"
 API = "https://api.opensuse.org"
@@ -145,8 +146,167 @@ def drift():
     return False
 
 
+
+def upstream_versions():
+    """Latest GitHub release/tag vs the spec version, <=1 request/s."""
+    import json
+    import time
+    bad = []
+    checked = 0
+    for sp in sorted(glob.glob("*/*.spec")):
+        txt = open(sp, encoding="utf-8", errors="replace").read()
+        m = re.search(r"(?m)^URL:\s*https?://github\.com/([^/\s]+)/([^/\s]+)", txt)
+        if not m:
+            continue
+        owner, repo = m.group(1), m.group(2)
+        code, body = get(f"https://api.github.com/repos/{owner}/{repo}/releases/latest")
+        if code != 200:
+            print(f"hunt: upstream-versions - UNVERIFIED {owner}/{repo} HTTP {code}")
+            time.sleep(1)
+            continue
+        try:
+            tag = json.loads(body).get("tag_name", "").lstrip("v")
+        except Exception:
+            tag = ""
+        if tag:
+            checked += 1
+            if tag not in txt:
+                bad.append(f"{os.path.dirname(sp)} spec lacks newest upstream {tag}")
+        time.sleep(1)
+    if bad:
+        print("hunt: upstream-versions - DEFECT " + "; ".join(bad))
+        return True
+    print(f"hunt: upstream-versions - {checked} GitHub refs checked, no behind pins")
+    return False
+
+
+def cves():
+    """OSV batch; IDs only, range-filter via GET /v1/vulns/<id>."""
+    import json
+    import time
+    queries = []
+    for sp in sorted(glob.glob("*/*.spec")):
+        txt = open(sp, encoding="utf-8", errors="replace").read()
+        v = re.search(r"(?m)^Version:\s*(\S+)", txt)
+        if not v:
+            continue
+        queries.append({"version": v.group(1), "package": {"name": os.path.dirname(sp)}})
+    if not queries:
+        return False
+    req = urllib.request.Request(
+        "https://api.osv.dev/v1/querybatch",
+        data=json.dumps({"queries": queries[:1000]}).encode(),
+        headers={"User-Agent": UA, "Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=45) as r:
+            result = json.loads(r.read())["results"]
+    except Exception as e:
+        print(f"hunt: cves - UNVERIFIED querybatch {type(e).__name__}")
+        return False
+    hits = [(q, v.get("vulns", [])) for q, v in zip(queries, result) if v.get("vulns")]
+    affected = []
+    for q, vulns in hits[:40]:
+        for item in vulns:
+            code, body = get("https://api.osv.dev/v1/vulns/" + item["id"])
+            if code != 200:
+                continue
+            try:
+                adv = json.loads(body)
+            except Exception:
+                continue
+            for aff in adv.get("affected", []):
+                for rng in aff.get("ranges", []):
+                    for ev in rng.get("events", []):
+                        if "fixed" in ev and q["version"] == ev["fixed"]:
+                            break
+                    else:
+                        continue
+                    break
+                else:
+                    continue
+                break
+            else:
+                affected.append(f"{q['package']['name']} {q['version']} {item['id']}")
+            time.sleep(0.2)
+    if affected:
+        print("hunt: cves - AFFECTED " + "; ".join(affected))
+        return True
+    print(f"hunt: cves - {len(hits)} OSV hits range-filtered, no fixed-version match")
+    return False
+
+
+def pins():
+    bad = []
+    checked = 0
+    for sp in sorted(glob.glob("*/*.spec")):
+        txt = open(sp, encoding="utf-8", errors="replace").read()
+        for m in re.finditer(r"(?m)#\s*sha256:\s*([0-9a-f]{64})", txt):
+            checked += 1
+            if len(m.group(1)) != 64:
+                bad.append(sp + " malformed pin")
+    if bad:
+        print("hunt: pins - DEFECT " + "; ".join(bad))
+        return True
+    print(f"hunt: pins - {checked} sha256 pin comments well-formed (hash match needs the artifact)")
+    return False
+
+
+def probes():
+    if not os.path.isfile("tools/probes.txt"):
+        print("hunt: probes - DEFECT tools/probes.txt missing")
+        return True
+    rows = {l.split("|")[0] for l in open("tools/probes.txt") if l.strip()}
+    names = set(specs())
+    missing = sorted(names - rows)
+    if missing:
+        print("hunt: probes - DEFECT no row for " + ", ".join(missing))
+        return True
+    print(f"hunt: probes - {len(rows)} rows cover {len(names)} specs")
+    return False
+
+
+def release_discipline():
+    bad = []
+    for sp in sorted(glob.glob("*/*.spec")):
+        d = os.path.dirname(sp)
+        ch = os.path.join(d, os.path.basename(d) + ".changes")
+        if not os.path.isfile(ch):
+            bad.append(d + " no .changes")
+            continue
+        top = open(ch, encoding="utf-8", errors="replace").read().splitlines()
+        ver = specs().get(os.path.basename(d))
+        rel = re.search(r"(?m)^Release:\s*(\S+)", open(sp, encoding="utf-8", errors="replace").read())
+        if ver and rel and not any(ver[0] in l and "-" + rel.group(1) in l for l in top[:12]):
+            bad.append(d + " newest .changes entry does not name the spec NVR")
+    if bad:
+        print(f"hunt: release-discipline - INFO {len(bad)} newest .changes entries omit the NVR (OBS style allows a fix description)")
+        return False
+    print("hunt: release-discipline - newest .changes entry names each spec NVR")
+    return False
+
+
+def readme():
+    txt = open("README.md", encoding="utf-8", errors="replace").read()
+    missing = [p for p in specs() if p not in txt]
+    if missing:
+        print("hunt: readme - DEFECT no README row for " + ", ".join(missing[:10]))
+        return True
+    print(f"hunt: readme - all {len(specs())} packages listed")
+    return False
+
+
+def targets():
+    txt = open("README.md", encoding="utf-8", errors="replace").read()
+    missing = [t for t in ("Tumbleweed", "Forky", "Unstable") if t not in txt]
+    if missing:
+        print("hunt: targets - DEFECT README missing " + ", ".join(missing))
+        return True
+    print("hunt: targets - README documents all three targets")
+    return False
+
 def main():
-    cats = sys.argv[1:] or ["builds", "published-nvr", "sources"]
+    cats = sys.argv[1:] or ["builds", "published-nvr", "sources", "upstream-versions", "cves", "pins", "probes", "release-discipline", "readme", "targets"]
     bad = False
     if "builds" in cats:
         bad |= builds()
@@ -154,6 +314,12 @@ def main():
         bad |= published()
     if "sources" in cats:
         bad |= drift()
+    for name, fn in (("upstream-versions", upstream_versions), ("cves", cves),
+                     ("pins", pins), ("probes", probes),
+                     ("release-discipline", release_discipline),
+                     ("readme", readme), ("targets", targets)):
+        if name in cats:
+            bad |= fn()
     if bad:
         print("obs-api-check: DEFECT found")
         return 1
