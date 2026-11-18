@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 18 02:46:39 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to 0.9.164 (sha256: add8421af06956c6fc2e6064b60d41ae6e3ef0c58b1407880ba0129edc87643f)
+
+-------------------------------------------------------------------
 Sat Nov 14 14:32:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - debian.rules: strip the payload's resources/app-update.yml and

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 02:47:05 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261118005044.6b5e084-0
+- Port from fedora-nexus; portal built for Tumbleweed and Debian Forky/Sid
+
+-------------------------------------------------------------------
 Tue Nov 17 17:16:52 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Ship the noctalia-ui font assets upstream installs

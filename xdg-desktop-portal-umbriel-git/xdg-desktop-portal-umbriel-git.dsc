@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: xdg-desktop-portal-umbriel-git
 Binary: xdg-desktop-portal-umbriel-git
 Architecture: amd64
-Version: 0.1.0+git20261117160213.ed91d04
+Version: 0.1.0+git20261118005044.6b5e084
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libsdbus-c++-dev, libpipewire-0.3-dev, libwayland-dev,
@@ -12,8 +12,8 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libegl-dev, libgles-dev, libfontconfig-dev, libfreetype-dev,
  libharfbuzz-dev, libpango1.0-dev, libxkbcommon-dev, libstb-dev
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: xdg-desktop-portal-umbriel-ed91d04.tar.gz
+Debtransform-Tar: xdg-desktop-portal-umbriel-6b5e084.tar.gz
 Checksums-Sha256:
- e4ede7f3543b0387b223a7d9724dfb3e42bbc2ee8a4394ea65d88a3bb9435306 1805206 xdg-desktop-portal-umbriel-ed91d04.tar.gz
+ 5f9d6ddb971029255df0c8e4ad75e6e66254ced45817a6d63379b0e0ee3e2986 1805499 xdg-desktop-portal-umbriel-6b5e084.tar.gz
 Files:
- e241bebb9fe92d4a2e638a752e35ec19 1805206 xdg-desktop-portal-umbriel-ed91d04.tar.gz
+ c0116ab10d78adf067620a63078f2a21 1805499 xdg-desktop-portal-umbriel-6b5e084.tar.gz

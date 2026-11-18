@@ -1,3 +1,9 @@
+xdg-desktop-portal-umbriel-git (0.1.0+git20261118005044.6b5e084-1) unstable; urgency=medium
+
+  * New upstream snapshot 6b5e084 (base 0.1.0).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 02:47:05 +0000
+
 xdg-desktop-portal-umbriel-git (0.1.0+git20261117160213.ed91d04-1) unstable; urgency=medium
 
   * New upstream snapshot ed91d04 (base 0.1.0).

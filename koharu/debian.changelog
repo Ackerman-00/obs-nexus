@@ -1,3 +1,9 @@
+koharu (0.85.2-1) unstable; urgency=medium
+
+  * New upstream release 0.85.2.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 02:47:02 +0000
+
 koharu (0.85.0-1) unstable; urgency=medium
 
   * New upstream release 0.85.0.
