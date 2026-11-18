@@ -4,7 +4,7 @@
 %global __provides_exclude_from ^/opt/obsidian/.*$
 Name:           obsidian
 Version:        1.15.1
-Release:        1
+Release:        2
 Summary:        A powerful knowledge base for plain text Markdown files
 License:        LicenseRef-SUSE-Freeware
 Group:          Productivity/Text/Editors
@@ -82,10 +82,6 @@ chmod go-w squashfs-root
 %install
 install -dm755 %{buildroot}/opt/obsidian
 cp -ar squashfs-root/* %{buildroot}/opt/obsidian/
-if [ -f "%{buildroot}/opt/obsidian/chrome-sandbox" ]; then
-    chmod 0755 %{buildroot}/opt/obsidian/chrome-sandbox
-fi
-
 install -Dm755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}
 
 install -dm755 %{buildroot}%{_datadir}/applications
@@ -127,7 +123,7 @@ fi
 %{_datadir}/pixmaps/%{app_id}.png
 %{_datadir}/mime/packages/obsidian.xml
 %exclude /opt/obsidian/AppRun
-%verify(not mode) /opt/obsidian/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) /opt/obsidian/chrome-sandbox
 /opt/obsidian/
 
 %changelog

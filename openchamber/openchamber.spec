@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/OpenChamber/.*$
 Name:           openchamber
 Version:        2.7.2
-Release:        1
+Release:        2
 Summary:        Agentic development environment boards for issues and pull requests
 License:        MIT
 Group:          Development/Tools/IDE
@@ -86,7 +86,6 @@ fi
 install -d -m 0755 %{buildroot}/opt
 cp -a opt/OpenChamber %{buildroot}/opt/
 find %{buildroot}/opt/OpenChamber -type f | xargs chmod go-w 2>/dev/null || true
-chmod 0755 %{buildroot}/opt/OpenChamber/chrome-sandbox
 
 install -d -m 0755 %{buildroot}%{_datadir}
 cp -a usr/share/applications %{buildroot}%{_datadir}/
@@ -113,7 +112,7 @@ fi
 %dir %{_datadir}/doc/openchamber
 %doc %{_datadir}/doc/openchamber/changelog.gz
 %dir /opt/OpenChamber
-%verify(not mode) /opt/OpenChamber/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) /opt/OpenChamber/chrome-sandbox
 /opt/OpenChamber/*
 
 %changelog

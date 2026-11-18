@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/Stoat/.*$
 Name:           stoat-desktop
 Version:        1.5.4
-Release:        1
+Release:        2
 Summary:        Open source, user-first chat platform desktop client
 License:        AGPL-3.0-only AND MIT AND BSD-2-Clause
 Group:          Productivity/Networking/Talk/Clients
@@ -75,8 +75,6 @@ exec /opt/Stoat/stoat-desktop "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/stoat-desktop
 
-chmod 0755 %{buildroot}/opt/Stoat/chrome-sandbox
-
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/chat.stoat.StoatDesktop.desktop
@@ -108,7 +106,7 @@ esac
 %{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 %{_datadir}/icons/hicolor/256x256/apps/chat.stoat.StoatDesktop.png
 %{_datadir}/metainfo/chat.stoat.StoatDesktop.metainfo.xml
-%verify(not mode) /opt/Stoat/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) /opt/Stoat/chrome-sandbox
 /opt/Stoat/
 
 %changelog

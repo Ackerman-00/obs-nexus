@@ -4,7 +4,7 @@
 Name:           freebuff-desktop
 Version:        0.0.204
 # sha256:  234fcf3b2a274833596100318b3f28cdbe5bc68e6a6b2dee7d862c2511a9d24a
-Release:        2
+Release:        3
 Summary:        Freebuff Desktop (Electron)
 License:        LicenseRef-SUSE-Freeware
 Group:          Development/Tools/IDE
@@ -85,7 +85,7 @@ ln -sf /opt/Freebuff/freebuff %{buildroot}%{_bindir}/freebuff
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
-%verify(not mode) /opt/Freebuff/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) /opt/Freebuff/chrome-sandbox
 /opt/Freebuff/
 %{_bindir}/freebuff
 %{_datadir}/applications/*

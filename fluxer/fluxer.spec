@@ -4,7 +4,7 @@
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*$
 Name:           fluxer
 Version:        2026.1118.85743
-Release:        1
+Release:        2
 Summary:        Free and open source instant messaging and VoIP platform
 License:        AGPL-3.0-or-later AND BSD-3-Clause
 Group:          Productivity/Networking/Talk/Clients
@@ -122,7 +122,7 @@ fi
 %license %{_libdir}/%{name}/LICENSE.electron.txt
 %doc %{_libdir}/%{name}/LICENSES.chromium.html
 %{_bindir}/%{name}
-%verify(not mode) %{_libdir}/%{name}/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) %{_libdir}/%{name}/chrome-sandbox
 %{_libdir}/%{name}/
 %{_datadir}/applications/%{appid}.desktop
 %dir %{_datadir}/icons/hicolor

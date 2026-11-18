@@ -8,7 +8,7 @@
 %global base_version    0.23.2
 Name:           hermes-agent-desktop
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        1
+Release:        2
 Summary:        Native desktop shell for Hermes Agent (git snapshot)
 License:        MIT
 Group:          Development/Tools/IDE
@@ -135,7 +135,7 @@ esac
 desktop-file-validate %{buildroot}%{_datadir}/applications/hermes-agent-desktop.desktop
 
 %files
-%verify(not mode) /opt/HermesDesktop/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) /opt/HermesDesktop/chrome-sandbox
 /opt/HermesDesktop/
 %license LICENSE
 %{_bindir}/hermes-agent-desktop

@@ -4,7 +4,7 @@
 Name:           qoder
 Version:        0.5.14
 # sha256: 3e7d20e6f70b1361ef675add301b0089a201dbe4c4f2d45f3c1c53ac48640d02
-Release:        1
+Release:        2
 Epoch:          1
 Summary:        Agent workbench for human and AI software teams
 License:        LicenseRef-SUSE-Freeware

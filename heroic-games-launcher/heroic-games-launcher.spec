@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/Heroic/.*$
 Name:           heroic-games-launcher
 Version:        2.22.4
-Release:        1
+Release:        2
 Summary:        Open source GOG, Epic and Amazon games launcher
 License:        GPL-3.0-only
 URL:            https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher
@@ -72,8 +72,6 @@ cp -a usr/share/* %{buildroot}%{_datadir}/
 install -d -m 0755 %{buildroot}/opt
 cp -a opt/Heroic %{buildroot}/opt/
 
-chmod 0755 %{buildroot}/opt/Heroic/chrome-sandbox
-
 install -d -m 0755 %{buildroot}%{_bindir}
 cat <<-'EOF' > %{buildroot}%{_bindir}/heroic
 #!/bin/sh
@@ -107,7 +105,7 @@ fi
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/heroic.png
-%verify(not mode) /opt/Heroic/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) /opt/Heroic/chrome-sandbox
 /opt/Heroic/
 
 %changelog

@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/Vesktop/.*$
 Name:           vesktop
 Version:        1.6.9
-Release:        1
+Release:        2
 Summary:        Custom Discord desktop client with Vencord preinstalled
 License:        GPL-3.0-or-later
 Group:          Productivity/Networking/Talk/Clients
@@ -113,7 +113,7 @@ fi
 %license /opt/Vesktop/LICENSE.electron.txt
 %doc /opt/Vesktop/LICENSES.chromium.html
 %dir /opt/Vesktop
-%verify(not mode) /opt/Vesktop/chrome-sandbox
+%attr(4755, root, root) %verify(not mode) /opt/Vesktop/chrome-sandbox
 /opt/Vesktop/*
 
 %changelog

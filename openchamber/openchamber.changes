@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Nov 18 20:48:38 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- chrome-sandbox ships setuid 4755. %verify(not mode) alone kept the
+  buildroot mode, and the %install chmod 0755 in four recipes forced it
+  back down, so the packaged helper was not setuid. %attr(4755, root,
+  root) together with %verify(not mode) sets the packaged mode and still
+  tolerates the install-time %post downgrade to 0755 on userns hosts.
+
+-------------------------------------------------------------------
 Wed Nov 18 20:26:26 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Ship the payload's chrome-sandbox and Electron license files. The
