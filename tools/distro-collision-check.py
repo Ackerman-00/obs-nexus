@@ -68,11 +68,26 @@ def local_packages() -> list[str]:
 
 def tumbleweed_packages() -> dict[str, str]:
     repomd = fetch(TW_OSS + "repodata/repomd.xml").decode("utf-8", "replace")
-    match = re.search(r'href="([^"]*primary\.xml\.(?:gz|zst))"', repomd)
-    if not match:
+    hrefs = re.findall(r'href="([^"]*primary\.xml\.(?:gz|zst))"', repomd)
+    if not hrefs:
         raise RuntimeError("primary.xml location not found in Tumbleweed repomd.xml")
-    href = match.group(1)
-    raw = fetch(TW_OSS + href)
+    # repomd can lag the mirror: the referenced hash then answers 404 while the
+    # published primary sits in the same repodata directory under a newer hash.
+    listing = ""
+    try:
+        listing = fetch(TW_OSS + "repodata/").decode("utf-8", "replace")
+        hrefs += ["repodata/" + n for n in re.findall(r'([a-f0-9]{32,}-primary\.xml\.(?:zst|gz))', listing)]
+    except Exception:
+        pass
+    raw = None
+    for href in hrefs:
+        try:
+            raw = fetch(TW_OSS + href)
+            break
+        except Exception:
+            continue
+    if raw is None:
+        raise RuntimeError("no published primary.xml readable from the Tumbleweed repodata")
     if href.endswith(".zst"):
         zstd = shutil.which("zstd")
         if not zstd:
@@ -155,8 +170,10 @@ def main() -> int:
 
     try:
         tw = tumbleweed_packages()
+        if not tw:
+            raise RuntimeError("primary.xml parsed to zero packages")
     except Exception as exc:
-        print(f"WARN: could not read Tumbleweed index ({exc}); RPM shadow check skipped")
+        print(f"WARN: RPM shadow check NOT PERFORMED - Tumbleweed index unreadable ({exc})")
         tw = {}
 
     print(f"Tumbleweed OSS packages: {len(tw)}")
