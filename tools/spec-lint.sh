@@ -5,7 +5,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 2
 IMG="${1:-registry.opensuse.org/opensuse/tumbleweed:latest}"
 docker run --rm -v "$PWD":/work -w /work "$IMG" bash -lc '
   set -uo pipefail
-  zypper --non-interactive --gpg-auto-import-keys install -y rpm-build rpmlint spec-cleaner rpmdevtools zypper >/dev/null 2>&1
+  zypper --non-interactive --gpg-auto-import-keys install -y rpm-build rpmlint spec-cleaner rpmdevtools zypper vim diffutils >/dev/null 2>&1
   bad=0
   for spec in */*.spec; do
     rpmspec -P "$spec" >/dev/null 2>&1 || { echo "RPMSPEC_FAIL $spec"; bad=$((bad+1)); continue; }
