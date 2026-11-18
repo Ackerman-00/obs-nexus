@@ -11,7 +11,8 @@ FFMPEG_RELEASE="https://github.com/BtbN/FFmpeg-Builds/releases/download/latest"
 FFMPEG_VERSION="8.1"
 FFMPEG_FILE="ffmpeg-n8.1-latest-linux64-gpl-shared-8.1.tar.xz"
 ORT_VERSION="1.28.0"
-ORT_TGZ="onnxruntime-linux-x64-$ORT_VERSION.tgz"
+ORT_NUPKG="microsoft.ml.onnxruntime.$ORT_VERSION.nupkg"
+ORT_SHA256="769d1d3ea8ab6cd69f737c9dd4d4462aa4ad0ccfa106eaf506efc40d7bead5db"
 
 echo "Checking for upstream updates on $GITHUB_REPO main..."
 
@@ -102,14 +103,19 @@ if [ -z "$FFTOP" ] || [ -z "$(ls "$FFTOP"/lib/libavcodec.* 2>/dev/null)" ] || [ 
 fi
 cp -a "$FFTOP"/lib "$FFTOP"/include "$SRC/ffmpeg-dev/"
 
-curl -fsSL --retry 3 --connect-timeout 60 "https://github.com/microsoft/onnxruntime/releases/download/v$ORT_VERSION/$ORT_TGZ" -o "$TMPD/onnx.tgz" \
+curl -fsSL --retry 3 --connect-timeout 60 "https://api.nuget.org/v3-flatcontainer/microsoft.ml.onnxruntime/$ORT_VERSION/$ORT_NUPKG" -o "$TMPD/$ORT_NUPKG" \
     || { echo "ONNX sidecar download failed; spec left untouched."; exit 1; }
-mkdir -p "$SRC/onnxlib"
-tar -xzf "$TMPD/onnx.tgz" -C "$TMPD" \
+echo "$ORT_SHA256  $TMPD/$ORT_NUPKG" | sha256sum -c --status \
+    || { echo "ONNX sidecar checksum mismatch; spec left untouched."; exit 1; }
+python3 -I -c 'import sys, zipfile; zipfile.ZipFile(sys.argv[1]).extractall(sys.argv[2])' "$TMPD/$ORT_NUPKG" "$TMPD/onnx" \
     || { echo "ONNX sidecar corrupt; spec left untouched."; exit 1; }
-ONNXLIB=$(ls -d "$TMPD"/onnxruntime-linux-*/lib 2>/dev/null | head -n1)
-[ -n "$ONNXLIB" ] && [ -f "$ONNXLIB/libonnxruntime.so.$ORT_VERSION" ] || { echo "ONNX sidecar layout unexpected; spec left untouched."; exit 1; }
-cp -a "$ONNXLIB"/libonnxruntime.so* "$SRC/onnxlib/"
+NATIVE="$TMPD/onnx/runtimes/linux-x64/native"
+[ -f "$NATIVE/libonnxruntime.so" ] || { echo "ONNX sidecar layout unexpected; spec left untouched."; exit 1; }
+mkdir -p "$SRC/onnxlib"
+cp "$NATIVE/libonnxruntime.so" "$SRC/onnxlib/libonnxruntime.so.$ORT_VERSION"
+chmod 755 "$SRC/onnxlib/libonnxruntime.so.$ORT_VERSION"
+cp "$NATIVE/libonnxruntime_providers_shared.so" "$SRC/onnxlib/"
+ln -sf "libonnxruntime.so.$ORT_VERSION" "$SRC/onnxlib/libonnxruntime.so.1"
 ln -sf "libonnxruntime.so.$ORT_VERSION" "$SRC/onnxlib/libonnxruntime.so"
 
 SKIA_TAG="0.153.3"

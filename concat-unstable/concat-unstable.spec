@@ -1,9 +1,9 @@
 %global debug_package %{nil}
 %global __requires_exclude_from ^/opt/concat-unstable/.*$
 %global __provides_exclude_from ^/opt/concat-unstable/.*$
-%global commit          a7cda105c55cf4a5413dd747e16b0980ff2555c1
-%global shortcommit     a7cda10
-%global gitdate         20261116142947
+%global commit          6043c370b949f42f0d11c356ddc2f7ea8f24b7a6
+%global shortcommit     6043c37
+%global gitdate         20261118173847
 %global base_version    0.2.11
 Name:           concat-unstable
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
