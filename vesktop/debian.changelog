@@ -1,3 +1,11 @@
+vesktop (1.6.9-3) unstable; urgency=medium
+
+  * debian/rules: set chrome-sandbox 4755 after dh_fixperms. The chmod in
+    dh_auto_install (or no chmod at all) left the setuid sandbox helper at
+    0755 because dh_fixperms strips setuid from every file.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 20:26:50 +0000
+
 vesktop (1.6.9-2) unstable; urgency=medium
 
   * Depends libxss1, libxtst6, libuuid1; Recommend libayatana-appindicator3-1

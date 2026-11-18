@@ -17,6 +17,10 @@ override_dh_dwz:
 override_dh_auto_test:
 	:
 
+override_dh_fixperms:
+	dh_fixperms
+	chmod 4755 debian/vesktop/opt/Vesktop/chrome-sandbox
+
 override_dh_auto_install:
 	python3 debian/rpm2tree.py "$$(ls *.rpm)" payload
 	mkdir -p debian/vesktop/opt/Vesktop debian/vesktop/usr/bin debian/vesktop/usr/share
@@ -26,5 +30,4 @@ override_dh_auto_install:
 	printf '#!/bin/sh\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="auto"\nfi\nexec /opt/Vesktop/vesktop "$$@"\n' > debian/vesktop/usr/bin/vesktop
 	chmod 0755 debian/vesktop/usr/bin/vesktop
 	sed -i 's|^Exec=.*|Exec=/usr/bin/vesktop %U|' debian/vesktop/usr/share/applications/vesktop.desktop
-	chmod 4755 debian/vesktop/opt/Vesktop/chrome-sandbox
 	find debian/vesktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

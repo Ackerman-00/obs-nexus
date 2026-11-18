@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/Stoat/.*$
 Name:           stoat-desktop
 Version:        1.5.4
-Release:        0
+Release:        1
 Summary:        Open source, user-first chat platform desktop client
 License:        AGPL-3.0-only AND MIT AND BSD-2-Clause
 Group:          Productivity/Networking/Talk/Clients
@@ -108,7 +108,6 @@ esac
 %{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 %{_datadir}/icons/hicolor/256x256/apps/chat.stoat.StoatDesktop.png
 %{_datadir}/metainfo/chat.stoat.StoatDesktop.metainfo.xml
-%exclude /opt/Stoat/chrome-sandbox
 %verify(not mode) /opt/Stoat/chrome-sandbox
 /opt/Stoat/
 

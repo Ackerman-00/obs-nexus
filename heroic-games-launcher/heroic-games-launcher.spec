@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/Heroic/.*$
 Name:           heroic-games-launcher
 Version:        2.22.4
-Release:        0
+Release:        1
 Summary:        Open source GOG, Epic and Amazon games launcher
 License:        GPL-3.0-only
 URL:            https://github.com/Heroic-Games-Launcher/HeroicGamesLauncher
@@ -101,15 +101,12 @@ fi
 %files
 %license /opt/Heroic/LICENSE.electron.txt
 %doc /opt/Heroic/LICENSES.chromium.html
-%exclude /opt/Heroic/LICENSE.electron.txt
-%exclude /opt/Heroic/LICENSES.chromium.html
 %{_bindir}/heroic
 %{_datadir}/applications/heroic.desktop
 %dir %{_datadir}/icons/hicolor
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/heroic.png
-%exclude /opt/Heroic/chrome-sandbox
 %verify(not mode) /opt/Heroic/chrome-sandbox
 /opt/Heroic/
 

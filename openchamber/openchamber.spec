@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/OpenChamber/.*$
 Name:           openchamber
 Version:        2.7.2
-Release:        0
+Release:        1
 Summary:        Agentic development environment boards for issues and pull requests
 License:        MIT
 Group:          Development/Tools/IDE
@@ -113,9 +113,6 @@ fi
 %dir %{_datadir}/doc/openchamber
 %doc %{_datadir}/doc/openchamber/changelog.gz
 %dir /opt/OpenChamber
-%exclude /opt/OpenChamber/chrome-sandbox
-%exclude /opt/OpenChamber/LICENSE.electron.txt
-%exclude /opt/OpenChamber/LICENSES.chromium.html
 %verify(not mode) /opt/OpenChamber/chrome-sandbox
 /opt/OpenChamber/*
 

@@ -5,5 +5,5 @@ Architecture: amd64
 Version: 3.8.7
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
-DEBTRANSFORM-RELEASE: 1
+DEBTRANSFORM-RELEASE: 2
 Debtransform-Tar: omnirush-desktop-3.8.7.tar.gz

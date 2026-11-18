@@ -5,5 +5,5 @@ Architecture: amd64
 Version: 1.6.9
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), python3
-DEBTRANSFORM-RELEASE: 1
+DEBTRANSFORM-RELEASE: 2
 Debtransform-Tar: vesktop-1.6.9.tar.gz

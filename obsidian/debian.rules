@@ -20,6 +20,10 @@ override_dh_strip:
 override_dh_auto_test:
 	:
 
+override_dh_fixperms:
+	dh_fixperms
+	chmod 4755 debian/obsidian/opt/obsidian/chrome-sandbox
+
 override_dh_auto_install:
 	APPIMAGE=$$(ls Obsidian-*.AppImage | grep -v arm64 | head -n1); \
 	if [ -z "$$APPIMAGE" ]; then echo "ERROR: no x86_64 AppImage in orig wrapper"; exit 1; fi; \
@@ -27,9 +31,6 @@ override_dh_auto_install:
 	chmod +x "$$APPIMAGE" && ./"$$APPIMAGE" --appimage-extract >/dev/null && mv squashfs-root appimage-root
 	mkdir -p debian/obsidian/opt/obsidian debian/obsidian/usr/bin debian/obsidian/usr/share/applications
 	cp -ar appimage-root/* debian/obsidian/opt/obsidian/
-	if [ -f debian/obsidian/opt/obsidian/chrome-sandbox ]; then \
-	    chmod 4755 debian/obsidian/opt/obsidian/chrome-sandbox; \
-	fi
 	printf '#!/bin/bash\nOBSIDIAN_USER_FLAGS_FILE="$${XDG_CONFIG_HOME:-$$HOME/.config}/obsidian/user-flags.conf"\nif [ -f "$$OBSIDIAN_USER_FLAGS_FILE" ]; then\n    mapfile -t OBSIDIAN_USER_FLAGS < <(sed -r "/^( *#|$$)/d;s%% %%\\n%%g" "$$OBSIDIAN_USER_FLAGS_FILE")\nfi\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="$${ELECTRON_OZONE_PLATFORM_HINT:-auto}"\nfi\nexec /opt/obsidian/obsidian "$${OBSIDIAN_USER_FLAGS[@]}" "$$@"\n' > debian/obsidian/usr/bin/obsidian
 	chmod 0755 debian/obsidian/usr/bin/obsidian
 	sed -e 's|^Exec=.*|Exec=/usr/bin/obsidian %U|' -e 's|^Icon=.*|Icon=md.obsidian.Obsidian|' \

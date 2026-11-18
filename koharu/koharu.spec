@@ -3,7 +3,7 @@
 %global __provides_exclude_from ^/opt/koharu/.*$
 Name:           koharu
 Version:        0.85.6
-Release:        0
+Release:        1
 Summary:        Local-first ML-powered manga translator
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Other
@@ -96,10 +96,7 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/koharu.png
 %dir /opt/koharu
-%exclude /opt/koharu/chrome-sandbox
-%exclude /opt/koharu/LICENSE-MIT
-%exclude /opt/koharu/LICENSE-APACHE
-/opt/koharu/*
 %attr(4755, root, root) /opt/koharu/chrome-sandbox
+/opt/koharu/*
 
 %changelog

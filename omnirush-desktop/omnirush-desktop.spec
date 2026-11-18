@@ -4,7 +4,7 @@
 Name:           omnirush-desktop
 Version:        3.8.7
 # sha256:  e4891b45e68da001dbcd5613f4a38188f2f35494a93605a2680a58de3168a913
-Release:        0
+Release:        1
 Summary:        OmniRush.ai desktop shell (Electron)
 License:        LicenseRef-SUSE-Freeware
 Group:          Productivity/Networking/Talk/Clients
@@ -82,7 +82,6 @@ ln -sf /opt/omnirush/omnirush %{buildroot}%{_bindir}/omnirush
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
-%exclude /opt/omnirush/chrome-sandbox
 %verify(not mode) /opt/omnirush/chrome-sandbox
 /opt/omnirush/
 %{_bindir}/omnirush

@@ -20,6 +20,10 @@ override_dh_strip:
 override_dh_auto_test:
 	:
 
+override_dh_fixperms:
+	dh_fixperms
+	chmod 4755 debian/omnirush-desktop/opt/omnirush/chrome-sandbox
+
 override_dh_auto_install:
 	mkdir -p payload
 	cd payload && (ar x ../*.deb data.tar.gz data.tar.xz data.tar.zst 2>/dev/null || true); cd ..

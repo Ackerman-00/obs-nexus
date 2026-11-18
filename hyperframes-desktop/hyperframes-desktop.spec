@@ -4,7 +4,7 @@
 Name:           hyperframes-desktop
 Version:        0.1.0.b1103
 # sha256:  542d97bd869640c88325dcf5e0634d57ee6b65cd50cc7bd4ae55de818212e239
-Release:        0
+Release:        1
 Summary:        HyperFrames Studio (Electron)
 License:        Apache-2.0 AND MIT AND BSD-3-Clause
 Group:          Productivity/Multimedia/Video/Editors and Convertors
@@ -78,7 +78,6 @@ if [ -L usr/bin/hyperframes ] || [ -e usr/bin/hyperframes ]; then ln -sf /opt/hy
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' -o -path '*/resources/build.json' \) -delete 2>/dev/null || true
 
 %files
-%exclude /opt/hyperframes/chrome-sandbox
 %verify(not mode) /opt/hyperframes/chrome-sandbox
 /opt/hyperframes/
 %{_bindir}/hyperframes

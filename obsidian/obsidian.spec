@@ -4,7 +4,7 @@
 %global __provides_exclude_from ^/opt/obsidian/.*$
 Name:           obsidian
 Version:        1.15.1
-Release:        0
+Release:        1
 Summary:        A powerful knowledge base for plain text Markdown files
 License:        LicenseRef-SUSE-Freeware
 Group:          Productivity/Text/Editors
@@ -126,10 +126,7 @@ fi
 %{_datadir}/icons/hicolor/*/apps/%{app_id}.png
 %{_datadir}/pixmaps/%{app_id}.png
 %{_datadir}/mime/packages/obsidian.xml
-%exclude /opt/obsidian/LICENSE.electron.txt
-%exclude /opt/obsidian/LICENSES.chromium.html
 %exclude /opt/obsidian/AppRun
-%exclude /opt/obsidian/chrome-sandbox
 %verify(not mode) /opt/obsidian/chrome-sandbox
 /opt/obsidian/
 
