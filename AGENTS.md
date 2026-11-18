@@ -305,3 +305,13 @@ hermes-agent-desktop/build.sh does. Alternatives: vendor dependencies into the
 source tree, or a dedicated AllowNetworkAccess subproject proven via API. Never
 re-post "no action available" without a fresh command for each path; close the
 tracking issue only after all three targets build and install-test PASS.
+
+## Self-evaluating proposals in the scheduler prompt
+
+A `BEGIN PROPOSAL` block is a design suggestion the scheduler must decide on
+once, with evidence, not carry forever. On the deciding run it records
+`proposal: accepted - landed: <commit>` or `proposal: rejected - <evidence>`.
+If rejected, delete the whole block from both tools/sweep-prompt.md and the
+embedded PROMPT; if adopted, implement it, verify on all three targets, then
+rename the header to `STANDARD (done <date> <commit>) - see <workflow>`. Sync
+both prompt copies, run tools/check-workflows.sh and commit either way.

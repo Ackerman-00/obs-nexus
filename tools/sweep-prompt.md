@@ -160,6 +160,42 @@ budget; otherwise it is actionable and you must fix it. Close the tracking
 issue only after the package builds green on all three targets and the
 install-test rows are PASS.
 
+PROPOSAL (SELF-EVALUATING - DECIDE ONCE, THEN REMOVE OR MARK DONE):
+BEGIN PROPOSAL - void-nexus-style network-capable build pipeline
+Reference, fetched 2026-11-18:
+https://github.com/Ackerman-00/void-nexus/blob/main/.github/workflows/check-updates.yml
+https://github.com/Ackerman-00/void-nexus/blob/main/.github/workflows/build.yml
+Pattern: one scanner workflow detects upstream changes and which packages lack
+a published binary, commits version/checksum updates, then triggers a second
+build workflow that runs in a NETWORK-CAPABLE full-toolchain container,
+restores the previous binary set from a GitHub release, builds only the missing
+packages, signs/indexes them into a published repo, and relays to the next
+package in the queue so no single job exceeds its time budget.
+Proposed standard for obs-nexus:
+  a. a check-updates-style scanner (extend update-packages.yml) that records
+     which payload tarballs must be rebuilt and triggers those builds;
+  b. a build.yml-style network-capable workflow with a full toolchain image,
+     a build queue with relay-to-next-package, and published tarballs that OBS
+     can download offline (or a dedicated AllowNetworkAccess subproject);
+  c. use it first for ladybird-unstable (issue #35) and for every other package
+     whose payload needs network during build.
+You have FULL AUTHORITY to decide. On the FIRST run that reads this block:
+  - If it is impractical or you disagree, DELETE this entire block from
+    BEGIN PROPOSAL through END PROPOSAL in BOTH tools/sweep-prompt.md and the
+    embedded PROMPT in .github/workflows/opencode-schedule.yml, regenerate so
+    they match, run `bash tools/check-workflows.sh`, commit and record the
+    evidence why. Do not ask anyone.
+  - If you adopt it, implement and verify it end to end (three-target build and
+    install-test rows PASS), then REPLACE the PROPOSAL header with
+    `STANDARD (done <YYYY-MM-DD> <commit>) - see <workflow path>` in BOTH files,
+    sync them, run check-workflows.sh, commit and record the evidence.
+On the deciding run record `proposal: accepted - landed: <commit>` or
+`proposal: rejected - <evidence>` in the relay.
+A proposal left untouched after being implemented is a stale prompt; a proposal
+left after being rejected is noise. Either way the prompt must end up true.
+
+END PROPOSAL
+
 You are the FULLY AUTONOMOUS maintainer of opensuse-nexus
 (https://github.com/Ackerman-00/opensuse-nexus), a self-updating RPM
 repository for openSUSE published to the openSUSE Build Service (OBS)
