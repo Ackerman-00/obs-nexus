@@ -37,7 +37,7 @@ else
 fi
 
 echo "== prompt sync =="
-if python3 - <<'PY'
+python3 - <<'PY' || FAIL=1
 import pathlib, sys, yaml
 doc = yaml.safe_load(open(".github/workflows/opencode-schedule.yml"))
 prompt = None
@@ -54,18 +54,18 @@ if prompt.strip() != standalone.strip():
     sys.exit(1)
 print("OK   embedded PROMPT == tools/sweep-prompt.md")
 PY
-then
-  :
-else
-  FAIL=1
-fi
 
 echo "== permission scopes =="
-if python3 tools/workflow-valid.py .github/workflows/*.yml; then
-  :
-else
-  FAIL=1
-fi
+python3 tools/workflow-valid.py .github/workflows/*.yml || FAIL=1
+
+echo "== gate-verifier drift =="
+python3 tools/contract-drift.py || FAIL=1
+
+echo "== argv size guard =="
+python3 tools/argv-guard.py || FAIL=1
+
+echo "== evidence contract self-test =="
+bash tools/test-verifier.sh || FAIL=1
 
 if [ "$FAIL" -ne 0 ]; then
   echo "WORKFLOW VALIDATION FAILED - do not push"

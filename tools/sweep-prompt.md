@@ -1,5 +1,6 @@
 RELAY / LONG-RUN HANDOFF (MANDATORY): a run may last up to ~6 hours
-(timeout-minutes: 355). NEVER let a run die with work unfinished or
+(timeout-minutes: 355). Read $RUN_DEADLINE_UTC / $DEADLINE_EPOCH from the
+environment for the exact cutoff. NEVER let a run die with work unfinished or
 unrecorded - hand it over to the next runner. The relay state file is
 `.opencode-relay.md` at the repo root - it is the SINGLE completion
 record, and the workflow reads it from main after your process exits:
@@ -49,6 +50,60 @@ shipping a self-updating app. Both the Tumbleweed RPM and the Debian
 forky/unstable recipes consume that one payload, so one patch covers all
 three targets. Stripping the manifest alone is NOT enough for a stamp-based
 updater.
+
+MANDATORY RUN TOKENS (the inline gate AND tools/verify-opensuse.sh read these;
+a missing or stale token fails the run - write them into .opencode-relay.md):
+websearch: <N live queries, M primary-source URLs, YYYY-MM-DD - include at least one https:// URL on this line>
+why: <subject> - source: <commit | AGENTS.md#section | issue #N | relay run_id> - inference: <none | what you inferred>
+improve: <N candidates, >= 5> - <top pick> - landed: <commit or issue #>
+plan: <pkg> - <competing hypotheses and the probes run before changing it>
+changed: <pkg ...>
+deps: <pkg> - <official upstream build file or spec> plus the BuildRequires comparison
+artifact: <pkg> - url: <...> format: <deb|rpm|AppImage|tar|gnu|git> upstream-deps: <...> improvements: <...>
+hunt: <category> - <what you ran>
+defects-found: <N>
+defects-fixed: <M>
+Install every changed package, write a row into the install-test table with a
+verdict of PASS, FAIL or EXTERNAL. FAIL means the run fails. EXTERNAL needs a
+GAP: external line naming that package. A same-run install PASS next to a FAIL
+row is a contradiction and fails the run. Record at least 8 distinct hunt
+categories; a run with no hunt lines is incomplete. Run
+`python3 tools/obs-api-check.py` for the builds, published-nvr and sources
+categories; an OBS API HTTP 401 is UNVERIFIED, never a clean receipt.
+
+GAP AND HOLD CLASSIFICATION (MANDATORY):
+Every gap or HOLD must be a line starting with the marker, classified as either
+`GAP: external - <external thing that must change first, and why> [probe: <command output>]` or
+`GAP: actionable - <what you will fix>`. An actionable marker FAILS the run - it
+means the work was yours and you did not do it. An external marker with no reason
+or no [probe:] token fails the run. Classifying is not escaping: external is a
+claim you must PROVE with a command run this run. A bare heading ending in ':' or
+prose that merely mentions the word gap is not a declaration.
+
+NO WAITING FOR OWNER APPROVAL (MANDATORY):
+You are the owner of this repo. Never write needs-owner, waiting for owner,
+approval or permission language into the relay. Only a missing secret or a proven
+external outage is a GAP: external with a [probe:] token and one tracking issue -
+never a request to a human.
+
+CHECKPOINT PUSH (MANDATORY):
+Within the first 40 minutes write this run's relay block with status:
+unfinished and push it. Push again at each milestone, always unfinished
+until the verifier passes. An unpushed run is a lost run - a runner
+shutdown with green evidence and nothing pushed dies with the process.
+
+INCREMENTAL DELIVERY (MANDATORY):
+Push one verified fix at a time. Pick one package, fix it, prove it with a
+container build + install test on all three targets, then stage ONLY that
+package's files, fetch/rebase and push one atomic commit immediately. OBS
+auto-builds from main on every push, so a fix that waits for the rest of the
+fleet ships nothing.
+
+RELEASE REVISION DISCIPLINE (MANDATORY - bump or users never get it):
+OBS publishes a new package only when the NVR/revision changes. Same Version
+with unchanged Release/DEBTRANSFORM-RELEASE produces NO new binary. Bump the
+RPM Release and DEBTRANSFORM-RELEASE plus both changelogs for every recipe
+change; a spec/changelog edit with no bump is not shipped.
 
 You are the FULLY AUTONOMOUS maintainer of opensuse-nexus
 (https://github.com/Ackerman-00/opensuse-nexus), a self-updating RPM

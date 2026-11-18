@@ -137,3 +137,139 @@ If the agent skips the table, the job fails and retries with stronger model.
   id must be scored and ranked by the next run, a retired one dropped.
 - `opencode.json` carries the same ids so the CLI can resolve them, and
   enables the websearch provider the benchmark check needs.
+
+## Comment policy (owner rule)
+
+Comments are short `#topic` labels: one line, a few words, naming a constraint
+the code cannot show. No incident narratives, no dated lesson logs, no
+restated code, no commented-out code, no banners, no "why this exists"
+essays. Keep a comment only when a future maintainer would delete working code
+without it (a version floor, the WHY of a pin, a license/SPDX proof, a
+harness gotcha).
+
+## The completion contract must measure truth, not the presence of strings
+
+A gate that greps for the STRING "install-test table" passes a table full of
+FAIL cells, and "status: complete" plus a pile of greppable rows is cheaper to
+produce than one real fix. The cheapest passing strategy wins when the machine
+only counts strings, so the gate parses instead:
+
+- ANY install-test verdict cell that is not PASS fails the run, unless it is
+  EXTERNAL and a `GAP: external` line names that package. A FAIL cell next to
+  a same-run install PASS is a contradiction and fails the run.
+- Every run carries `defects-found: N` and `defects-fixed: M`; the gate
+  requires M + external gaps >= N.
+- Every package named on the `changed:` line needs a PASS row in the
+  install-test table. A fix you did not install-test is a fix you did not prove.
+- Every run carries at least 8 distinct `hunt: <category> - <what you ran>`
+  lines. A category you did not run is a category you did not check.
+- A verdict is a transcript of a command, never a summary of a belief.
+
+Nothing counts repairs unless repairs are counted: a run that found 12 defects
+and fixed 0 must not be indistinguishable from a run that found 0.
+
+## The permission scopes come from actionlint and the schema, not the docs
+
+The GitHub docs table for `permissions` lists keys GitHub's workflow validator
+does not accept, and a file carrying one is refused at parse time: the push
+shows up as a failed run with NO jobs and the workflow path as the run name,
+so the agent that would fix it cannot run either.
+
+- the KEY set is actionlint's: actions, artifact-metadata, attestations,
+  checks, contents, deployments, discussions, id-token, issues, models,
+  packages, pages, pull-requests, repository-projects, security-events,
+  statuses.
+- the VALUES per key are the schema's
+  (https://json.schemastore.org/github-workflow.json,
+  `definitions.permissions-event`): `vulnerability-alerts` and `models` take
+  read|none, `id-token` write|none.
+
+`tools/workflow-valid.py` is that rule in one place, with the vendored
+`tools/permissions-schema.json`. RULE: run `bash tools/check-workflows.sh`
+(YAML parse + actionlint + scope scan) before pushing any workflow change. If
+actionlint and the docs disagree, actionlint wins.
+
+## No owner approval gates
+
+The scheduler is the owner: wildcard tool permissions, write-scope workflows,
+bot commit identity, OBS credentials and self-merge are already configured.
+The gate fails any relay line containing `needs-owner`, waiting-for-owner, or
+approval markers, and `tools/verify-opensuse.sh` refuses `status: complete`
+while its report is red. Only a missing/expired secret or a proven external
+outage is a `GAP: external - ... [probe: ...]` plus one tracking issue -
+never a request to a human.
+
+## Direct-to-main pushes from outside
+
+Other people and agents push straight to main while a run is in flight. RULE:
+every run `git fetch origin` BEFORE build decisions and reviews the main
+commits that are not its own, then reconciles that work into the run (rebase
+onto it, verify the builds it triggered, review the diff as code). Never
+rebase over others' commits and never discard them. An external commit that
+broke a build is fixed forward, not reverted: reverting can destroy a real fix
+that solves a real defect. A change outside the package's own files (an
+install-time `%post` that rewrites system configuration) is flagged loudly -
+silent acceptance and silent revert are both wrong.
+
+## Container teardown harness rule
+
+When a package is rebuilt in a clean container with `rpmbuild -bb`, the
+SOURCES dir must contain the package directory's LOCAL files (Patch files,
+extra Source files such as `.desktop`, policies, wrapper scripts), not only
+what `spectool -g` downloads - spectool fetches URL-declared sources only. A
+teardown that fails with "Cannot read ... .patch" or a missing Source1+ in
+`%install` is therefore a HARNESS bug, not a package bug: check the package
+dir for tracked files before touching the spec. Fix: `cp -a <pkgdir>/. SOURCES/`
+before running spectool.
+
+## A macro name inside a `#` comment still expands
+
+RPM expands macros on every spec line before it decides the line is a comment,
+so `# %meson_test wraps two tests` becomes the meson test command and rpmbuild
+dies with `Unknown tag: /usr/bin/meson test ...` on a line that reads as a
+comment. Name the constraint, not the macro: `# dbus-run-session wraps two of
+the upstream tests`.
+
+## Harness smoke probes must match what the harness installed
+
+A bare `rpmbuild -bb` in a container does not always run the brp compression
+step that OBS runs, so a smoke that asserts a compression-specific path
+(`.../man1/foo.1.gz`) fails on a healthy package. Probe with a glob, or check
+the published package for compression-specific paths; keep `rpm -V` and `ldd`
+checks as the real verdict, and treat a probe that names a path the RPM does
+not ship as a PROBE-BUG rather than a package failure.
+
+## OBS API and upstream research receipts (verified 2026-11-18)
+
+- `https://api.opensuse.org/build/home:ackerman/_result` answers **HTTP 401**
+  unauthenticated (verified this date). A 401 is `UNVERIFIED`, never a clean
+  build. `tools/obs-api-check.py` reports the exact status code and exits 0
+  for that case; exit 1 only for a concrete defect.
+- Documented OBS endpoints (api.opensuse.org/apidocs, OBS user guide
+  2026-11-11): `GET /build/{project}/_result`, `...?lastsuccess=1`,
+  `/build/{p}/{repo}/{arch}/{pkg}/_reason`, `_history`, `_statistics`,
+  `/source/{p}/{pkg}?view=info` (source version + md5sums, the drift check),
+  and `POST /{p}?cmd=rebuild`. Use them instead of scraping the web UI.
+- OBS source services can enforce checksums with `verify_file` + a `sha256`
+  param in `_service`; a failed check makes the package `broken` (user guide
+  ch. 7.4). Only add it where the spec actually pins a checksum.
+- Published indices (verified HTTP 200 this date) are
+  `download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/repodata/repomd.xml`
+  and `.../Debian_Testing/Packages.gz` / `.../Debian_Unstable/Packages.gz`.
+  Debian binary names come from each `.dsc` `Binary:` field, not the directory
+  (heroic-games-launcher ships as `heroic`).
+- Debian ships `libscenefx-0.5` and `-dev` natively in sid and forky
+  (packages.debian.org, fetched 2026-11-18). The old "scenefx is RPM-only"
+  note is obsolete; no OBS DEB recipe is needed for that library.
+- Repology API: max 1 request/s and a custom User-Agent containing a link to
+  this repo plus its issue tracker, or bulk clients get blocked
+  (repology.org/api, fetched 2026-11-18). 403 means a bad UA, not no data.
+- OSV `POST /v1/querybatch` returns only advisory ids; fetch ranges from
+  `GET /v1/vulns/{id}`, follow `next_page_token`, and group aliases before
+  counting (osv.dev API docs, fetched 2026-11-18). No rate limit, but a 32 MiB
+  response cap on HTTP/1.1.
+- Debian QA floor: run `lintian` on the built `.deb`, prefer a clean chroot
+  build (`sbuild`/`mmdebstrap`) over a host build, and keep
+  `SOURCE_DATE_EPOCH` reproducibility (debian policy 4.15). On the RPM side,
+  `rpmlint` on the SRPM has better coverage than on a bare spec; `spec-cleaner`
+  enforces the openSUSE style (en.opensuse.org/openSUSE:Package_Cleaning).
