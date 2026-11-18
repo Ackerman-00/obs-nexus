@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 18 16:58:18 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.0.204-0
+- Depend on libgbm1: the payload links libgbm.so.1, which no other
+  dependency provided
+
+-------------------------------------------------------------------
 Wed Nov 18 02:43:17 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.0.204-0

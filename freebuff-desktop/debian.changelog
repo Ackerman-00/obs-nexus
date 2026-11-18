@@ -1,3 +1,10 @@
+freebuff-desktop (0.0.204-2) unstable; urgency=medium
+
+  * Depend on libgbm1: the packaged payload links libgbm.so.1 and no other
+    dependency pulls it in.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 16:58:18 +0000
+
 freebuff-desktop (0.0.204-1) unstable; urgency=medium
 
   * New upstream release 0.0.204.
