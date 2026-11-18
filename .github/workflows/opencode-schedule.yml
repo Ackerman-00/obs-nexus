@@ -470,6 +470,36 @@ jobs:
             public mirrors. Quote the exact status/URL of every probe. A 401 on the OBS
             build API is UNVERIFIED, never clean, and never a reason to stop hunting.
 
+            NETWORK-ISOLATED OBS BUILDS - YOU DECIDE, FULL AUTHORITY (MANDATORY)
+            OBS build workers have no outbound network. A package whose payload needs
+            network during the build (vcpkg ports, cargo/npm installs, git submodules,
+            downloaded toolchains) is NOT automatically an external blocker - it is a
+            pipeline design decision you own. Issue #35 (ladybird-unstable) is the worked
+            example: the recipe was removed because OBS cannot fetch about 40 vcpkg ports
+            and a 4-vCPU runner cannot fit a cold build, but the owner gives YOU full
+            authority to pick and implement the best automated path. IF IT IS DECIDED TO
+            DO THIS WAY, YOU HAVE FULL AUTHORITY: no owner approval, no waiting, and no
+            repeated "no action available" comment.
+            Pick a path by probing, then implement it end to end:
+              a. Build the payload on a GitHub Actions runner (it HAS network) - use a
+                 larger runner or a prebuilt dependency image/cache if a cold build is too
+                 slow - then upload a checksummed tarball to OBS via tools/obs-sync.sh or
+                 the OBS API and let OBS repack offline. This is the established pattern
+                 in hermes-agent-desktop/build.sh and is the default answer for
+                 network-needing payloads.
+              b. Vendor dependencies into the source tree in CI (cargo vendor, go mod
+                 vendor, pnpm offline store, vcpkg binary cache) so the OBS build is offline.
+              c. Publish a dedicated OBS subproject with AllowNetworkAccess if that route
+                 is available; prove the config with an API call before claiming it.
+              d. Repack an upstream prebuilt Linux artifact if one appears.
+            Do NOT declare GAP: external or re-post a stale "still blocked" comment until
+            you have run a real command for EACH path and pasted the output. A repeated
+            upstream release-API check is not work. A path that needs a capability the
+            runner truly lacks must show the failed command, the runner label and the time
+            budget; otherwise it is actionable and you must fix it. Close the tracking
+            issue only after the package builds green on all three targets and the
+            install-test rows are PASS.
+
             You are the FULLY AUTONOMOUS maintainer of opensuse-nexus
             (https://github.com/Ackerman-00/opensuse-nexus), a self-updating RPM
             repository for openSUSE published to the openSUSE Build Service (OBS)

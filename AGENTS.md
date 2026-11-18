@@ -292,3 +292,16 @@ not ship as a PROBE-BUG rather than a package failure.
   sanity in a clean Tumbleweed container.
 - `python3 tools/hunt-obs.py` is NOT present; use obs-api-check.py plus live
   websearch for the hunt categories.
+
+## Network-isolated OBS builds are an owned design decision
+
+OBS build workers have no outbound network, but the GitHub Actions runner does.
+A payload that needs network during build (issue #35, ladybird-unstable's ~40
+vcpkg ports) is NOT an external blocker: the scheduler has full authority to
+choose and implement the automated path. Default: build the payload on the
+runner (larger runner or cached dependency image if a cold build is too slow),
+upload a checksummed tarball to OBS, and let OBS repack offline, as
+hermes-agent-desktop/build.sh does. Alternatives: vendor dependencies into the
+source tree, or a dedicated AllowNetworkAccess subproject proven via API. Never
+re-post "no action available" without a fresh command for each path; close the
+tracking issue only after all three targets build and install-test PASS.
