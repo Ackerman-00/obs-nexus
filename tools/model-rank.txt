@@ -32,4 +32,4 @@ big-pickle
 
 # vetoed by owner (2026-10-22): glm-5.3-flash-free, jev-1.13-free (probabilistic classifier, not a coding model)
 # retired from the live catalog: crouton-alpha-free (2026-11-10), Pulse Alpha Free (2026-11-06), minimax-m3.1-flash-free (2026-11-17)
-# leader re-checked 2026-11-17: live catalog serves 11 free ids plus big-pickle, all ranked ids live; DeepSeek V4.1 Flash (AA 33) still leads the free set. hy4-flash-free added at the bottom of tier 3 because only the base Hy4 has an independent score (AA 35) and the Flash variant ships vendor numbers only (DeepSWE 64.6 / TB4.0 19.2)
+# leader re-checked 2026-11-18: live catalog serves 12 zero-cost chat ids (these 11 plus the vetoed glm-5.3-flash-free), all ranked ids live, no new or retired id; DeepSeek V4.1 Flash still leads the free set on the independent coding estimate 59.9 vs Inkling 2 Small 57 (benchlm.ai) and the agentic rows FrontierCode 28.5 / DeepSWE 77.0 / Vibe Code 87.7 (thinkingmachines.ai card)
