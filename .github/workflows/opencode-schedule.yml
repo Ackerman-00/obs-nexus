@@ -500,6 +500,33 @@ jobs:
             issue only after the package builds green on all three targets and the
             install-test rows are PASS.
 
+            COUNTERMEASURES FROM THE 2026-11-18 DEEP AUDIT (ALL PACKAGES, MANDATORY)
+            These were real findings, not style nits. Apply them to every package, not only
+            the one in front of you:
+              a. Electron chrome-sandbox: every spec shipping a binary named chrome-sandbox
+                 must carry `%attr(4755, root, root)` in %files OR a %post probe with
+                 `unshare --user true` that chooses 4755 when user namespaces are disabled.
+                 A bare `chmod 0755` in %install with no fallback is a defect (found in
+                 heroic-games-launcher and stoat-desktop). Prove the fix with a non-root
+                 launch test in a clean container; record the command and its output.
+              b. Relay terminal status: write a plain line `status: complete`, never
+                 `**status:** complete`. The gate and verifier use `grep -qix` on the bare
+                 line; the last relay used the bold form and would fail the current gate.
+              c. Tool references must resolve: every tool named in AGENTS.md, the prompt or
+                 a workflow must exist and be executable; a basename grep found a stale
+                 `tools/hunt-obs.py` reference. Do not add documentation for tools that do
+                 not exist, and do not leave orphan tools unreferenced.
+              d. Source0 with an http(s) URL needs a `download_files` `_service`; three
+                 packages (fluxer, lazyvim-git, obsidian) had no `_service` but use local
+                 filenames, which is fine - record which case applies, never assume.
+              e. No run has yet produced the new token set (skills, defects, 8 hunts,
+                 websearch with URL, plan/deps/artifact per changed package). The FIRST run
+                 after this rule lands must emit every token or the gate correctly fails
+                 it. Do not weaken the gate to accommodate a stale relay.
+              f. The harvest sweep must cover all 34 packages, not only changed ones: run
+                 `python3 tools/obs-api-check.py` (all categories) plus a per-package file,
+                 version, updater-strip and sandbox check, and record the command output.
+
             PROPOSAL (SELF-EVALUATING - DECIDE ONCE, THEN REMOVE OR MARK DONE):
             BEGIN PROPOSAL - void-nexus-style network-capable build pipeline
             Reference, fetched 2026-11-18:

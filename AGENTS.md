@@ -290,8 +290,6 @@ not ship as a PROBE-BUG rather than a package failure.
 - `bash tools/obs-drift.sh` - spec in git vs spec OBS built (needs OBS creds).
 - `bash tools/spec-lint.sh` - rpmspec -P, rpmlint, spec-cleaner and debian.rules
   sanity in a clean Tumbleweed container.
-- `python3 tools/hunt-obs.py` is NOT present; use obs-api-check.py plus live
-  websearch for the hunt categories.
 
 ## Network-isolated OBS builds are an owned design decision
 
