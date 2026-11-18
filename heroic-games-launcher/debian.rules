@@ -33,7 +33,7 @@ override_dh_auto_install:
 	mkdir -p debian/heroic/usr/bin debian/heroic/usr/share debian/heroic/opt
 	cp -a payload/usr/share/* debian/heroic/usr/share/
 	cp -a payload/opt/Heroic debian/heroic/opt/
-	chmod 0755 debian/heroic/opt/Heroic/chrome-sandbox
+	chmod 4755 debian/heroic/opt/Heroic/chrome-sandbox
 	printf '#!/bin/sh\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="auto"\nfi\nexec /opt/Heroic/heroic "$$@"\n' > debian/heroic/usr/bin/heroic
 	chmod 0755 debian/heroic/usr/bin/heroic
 	sed -e 's|^Exec=.*|Exec=/usr/bin/heroic %U|' \

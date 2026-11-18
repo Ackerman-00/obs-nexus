@@ -5,5 +5,5 @@ Architecture: amd64
 Version: 2.22.4
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
-DEBTRANSFORM-RELEASE: 1
+DEBTRANSFORM-RELEASE: 2
 Debtransform-Tar: heroic-games-launcher-2.22.4.tar.gz

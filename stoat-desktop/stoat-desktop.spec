@@ -82,6 +82,12 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 desktop-file-validate %{buildroot}%{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 
 %post
+if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
+  chmod 4755 /opt/Stoat/chrome-sandbox || true
+else
+  chmod 0755 /opt/Stoat/chrome-sandbox || true
+fi
+
 %{_bindir}/update-desktop-database > /dev/null 2>&1 || :
 /bin/touch --no-create %{_datadir}/icons/hicolor > /dev/null 2>&1 || :
 
@@ -102,6 +108,8 @@ esac
 %{_datadir}/applications/chat.stoat.StoatDesktop.desktop
 %{_datadir}/icons/hicolor/256x256/apps/chat.stoat.StoatDesktop.png
 %{_datadir}/metainfo/chat.stoat.StoatDesktop.metainfo.xml
+%exclude /opt/Stoat/chrome-sandbox
+%verify(not mode) /opt/Stoat/chrome-sandbox
 /opt/Stoat/
 
 %changelog

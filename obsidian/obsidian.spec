@@ -129,6 +129,8 @@ fi
 %exclude /opt/obsidian/LICENSE.electron.txt
 %exclude /opt/obsidian/LICENSES.chromium.html
 %exclude /opt/obsidian/AppRun
+%exclude /opt/obsidian/chrome-sandbox
+%verify(not mode) /opt/obsidian/chrome-sandbox
 /opt/obsidian/
 
 %changelog

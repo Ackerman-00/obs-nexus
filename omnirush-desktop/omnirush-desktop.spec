@@ -82,6 +82,8 @@ ln -sf /opt/omnirush/omnirush %{buildroot}%{_bindir}/omnirush
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 
 %files
+%exclude /opt/omnirush/chrome-sandbox
+%verify(not mode) /opt/omnirush/chrome-sandbox
 /opt/omnirush/
 %{_bindir}/omnirush
 %{_datadir}/applications/*

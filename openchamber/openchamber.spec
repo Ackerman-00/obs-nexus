@@ -116,7 +116,7 @@ fi
 %exclude /opt/OpenChamber/chrome-sandbox
 %exclude /opt/OpenChamber/LICENSE.electron.txt
 %exclude /opt/OpenChamber/LICENSES.chromium.html
-%attr(4755, root, root) /opt/OpenChamber/chrome-sandbox
+%verify(not mode) /opt/OpenChamber/chrome-sandbox
 /opt/OpenChamber/*
 
 %changelog

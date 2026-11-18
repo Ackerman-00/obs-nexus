@@ -124,6 +124,8 @@ fi
 %{_bindir}/%{name}
 %exclude %{_libdir}/%{name}/LICENSE.electron.txt
 %exclude %{_libdir}/%{name}/LICENSES.chromium.html
+%exclude %{_libdir}/%{name}/chrome-sandbox
+%verify(not mode) %{_libdir}/%{name}/chrome-sandbox
 %{_libdir}/%{name}/
 %{_datadir}/applications/%{appid}.desktop
 %dir %{_datadir}/icons/hicolor

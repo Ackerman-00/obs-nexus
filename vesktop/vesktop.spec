@@ -115,6 +115,8 @@ fi
 %dir /opt/Vesktop
 %exclude /opt/Vesktop/LICENSE.electron.txt
 %exclude /opt/Vesktop/LICENSES.chromium.html
+%exclude /opt/Vesktop/chrome-sandbox
+%verify(not mode) /opt/Vesktop/chrome-sandbox
 /opt/Vesktop/*
 
 %changelog

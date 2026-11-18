@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 17:03:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- chrome-sandbox: declare the install-time managed mode with %verify(not mode),
+  so rpm -V no longer reports a mode drift after %%post promotes it to 4755
+
+-------------------------------------------------------------------
 Wed Nov 18 06:28:12 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.23.2+git20261117033945.40d1e95-1
@@ -23,12 +29,6 @@ Mon Nov 16 16:44:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 - Update hermes-agent-desktop to base 0.23.1 + main aa6d201
 
 -------------------------------------------------------------------
-Sun Nov 15 07:35:14 UTC 2026 - Ackerman-00 <noreply@example.com>
-
-- version 0.23.1+git20261115053135.d1b46d7-0
-- Update hermes-agent-desktop to base 0.23.1 + main d1b46d7
-
--------------------------------------------------------------------
 Sun Nov 15 14:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - build.sh: switch the upstream payload-build container from
@@ -36,6 +36,12 @@ Sun Nov 15 14:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>
   opensuse/tumbleweed:latest with zypper. obs-nexus is an openSUSE
   build forge; no Fedora bytes ever reach the payload, but pulling
   the Fedora image inside this repository was wrong.
+
+-------------------------------------------------------------------
+Sun Nov 15 07:35:14 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.1+git20261115053135.d1b46d7-0
+- Update hermes-agent-desktop to base 0.23.1 + main d1b46d7
 
 -------------------------------------------------------------------
 Sat Nov 14 22:50:00 UTC 2026 - Ackerman-00 <noreply@example.com>

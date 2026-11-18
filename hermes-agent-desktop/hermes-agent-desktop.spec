@@ -135,6 +135,8 @@ esac
 desktop-file-validate %{buildroot}%{_datadir}/applications/hermes-agent-desktop.desktop
 
 %files
+%exclude /opt/HermesDesktop/chrome-sandbox
+%verify(not mode) /opt/HermesDesktop/chrome-sandbox
 /opt/HermesDesktop/
 %license LICENSE
 %{_bindir}/hermes-agent-desktop

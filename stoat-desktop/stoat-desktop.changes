@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 17:03:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- chrome-sandbox: declare the install-time managed mode with %verify(not mode),
+- Give chrome-sandbox the unshare --user probe the other Electron packages use
+
+-------------------------------------------------------------------
 Sat Nov 14 22:40:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Recommend libayatana-appindicator3: the installed payload registers a

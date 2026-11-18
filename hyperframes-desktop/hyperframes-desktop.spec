@@ -78,6 +78,8 @@ if [ -L usr/bin/hyperframes ] || [ -e usr/bin/hyperframes ]; then ln -sf /opt/hy
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' -o -path '*/resources/build.json' \) -delete 2>/dev/null || true
 
 %files
+%exclude /opt/hyperframes/chrome-sandbox
+%verify(not mode) /opt/hyperframes/chrome-sandbox
 /opt/hyperframes/
 %{_bindir}/hyperframes
 %{_datadir}/applications/*

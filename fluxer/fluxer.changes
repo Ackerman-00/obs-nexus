@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 17:03:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- chrome-sandbox: declare the install-time managed mode with %verify(not mode),
+  so rpm -V no longer reports a mode drift after %%post promotes it to 4755
+
+-------------------------------------------------------------------
 Tue Nov 17 16:42:46 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.1117.144711-0

@@ -91,6 +91,13 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/heroic.desktop
 
+%post
+if ! { [ -L /proc/self/ns/user ] && unshare --user true; }; then
+  chmod 4755 /opt/Heroic/chrome-sandbox || true
+else
+  chmod 0755 /opt/Heroic/chrome-sandbox || true
+fi
+
 %files
 %license /opt/Heroic/LICENSE.electron.txt
 %doc /opt/Heroic/LICENSES.chromium.html
@@ -102,6 +109,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/heroic.desktop
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps
 %{_datadir}/icons/hicolor/*/apps/heroic.png
+%exclude /opt/Heroic/chrome-sandbox
+%verify(not mode) /opt/Heroic/chrome-sandbox
 /opt/Heroic/
 
 %changelog

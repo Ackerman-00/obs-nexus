@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 18 17:03:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- chrome-sandbox: ship it setuid on the Debian targets and give the RPM the
+  unshare --user probe, declaring the install-time managed mode with
+  %verify(not mode) so rpm -V stops reporting a mode drift
+
+-------------------------------------------------------------------
 Sat Nov 14 14:20:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - debian.rules: strip the payload's resources/app-update.yml and
