@@ -381,7 +381,7 @@ def test_debian_package(name, ver, spec_path, workdir, image="debian:testing"):
             "|| echo DEP-SKIP \"$p\"; done" % " ".join(our_depends))
     commands = [
         "apt-get update -qq 2>&1 | tail -3",
-        "apt-get install -y -qq curl binutils file 2>&1 | tail -3",
+        "apt-get install -y -qq ca-certificates curl binutils file 2>&1 | tail -3",
         dep_install or "true",
         "curl -fsSL '%s' -o /tmp/pkg.deb && ls -l /tmp/pkg.deb || echo NO-DEB-URL" % deb_url,
         "dpkg-deb -f /tmp/pkg.deb Version 2>&1 || echo NO-DEB-FILE",

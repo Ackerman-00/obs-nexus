@@ -40,6 +40,7 @@ one() {
     deb_out=$(docker run --rm "$img" bash -lc '
       set -u
       apt-get update -qq >/dev/null 2>&1
+      apt-get install -y -qq ca-certificates curl gnupg >/dev/null 2>&1
       install -d -m 0755 /etc/apt/keyrings
       curl -fsSL https://download.opensuse.org/repositories/home:ackerman/'"$repo"'/Release.key | gpg --dearmor -o /etc/apt/keyrings/obs-nexus.gpg >/dev/null 2>&1
       echo "deb [signed-by=/etc/apt/keyrings/obs-nexus.gpg] https://download.opensuse.org/repositories/home:ackerman/'"$repo"'/ /" > /etc/apt/sources.list.d/obs-nexus.list
