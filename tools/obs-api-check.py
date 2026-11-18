@@ -347,7 +347,7 @@ def probes():
     if not os.path.isfile("tools/probes.txt"):
         print("hunt: probes - DEFECT tools/probes.txt missing")
         return True
-    rows = {l.split("|")[0] for l in open("tools/probes.txt") if l.strip()}
+    rows = {l.split("|")[0].strip() for l in open("tools/probes.txt") if l.strip()}
     names = set(specs())
     missing = sorted(names - rows)
     if missing:
