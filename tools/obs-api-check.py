@@ -5,12 +5,14 @@ Uses the documented OBS API for build state and the public download tree for
 published NVRs. An unauthenticated 401 is reported as UNVERIFIED with the
 exact status code, never as clean.
 """
-import gzip
 import glob
+import gzip
+import json
 import os
 import re
 import subprocess
 import sys
+import time
 import urllib.request
 
 PROJECT = "home:ackerman"
@@ -29,6 +31,9 @@ def get(url, auth=False):
            "-o", "-"]
     if auth and os.environ.get("OBS_USER") and os.environ.get("OBS_PASS"):
         cmd += ["-u", f"{os.environ['OBS_USER']}:{os.environ['OBS_PASS']}"]
+    tok = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+    if tok and url.startswith("https://api.github.com/"):
+        cmd += ["-H", f"Authorization: token {tok}"]
     cmd.append(url)
     try:
         r = subprocess.run(cmd, capture_output=True, timeout=60)
@@ -147,10 +152,14 @@ def drift():
 
 
 
+def rev_seen(tag, text):
+    """Tag equivalence: dot and dash separators are the same version to a packager."""
+    cands = {tag, tag.replace("-", "."), tag.replace(".", "-"), tag.replace("_", ".")}
+    return any(c and c in text for c in cands)
+
+
 def upstream_versions():
     """Latest GitHub release/tag vs the spec version, <=1 request/s."""
-    import json
-    import time
     bad = []
     checked = 0
     for sp in sorted(glob.glob("*/*.spec")):
@@ -161,7 +170,25 @@ def upstream_versions():
         owner, repo = m.group(1), m.group(2)
         code, body = get(f"https://api.github.com/repos/{owner}/{repo}/releases/latest")
         if code != 200:
-            print(f"hunt: upstream-versions - UNVERIFIED {owner}/{repo} HTTP {code}")
+            code_t, body_t = get(f"https://api.github.com/repos/{owner}/{repo}/tags?per_page=100")
+            tag = ""
+            if code_t == 200:
+                try:
+                    names = [t["name"] for t in json.loads(body_t)]
+                except Exception:
+                    names = []
+                vers = [n for n in names if re.match(r"^v?\d", n)]
+                if vers:
+                    tag = max(vers, key=lambda n: [int(x) for x in re.findall(r"\d+", n)[:4]] or [0]).lstrip("v")
+            if code_t == 200:
+                if tag:
+                    checked += 1
+                    if not rev_seen(tag, txt):
+                        bad.append(f"{os.path.dirname(sp)} spec lacks newest upstream tag {tag}")
+                    time.sleep(1)
+                    continue
+            print(f"hunt: upstream-versions - UNVERIFIED {owner}/{repo} releases HTTP {code}, tags HTTP {code_t}"
+                  + (" (no version-like tag; commit HEAD is the reference)" if code_t == 200 else ""))
             time.sleep(1)
             continue
         try:
@@ -170,7 +197,7 @@ def upstream_versions():
             tag = ""
         if tag:
             checked += 1
-            if tag not in txt:
+            if not rev_seen(tag, txt):
                 bad.append(f"{os.path.dirname(sp)} spec lacks newest upstream {tag}")
         time.sleep(1)
     if bad:
@@ -180,10 +207,68 @@ def upstream_versions():
     return False
 
 
+def vcmp(a, b):
+    """Numeric dotted compare; non-numeric suffixes sort below the bare version."""
+    def parts(v):
+        v = v.strip().lstrip("v")
+        out = []
+        for p in re.split(r"[._+~-]", v):
+            m = re.match(r"^\d+", p)
+            out.append(int(m.group(0)) if m else -1)
+        return out
+    pa, pb = parts(a), parts(b)
+    n = max(len(pa), len(pb))
+    pa += [0] * (n - len(pa))
+    pb += [0] * (n - len(pb))
+    for x, y in zip(pa, pb):
+        if x != y:
+            return -1 if x < y else 1
+    return 0
+
+
+def in_range(version, events):
+    """True when version falls in any [introduced, fixed) interval."""
+    intro = "0"
+    for ev in events:
+        if "introduced" in ev:
+            intro = ev["introduced"]
+        elif "fixed" in ev:
+            if vcmp(version, intro) >= 0 and vcmp(version, ev["fixed"]) < 0:
+                return True
+            intro = None
+        elif "last_affected" in ev:
+            if vcmp(version, intro) >= 0 and vcmp(version, ev["last_affected"]) <= 0:
+                return True
+            intro = None
+    return intro is not None and vcmp(version, intro) >= 0
+
+
+def cna_ceiling(vid):
+    """Upstream fix ceiling from the CVE record; distro ids are not CVE records."""
+    m = re.search(r"(CVE-\d{4}-\d+)", vid)
+    if not m:
+        return None
+    code, body = get("https://cveawg.mitre.org/api/cve/" + m.group(1))
+    if code != 200:
+        return None
+    try:
+        doc = json.loads(body)
+    except Exception:
+        return None
+    for aff in doc.get("containers", {}).get("cna", {}).get("affected", []):
+        for ver in aff.get("versions", []):
+            if ver.get("status") != "affected":
+                continue
+            if ver.get("lessThan"):
+                return ver["lessThan"]
+            v = (ver.get("version") or "").strip()
+            if v.startswith("<"):
+                return v.lstrip("<").strip()
+    return None
+
+
 def cves():
-    """OSV batch; IDs only, range-filter via GET /v1/vulns/<id>."""
-    import json
-    import time
+    """OSV batch; IDs only, interval-filter with GET /v1/vulns/<id>."""
     queries = []
     for sp in sorted(glob.glob("*/*.spec")):
         txt = open(sp, encoding="utf-8", errors="replace").read()
@@ -206,6 +291,7 @@ def cves():
         return False
     hits = [(q, v.get("vulns", [])) for q, v in zip(queries, result) if v.get("vulns")]
     affected = []
+    excused = []
     for q, vulns in hits[:40]:
         for item in vulns:
             code, body = get("https://api.osv.dev/v1/vulns/" + item["id"])
@@ -215,24 +301,29 @@ def cves():
                 adv = json.loads(body)
             except Exception:
                 continue
+            hit = False
+            unfixed = False
             for aff in adv.get("affected", []):
                 for rng in aff.get("ranges", []):
-                    for ev in rng.get("events", []):
-                        if "fixed" in ev and q["version"] == ev["fixed"]:
-                            break
-                    else:
-                        continue
-                    break
-                else:
+                    events = rng.get("events", [])
+                    if in_range(q["version"], events):
+                        hit = True
+                        if not any("fixed" in e for e in events):
+                            unfixed = True
+            if hit and unfixed:
+                ceiling = next((c for c in (cna_ceiling(a) for a in adv.get("aliases", []) + [item["id"]]) if c), None)
+                if ceiling and vcmp(q["version"], ceiling) >= 0:
+                    excused.append(f"{q['package']['name']} {q['version']} {item['id']} (fixed upstream < {ceiling})")
+                    time.sleep(0.2)
                     continue
-                break
-            else:
+            if hit:
                 affected.append(f"{q['package']['name']} {q['version']} {item['id']}")
             time.sleep(0.2)
     if affected:
         print("hunt: cves - AFFECTED " + "; ".join(affected))
         return True
-    print(f"hunt: cves - {len(hits)} OSV hits range-filtered, no fixed-version match")
+    print(f"hunt: cves - {len(hits)} OSV hits range-filtered, no in-range advisory"
+          + (f"; excused {len(excused)} distro-unfixed with upstream fix: " + "; ".join(excused) if excused else ""))
     return False
 
 
@@ -305,7 +396,32 @@ def targets():
     print("hunt: targets - README documents all three targets")
     return False
 
+def selftest():
+    """Positive and negative fixtures for the version/range logic."""
+    ok = True
+    cases = [
+        (in_range("1.4.0", [{"introduced": "0"}, {"fixed": "1.0.1"}]), False, "above fixed ceiling"),
+        (in_range("0.9.0", [{"introduced": "0"}, {"fixed": "1.0.1"}]), True, "below fixed ceiling"),
+        (in_range("1.0.1", [{"introduced": "0"}, {"fixed": "1.0.1"}]), False, "exactly at fixed"),
+        (in_range("1.4.0", [{"introduced": "0"}]), True, "unfixed range covers all"),
+        (in_range("1.2.0", [{"introduced": "1.1.0"}, {"last_affected": "1.3.0"}]), True, "last_affected"),
+        (vcmp("0.85.4", "0.85.10"), -1, "numeric compare, not lexical"),
+        (vcmp("2.0.7", "2.0.7"), 0, "equal"),
+        (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
+        (rev_seen("2026-10-31.1", "Version: 2026.10.31.1"), True, "dash/dot tag equivalence"),
+        (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
+    ]
+    for got, want, label in cases:
+        if got != want:
+            ok = False
+            print(f"selftest FAIL {label}: got {got}, want {want}")
+    print("selftest PASS" if ok else "selftest FAIL")
+    return 0 if ok else 1
+
+
 def main():
+    if "--selftest" in sys.argv:
+        return selftest()
     cats = sys.argv[1:] or ["builds", "published-nvr", "sources", "upstream-versions", "cves", "pins", "probes", "release-discipline", "readme", "targets"]
     bad = False
     if "builds" in cats:
