@@ -26,6 +26,7 @@ override_dh_auto_install:
 	else echo "ERROR: unexpected data.tar compression"; exit 1; fi
 	mkdir -p debian/freebuff-desktop/opt debian/freebuff-desktop/usr/share debian/freebuff-desktop/usr/bin
 	cp -a payload/opt/Freebuff debian/freebuff-desktop/opt/
+	chmod 4755 debian/freebuff-desktop/opt/Freebuff/chrome-sandbox
 	cp -a payload/usr/share/* debian/freebuff-desktop/usr/share/
 	ln -sf /opt/Freebuff/freebuff debian/freebuff-desktop/usr/bin/freebuff
 	find debian/freebuff-desktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete

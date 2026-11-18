@@ -23,6 +23,7 @@ override_dh_auto_install:
 	FLUXER_SRC=$$(ls -d payload/opt/Fluxer* | head -n1); \
 	if [ -z "$$FLUXER_SRC" ]; then echo "No Fluxer source dir found in RPM"; exit 1; fi; \
 	cp -a "$$FLUXER_SRC"/* debian/fluxer/usr/lib/fluxer/
+	chmod 4755 debian/fluxer/usr/lib/fluxer/chrome-sandbox
 	if [ ! -x debian/fluxer/usr/lib/fluxer/fluxer ] && [ -x debian/fluxer/usr/lib/fluxer/fluxer-canary ]; then \
 	    ln -sf fluxer-canary debian/fluxer/usr/lib/fluxer/fluxer; \
 	fi

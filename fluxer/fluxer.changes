@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 18 18:19:56 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- debian.rules: chrome-sandbox promoted to 4755 at build time (RPM side
+  already ships the unshare-userns probe; DEB had no fallback)
+- DEBTRANSFORM-RELEASE -> 2
+
+-------------------------------------------------------------------
 Wed Nov 18 17:19:02 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 2026.1118.85743-0
