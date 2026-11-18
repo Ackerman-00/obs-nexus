@@ -5,5 +5,93 @@ hermes-agent-desktop (0.23.2+git20261118044130.f7e2898-3) unstable; urgency=medi
     fallback, so on kernels without unprivileged user namespaces the
     sandbox never launches.
 
- -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 18:19:56 +0000
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 18:26:42 +0000
 
+hermes-agent-desktop (0.23.2+git20261118044130.f7e2898-1) unstable; urgency=medium
+
+  * New upstream snapshot f7e2898 (base 0.23.2).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 17:43:07 +0000
+
+hermes-agent-desktop (0.23.2+git20261117033945.40d1e95-2) unstable; urgency=medium
+
+  * Bake external update mechanism into the build stamp; updates are managed
+    by the home:ackerman OBS package, not the app.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 06:28:12 +0000
+
+hermes-agent-desktop (0.23.2+git20261117033945.40d1e95-1) unstable; urgency=medium
+
+  * New upstream snapshot 40d1e95 (base 0.23.2).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 17 Nov 2026 16:42:19 +0000
+
+hermes-agent-desktop (0.23.2+git20261116192845.ae2a81c-1) unstable; urgency=medium
+
+  * New upstream snapshot ae2a81c (base 0.23.2).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 17 Nov 2026 03:27:45 +0000
+
+hermes-agent-desktop (0.23.1+git20261116062244.aa6d201-1) unstable; urgency=medium
+
+  * New upstream snapshot aa6d201 (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 16 Nov 2026 16:44:00 +0000
+
+hermes-agent-desktop (0.23.1+git20261115053135.d1b46d7-1) unstable; urgency=medium
+
+  * New upstream snapshot d1b46d7 (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 07:35:14 +0000
+
+hermes-agent-desktop (0.23.1+git20261114155028.71e07ef-2) unstable; urgency=medium
+
+  * Recommend libayatana-appindicator3-1 (StatusNotifierItem tray host).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 22:50:00 +0000
+
+hermes-agent-desktop (0.23.1+git20261114155028.71e07ef-1) unstable; urgency=medium
+
+  * New upstream snapshot 71e07ef (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 15:58:35 +0000
+
+hermes-agent-desktop (0.23.1+git20261114130208.cd582ed-1) unstable; urgency=medium
+
+  * New upstream snapshot cd582ed (base 0.23.1).
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk.
+  * debian/rules: strip the payload's resources/app-update.yml and
+    resources/package-type to disable the in-app self-updater,
+    matching the RPM recipe.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 14:20:00 +0000
+
+hermes-agent-desktop (0.23.1+git20261114034817.422ad18-1) unstable; urgency=medium
+
+  * New upstream snapshot 422ad18 (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 04:29:11 +0000
+
+hermes-agent-desktop (0.23.1+git20261113204052.491f984-1) unstable; urgency=medium
+
+  * New upstream snapshot 491f984 (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 21:17:40 +0000
+
+hermes-agent-desktop (0.23.1+git20261113175838.8f442ba-1) unstable; urgency=medium
+
+  * New upstream snapshot 8f442ba (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 17:58:38 +0000
+
+hermes-agent-desktop (0.23.1+git20261113141540.5c1abd2-1) unstable; urgency=medium
+
+  * New upstream snapshot 5c1abd2 (base 0.23.1).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 14:43:03 +0000
+
+hermes-agent-desktop (0.23.1+git20261113131118.a5af509-1) unstable; urgency=medium
+
+  * Initial Debian_Testing recipe (upstream git snapshot, Electron build).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 20:20:00 +0000

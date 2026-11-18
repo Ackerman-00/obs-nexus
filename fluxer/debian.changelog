@@ -5,5 +5,285 @@ fluxer (2026.1118.85743-2) unstable; urgency=medium
     fallback, so on kernels without unprivileged user namespaces the
     sandbox never launches.
 
- -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 18:19:56 +0000
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 18:26:42 +0000
 
+fluxer (2026.1118.85743-1) unstable; urgency=medium
+
+  * New upstream release 2026.1118.85743.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 17:19:02 +0000
+
+fluxer (2026.1117.144711-1) unstable; urgency=medium
+
+  * New upstream release 2026.1117.144711.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 17 Nov 2026 16:42:46 +0000
+
+fluxer (2026.1116.172250-1) unstable; urgency=medium
+
+  * New upstream release 2026.1116.172250.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 17 Nov 2026 03:28:17 +0000
+
+fluxer (2026.1116.75059-1) unstable; urgency=medium
+
+  * New upstream release 2026.1116.75059.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 16 Nov 2026 16:44:32 +0000
+
+fluxer (2026.1115.225010-1) unstable; urgency=medium
+
+  * New upstream release 2026.1115.225010.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 16 Nov 2026 00:37:07 +0000
+
+fluxer (2026.1115.192010-1) unstable; urgency=medium
+
+  * New upstream release 2026.1115.192010.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 15 Nov 2026 20:24:46 +0000
+
+fluxer (2026.1114.183423-2) unstable; urgency=medium
+
+  * Depends libxss1, libxtst6, libuuid1 to match the payload's declared deps.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 21:55:00 +0000
+
+fluxer (2026.1114.183423-1) unstable; urgency=medium
+
+  * New upstream release 2026.1114.183423.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 20:41:27 +0000
+
+fluxer (2026.1114.60222-1) unstable; urgency=medium
+
+  * debian/rules: strip the payload's resources/app-update.yml and
+    resources/package-type to disable the in-app self-updater,
+    matching the RPM recipe.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 14:32:00 +0000
+
+fluxer (2026.1114.60222-1) unstable; urgency=medium
+
+  * New upstream release 2026.1114.60222.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 13:34:08 +0000
+
+fluxer (2026.1114.41034-1) unstable; urgency=medium
+
+  * New upstream release 2026.1114.41034.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 06:25:41 +0000
+
+fluxer (2026.1113.195311-1) unstable; urgency=medium
+
+  * New upstream release 2026.1113.195311.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 04:29:49 +0000
+
+fluxer (2026.1113.52631-1) unstable; urgency=medium
+
+  * New upstream release 2026.1113.52631.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 13 Nov 2026 06:48:47 +0000
+
+fluxer (2026.1112.200211-1) unstable; urgency=medium
+
+  * New upstream release 2026.1112.200211.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 12 Nov 2026 21:49:25 +0000
+
+fluxer (2026.1112.24929-1) unstable; urgency=medium
+
+  * New upstream release 2026.1112.24929.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 12 Nov 2026 07:12:25 +0000
+
+fluxer (2026.1111.222719-1) unstable; urgency=medium
+
+  * New upstream release 2026.1111.222719.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 12 Nov 2026 05:13:19 +0000
+
+fluxer (2026.1111.152810-1) unstable; urgency=medium
+
+  * New upstream release 2026.1111.152810.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 11 Nov 2026 21:49:09 +0000
+
+fluxer (2026.1109.42917-1) unstable; urgency=medium
+
+  * New upstream release 2026.1109.42917.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 09 Nov 2026 06:39:55 +0000
+
+fluxer (2026.1108.50402-1) unstable; urgency=medium
+
+  * New upstream release 2026.1108.50402.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 08 Nov 2026 19:21:52 +0000
+
+fluxer (2026.1107.235046-1) unstable; urgency=medium
+
+  * New upstream release 2026.1107.235046.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 08 Nov 2026 03:47:22 +0000
+
+fluxer (2026.1106.11400-1) unstable; urgency=medium
+
+  * New upstream release 2026.1106.11400.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 06 Nov 2026 05:35:40 +0000
+
+fluxer (2026.1105.25408-1) unstable; urgency=medium
+
+  * New upstream release 2026.1105.25408.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 05 Nov 2026 05:36:29 +0000
+
+fluxer (2026.1101.102918-1) unstable; urgency=medium
+
+  * New upstream release 2026.1101.102918.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 01 Nov 2026 12:52:29 +0000
+
+fluxer (2026.1101.41644-1) unstable; urgency=medium
+
+  * New upstream release 2026.1101.41644.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 01 Nov 2026 10:18:43 +0000
+
+fluxer (2026.1031.201025-1) unstable; urgency=medium
+
+  * New upstream release 2026.1031.201025.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 23:56:26 +0000
+
+fluxer (2026.1031.143121-1) unstable; urgency=medium
+
+  * New upstream release 2026.1031.143121.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 17:00:46 +0000
+
+fluxer (2026.1031.50514-1) unstable; urgency=medium
+
+  * New upstream release 2026.1031.50514.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 11:51:57 +0000
+
+fluxer (2026.1030.232443-1) unstable; urgency=medium
+
+  * New upstream release 2026.1030.232443.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 31 Oct 2026 04:33:50 +0000
+
+fluxer (2026.1026.24218-1) unstable; urgency=medium
+
+  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
+    payload talks to org.freedesktop.portal.* at runtime.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 16:34:14 +0000
+
+fluxer (2026.1026.24218-1) unstable; urgency=medium
+
+  * New upstream release 2026.1026.24218.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 26 Oct 2026 05:57:13 +0000
+
+fluxer (2026.1025.12517-1) unstable; urgency=medium
+
+  * New upstream release 2026.1025.12517.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 25 Oct 2026 03:35:59 +0000
+
+fluxer (2026.1018.223338-1) unstable; urgency=medium
+
+  * New upstream release 2026.1018.223338.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 19 Oct 2026 03:38:48 +0000
+
+fluxer (2026.1018.183123-1) unstable; urgency=medium
+
+  * New upstream release 2026.1018.183123.
+
+ -- Ackerman-00 <noreply@example.com>  Sun, 18 Oct 2026 20:14:23 +0000
+
+fluxer (2026.1017.133957-1) unstable; urgency=medium
+
+  * New upstream release 2026.1017.133957.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 17 Oct 2026 15:08:19 +0000
+
+fluxer (2026.1015.145325-2) unstable; urgency=medium
+
+  * Fix Depends: rename libpipewire-0.3-0 to libpipewire-0.3-0t64
+    (post-t64 name; old name unresolvable on Testing/Sid), add
+    libsecret-1-0 and libpulse0 (dlopen-only, per upstream RPM).
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 21:39:56 +0000
+
+fluxer (2026.1015.145325-1) unstable; urgency=medium
+
+  * New upstream release 2026.1015.145325.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 18:10:43 +0000
+
+fluxer (2026.1015.24528-1) unstable; urgency=medium
+
+  * New upstream release 2026.1015.24528.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 08:24:03 +0000
+
+fluxer (2026.1015.15300-1) unstable; urgency=medium
+
+  * New upstream release 2026.1015.15300.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 04:36:30 +0000
+
+fluxer (2026.1015.3958-1) unstable; urgency=medium
+
+  * New upstream release 2026.1015.3958.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 15 Oct 2026 03:34:52 +0000
+
+fluxer (2026.1014.200615-1) unstable; urgency=medium
+
+  * New upstream release 2026.1014.200615.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 14 Oct 2026 21:21:21 +0000
+
+fluxer (2026.1014.161544-1) unstable; urgency=medium
+
+  * New upstream release 2026.1014.161544.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 14 Oct 2026 19:56:00 +0000
+
+fluxer (2026.1014.143444-1) unstable; urgency=medium
+
+  * New upstream release 2026.1014.143444.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 14 Oct 2026 15:51:14 +0000
+
+fluxer (2026.1013.200953-1) unstable; urgency=medium
+
+  * New upstream release 2026.1013.200953.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 13 Oct 2026 22:22:45 +0000
+
+fluxer (2026.1013.15209-1) unstable; urgency=medium
+
+  * New upstream release 2026.1013.15209.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 13 Oct 2026 13:43:36 +0000
+
+fluxer (2026.1012.202129-1) unstable; urgency=medium
+
+  * New upstream release 2026.1012.202129.
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 13 Oct 2026 00:07:03 +0000
+
+fluxer (2026.1006.171735-1) unstable; urgency=medium
+
+  * Initial Debian_Testing recipe (repack of the upstream .rpm).
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 09 Oct 2026 12:00:00 +0000
