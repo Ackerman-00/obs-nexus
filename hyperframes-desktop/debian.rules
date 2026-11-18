@@ -26,6 +26,9 @@ override_dh_auto_install:
 	else echo "ERROR: unexpected data.tar compression"; exit 1; fi
 	mkdir -p debian/hyperframes-desktop/opt debian/hyperframes-desktop/usr/share debian/hyperframes-desktop/usr/bin
 	cp -a payload/opt/hyperframes debian/hyperframes-desktop/opt/
+	chmod 4755 debian/hyperframes-desktop/opt/hyperframes/chrome-sandbox
 	cp -a payload/usr/share/* debian/hyperframes-desktop/usr/share/
 	if [ -L payload/usr/bin/hyperframes ] || [ -e payload/usr/bin/hyperframes ]; then ln -sf /opt/hyperframes/HyperFrames debian/hyperframes-desktop/usr/bin/hyperframes; fi
 	find debian/hyperframes-desktop \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' -o -path '*/resources/build.json' \) -delete
+override_dh_fixperms:
+	dh_fixperms -Xchrome-sandbox

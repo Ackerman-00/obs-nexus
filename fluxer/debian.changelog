@@ -1,3 +1,9 @@
+fluxer (2026.1118.85743-3) unstable; urgency=medium
+
+  * debian.rules: override_dh_fixperms now runs dh_fixperms -Xchrome-sandbox; the plain chmod in dh_auto_install was reset by dh_fixperms, so the DEB shipped a 0755 sandbox. Proven with a real dh build in debian:sid: binary data tar carries -rwsr-xr-x root/root.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 19:01:43 +0000
+
 fluxer (2026.1118.85743-2) unstable; urgency=medium
 
   * chrome-sandbox: promote it to 4755 at package build time like the

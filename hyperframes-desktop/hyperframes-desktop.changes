@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 19:01:43 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- debian.rules: dh_fixperms -Xchrome-sandbox keeps the 4755 sandbox the
+  plain chmod could not; DEBTRANSFORM-RELEASE 2
+
+-------------------------------------------------------------------
 Wed Nov 18 17:52:52 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0.b1103-0
