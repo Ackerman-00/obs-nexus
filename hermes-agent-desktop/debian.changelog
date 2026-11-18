@@ -1,3 +1,9 @@
+hermes-agent-desktop (0.23.2+git20261118044130.f7e2898-1) unstable; urgency=medium
+
+  * New upstream snapshot f7e2898 (base 0.23.2).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 17:43:07 +0000
+
 hermes-agent-desktop (0.23.2+git20261117033945.40d1e95-2) unstable; urgency=medium
 
   * Bake external update mechanism into the build stamp; updates are managed

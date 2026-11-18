@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 17:43:07 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.2+git20261118044130.f7e2898-0
+- Update hermes-agent-desktop to base 0.23.2 + main f7e2898
+
+-------------------------------------------------------------------
 Wed Nov 18 17:03:45 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - chrome-sandbox: declare the install-time managed mode with %verify(not mode),
