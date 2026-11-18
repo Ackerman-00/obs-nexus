@@ -2,28 +2,28 @@
 # authority: opencode curated list > live catalog > published independent scores > vendor claims
 # order is set by the per-run web check in tools/sweep-prompt.md, not by hand
 
-# tier 1 - independently scored leaders (re-checked 2026-11-15)
-# AA Intelligence Index 33 (max variant) - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15; highest free id on the board
+# tier 1 - independently scored leaders (re-checked 2026-11-18)
+# AA Intelligence Index 33 (max variant), LiveBench coding 80.4, OpenCode 7-day usage leader at 180T tokens - sources: artificialanalysis.ai/leaderboards/models, livebench.ai, opencode.ai/data fetched 2026-11-18
 deepseek-v4.1-flash-free
-# AA Intelligence Index 31 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
+# AA Intelligence Index 31 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-18
 inkling-2-small-free
-# AA Intelligence Index 27 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
+# AA Intelligence Index 27 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-18
 mimo-v2.6-flash-free
 
 # tier 2 - scored, lower index or single-source
-# AA Intelligence Index 18 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
+# AA Intelligence Index 18 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-18
 beam-free
-# AA Intelligence Index 14 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
+# AA Intelligence Index 14 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-18
 nemotron-3.5-super-vl-free
 # AA Coding Index 48.3 estimated, medium confidence; SWE-bench Verified 74.2 vendor - source: Benchgap
 flint-40b-free
 
 # tier 3 - no independent coding score (live catalog re-verified 2026-11-15)
-# AA Intelligence Index 6 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-15
+# AA Intelligence Index 6 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-18
 nemotron-3.5-lightning-free
 # no independent coding score; DeepSWE 64.6, Terminal-Bench 4.0 38.5 vendor - source: Meituan launch evals
 longcat-2.5-free
-# no independent score for the Flash variant (only base Hy4 scored, AA 35); DeepSWE 64.6 rank 60/121, Terminal-Bench 4.0 19.2 rank 73/135, APEX-Agents 63.1 - source: datalearner.com hy4-flash, live catalog 2026-11-17
+# no independent score for the Flash variant (only base Hy4 scored, AA 35); DeepSWE 64.6 rank 60/121, Terminal-Bench 4.0 19.2 rank 73/135, APEX-Agents 63.1 - source: datalearner.com hy4-flash, live catalog 2026-11-18
 hy4-flash-free
 # no independent score; stealth model - source: OpenCode Zen catalog
 iceman-free
