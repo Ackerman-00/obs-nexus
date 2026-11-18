@@ -1,0 +1,2 @@
+# direct urllib3 import
+addFilter("explicit-lib-dependency python3-urllib3")

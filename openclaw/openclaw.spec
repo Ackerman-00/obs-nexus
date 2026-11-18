@@ -18,6 +18,7 @@ ExclusiveArch:  x86_64
 BuildRequires:  binutils
 BuildRequires:  tar
 BuildRequires:  desktop-file-utils
+BuildRequires:  fdupes
 BuildRequires:  hicolor-icon-theme
 
 Requires:       libgtk-3.so.0()(64bit)
@@ -70,6 +71,8 @@ done
 install -d %{buildroot}%{_datadir}/applications
 install -Dpm0644 usr/share/applications/OpenClaw.desktop %{buildroot}%{_datadir}/applications/OpenClaw.desktop
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_prefix}/lib/OpenClaw/LICENSE
+
+%fdupes %{buildroot}%{_prefix}/lib/OpenClaw
 
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check

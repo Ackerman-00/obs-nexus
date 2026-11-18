@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Nov 18 03:46:38 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- %fdupes the payload and drop the filters rpmlint reports as unused.
+
+-------------------------------------------------------------------
 Sun Nov 15 13:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - spec-cleaner pass: Release back to the repo norm 0 (was 1 after the

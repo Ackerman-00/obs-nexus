@@ -90,6 +90,13 @@ find third_party -type f \( -name "LICENSE*" -o -name "COPYING*" -o -name "NOTIC
 done
 
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
+
+sed -i '1s|^#!/usr/bin/env sh$|#!/usr/bin/sh|' \
+    %{buildroot}%{_bindir}/%{name}-print-greetd-config \
+    %{buildroot}%{_bindir}/%{name}-session \
+    %{buildroot}%{_bindir}/%{name}-xsession
+sed -i '1s|^#!/usr/bin/env bash$|#!/usr/bin/bash|' %{buildroot}%{_datadir}/%{name}/*.sh
+chmod 0644 %{buildroot}%{_datadir}/%{name}/greetd_setup_lib.sh
 %check
 %meson_test
 

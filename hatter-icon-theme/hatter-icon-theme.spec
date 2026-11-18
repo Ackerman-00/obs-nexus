@@ -42,6 +42,7 @@ install -d -m 0755 %{buildroot}%{_datadir}/icons
 cp -a dist/* %{buildroot}%{_datadir}/icons/
 find %{buildroot}%{_datadir}/icons -name icon-theme.cache -delete
 find %{buildroot}%{_datadir}/icons -xtype l -delete
+find %{buildroot}%{_datadir}/icons -name '*.sh' -exec sed -i '1s|^#!/usr/bin/env bash$|#!/usr/bin/bash|' {} +
 %fdupes %{buildroot}%{_datadir}/icons
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 

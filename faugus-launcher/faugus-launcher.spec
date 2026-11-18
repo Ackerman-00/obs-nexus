@@ -6,6 +6,7 @@ License:        MIT
 Group:          System/GUI/Other
 URL:            https://github.com/Faugus/faugus-launcher
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
+Source1:        faugus-launcher-rpmlintrc
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
 BuildRequires:  gettext-runtime

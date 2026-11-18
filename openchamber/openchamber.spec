@@ -13,6 +13,7 @@ Source0:        %{url}/releases/download/v%{version}/OpenChamber-%{version}-linu
 Source1:        openchamber-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  desktop-file-utils
+BuildRequires:  fdupes
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  tar
 BuildRequires:  xz
@@ -91,6 +92,8 @@ install -d -m 0755 %{buildroot}%{_datadir}
 cp -a usr/share/applications %{buildroot}%{_datadir}/
 cp -a usr/share/icons %{buildroot}%{_datadir}/
 cp -a usr/share/doc %{buildroot}%{_datadir}/ 2>/dev/null || true
+
+%fdupes %{buildroot}/opt/OpenChamber
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/openchamber.desktop
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true

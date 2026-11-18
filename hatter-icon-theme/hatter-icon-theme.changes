@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 03:46:38 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Drop the filter rpmlint reports as unused and give the shipped helper
+  script an absolute bash interpreter so rpmlint reports no errors.
+
+-------------------------------------------------------------------
 Mon Nov 16 00:28:20 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 4.1-0

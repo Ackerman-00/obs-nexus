@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 18 03:46:38 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Filter explicit-lib-dependency python3-urllib3: the launcher imports
+  urllib3.util.retry directly, so the explicit requirement is correct.
+
+-------------------------------------------------------------------
 Sun Nov 15 13:52:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Declare runtime python modules the code imports directly:

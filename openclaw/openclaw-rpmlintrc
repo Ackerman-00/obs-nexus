@@ -1,1 +1,5 @@
 addFilter("unstripped-binary-or-object")
+
+# upstream npm payload, scripts are not executed by the package
+addFilter("openclaw.*: E: script-without-shebang /usr/lib/OpenClaw/desktop-runtime/package/node_modules/")
+addFilter("openclaw.*: E: wrong-script-end-of-line-encoding /usr/lib/OpenClaw/desktop-runtime/package/node_modules/")
