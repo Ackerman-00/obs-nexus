@@ -4,7 +4,7 @@
 %global __provides_exclude_from ^/opt/obsidian/.*$
 Name:           obsidian
 Version:        1.15.1
-Release:        2
+Release:        3
 Summary:        A powerful knowledge base for plain text Markdown files
 License:        LicenseRef-SUSE-Freeware
 Group:          Productivity/Text/Editors
@@ -82,6 +82,7 @@ chmod go-w squashfs-root
 %install
 install -dm755 %{buildroot}/opt/obsidian
 cp -ar squashfs-root/* %{buildroot}/opt/obsidian/
+rm -f %{buildroot}/opt/obsidian/%{app_id}.desktop
 install -Dm755 %{SOURCE2} %{buildroot}%{_bindir}/%{name}
 
 install -dm755 %{buildroot}%{_datadir}/applications

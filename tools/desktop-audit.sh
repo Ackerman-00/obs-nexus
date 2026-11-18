@@ -25,7 +25,7 @@ docker run --rm "$img" bash -lc '
   for f in $(find /usr/share/applications /usr/share/xsessions /usr/share/wayland-sessions /opt -name "*.desktop" 2>/dev/null | head -40); do
     found=$((found+1))
     icon=$(grep -m1 "^Icon=" "$f" | cut -d= -f2)
-    exec=$(grep -m1 "^Exec=" "$f" | cut -d= -f2 | awk "{print \\$1}")
+    exec=$(grep -m1 "^Exec=" "$f" | cut -d= -f2 | cut -d" " -f1)
     case "$f" in
       /usr/share/applications/*)
         if [ -n "$icon" ] && ! find /usr/share/icons /usr/share/pixmaps /opt -iname "$icon.*" 2>/dev/null | grep -q .; then echo "ICON_MISSING $f $icon"; bad=$((bad+1)); fi ;;

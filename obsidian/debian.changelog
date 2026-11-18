@@ -1,46 +1,7 @@
-obsidian (1.15.1-2) unstable; urgency=medium
+obsidian (1.15.1-3) unstable; urgency=medium
 
-  * debian/rules: set chrome-sandbox 4755 after dh_fixperms. The chmod in
-    dh_auto_install (or no chmod at all) left the setuid sandbox helper at
-    0755 because dh_fixperms strips setuid from every file.
+  * debian/rules: drop the payload's AppImage desktop entry from
+    /opt/obsidian; it duplicates the generated entry and point at AppRun.
 
- -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 20:26:50 +0000
+ -- Ackerman-00 <noreply@example.com>  Wed, 18 Nov 2026 22:52:51 +0000
 
-obsidian (1.15.1-1) unstable; urgency=medium
-
-  * debian/rules: strip the payload's resources/app-update.yml and
-    resources/package-type to disable the in-app self-updater,
-    matching the RPM recipe.
-
- -- Ackerman-00 <noreply@example.com>  Sat, 14 Nov 2026 14:32:00 +0000
-
-obsidian (1.15.1-1) unstable; urgency=medium
-
-  * New upstream release 1.15.1.
-
- -- Ackerman-00 <noreply@example.com>  Thu, 12 Nov 2026 21:45:23 +0000
-
-obsidian (1.15.0-1) unstable; urgency=medium
-
-  * New upstream release 1.15.0.
-
- -- Ackerman-00 <noreply@example.com>  Tue, 03 Nov 2026 00:46:20 +0000
-
-obsidian (1.14.5-1) unstable; urgency=medium
-
-  * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the
-    payload talks to org.freedesktop.portal.* at runtime.
-
- -- Ackerman-00 <noreply@example.com>  Wed, 28 Oct 2026 16:34:14 +0000
-
-obsidian (1.14.5-1) unstable; urgency=medium
-
-  * New upstream release 1.14.5.
-
- -- Ackerman-00 <noreply@example.com>  Thu, 22 Oct 2026 21:37:53 +0000
-
-obsidian (1.14.4-1) unstable; urgency=medium
-
-  * Initial Debian_Testing recipe (repack of the upstream AppImages).
-
- -- Ackerman-00 <noreply@example.com>  Fri, 09 Oct 2026 12:00:00 +0000

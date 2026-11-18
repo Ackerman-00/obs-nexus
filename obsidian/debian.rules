@@ -31,6 +31,7 @@ override_dh_auto_install:
 	chmod +x "$$APPIMAGE" && ./"$$APPIMAGE" --appimage-extract >/dev/null && mv squashfs-root appimage-root
 	mkdir -p debian/obsidian/opt/obsidian debian/obsidian/usr/bin debian/obsidian/usr/share/applications
 	cp -ar appimage-root/* debian/obsidian/opt/obsidian/
+	rm -f debian/obsidian/opt/obsidian/md.obsidian.Obsidian.desktop
 	printf '#!/bin/bash\nOBSIDIAN_USER_FLAGS_FILE="$${XDG_CONFIG_HOME:-$$HOME/.config}/obsidian/user-flags.conf"\nif [ -f "$$OBSIDIAN_USER_FLAGS_FILE" ]; then\n    mapfile -t OBSIDIAN_USER_FLAGS < <(sed -r "/^( *#|$$)/d;s%% %%\\n%%g" "$$OBSIDIAN_USER_FLAGS_FILE")\nfi\nif [ "$$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$$WAYLAND_DISPLAY" ]; then\n    export ELECTRON_OZONE_PLATFORM_HINT="$${ELECTRON_OZONE_PLATFORM_HINT:-auto}"\nfi\nexec /opt/obsidian/obsidian "$${OBSIDIAN_USER_FLAGS[@]}" "$$@"\n' > debian/obsidian/usr/bin/obsidian
 	chmod 0755 debian/obsidian/usr/bin/obsidian
 	sed -e 's|^Exec=.*|Exec=/usr/bin/obsidian %U|' -e 's|^Icon=.*|Icon=md.obsidian.Obsidian|' \
