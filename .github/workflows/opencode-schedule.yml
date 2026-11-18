@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   opencode:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 355
     permissions:
       artifact-metadata: write
@@ -2238,7 +2238,7 @@ jobs:
           if-no-files-found: ignore
 
   cleanup:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     if: always()
     needs: opencode
     permissions:

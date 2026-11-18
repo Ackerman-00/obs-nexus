@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   select:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     outputs:
       deb_matrix: ${{ steps.pick.outputs.deb_matrix }}
       rpm_matrix: ${{ steps.pick.outputs.rpm_matrix }}
@@ -59,7 +59,7 @@ jobs:
   rpm:
     needs: select
     if: needs.select.outputs.rpm_matrix != '[]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -81,7 +81,7 @@ jobs:
   deb:
     needs: select
     if: needs.select.outputs.deb_matrix != '[]'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 4
