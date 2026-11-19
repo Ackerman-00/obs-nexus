@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 19 16:21:14 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.11+git20261119115344.dd8236b-0
+- Update concat-unstable to base 0.2.11 + main dd8236b
+
+-------------------------------------------------------------------
 Thu Nov 19 02:48:21 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.11+git20261119022254.cf9e4ee-0

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 19 16:15:43 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 3.8.9-0
+- Update omnirush-desktop to v3.8.9
+
+-------------------------------------------------------------------
 Wed Nov 18 20:48:38 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - chrome-sandbox ships setuid 4755. %verify(not mode) alone kept the

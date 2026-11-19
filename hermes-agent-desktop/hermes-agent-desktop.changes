@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 19 16:09:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.23.2+git20261119054440.fe8b920-0
+- Update hermes-agent-desktop to base 0.23.2 + main fe8b920
+
+-------------------------------------------------------------------
 Wed Nov 18 20:48:38 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - chrome-sandbox ships setuid 4755. %verify(not mode) alone kept the

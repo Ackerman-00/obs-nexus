@@ -2,13 +2,13 @@
 %global __requires_exclude_from ^/opt/HermesDesktop/.*$
 %global __provides_exclude_from ^/opt/HermesDesktop/.*$
 %global __brp_mangle_shebangs_exclude_from ^/opt/HermesDesktop/.*$
-%global commit          f7e2898aaefc8f967dbf7345e3999a65672fe60e
-%global shortcommit     f7e2898
-%global gitdate         20261118044130
+%global commit          fe8b920cae0980cef854f478236f525aaf2b93ce
+%global shortcommit     fe8b920
+%global gitdate         20261119054440
 %global base_version    0.23.2
 Name:           hermes-agent-desktop
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        2
+Release:        0
 Summary:        Native desktop shell for Hermes Agent (git snapshot)
 License:        MIT
 Group:          Development/Tools/IDE

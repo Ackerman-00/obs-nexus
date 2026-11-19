@@ -1,3 +1,9 @@
+qoder (0.5.16-1) unstable; urgency=medium
+
+  * New upstream release 0.5.16.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 19 Nov 2026 16:14:39 +0000
+
 qoder (0.5.14-1) unstable; urgency=medium
 
   * New upstream release 0.5.14.

@@ -1,3 +1,9 @@
+hermes-agent-desktop (0.23.2+git20261119054440.fe8b920-1) unstable; urgency=medium
+
+  * New upstream snapshot fe8b920 (base 0.23.2).
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 19 Nov 2026 16:09:58 +0000
+
 hermes-agent-desktop (0.23.2+git20261118044130.f7e2898-4) unstable; urgency=medium
 
   * debian.rules: override_dh_fixperms now runs dh_fixperms -Xchrome-sandbox; the plain chmod in dh_auto_install was reset by dh_fixperms, so the DEB shipped a 0755 sandbox. Proven with a real dh build in debian:sid: binary data tar carries -rwsr-xr-x root/root.
