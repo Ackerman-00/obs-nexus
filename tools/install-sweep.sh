@@ -22,6 +22,8 @@ tw_probe() {
       sleep 3
     done
     [ "$ok" = 1 ] || { echo HARNESS_REPO_ADD_FAIL; tail -3 /tmp/r.log; exit 2; }
+    zypper --non-interactive removerepo repo-oss repo-update repo-non-oss repo-openh264 >/dev/null 2>&1
+    zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://ftp.halifax.rwth-aachen.de/opensuse/tumbleweed/repo/oss/ oss-mirror >/tmp/l.log 2>&1 || { echo HARNESS_DISTRO_MIRROR_FAIL; tail -3 /tmp/l.log; exit 2; }
     ok=0
     for attempt in 1 2 3; do
       zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 && ok=1 && break
