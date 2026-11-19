@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 19 05:07:11 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.85.7-0
+- Update koharu to 0.85.7
+
+-------------------------------------------------------------------
 Wed Nov 18 20:48:38 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - chrome-sandbox ships setuid 4755. %verify(not mode) alone kept the
