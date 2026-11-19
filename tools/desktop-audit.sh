@@ -16,19 +16,24 @@ case "$tgt" in
 esac
 case "$tgt" in
   tumbleweed) img=registry.opensuse.org/opensuse/tumbleweed:latest; setup='
-    zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus >/dev/null 2>&1
-    zypper --non-interactive --gpg-auto-import-keys refresh >/dev/null 2>&1
-    zypper --non-interactive install --no-recommends '"$pkg"' >/dev/null 2>&1' ;;
-  testing|sid) img="debian:$tgt"; repo="Debian_Testing"; [ "$tgt" = sid ] && repo="Debian_Unstable"; setup='
-    apt-get update -qq >/dev/null 2>&1
+    zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus >/tmp/r.log 2>&1 || { echo SETUP_REPO_FAIL; tail -3 /tmp/r.log; exit 2; }
+    zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 || { echo SETUP_REFRESH_FAIL; tail -3 /tmp/r.log; exit 2; }
+    zypper --non-interactive install --no-recommends '"$pkg"' >/tmp/i.log 2>&1 || { echo SETUP_INSTALL_FAIL; tail -5 /tmp/i.log; exit 2; }' ;;
+  testing|sid) img="debian:$tgt"; repo="Debian_Testing"; [ "$tgt" = sid ] && repo="Debian_Unstable"
+    deb="${pkg}"
+    if [ -f "$pkg/$pkg.dsc" ]; then
+      deb=$(awk '/^Binary:/{print $2; exit}' "$pkg/$pkg.dsc")
+    fi
+    setup='
+    apt-get update -qq >/tmp/r.log 2>&1 || { echo SETUP_INDEX_FAIL; tail -3 /tmp/r.log; exit 2; }
     install -d -m 0755 /etc/apt/keyrings
-    curl -fsSL https://download.opensuse.org/repositories/home:ackerman/'"$repo"'/Release.key | gpg --dearmor -o /etc/apt/keyrings/obs-nexus.gpg >/dev/null 2>&1
+    curl -fsSL https://download.opensuse.org/repositories/home:ackerman/'"$repo"'/Release.key | gpg --dearmor -o /etc/apt/keyrings/obs-nexus.gpg >/tmp/r.log 2>&1 || { echo SETUP_KEY_FAIL; tail -3 /tmp/r.log; exit 2; }
     echo "deb [signed-by=/etc/apt/keyrings/obs-nexus.gpg] https://download.opensuse.org/repositories/home:ackerman/'"$repo"'/ /" > /etc/apt/sources.list.d/obs-nexus.list
-    apt-get update -qq >/dev/null 2>&1
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends '"$pkg"' >/dev/null 2>&1' ;;
+    apt-get update -qq >/tmp/r.log 2>&1 || { echo SETUP_INDEX_FAIL; tail -3 /tmp/r.log; exit 2; }
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends '"$deb"' >/tmp/i.log 2>&1 || { echo SETUP_INSTALL_FAIL; tail -5 /tmp/i.log; exit 2; }' ;;
   *) echo "unknown target $tgt" >&2; exit 2 ;;
 esac
-docker run --rm "$img" bash -lc '
+timeout "${TMO:-900}" docker run --rm "$img" bash -lc '
   set -u
   '"$setup"'
   bad=0; found=0
@@ -45,6 +50,10 @@ docker run --rm "$img" bash -lc '
       command -v "$exec" >/dev/null 2>&1 || find /opt -name "$exec" -type f 2>/dev/null | grep -q . || { echo "EXEC_MISSING $f $exec"; bad=$((bad+1)); }
     fi
   done
+  if [ "$found" -eq 0 ]; then
+    echo "desktop_files=0 NO_DESKTOP_ENTRY - installed payload ships no .desktop, not a pass"
+    exit 3
+  fi
   echo "desktop_files=$found bad=$bad"
   [ "$bad" -eq 0 ]
 '

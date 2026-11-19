@@ -33,6 +33,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import urllib.request
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,9 +51,16 @@ FORBIDDEN = {"wlroots"}
 
 
 def fetch(url: str, timeout: int = 60) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "opensuse-nexus-collision-check"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+    last: Exception | None = None
+    for attempt in range(4):
+        req = urllib.request.Request(url, headers={"User-Agent": "opensuse-nexus-collision-check"})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except Exception as exc:
+            last = exc
+            time.sleep(3 * (attempt + 1))
+    raise last
 
 
 def local_packages() -> list[str]:
