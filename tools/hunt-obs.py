@@ -141,9 +141,39 @@ def vprefix(v):
     return m.group(1) if m else ""
 
 
+INFLIGHT_STATES = {"building", "scheduled", "dispatching", "signing", "blocked", "unbroken"}
+
+
+def build_states():
+    """Per package: its own status codes plus whether the repository is still building/publishing."""
+    code, body = get("%s/build/%s/_result" % (API, PROJECT), auth=True)
+    states = {}
+    if code != 200:
+        return states
+    text = body.decode("utf-8", "replace")
+    for rattrs_text, inner in re.findall(r"<result\b([^>]*)>(.*?)</result>", text, re.S):
+        rattrs = attrs(rattrs_text)
+        busy = rattrs.get("state", "") in INFLIGHT_STATES or rattrs.get("code", "") in INFLIGHT_STATES
+        for pkg, st in re.findall(r'<status package="([^"]+)" code="([^"]+)"', inner):
+            info = states.setdefault(pkg, {"busy": False, "codes": set()})
+            info["codes"].add(st)
+            info["busy"] = info["busy"] or busy
+    return states
+
+
+def published_verdict(pub, spec, info):
+    """An index that trails the spec is only a defect when nothing is building or publishing."""
+    if vcmp(pub, spec) >= 0:
+        return "ok"
+    if info.get("busy") or (set(info.get("codes", ())) & INFLIGHT_STATES):
+        return "inflight"
+    return "behind"
+
+
 def published():
     local = specs()
     debs = deb_binaries()
+    states = build_states()
     seen = {}
     for target, url in TARGETS.items():
         code, body = get(url)
@@ -180,7 +210,7 @@ def published():
     if not seen:
         print("hunt: published-nvr - UNVERIFIED no published index readable on any target")
         return "unverified"
-    missing, behind, compared, uncomparable = [], [], 0, 0
+    missing, behind, inflight, compared, uncomparable = [], [], [], 0, 0
     for d, meta in sorted(local.items()):
         expects_deb = d in debs
         raw = meta["raw_version"]
@@ -199,17 +229,24 @@ def published():
                 uncomparable += 1
                 continue
             compared += 1
-            if vcmp(pub, spec_v) < 0:
+            verdict = published_verdict(pub, spec_v, states.get(d, {}))
+            if verdict == "behind":
                 behind.append("%s on %s serves %s, spec builds %s"
                               % (want, target, names[want], meta["version"]))
+            elif verdict == "inflight":
+                inflight.append("%s on %s serves %s while %s builds"
+                                % (want, target, names[want], meta["version"]))
     if missing or behind:
         print("hunt: published-nvr - DEFECT %d missing, %d behind the spec"
               % (len(missing), len(behind)))
         for row in (missing + behind)[:30]:
             print("  FINDING %s" % row)
         return "defect"
+    for row in inflight:
+        print("  note in flight: %s" % row)
     print("hunt: published-nvr - %d targets read, %d names present, %d versions at/above the spec, "
-          "%d macro/unparsable versions skipped" % (len(seen), len(local), compared, uncomparable))
+          "%d in-flight builds, %d macro/unparsable versions skipped"
+          % (len(seen), len(local), compared, len(inflight), uncomparable))
     return "ok"
 
 
@@ -577,6 +614,9 @@ def selftest():
         (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
         (vprefix("1:0.0.49-1+74.3"), "0.0.49", "epoch and release stripped"),
         (vprefix("1.24.2b-21.1"), "1.24.2", "letter suffix dropped"),
+        (published_verdict("0.85.7", "0.86.0", {"busy": True, "codes": {"succeeded"}}), "inflight", "repo still publishing"),
+        (published_verdict("0.85.7", "0.86.0", {"busy": False, "codes": {"succeeded"}}), "behind", "trailing index, repo finished"),
+        (published_verdict("0.86.0", "0.86.0", {"busy": False, "codes": {"succeeded"}}), "ok", "index at the spec"),
     ]
     for got, want, label in cases:
         if got != want:
