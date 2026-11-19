@@ -1,34 +1,36 @@
-bibata-cursor-theme
-cline-desktop
-concat-unstable
-concat
-faugus-launcher
-fluxer
-freebuff-desktop
-ghostty
-hatter-icon-theme
-helium-browser
-hermes-agent-desktop
-heroic-games-launcher
-hyperframes-desktop
-koharu
-lazyvim-git
-localsend
-mangowm
-matugen
-mixtapes
-noctalia-greeter
-obsidian
-omnirush-desktop
-openchamber
-openclaw
-protonplus
-qoder
-rootapp
-scenefx
-stoat-desktop
-umbriel-git
-vesktop
-whitesur-icon-theme
-xdg-desktop-portal-umbriel-git
-zen-browser
+# pkg|dnf-name|deb-name|smoke - one row per spec dir; empty smoke = files-only.
+# Debian names come from each .dsc Binary: field (heroic-games-launcher ships heroic).
+bibata-cursor-theme|bibata-cursor-theme|bibata-cursor-theme|
+cline-desktop|cline-desktop|cline-desktop|
+concat|concat|concat|test -x /usr/bin/concat
+concat-unstable|concat-unstable|concat-unstable|test -x /usr/bin/concat-unstable
+faugus-launcher|faugus-launcher|faugus-launcher|test -x /usr/bin/faugus-launcher
+fluxer|fluxer|fluxer|
+freebuff-desktop|freebuff-desktop|freebuff-desktop|
+ghostty|ghostty|ghostty|test -x /usr/bin/ghostty
+hatter-icon-theme|hatter-icon-theme|hatter-icon-theme|
+helium-browser|helium-browser|helium-browser|
+hermes-agent-desktop|hermes-agent-desktop|hermes-agent-desktop|test -x /usr/bin/hermes-agent-desktop
+heroic-games-launcher|heroic-games-launcher|heroic|test -x /usr/bin/heroic
+hyperframes-desktop|hyperframes-desktop|hyperframes-desktop|
+koharu|koharu|koharu|test -x /usr/bin/koharu
+lazyvim-git|lazyvim-git|lazyvim-git|
+localsend|localsend|localsend|
+mangowm|mangowm|mangowm|
+matugen|matugen|matugen|test -x /usr/bin/matugen
+mixtapes|mixtapes|mixtapes|test -x /usr/bin/mixtapes
+noctalia-greeter|noctalia-greeter|noctalia-greeter|
+obsidian|obsidian|obsidian|test -x /usr/bin/obsidian
+omnirush-desktop|omnirush-desktop|omnirush-desktop|
+openchamber|openchamber|openchamber|
+openclaw|openclaw|openclaw|
+protonplus|protonplus|protonplus|test -x /usr/bin/protonplus
+qoder|qoder|qoder|test -x /usr/bin/qoder
+rootapp|rootapp|rootapp|test -x /usr/bin/rootapp
+scenefx|libscenefx-0_5|libscenefx-0.5|
+stoat-desktop|stoat-desktop|stoat-desktop|test -x /usr/bin/stoat-desktop
+umbriel-git|umbriel-git|umbriel-git|
+vesktop|vesktop|vesktop|test -x /usr/bin/vesktop
+whitesur-icon-theme|whitesur-icon-theme|whitesur-icon-theme|
+xdg-desktop-portal-umbriel-git|xdg-desktop-portal-umbriel-git|xdg-desktop-portal-umbriel-git|
+zen-browser|zen-browser|zen-browser|test -x /usr/bin/zen-browser

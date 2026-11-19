@@ -2,8 +2,18 @@
 # Resolve every shipped .desktop entry in a published package.
 set -uo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 2
-[ $# -ge 1 ] || { echo "usage: $0 <pkg> [tumbleweed|testing|sid]" >&2; exit 2; }
+case "${1:-}" in -h|--help) usage=1 ;; esac
+if [ $# -lt 1 ] || [ "${usage:-0}" = 1 ]; then
+  echo "usage: $0 <pkg> [tumbleweed|testing|sid]"
+  echo "  target: tumbleweed (default), testing (Debian_Testing), sid (Debian_Unstable)"
+  exit 2
+fi
 pkg="$1"; tgt="${2:-tumbleweed}"
+case "$tgt" in
+  Tumbleweed|openSUSE_Tumbleweed) tgt=tumbleweed ;;
+  Debian_Testing) tgt=testing ;;
+  Debian_Unstable) tgt=sid ;;
+esac
 case "$tgt" in
   tumbleweed) img=registry.opensuse.org/opensuse/tumbleweed:latest; setup='
     zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus >/dev/null 2>&1
@@ -28,7 +38,8 @@ docker run --rm "$img" bash -lc '
     exec=$(grep -m1 "^Exec=" "$f" | cut -d= -f2 | cut -d" " -f1)
     case "$f" in
       /usr/share/applications/*)
-        if [ -n "$icon" ] && ! find /usr/share/icons /usr/share/pixmaps /opt -iname "$icon.*" 2>/dev/null | grep -q .; then echo "ICON_MISSING $f $icon"; bad=$((bad+1)); fi ;;
+        if [ -z "$icon" ]; then echo "ICON_UNSET $f"; bad=$((bad+1))
+        elif ! find /usr/share/icons /usr/share/pixmaps /opt -iname "$icon.*" 2>/dev/null | grep -q .; then echo "ICON_MISSING $f $icon"; bad=$((bad+1)); fi ;;
     esac
     if [ -n "$exec" ]; then
       command -v "$exec" >/dev/null 2>&1 || find /opt -name "$exec" -type f 2>/dev/null | grep -q . || { echo "EXEC_MISSING $f $exec"; bad=$((bad+1)); }
@@ -37,4 +48,6 @@ docker run --rm "$img" bash -lc '
   echo "desktop_files=$found bad=$bad"
   [ "$bad" -eq 0 ]
 '
-echo "desktop-audit: $pkg/$tgt rc=$?"
+rc=$?
+echo "desktop-audit: $pkg/$tgt rc=$rc"
+exit "$rc"

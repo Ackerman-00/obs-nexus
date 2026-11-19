@@ -11,8 +11,8 @@ OUT="$OUTDIR/rows.txt"
 : > "$OUT"
 
 one() {
-  local row="$1" pkg dnf_name deb_name dsc
-  IFS='|' read -r pkg dnf_name deb_name <<< "$row"
+  local row="$1" pkg dnf_name deb_name smoke dsc
+  IFS='|' read -r pkg dnf_name deb_name smoke <<< "$row"
   [ -n "$pkg" ] || return 0
   [ -n "$dnf_name" ] || dnf_name="$pkg"
   dsc=$(ls "$pkg"/*.dsc 2>/dev/null | head -1)
@@ -47,10 +47,13 @@ one() {
       done
     done
     echo "ldd_missing=$miss"
+    if [ -n "'"$smoke"'" ]; then
+      timeout 30 sh -c "'"$smoke"'" >/tmp/s.log 2>&1; echo "smoke_rc=$?"; head -2 /tmp/s.log
+    fi
   ' 2>&1) || true
   local tw_verdict=FAIL
   printf '%s\n' "$tw_out" > "$OUTDIR/$pkg-tumbleweed.log"
-  printf '%s\n' "$tw_out" | grep -q INSTALL_OK && printf '%s\n' "$tw_out" | grep -q 'markers=0' && printf '%s\n' "$tw_out" | grep -q 'ldd_missing=0' && ! printf '%s\n' "$tw_out" | grep -q RPM_V_FAIL && tw_verdict=PASS
+  printf '%s\n' "$tw_out" | grep -q INSTALL_OK && printf '%s\n' "$tw_out" | grep -q 'markers=0' && printf '%s\n' "$tw_out" | grep -q 'ldd_missing=0' && ! printf '%s\n' "$tw_out" | grep -q RPM_V_FAIL && { [ -z "$smoke" ] || printf '%s\n' "$tw_out" | grep -q 'smoke_rc=0'; } && tw_verdict=PASS
   if [ -z "$dsc" ]; then
     printf '| %s | tumbleweed | %s |\n' "$pkg" "$tw_verdict" >> "$OUT"
     echo "=== $pkg tumbleweed=$tw_verdict deb=n/a-no-dsc"
@@ -87,10 +90,13 @@ one() {
         done
       done
       echo "ldd_missing=$miss"
+      if [ -n "'"$smoke"'" ]; then
+        timeout 30 sh -c "'"$smoke"'" >/tmp/s.log 2>&1; echo "smoke_rc=$?"; head -2 /tmp/s.log
+      fi
     ' 2>&1) || true
     local dv=FAIL
     printf '%s\n' "$deb_out" > "$OUTDIR/$pkg-$tgt_name.log"
-    printf '%s\n' "$deb_out" | grep -q INSTALL_OK && printf '%s\n' "$deb_out" | grep -q 'markers=0' && printf '%s\n' "$deb_out" | grep -q 'ldd_missing=0' && ! printf '%s\n' "$deb_out" | grep -q DPKG_V_FAIL && dv=PASS
+    printf '%s\n' "$deb_out" | grep -q INSTALL_OK && printf '%s\n' "$deb_out" | grep -q 'markers=0' && printf '%s\n' "$deb_out" | grep -q 'ldd_missing=0' && ! printf '%s\n' "$deb_out" | grep -q DPKG_V_FAIL && { [ -z "$smoke" ] || printf '%s\n' "$deb_out" | grep -q 'smoke_rc=0'; } && dv=PASS
     printf '| %s | %s | %s |\n' "$pkg" "$tgt_name" "$dv" >> "$OUT"
   done
   printf '| %s | tumbleweed | %s |\n' "$pkg" "$tw_verdict" >> "$OUT"
