@@ -1,6 +1,6 @@
-%global commit          c89f67718ad03a3eff0f01d4830472a2c9bc4a98
-%global shortcommit     c89f677
-%global gitdate         20261118145812
+%global commit          bf3d293dc20b6bc72a0298775feb868a77393e9d
+%global shortcommit     bf3d293
+%global gitdate         20261118234510
 %global base_version    0.1.0
 Name:           umbriel-git
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
