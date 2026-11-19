@@ -59,9 +59,10 @@ deb_probe() {
   timeout "$TMO" docker run --rm "$img" bash -lc '
     set -u
     ok=0
-    for attempt in 1 2 3; do
-      apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 update -qq >/tmp/u.log 2>&1 && ok=1 && break
-      sleep 3
+    for attempt in 1 2 3 4 5 6; do
+      apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 update >/tmp/u.log 2>&1 || true
+      if grep -qiE "failed to fetch|unable to connect|connection timed out|temporary failure|network is unreachable" /tmp/u.log; then sleep 4; continue; fi
+      ok=1; break
     done
     [ "$ok" = 1 ] || { echo HARNESS_BASE_INDEX_FAIL; tail -3 /tmp/u.log; exit 2; }
     apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 install -y -qq ca-certificates curl gnupg >/tmp/u.log 2>&1 || { echo HARNESS_BASE_TOOLS_FAIL; tail -3 /tmp/u.log; exit 2; }
@@ -70,9 +71,10 @@ deb_probe() {
     gpg --dearmor -o /etc/apt/keyrings/obs-nexus.gpg /tmp/Release.key >/dev/null 2>&1 || { echo HARNESS_KEY_DECODE_FAIL; exit 2; }
     echo "deb [signed-by=/etc/apt/keyrings/obs-nexus.gpg] https://download.opensuse.org/repositories/home:ackerman/'"$repo"'/ /" > /etc/apt/sources.list.d/obs-nexus.list
     ok=0
-    for attempt in 1 2 3; do
-      apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 update -qq >/tmp/u.log 2>&1 && ok=1 && break
-      sleep 3
+    for attempt in 1 2 3 4 5 6; do
+      apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 update >/tmp/u.log 2>&1 || true
+      if grep -qiE "failed to fetch|unable to connect|connection timed out|temporary failure|network is unreachable" /tmp/u.log; then sleep 4; continue; fi
+      ok=1; break
     done
     [ "$ok" = 1 ] || { echo HARNESS_OBS_INDEX_FAIL; tail -3 /tmp/u.log; exit 2; }
     apt-cache policy "'"$name"'" 2>/dev/null | grep -qE "Candidate: [^ ]" || { echo INDEX_MISSING "'"$name"'"; apt-cache policy "'"$name"'" 2>&1 | head -2; exit 3; }
