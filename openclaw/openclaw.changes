@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Nov 19 18:14:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2026.11.6-0
+- Update openclaw to v2026.11.6
+
+-------------------------------------------------------------------
 Wed Nov 18 04:07:43 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Also scope the ldconfig and devel-file filters to the bundled
