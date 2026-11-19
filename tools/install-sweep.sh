@@ -28,7 +28,7 @@ tw_probe() {
       sleep 3
     done
     [ "$ok" = 1 ] || { echo HARNESS_REPO_REFRESH_FAIL; tail -3 /tmp/r.log; exit 2; }
-    zypper --non-interactive install --no-recommends "'"$name"'" >/tmp/i.log 2>&1 || { echo INSTALL_FAIL; grep -E "Problem|nothing provides|not found|not available" /tmp/i.log | head -4; exit 1; }
+    zypper --non-interactive install --no-recommends "'"$name"'" >/tmp/i.log 2>&1 || { echo INSTALL_FAIL; grep -E "Problem|nothing provides|not found|not available|Error|Could not|Failed to" /tmp/i.log | head -4; exit 1; }
     echo INSTALL_OK
     rpm -V "'"$name"'" >/tmp/v.log 2>&1 || { echo RPM_V_FAIL; head -4 /tmp/v.log; }
     markers=$(find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | wc -l)
@@ -61,7 +61,7 @@ deb_probe() {
     ok=0
     for attempt in 1 2 3 4 5 6; do
       apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 update >/tmp/u.log 2>&1 || true
-      if grep -qiE "failed to fetch|unable to connect|connection timed out|temporary failure|network is unreachable" /tmp/u.log; then sleep 4; continue; fi
+      if grep -qiE "failed to fetch|unable to connect|connection timed out|temporary failure|network is unreachable|unable to parse|parse error|corrupt file" /tmp/u.log; then sleep 4; continue; fi
       ok=1; break
     done
     [ "$ok" = 1 ] || { echo HARNESS_BASE_INDEX_FAIL; tail -3 /tmp/u.log; exit 2; }
@@ -73,11 +73,11 @@ deb_probe() {
     ok=0
     for attempt in 1 2 3 4 5 6; do
       apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 update >/tmp/u.log 2>&1 || true
-      if grep -qiE "failed to fetch|unable to connect|connection timed out|temporary failure|network is unreachable" /tmp/u.log; then sleep 4; continue; fi
+      if grep -qiE "failed to fetch|unable to connect|connection timed out|temporary failure|network is unreachable|unable to parse|parse error|corrupt file" /tmp/u.log; then sleep 4; continue; fi
       ok=1; break
     done
     [ "$ok" = 1 ] || { echo HARNESS_OBS_INDEX_FAIL; tail -3 /tmp/u.log; exit 2; }
-    apt-cache policy "'"$name"'" 2>/dev/null | grep -qE "Candidate: [^ ]" || { echo INDEX_MISSING "'"$name"'"; apt-cache policy "'"$name"'" 2>&1 | head -2; exit 3; }
+    apt-cache policy "'"$name"'" 2>/dev/null | grep -qE "Candidate: [0-9]" || { echo INDEX_MISSING "'"$name"'"; apt-cache policy "'"$name"'" 2>&1 | head -2; exit 3; }
     DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::http::Timeout=25 -o Acquire::https::Timeout=25 -o Acquire::Retries=2 install -y --no-install-recommends "'"$name"'" >/tmp/i.log 2>&1 || { echo INSTALL_FAIL; grep -E "E:|unable to locate" /tmp/i.log | head -4; exit 1; }
     echo INSTALL_OK
     dpkg -V "'"$name"'" >/tmp/v.log 2>&1 || { echo DPKG_V_FAIL; head -4 /tmp/v.log; }
@@ -110,7 +110,7 @@ verdict_of() {
   if printf '%s\n' "$out" | grep -q '^INDEX_MISSING'; then echo FAIL; return; fi
   if printf '%s\n' "$out" | grep -q '^HARNESS_'; then echo HARNESS; return; fi
   if ! printf '%s\n' "$out" | grep -qE 'INSTALL_OK|INSTALL_FAIL'; then echo HARNESS; return; fi
-  if printf '%s\n' "$out" | grep -qiE 'unable to locate|unable to fetch|could not connect|connection timed out|failed to fetch|failed to retrieve|download failed|temporary failure|network is unreachable|curl: \(|timed out'; then echo HARNESS; return; fi
+  if printf '%s\n' "$out" | grep -qiE 'unable to locate|unable to fetch|could not connect|connection timed out|failed to fetch|failed to retrieve|download failed|temporary failure|network is unreachable|curl: \(|timed out|error trying to read|failed to connect|could not resolve host|unable to parse|parse error|corrupt file'; then echo HARNESS; return; fi
   if printf '%s\n' "$out" | grep -q INSTALL_OK \
      && printf '%s\n' "$out" | grep -q 'markers=0' \
      && printf '%s\n' "$out" | grep -q 'ldd_missing=0' \
@@ -121,7 +121,7 @@ verdict_of() {
 
 flaked() {
   printf '%s\n' "$1" | grep -q '^HARNESS_' && return 0
-  printf '%s\n' "$1" | grep -qiE 'unable to locate|unable to fetch|could not connect|connection timed out|failed to fetch|failed to retrieve|download failed|temporary failure|network is unreachable|curl: \(|timed out' && return 0
+  printf '%s\n' "$1" | grep -qiE 'unable to locate|unable to fetch|could not connect|connection timed out|failed to fetch|failed to retrieve|download failed|temporary failure|network is unreachable|curl: \(|timed out|error trying to read|failed to connect|could not resolve host|unable to parse|parse error|corrupt file' && return 0
   return 1
 }
 
