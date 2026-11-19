@@ -24,11 +24,16 @@ LATEST_VERSION=$(echo "$LATEST_TAG" | sed 's@-@.@g')
 CURRENT_VERSION=$(grep -E "^Version:" "$SPEC_FILE" | awk '{print $2}')
 
 build_orig_wrapper() {
-    local ver="$1" url="$2" tmpd
+    local ver="$1" url="$2" want="${3:-}" tmpd got
     tmpd=$(mktemp -d)
     trap 'rm -rf "$tmpd"' EXIT
     curl -fsSL --retry 3 --connect-timeout 30 "$url" -o "$tmpd/upstream.deb" \
         || { echo "orig .deb download failed."; trap - EXIT; rm -rf "$tmpd"; return 1; }
+    got=$(sha256sum "$tmpd/upstream.deb" | awk '{print $1}')
+    if [ -n "$want" ] && [ "$want" != "repin" ] && [ "$got" != "$want" ]; then
+        echo "checksum mismatch: expected $want, download is $got"
+        trap - EXIT; rm -rf "$tmpd"; return 1
+    fi
     tar -czf "koharu-$ver.tar.gz" -C "$tmpd" upstream.deb
     for old in koharu-*.tar koharu-*.tar.gz; do
         [ "$old" = "koharu-$ver.tar.gz" ] || rm -f "$old"
@@ -36,6 +41,11 @@ build_orig_wrapper() {
     ls -l "koharu-$ver.tar.gz"
     trap - EXIT
     rm -rf "$tmpd"
+    echo "SHA256=$got"
+}
+
+spec_sha() {
+    grep -E '^# sha256:' "$SPEC_FILE" | head -1 | awk '{print $NF}'
 }
 
 deb_url_for() {
@@ -44,7 +54,7 @@ deb_url_for() {
 
 if [ ! -f "koharu-$CURRENT_VERSION.tar.gz" ]; then
     echo "Orig wrapper missing locally; rebuilding..."
-    build_orig_wrapper "$CURRENT_VERSION" "$(deb_url_for "$CURRENT_VERSION")" || \
+    build_orig_wrapper "$CURRENT_VERSION" "$(deb_url_for "$CURRENT_VERSION")" "$(spec_sha)" || \
         echo "WARNING: orig wrapper rebuild failed; continuing version check."
 fi
 
@@ -68,7 +78,11 @@ sed -i -E "s/^Release:.*/Release:        0/" "$SPEC_FILE"
 
 sed -i -E "s|download/[^/]+/koharu_[^/]+\.deb|download/$LATEST_TAG/koharu_${LATEST_VERSION}_amd64.deb|g" "$SPEC_FILE"
 
-build_orig_wrapper "$LATEST_VERSION" "$SOURCE_URL"
+BUILD_OUT=$(build_orig_wrapper "$LATEST_VERSION" "$SOURCE_URL" "repin") || { echo "orig wrapper build failed; not bumping."; exit 1; }
+printf '%s\n' "$BUILD_OUT"
+NEW_SHA=$(printf '%s\n' "$BUILD_OUT" | sed -n 's/^SHA256=//p' | tail -1)
+[ -n "$NEW_SHA" ] || { echo "could not read the new sha256; not bumping."; exit 1; }
+grep -q '^# sha256:' "$SPEC_FILE" && sed -i -E "s|^# sha256:.*|# sha256:  $NEW_SHA|" "$SPEC_FILE" || sed -i -E "/^Version:/a # sha256:  $NEW_SHA" "$SPEC_FILE"
 DSC_FILE="koharu.dsc"
 sed -i -E "s/^Version: .*/Version: $LATEST_VERSION/" "$DSC_FILE"
 sed -i -E "s|^Debtransform-Tar:.*|Debtransform-Tar: koharu-$LATEST_VERSION.tar.gz|" "$DSC_FILE"

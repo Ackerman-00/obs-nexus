@@ -1,3 +1,8 @@
 <services>
   <service name="download_files" />
+  <service name="verify_file">
+    <param name="file">koharu_0.86.0_amd64.deb</param>
+    <param name="verifier">sha256</param>
+    <param name="checksum">f4041fd300a16ab5faa59e37b6ca82e93d8251d22692f4030fff5f87c7bccd67</param>
+  </service>
 </services>

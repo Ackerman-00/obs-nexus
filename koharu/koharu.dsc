@@ -5,5 +5,5 @@ Architecture: amd64
 Version: 0.86.0
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd
-DEBTRANSFORM-RELEASE: 2
+DEBTRANSFORM-RELEASE: 3
 Debtransform-Tar: koharu-0.86.0.tar.gz
