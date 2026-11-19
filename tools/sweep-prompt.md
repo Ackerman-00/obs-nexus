@@ -160,6 +160,38 @@ budget; otherwise it is actionable and you must fix it. Close the tracking
 issue only after the package builds green on all three targets and the
 install-test rows are PASS.
 
+PIKAOS COMPATIBILITY (MANDATORY HUNT, SOURCES CHECKED 2026-11-19)
+PikaOS is a Debian Sid derivative: its base repos are Debian Sid plus Debian
+Experimental (selected desktop packages) and DEB Multimedia, all rebuilt with
+x86_64-v3, LTO and O3 and compiled against each other to avoid ABI conflicts.
+It adds a custom Cockatiel repo (mesa, wine-staging, obs-studio, lutris,
+blender, kernel and others), GFX/Compute stacks and kernel patches. PikaOS
+reports its codename as `pika`, so third-party repo scripts must be forced with
+`distro=debian codename=sid` (wiki.pika-os.com/en/faqs/pika-modifications and
+/en/guides-wiki/install-debian-repos, fetched 2026-11-19; Debian testing is
+forky, unstable is sid, debian.org/releases, same date).
+Test whether our Debian_Testing and Debian_Unstable packages coexist with
+PikaOS packages, because our .debs are built against plain Sid/Forky and may
+conflict with the rebuilt stack:
+  a. websearch live for a usable PikaOS container image or ISO; probes on
+     2026-11-19 found no Docker Hub image (`pikaos/pikaos` 404) and GHCR
+     `pikaos-linux/pikaos` answered 401, so do not assume one exists - keep
+     hunting and record what you find with the exact status.
+  b. if no image exists, use a `debian:sid` container, add the PikaOS repo from
+     its published sources (packages.pika-os.com answered HTTP 200 on
+     2026-11-19; find and record the exact dists path), then add our
+     Debian_Unstable OBS repo and install a rotating slice of our packages.
+  c. watch for held-broken packages, forced downgrades, replaced mesa/ffmpeg/
+     openssl/libc/wayland libraries and broken ldd after install. Install and
+     smoke-test each package, then record a `pikaos:` table row per package
+     with verdict PASS/FAIL/UNVERIFIED and a `hunt: pikaos-compat - <command
+     and result>` line. An UNVERIFIED line must carry the exact HTTP code or
+     missing-image proof; never write it as clean.
+  d. if the PikaOS repo cannot be installed in a container at all, prove it
+     with the command output, mark only that blocker external and still test
+     every package that can be tested against a Sid base with our repo.
+Compatibility is a claim only when an install + smoke produced PASS rows.
+
 COUNTERMEASURES FROM THE 2026-11-18 DEEP AUDIT (ALL PACKAGES, MANDATORY)
 These were real findings, not style nits. Apply them to every package, not only
 the one in front of you:

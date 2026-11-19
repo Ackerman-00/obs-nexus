@@ -313,3 +313,18 @@ If rejected, delete the whole block from both tools/sweep-prompt.md and the
 embedded PROMPT; if adopted, implement it, verify on all three targets, then
 rename the header to `STANDARD (done <date> <commit>) - see <workflow>`. Sync
 both prompt copies, run tools/check-workflows.sh and commit either way.
+
+## PikaOS compatibility (checked 2026-11-19)
+
+PikaOS is Debian Sid + selected Debian Experimental + DEB Multimedia, all
+rebuilt x86_64-v3/LTO/O3 and compiled against each other, plus a custom repo
+(mesa, wine-staging, obs-studio, lutris, blender, kernel) and GFX/Compute
+stacks (wiki.pika-os.com/en/faqs/pika-modifications, fetched 2026-11-19). It
+reports codename `pika`, so third-party repo scripts need
+`distro=debian codename=sid` (wiki install-debian-repos guide, same date).
+Our Debian packages must be install-tested alongside that stack, not assumed
+compatible. No usable container image was found on 2026-11-19 (Docker Hub
+`pikaos/pikaos` 404; GHCR `pikaos-linux/pikaos` 401); packages.pika-os.com
+answered HTTP 200. Record a `pikaos:` verdict table and a `hunt:
+pikaos-compat` line with the exact commands. UNVERIFIED needs the status code,
+never a clean claim.
