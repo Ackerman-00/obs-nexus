@@ -166,6 +166,51 @@ def check_readme(root, pkgs):
             for p in pkgs if os.path.basename(p) not in readme]
 
 
+def parse_probes(root):
+    path = os.path.join(root, "tools", "probes.txt")
+    if not os.path.exists(path):
+        return None
+    rows = {}
+    for line in read(path).splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [q.strip() for q in line.split("|")]
+        if len(parts) < 3 or not parts[0]:
+            continue
+        rows[parts[0]] = (parts[1], parts[2])
+    return rows
+
+
+def check_probes(root, pkgs):
+    # install probes name what apt/zypper actually install, so they must match the recipes
+    rows = parse_probes(root)
+    if rows is None:
+        return ["tools/probes.txt missing"]
+    findings = []
+    dirs = {os.path.basename(p) for p in pkgs}
+    for p in pkgs:
+        name = os.path.basename(p)
+        if name not in rows:
+            findings.append(f"{name}: no row in tools/probes.txt")
+            continue
+        rpm_name, deb_name = rows[name]
+        spec = read(os.path.join(p, name + ".spec"))
+        declared = re.search(r"^Name:\s*(\S+)", spec, re.M)
+        declared = declared.group(1) if declared else name
+        sub = re.findall(r"^%package\s+-n\s+(\S+)", spec, re.M)
+        if rpm_name != declared and rpm_name not in sub:
+            findings.append(f"{name}: probes rpm name {rpm_name} is neither the spec Name nor a declared subpackage")
+        dsc = os.path.join(p, name + ".dsc")
+        if os.path.exists(dsc):
+            binary = re.search(r"^Binary:\s*(\S+)", read(dsc), re.M)
+            if binary and deb_name != binary.group(1):
+                findings.append(f"{name}: probes deb name {deb_name} != .dsc Binary {binary.group(1)}")
+    for extra in sorted(set(rows) - dirs):
+        findings.append(f"{extra}: probes row has no package directory")
+    return findings
+
+
 def check_packager_email(root, pkgs):
     # identity carriers only: a copyright file legitimately names upstream authors
     findings = []
@@ -196,6 +241,7 @@ CHECKS = [
     ("sandbox-attr", check_sandbox_attr),
     ("sandbox-fixperms", check_sandbox_fixperms),
     ("deb-recipes", check_deb_recipes),
+    ("install-probes", check_probes),
     ("readme-coverage", check_readme),
     ("packager-email", check_packager_email),
 ]
@@ -229,8 +275,10 @@ def self_test():
     %attr(4755, root, root) %verify(not mode) /opt/demo/chrome-sandbox
     """
     checks, failures = [], []
+    seen = []
 
     def case(label, layout, expect_fail):
+        seen.append(label)
         with tempfile.TemporaryDirectory() as tmp:
             write_fixture(tmp, layout)
             rc, findings = run(tmp)
@@ -253,6 +301,7 @@ def self_test():
         "demo/debian.control": control_ok,
         "demo/debian.rules": "override_dh_fixperms:\n",
         "demo/debian.changelog": "demo (1.0-1) unstable; urgency=medium\n\n -- Ackerman-00 <noreply@example.com>  Mon, 19 Nov 2026 00:00:00 +0000\n",
+        "tools/probes.txt": "demo|demo|demo|\n",
         "README.md": "demo\n",
     }
     case("clean tree", full_ok, False)
@@ -271,6 +320,8 @@ def self_test():
     case("build-depends gap", mutate("demo/debian.control", "Package: demo\nBuild-Depends: debhelper-compat (= 13), lintian\n"), True)
     case("tar version drift", mutate("demo/demo.dsc", dsc_ok.replace("demo-1.0.tar.gz", "demo-0.9.tar.gz")), True)
     case("changelog head drift", mutate("demo/debian.changelog", "demo (0.9-1) unstable; urgency=medium\n"), True)
+    case("probes deb name drift", mutate("tools/probes.txt", "demo|demo|other|\n"), True)
+    case("probes row missing", mutate("tools/probes.txt", "# no rows\n"), True)
     case("readme gap", mutate("README.md", "other\n"), True)
     case("real email", mutate("demo/debian.control", control_ok + "Maintainer: dev@real-domain.example\n"), True)
     case("placeholder email", mutate("demo/debian.control", control_ok + "Maintainer: Ackerman-00 <noreply@example.com>\n"), False)
@@ -278,6 +329,7 @@ def self_test():
     for label, layout, expect in (
         ("library package without dsc", {k: v for k, v in full_ok.items() if not k.startswith("demo/demo.d")}, False),
     ):
+        seen.append(label)
         with tempfile.TemporaryDirectory() as tmp:
             lib_spec = good_pkg.replace("Name:           demo", "Name:           demo\n    %package devel")
             lib_spec = lib_spec.replace("    %attr(4755, root, root) %verify(not mode) /opt/demo/chrome-sandbox", "    %{_libdir}/libdemo.so")
@@ -290,7 +342,7 @@ def self_test():
         print("SELFTEST FAIL " + f)
     if failures:
         return 1
-    print(f"fleet-invariants self-test: {len(CHECKS)} checks, 12 fixtures, all pass")
+    print(f"fleet-invariants self-test: {len(CHECKS)} checks, {len(seen)} fixtures, all pass")
     return 0
 
 
