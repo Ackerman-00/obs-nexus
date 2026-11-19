@@ -436,10 +436,13 @@ CONTEXT
   hardcoded name lists. (The 2026-11-15 bug was a `"$pkg"-*.tar.*`
   prefix match: umbriel-git ships `umbriel-<shortcommit>.tar.gz`, so
   `umbriel-git-*.tar.*` never matched and `umbriel-ae3472d.tar.gz`
-  lived on next to `umbriel-2572005.tar.gz`.) The helper in
-  .github/workflows/update-packages.yml (`keep_tar_names`, used by
-  the two stale-tar deletion branches) is the current implementation
-  - extend IT generically for other artifact classes (AppImages,
+  lived on next to `umbriel-2572005.tar.gz`.) The helpers in
+  .github/workflows/update-packages.yml (`keep_artifact_names` builds
+  the keep-set from local artifacts, the .dsc `Debtransform-Tar:`,
+  expanded spec Sources and _service filenames; `artifact_verdict`
+  prints KEEP:<reason> or DELETE:<reason> per remote artifact and is
+  used by the two prune branches) are the current implementation
+  - extend THEM generically for other artifact classes (AppImages,
   .deb/.rpm leftovers, stray *.AppImage from pre-.deb days) instead
   of adding special cases or new hardcoded lists. Rule of thumb:
   keep the set referenced by the local recipe, delete everything
