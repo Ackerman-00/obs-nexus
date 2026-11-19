@@ -135,7 +135,7 @@ out of scope):
 
 ## Build status
 
-Automated OBS builds are triggered by the `update-packages.yml` pipeline (runs every 15h) which syncs changed packages to OBS and rebuilds them, and the autonomous opencode maintainer verifies and repairs failed builds on the same schedule.
+Automated OBS builds are triggered by the `update-packages.yml` pipeline (runs every 7 hours, cron `0 */7 * * *`) which syncs changed packages to OBS and rebuilds them; the autonomous opencode maintainer follows 20 minutes later (cron `20 */7 * * *`) and verifies and repairs failed builds. `verify-install.yml` install-tests a rotating slice daily and after every updater run.
 
 | Project | Status |
 |---|---|
