@@ -290,6 +290,12 @@ not ship as a PROBE-BUG rather than a package failure.
 - `bash tools/obs-drift.sh` - spec in git vs spec OBS built (needs OBS creds).
 - `bash tools/spec-lint.sh` - rpmspec -P, rpmlint, spec-cleaner and debian.rules
   sanity in a clean Tumbleweed container.
+- `python3 tools/fleet-invariants.py` - the invariants no single build can prove:
+  `ExclusiveArch: x86_64`, the updater strip in every spec, `%attr(4755)` plus
+  `override_dh_fixperms` wherever chrome-sandbox ships, `.dsc`/spec/control
+  version+binary+Build-Depends+Debtransform-Tar agreement, a `.dsc` for every
+  non-library package, README coverage, and a placeholder-only packager address.
+  `--self-test` runs the 12 fixtures; `--root <dir>` scans another tree.
 
 ## Network-isolated OBS builds are an owned design decision
 

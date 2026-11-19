@@ -29,7 +29,10 @@ hy4-flash-free
 iceman-free
 # no independent score; anonymous stealth id - source: OpenCode Zen catalog
 big-pickle
+# no independent score; new stealth id, absent from the console table and the free-model list - sources: opencode.ai/docs/console/models/ and the live catalog, both fetched 2026-11-19
+tidepool-alpha-free
 
 # vetoed by owner (2026-10-22): glm-5.3-flash-free, jev-1.13-free (probabilistic classifier, not a coding model)
-# retired from the live catalog: crouton-alpha-free (2026-11-10), Pulse Alpha Free (2026-11-06), minimax-m3.1-flash-free (2026-11-17)
+# retired from the live catalog: crouton-alpha-free (2026-11-10), Pulse Alpha Free (2026-11-06), minimax-m3.1-flash-free (2026-11-17), glm-5.3-flash-free (deprecated 2026-11-18)
 # leader re-checked 2026-11-18: live catalog (87 chat ids) serves 10 `-free` ids plus big-pickle, all ranked and all present in opencode.json; glm-5.3-flash-free is no longer catalogued (owner veto moot), no other id retired; DeepSeek V4.1 Flash still leads the free set on the independent coding estimate 59.9 vs Inkling 2 Small 57 (benchlm.ai) and the agentic rows FrontierCode 28.5 / DeepSWE 77.0 / Vibe Code 87.7 (thinkingmachines.ai card)
+# leader re-checked 2026-11-19: live catalog (89 chat ids) serves 11 `-free` ids plus big-pickle; tidepool-alpha-free is the one new id and has no published coding score (benchlm.ai AA Coding Index and livebench.ai checked, no row; console docs do not list it), so it ranks in tier 3 per the no-score rule; DeepSeek V4.1 Flash keeps the lead on KiloBench 75.3% (kilo.ai/leaderboard) and the AA intelligence row for V4.1 Flash 1017

@@ -92,6 +92,14 @@
             "input": 983040,
             "output": 65536
           }
+        },
+        "tidepool-alpha-free": {
+          "name": "Tidepool Alpha Free",
+          "modelID": "tidepool-alpha-free",
+          "limit": {
+            "context": 200000,
+            "output": 32000
+          }
         }
       }
     }

@@ -199,6 +199,17 @@ for tgt in "Tumbleweed" "Debian_Testing" "Debian_Unstable"; do
   fi
 done
 
+echo "== fleet invariants =="
+inv_out=$(mktemp)
+if python3 tools/fleet-invariants.py > "$inv_out" 2>&1; then
+  echo "PASS: $(tail -1 "$inv_out")"
+else
+  echo "FAIL: fleet invariants violated:"
+  cat "$inv_out"
+  FAIL=1
+fi
+rm -f "$inv_out"
+
 if [[ "$FAIL" -ne 0 ]]; then echo "FAIL: NOT COMPLETE -- agent must continue working"; exit 1; fi
 echo "PASS: VERIFICATION PASSED -- all $expected deps rows, version table, evidence, install+battle test present"
 exit 0

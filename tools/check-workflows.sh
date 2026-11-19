@@ -67,6 +67,9 @@ python3 tools/argv-guard.py || FAIL=1
 echo "== evidence contract self-test =="
 bash tools/test-verifier.sh || FAIL=1
 
+echo "== fleet invariant self-test =="
+python3 tools/fleet-invariants.py --self-test || FAIL=1
+
 if [ "$FAIL" -ne 0 ]; then
   echo "WORKFLOW VALIDATION FAILED - do not push"
   exit 1
