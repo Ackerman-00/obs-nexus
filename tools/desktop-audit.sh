@@ -37,7 +37,8 @@ timeout "${TMO:-900}" docker run --rm "$img" bash -lc '
   set -u
   '"$setup"'
   bad=0; found=0
-  for f in $(find /usr/share/applications /usr/share/xsessions /usr/share/wayland-sessions /opt -name "*.desktop" 2>/dev/null | head -40); do
+  PKGFILES=$(rpm -ql "'"$pkg"'" 2>/dev/null || dpkg -L "'"$pkg"'" 2>/dev/null)
+  for f in $(printf '%s\n' "$PKGFILES" | grep -E '\.desktop$' | head -40); do
     found=$((found+1))
     icon=$(grep -m1 "^Icon=" "$f" | cut -d= -f2)
     exec=$(grep -m1 "^Exec=" "$f" | cut -d= -f2 | cut -d" " -f1)
