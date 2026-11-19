@@ -1,10 +1,12 @@
 -------------------------------------------------------------------
 Thu Nov 19 18:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
-- koharu: pin the 0.86.0 payload (f4041fd3...) in the spec and enforce
-  it at OBS fetch time with a verify_file service; update.sh now
-  re-pins on bump and rejects a respinned artifact. Pin verified
-  byte-exact against the GitHub release asset this run.
+- koharu: pin the 0.86.0 payload (f4041fd3...) in the spec; update.sh
+  now re-pins on bump, verifies the orig wrapper against the pin and
+  rejects a respinned artifact. Pin verified byte-exact against the
+  GitHub release asset this run. (verify_file service tried and
+  reverted: OBS runs services at commit time and cannot see the URL
+  artifact download_files fetches at build time.)
 
 -------------------------------------------------------------------
 Thu Nov 19 16:15:57 UTC 2026 - Ackerman-00 <noreply@example.com>
