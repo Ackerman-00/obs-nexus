@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Nov 19 03:07:05 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Replace the hard Conflicts: ProtonPlus with Provides/Obsoletes so a
+  Tumbleweed box that already has the distro ProtonPlus upgrades into
+  ours instead of aborting. Reproduced before the change: `zypper in
+  protonplus` on a stock Tumbleweed answered "conflicts with 'ProtonPlus'
+  provided by the installed ProtonPlus-0.6.8-1.1", leaving users to break
+  the dependency by hand. Obsoletes: ProtonPlus <= the current version
+  keeps the mutual-exclusion intent and lets zypper replace the distro
+  package.
+
+-------------------------------------------------------------------
 Tue Nov 10 22:18:10 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Add Requires: which (upstream calls `which` at runtime,

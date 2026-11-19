@@ -32,7 +32,8 @@ BuildRequires:  pkgconfig(sdl3) >= 3.2.0
 Requires:       hicolor-icon-theme
 Requires:       libGLESv2.so.2()(64bit)
 Requires:       which
-Conflicts:      ProtonPlus
+Provides:       ProtonPlus = %{version}
+Obsoletes:      ProtonPlus <= %{version}
 
 %description
 ProtonPlus is a Proton version manager for installing and managing Proton
