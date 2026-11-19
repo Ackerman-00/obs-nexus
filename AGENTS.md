@@ -283,6 +283,9 @@ not ship as a PROBE-BUG rather than a package failure.
   the relay is not done. Reads the current run's section only.
 - `python3 tools/obs-api-check.py` - live OBS build state and published NVRs
   across Tumbleweed/Forky/Sid; 401 is UNVERIFIED, never clean.
+- `python3 tools/hunt-obs.py [category ...]` - the same hunt categories as one
+  command, one relay-ready `hunt:` line each, `UNVERIFIED` with the reason when
+  a source is unreachable; `--selftest` runs offline.
 - `bash tools/install-sweep.sh tools/probes.txt` - install + rpm -V/dpkg -V +
   ldd on all three targets; writes relay-ready PASS/FAIL rows.
 - `bash tools/desktop-audit.sh <pkg> [tumbleweed|testing|sid]` - Icon/Exec

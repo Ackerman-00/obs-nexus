@@ -70,6 +70,9 @@ bash tools/test-verifier.sh || FAIL=1
 echo "== fleet invariant self-test =="
 python3 tools/fleet-invariants.py --self-test || FAIL=1
 
+echo "== hunt-obs self-test =="
+python3 tools/hunt-obs.py --selftest || FAIL=1
+
 echo "== distro collision self-test =="
 python3 tools/distro-collision-check.py --self-test || FAIL=1
 
