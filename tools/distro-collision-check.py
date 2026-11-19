@@ -136,7 +136,54 @@ def deb_name(pkg: str) -> str | None:
     return None
 
 
+def declares_replacement(pkg: str, distro_name: str) -> bool:
+    """Both fields are required: Provides alone keeps the file conflict."""
+    spec = os.path.join(REPO_ROOT, pkg, pkg + ".spec")
+    try:
+        text = open(spec, encoding="utf-8").read()
+    except OSError:
+        return False
+    names = re.escape(distro_name)
+    provides = re.search(r"^Provides:\s*(?:\S+\s+)*?" + names + r"\b", text, re.M)
+    obsoletes = re.search(r"^Obsoletes:\s*(?:\S+\s+)*?" + names + r"\b", text, re.M)
+    return bool(provides and obsoletes)
+
+
+def self_test() -> int:
+    import tempfile
+    global REPO_ROOT
+    cases = [
+        ("Provides:       ProtonPlus = %{version}\nObsoletes:      ProtonPlus <= %{version}\n", True),
+        ("Conflicts:      ProtonPlus\n", False),
+        ("Provides:       ProtonPlus = 1.0\nConflicts:      ProtonPlus\n", False),
+        ("Obsoletes:      ProtonPlus <= 1.0\n", False),
+        ("Provides:       OtherThing = 1.0\nObsoletes:      OtherThing <= 1.0\n", False),
+    ]
+    saved = REPO_ROOT
+    failures = 0
+    try:
+        for body, expected in cases:
+            tmp = tempfile.mkdtemp()
+            os.makedirs(os.path.join(tmp, "demo"))
+            with open(os.path.join(tmp, "demo", "demo.spec"), "w", encoding="utf-8") as fh:
+                fh.write("Name: demo\n" + body)
+            REPO_ROOT = tmp
+            got = declares_replacement("demo", "ProtonPlus")
+            shutil.rmtree(tmp)
+            if got != expected:
+                print(f"SELFTEST FAIL {body!r}: expected {expected}, got {got}")
+                failures += 1
+    finally:
+        REPO_ROOT = saved
+    if failures:
+        return 1
+    print(f"distro-collision self-test: {len(cases)} fixtures, all pass")
+    return 0
+
+
 def main() -> int:
+    if "--self-test" in sys.argv:
+        return self_test()
     packages = local_packages()
     if not packages:
         print("FAIL: no package directories found (run from the repo root)")
@@ -146,6 +193,7 @@ def main() -> int:
     warns: list[str] = []
 
     print(f"local packages: {len(packages)}")
+    read_indexes: list[str] = []
     for pkg in packages:
         if pkg in FORBIDDEN:
             fails.append(f"{pkg}: forbidden package present (owner order: distro ships it, never repackage)")
@@ -177,6 +225,8 @@ def main() -> int:
         tw = {}
 
     print(f"Tumbleweed OSS packages: {len(tw)}")
+    if tw:
+        read_indexes.append("Tumbleweed")
     for pkg in packages:
         if pkg not in tw:
             continue
@@ -190,10 +240,19 @@ def main() -> int:
         if pkg in tw:
             continue
         match = tw_lower.get(pkg.lower())
-        if match:
+        if not match:
+            continue
+        if declares_replacement(pkg, match):
             warns.append(
-                f"case-collision RPM: ours {pkg} {spec_version(pkg)} vs distro {match} {tw[match]} "
-                f"(Tumbleweed OSS) - distinct RPM names installing overlapping payload paths"
+                f"case-collision RPM handled: ours {pkg} {spec_version(pkg)} declares "
+                f"Provides/Obsoletes {match}, so zypper replaces the distro {match} {tw[match]}"
+            )
+        else:
+            fails.append(
+                f"case-collision RPM unhandled: ours {pkg} {spec_version(pkg)} vs distro {match} {tw[match]} "
+                f"(Tumbleweed OSS) - distinct RPM names installing overlapping payload paths, so "
+                f"'zypper in {pkg}' aborts on a box that has {match} installed; declare "
+                f"Provides/Obsoletes {match} or rename ours"
             )
 
     for label, url in DEB_MIRRORS.items():
@@ -203,6 +262,7 @@ def main() -> int:
             print(f"WARN: could not read Debian {label} index ({exc}); DEB shadow check skipped")
             continue
         print(f"Debian {label} packages: {len(deb)}")
+        read_indexes.append(f"Debian {label}")
         for pkg in packages:
             name = deb_name(pkg)
             if not name or name not in deb:
@@ -219,7 +279,9 @@ def main() -> int:
         print(f"FAIL: {failure}")
     if not fails:
         print(f"PASS: {len(packages)} packages checked, no shadowing violation "
-              f"(Tumbleweed + forky + sid indexes read live)")
+              f"(indexes read live: {', '.join(read_indexes) or 'none'})")
+        if len(read_indexes) < 3:
+            print("WARN: coverage incomplete - a skipped index proves nothing, re-run it")
         return 0
     print(f"FAIL: {len(fails)} collision violation(s)")
     return 1
