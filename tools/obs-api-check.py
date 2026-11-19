@@ -343,15 +343,30 @@ def pins():
     return False
 
 
+def probe_rows(path="tools/probes.txt"):
+    """Package names from the data rows only; '#' lines are notes, not rows."""
+    rows = set()
+    for line in open(path, encoding="utf-8", errors="replace"):
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        rows.add(s.split("|")[0].strip())
+    return rows
+
+
 def probes():
     if not os.path.isfile("tools/probes.txt"):
         print("hunt: probes - DEFECT tools/probes.txt missing")
         return True
-    rows = {l.split("|")[0].strip() for l in open("tools/probes.txt") if l.strip()}
+    rows = probe_rows()
     names = set(specs())
     missing = sorted(names - rows)
     if missing:
         print("hunt: probes - DEFECT no row for " + ", ".join(missing))
+        return True
+    extra = sorted(rows - names)
+    if extra:
+        print("hunt: probes - DEFECT stale row for " + ", ".join(extra))
         return True
     print(f"hunt: probes - {len(rows)} rows cover {len(names)} specs")
     return False
@@ -410,6 +425,16 @@ def selftest():
         (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
         (rev_seen("2026-10-31.1", "Version: 2026.10.31.1"), True, "dash/dot tag equivalence"),
         (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
+    ]
+    import tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
+        f.write("# note: not a probe row\npkg-a|rpm-a|deb-a|\n\n# second note\npkg-b|rpm-b|deb-b|test -x /usr/bin/b\n")
+        tmp = f.name
+    rows = probe_rows(tmp)
+    os.unlink(tmp)
+    cases += [
+        (rows, {"pkg-a", "pkg-b"}, "comment lines are not probe rows"),
+        (len(rows), 2, "probe row count ignores notes"),
     ]
     for got, want, label in cases:
         if got != want:
