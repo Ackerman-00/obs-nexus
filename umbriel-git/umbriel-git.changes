@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 20 15:49:25 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261120024038.bc10feb-0
+- Port from fedora-nexus; umbriel builds from git snapshot with Tumbleweed system wlroots and vendored umbrielfx
+
+-------------------------------------------------------------------
 Fri Nov 20 02:37:56 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261120023432.9404848-0

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 20 15:54:19 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2026.1120.30521-0
+- Update fluxer to v2026.1120.30521
+
+-------------------------------------------------------------------
 Fri Nov 20 02:32:11 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - rpm2tree.py: unpack the stripped cpio payload (07070X) rpm writes for

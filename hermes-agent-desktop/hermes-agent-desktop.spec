@@ -2,9 +2,9 @@
 %global __requires_exclude_from ^/opt/HermesDesktop/.*$
 %global __provides_exclude_from ^/opt/HermesDesktop/.*$
 %global __brp_mangle_shebangs_exclude_from ^/opt/HermesDesktop/.*$
-%global commit          caafe5389ae585ef77387a962aee05b1bcf17029
-%global shortcommit     caafe53
-%global gitdate         20261119205115
+%global commit          32dbc1dcda2255fd35969ec99cfc0170988c3eca
+%global shortcommit     32dbc1d
+%global gitdate         20261120044740
 %global base_version    0.23.3
 Name:           hermes-agent-desktop
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
