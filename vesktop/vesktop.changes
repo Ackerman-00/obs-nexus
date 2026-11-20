@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Nov 20 02:32:11 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- rpm2tree.py: unpack the stripped cpio payload (07070X) rpm writes for
+  v6 packages and files over 4 GiB, taking names/sizes/modes from the RPM
+  header tags. vesktop 1.7.0's upstream RPM switched to it and both Debian
+  recipes aborted with "no payload members extracted".
+
+-------------------------------------------------------------------
 Fri Nov 20 02:03:22 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.7.0-0

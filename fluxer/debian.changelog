@@ -1,3 +1,10 @@
+fluxer (2026.1119.170904-2) unstable; urgency=medium
+
+  * debian/rpm2tree.py: unpack the stripped cpio payload format used by
+    rpm v6 packages and files over 4 GiB.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 20 Nov 2026 02:32:11 +0000
+
 fluxer (2026.1119.170904-1) unstable; urgency=medium
 
   * New upstream release 2026.1119.170904.

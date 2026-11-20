@@ -1,3 +1,10 @@
+vesktop (1.7.0-2) unstable; urgency=medium
+
+  * debian/rpm2tree.py: unpack the stripped cpio payload format, so the
+    1.7.0 upstream RPM no longer aborts with "no payload members extracted".
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 20 Nov 2026 02:32:11 +0000
+
 vesktop (1.7.0-1) unstable; urgency=medium
 
   * New upstream release 1.7.0.
