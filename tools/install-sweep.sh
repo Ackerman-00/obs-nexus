@@ -35,6 +35,13 @@ tw_probe() {
     rpm -V "'"$name"'" >/tmp/v.log 2>&1 || { echo RPM_V_FAIL; head -4 /tmp/v.log; }
     markers=$(find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | wc -l)
     echo "markers=$markers"
+    stamp_bad=0
+    for s in $(find /opt -maxdepth 6 -name install-stamp.json 2>/dev/null); do
+      grep -q "updateMechanism" "$s" || continue
+      grep -qE "updateMechanism\"[[:space:]]*:[[:space:]]*\"external\"" "$s" && continue
+      echo "STAMP_SELF_UPDATE $s"; stamp_bad=$((stamp_bad + 1))
+    done
+    echo "stamp_bad=$stamp_bad"
     ship=" "
     for lib in $(rpm -ql "'"$name"'" 2>/dev/null | grep -E "\.so"); do ship="$ship $(basename $lib) "; done
     miss=0
@@ -85,6 +92,13 @@ deb_probe() {
     dpkg -V "'"$name"'" >/tmp/v.log 2>&1 || { echo DPKG_V_FAIL; head -4 /tmp/v.log; }
     markers=$(find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | wc -l)
     echo "markers=$markers"
+    stamp_bad=0
+    for s in $(find /opt -maxdepth 6 -name install-stamp.json 2>/dev/null); do
+      grep -q "updateMechanism" "$s" || continue
+      grep -qE "updateMechanism\"[[:space:]]*:[[:space:]]*\"external\"" "$s" && continue
+      echo "STAMP_SELF_UPDATE $s"; stamp_bad=$((stamp_bad + 1))
+    done
+    echo "stamp_bad=$stamp_bad"
     ship=" "
     for lib in $(dpkg -L "'"$name"'" 2>/dev/null | grep -E "\.so"); do ship="$ship $(basename $lib) "; done
     miss=0
@@ -115,6 +129,7 @@ verdict_of() {
   if printf '%s\n' "$out" | grep -qiE 'unable to locate|unable to fetch|could not connect|connection timed out|failed to fetch|failed to retrieve|download failed|temporary failure|network is unreachable|curl: \(|timed out|error trying to read|failed to connect|could not resolve host|unable to parse|parse error|corrupt file'; then echo HARNESS; return; fi
   if printf '%s\n' "$out" | grep -q INSTALL_OK \
      && printf '%s\n' "$out" | grep -q 'markers=0' \
+     && printf '%s\n' "$out" | grep -q 'stamp_bad=0' \
      && printf '%s\n' "$out" | grep -q 'ldd_missing=0' \
      && ! printf '%s\n' "$out" | grep -q "$mark" \
      && { [ -z "$smoke" ] || printf '%s\n' "$out" | grep -q 'smoke_rc=0'; }; then echo PASS; return; fi

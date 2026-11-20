@@ -106,6 +106,14 @@ jobs:
             n=$(find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | wc -l)
             echo "updater_markers=$n"
             [ "$n" -eq 0 ] || { echo "in-app updater markers shipped: $n"; exit 1; }
+            s=0
+            for f in $(find /opt -maxdepth 6 -name install-stamp.json 2>/dev/null); do
+              grep -q "updateMechanism" "$f" || continue
+              grep -qE "updateMechanism\"[[:space:]]*:[[:space:]]*\"external\"" "$f" && continue
+              echo "self-updating stamp shipped in $f"; s=$((s + 1))
+            done
+            echo "self_update_stamps=$s"
+            [ "$s" -eq 0 ] || exit 1
           '
 
   deb:
@@ -140,4 +148,12 @@ jobs:
             n=$(find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | wc -l)
             echo "updater_markers=$n"
             [ "$n" -eq 0 ] || { echo "in-app updater markers shipped: $n"; exit 1; }
+            s=0
+            for f in $(find /opt -maxdepth 6 -name install-stamp.json 2>/dev/null); do
+              grep -q "updateMechanism" "$f" || continue
+              grep -qE "updateMechanism\"[[:space:]]*:[[:space:]]*\"external\"" "$f" && continue
+              echo "self-updating stamp shipped in $f"; s=$((s + 1))
+            done
+            echo "self_update_stamps=$s"
+            [ "$s" -eq 0 ] || exit 1
           '
