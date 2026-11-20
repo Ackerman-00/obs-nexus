@@ -17,7 +17,7 @@ esac
 case "$tgt" in
   tumbleweed) img=registry.opensuse.org/opensuse/tumbleweed:latest; setup='
     zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus >/tmp/r.log 2>&1 || { echo SETUP_REPO_FAIL; tail -3 /tmp/r.log; exit 2; }
-    zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://ftp.halifax.rwth-aachen.de/opensuse/tumbleweed/repo/oss/ oss >/tmp/r.log 2>&1 || { echo SETUP_DISTRO_REPO_FAIL; tail -3 /tmp/r.log; exit 2; }
+    zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/tumbleweed/repo/oss/ oss >/tmp/r.log 2>&1 || { echo SETUP_DISTRO_REPO_FAIL; tail -3 /tmp/r.log; exit 2; }
     zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 || { echo SETUP_REFRESH_FAIL; tail -3 /tmp/r.log; exit 2; }
     zypper --non-interactive install -y findutils >/tmp/r.log 2>&1 || { echo SETUP_FINDUTILS_FAIL; tail -3 /tmp/r.log; exit 2; }
     zypper --non-interactive install --no-recommends '"$pkg"' >/tmp/i.log 2>&1 || { echo SETUP_INSTALL_FAIL; tail -5 /tmp/i.log; exit 2; }' ;;
