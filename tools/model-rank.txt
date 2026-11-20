@@ -5,8 +5,6 @@
 # tier 1 - independently scored leaders (re-checked 2026-11-18)
 # AA Intelligence Index 33 (max variant), LiveBench coding 80.4, OpenCode 7-day usage leader at 180T tokens - sources: artificialanalysis.ai/leaderboards/models, livebench.ai, opencode.ai/data fetched 2026-11-18
 deepseek-v4.1-flash-free
-# AA Intelligence Index 31 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-18
-inkling-2-small-free
 # AA Intelligence Index 27 - source: artificialanalysis.ai/leaderboards/models fetched 2026-11-18
 mimo-v2.6-flash-free
 
@@ -37,3 +35,4 @@ tidepool-alpha-free
 # leader re-checked 2026-11-18: live catalog (87 chat ids) serves 10 `-free` ids plus big-pickle, all ranked and all present in opencode.json; glm-5.3-flash-free is no longer catalogued (owner veto moot), no other id retired; DeepSeek V4.1 Flash still leads the free set on the independent coding estimate 59.9 vs Inkling 2 Small 57 (benchlm.ai) and the agentic rows FrontierCode 28.5 / DeepSWE 77.0 / Vibe Code 87.7 (thinkingmachines.ai card)
 # leader re-checked 2026-11-19: live catalog (89 chat ids) serves 11 `-free` ids plus big-pickle; tidepool-alpha-free is the one new id and has no published coding score (benchlm.ai AA Coding Index and livebench.ai checked, no row; console docs do not list it), so it ranks in tier 3 per the no-score rule; DeepSeek V4.1 Flash keeps the lead on KiloBench 75.3% (kilo.ai/leaderboard) and the AA intelligence row for V4.1 Flash 1017
 # leader re-checked 2026-11-19 16:5xZ: live catalog (92 ids, 12 `-free`) still serves every ranked id and opencode.json resolves all 12; jev-1.13-free stays vetoed; tidepool-alpha-free still has no published coding score (tier 3). DeepSeek V4.1 Flash 1017 keeps the lead: benchlm.ai/best/deepseek-models (2026-11-18) ranks it #1 of 8 DeepSeek models on BenchAlign 63.9 and #7 of 46 for coding, morphllm.com/best-ai-model-for-coding lists it as the top open-weight coder (74.2% DeepSWE v1.1), and it leads OpenRouter programming tokens at 29.7T. No reorder.
+# leader re-checked 2026-11-20: live catalog (91 ids, 11 `-free`) no longer serves inkling-2-small-free, which was retired this run from both this file and opencode.json; every other ranked id is still catalogued. DeepSeek V4.1 Flash 1017 keeps the lead: benchlm.ai/best/deepseek-models (updated 2026-11-19) scores it 69.9, #1 of 7 DeepSeek models and #12 of 106 for coding, and no other free id has an independent score that beats it.

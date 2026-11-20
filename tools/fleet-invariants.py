@@ -235,6 +235,23 @@ def check_packager_email(root, pkgs):
     return findings
 
 
+def check_rpm2tree_sync(root, pkgs):
+    # the per-recipe copies must be the canonical parser, or one package keeps an old defect
+    canon = os.path.join(root, "tools", "rpm2tree.py")
+    if not os.path.exists(canon):
+        return []
+    want = open(canon, "rb").read()
+    findings = []
+    for p in pkgs:
+        name = os.path.basename(p)
+        copy = os.path.join(p, "debian.rpm2tree.py")
+        if not os.path.exists(copy):
+            continue
+        if open(copy, "rb").read() != want:
+            findings.append(f"{name}: debian.rpm2tree.py differs from tools/rpm2tree.py")
+    return findings
+
+
 CHECKS = [
     ("exclusive-arch", check_exclusive_arch),
     ("updater-strip", check_updater_strip),
@@ -242,6 +259,7 @@ CHECKS = [
     ("sandbox-fixperms", check_sandbox_fixperms),
     ("deb-recipes", check_deb_recipes),
     ("install-probes", check_probes),
+    ("rpm2tree-sync", check_rpm2tree_sync),
     ("readme-coverage", check_readme),
     ("packager-email", check_packager_email),
 ]
@@ -300,6 +318,8 @@ def self_test():
         "demo/demo.dsc": dsc_ok,
         "demo/debian.control": control_ok,
         "demo/debian.rules": "override_dh_fixperms:\n",
+        "demo/debian.rpm2tree.py": "#!/usr/bin/env python3\n",
+        "tools/rpm2tree.py": "#!/usr/bin/env python3\n",
         "demo/debian.changelog": "demo (1.0-1) unstable; urgency=medium\n\n -- Ackerman-00 <noreply@example.com>  Mon, 19 Nov 2026 00:00:00 +0000\n",
         "tools/probes.txt": "demo|demo|demo|\n",
         "README.md": "demo\n",
@@ -321,6 +341,7 @@ def self_test():
     case("tar version drift", mutate("demo/demo.dsc", dsc_ok.replace("demo-1.0.tar.gz", "demo-0.9.tar.gz")), True)
     case("changelog head drift", mutate("demo/debian.changelog", "demo (0.9-1) unstable; urgency=medium\n"), True)
     case("probes deb name drift", mutate("tools/probes.txt", "demo|demo|other|\n"), True)
+    case("rpm2tree copy drift", mutate("demo/debian.rpm2tree.py", "#!/usr/bin/env python3\n# old\n"), True)
     case("probes row missing", mutate("tools/probes.txt", "# no rows\n"), True)
     case("readme gap", mutate("README.md", "other\n"), True)
     case("real email", mutate("demo/debian.control", control_ok + "Maintainer: dev@real-domain.example\n"), True)
