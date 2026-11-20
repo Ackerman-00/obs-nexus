@@ -1,3 +1,9 @@
+vesktop (1.7.0-1) unstable; urgency=medium
+
+  * New upstream release 1.7.0.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 20 Nov 2026 02:03:22 +0000
+
 vesktop (1.6.9-3) unstable; urgency=medium
 
   * debian/rules: set chrome-sandbox 4755 after dh_fixperms. The chmod in

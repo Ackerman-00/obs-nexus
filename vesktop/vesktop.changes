@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 20 02:03:22 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.7.0-0
+- Update vesktop to v1.7.0
+
+-------------------------------------------------------------------
 Wed Nov 18 20:48:38 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - chrome-sandbox ships setuid 4755. %verify(not mode) alone kept the

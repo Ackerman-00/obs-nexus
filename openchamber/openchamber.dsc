@@ -2,8 +2,8 @@ Format: 3.0 (quilt)
 Source: openchamber
 Binary: openchamber
 Architecture: amd64
-Version: 2.7.2
+Version: 2.7.3
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), binutils, xz-utils, zstd, desktop-file-utils
 DEBTRANSFORM-RELEASE: 2
-Debtransform-Tar: openchamber-2.7.2.tar.gz
+Debtransform-Tar: openchamber-2.7.3.tar.gz

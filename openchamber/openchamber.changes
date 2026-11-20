@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 20 02:05:58 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 2.7.3-0
+- Update openchamber to v2.7.3
+
+-------------------------------------------------------------------
 Wed Nov 18 20:48:38 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - chrome-sandbox ships setuid 4755. %verify(not mode) alone kept the

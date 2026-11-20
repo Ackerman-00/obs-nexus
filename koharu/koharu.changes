@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 20 02:01:51 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.86.4-0
+- Update koharu to 0.86.4
+
+-------------------------------------------------------------------
 Thu Nov 19 18:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - koharu: pin the 0.86.0 payload (f4041fd3...) in the spec; update.sh
