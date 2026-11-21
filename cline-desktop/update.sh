@@ -1,5 +1,7 @@
 #!/bin/bash
-cd "$(dirname "$0")" || exit 1
+SELF_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
+. "$SELF_DIR/../tools/upstream-guard.sh"
+cd "$SELF_DIR" || exit 1
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 SPEC_FILE="cline-desktop.spec"
 CHANGES_FILE="cline-desktop.changes"
@@ -48,8 +50,7 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
     fi
 fi
 
-HTTP=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$LATEST_URL")
-if [ "$HTTP" != "200" ]; then echo "Asset returns HTTP $HTTP; not bumping."; exit 0; fi
+if ! asset_http_ok "$LATEST_URL"; then echo "Asset returns HTTP $ASSET_HTTP_CODE; not bumping."; exit 0; fi
 
 echo "Update: $CURRENT_VERSION -> $LATEST_VERSION"
 curl -fsSL --retry 3 --connect-timeout 30 "$LATEST_URL" -o "$LOCAL_FILE"

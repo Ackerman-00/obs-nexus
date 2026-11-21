@@ -1,5 +1,7 @@
 #!/bin/bash
-cd "$(dirname "$0")" || exit 1
+SELF_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
+. "$SELF_DIR/../tools/upstream-guard.sh"
+cd "$SELF_DIR" || exit 1
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="openclaw.spec"
@@ -50,9 +52,8 @@ if [ "$CURRENT_VERSION" = "$LATEST_VERSION" ]; then
     exit 0
 fi
 
-HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 60 "$DEB_URL")
-if [ "$HTTP_CODE" != "200" ]; then
-    echo "Release asset returns HTTP $HTTP_CODE (not 200); not bumping to avoid a broken spec."
+if ! asset_http_ok "$DEB_URL"; then
+    echo "Release asset returns HTTP $ASSET_HTTP_CODE; not bumping to avoid a broken spec."
     exit 0
 fi
 

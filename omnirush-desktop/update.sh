@@ -1,5 +1,7 @@
 #!/bin/bash
-cd "$(dirname "$0")" || exit 1
+SELF_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
+. "$SELF_DIR/../tools/upstream-guard.sh"
+cd "$SELF_DIR" || exit 1
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 SPEC_FILE="omnirush-desktop.spec"
 CHANGES_FILE="omnirush-desktop.changes"
@@ -64,8 +66,7 @@ fi
 ASSET_URL=$(gh_api "https://api.github.com/repos/$REPO/releases/tags/$LATEST_TAG" \
   | grep -oP '"browser_download_url":\s*"\K[^"]+omnirush-linux-amd64-[^"]+\.deb' | head -1)
 if [ -z "$ASSET_URL" ]; then echo "Asset not found."; exit 1; fi
-HTTP=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$ASSET_URL")
-if [ "$HTTP" != "200" ]; then echo "Asset HTTP $HTTP; not bumping."; exit 0; fi
+if ! asset_http_ok "$ASSET_URL"; then echo "Asset HTTP $ASSET_HTTP_CODE; not bumping."; exit 0; fi
 
 echo "Update $CURRENT_VERSION -> $LATEST_VERSION"
 DEBNAME="omnirush-linux-amd64-${LATEST_VERSION}.deb"

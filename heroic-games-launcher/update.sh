@@ -1,5 +1,7 @@
 #!/bin/bash
-cd "$(dirname "$0")" || exit 1
+SELF_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
+. "$SELF_DIR/../tools/upstream-guard.sh"
+cd "$SELF_DIR" || exit 1
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="heroic-games-launcher.spec"
@@ -62,9 +64,8 @@ fi
 RPM_URL="$(rpm_url_for "$LATEST_VERSION")"
 SOURCE_URL="$(deb_url_for "$LATEST_VERSION")"
 for url in "$RPM_URL" "$SOURCE_URL"; do
-    HTTP_CODE=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 30 "$url")
-    if [ "$HTTP_CODE" != "200" ]; then
-        echo "Release asset $url returns HTTP $HTTP_CODE (not 200); not bumping to avoid a broken spec."
+    if ! asset_http_ok "$url"; then
+        echo "Release asset $url returns HTTP $ASSET_HTTP_CODE; not bumping to avoid a broken spec."
         echo "Staying on $CURRENT_VERSION."
         exit 0
     fi
