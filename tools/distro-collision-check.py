@@ -28,12 +28,14 @@ Stdlib only (urllib + gzip + re), no credentials needed.
 from __future__ import annotations
 
 import gzip
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
 import time
+import urllib.parse
 import urllib.request
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,6 +45,12 @@ DEB_MIRRORS = {
     "testing/forky": "https://deb.debian.org/debian/dists/testing/main/binary-amd64/Packages.gz",
     "unstable/sid": "https://deb.debian.org/debian/dists/sid/main/binary-amd64/Packages.gz",
 }
+# PikaOS rebuilds Debian with its own `NNNpikaN` suffixes and a suite pin that
+# outranks third-party repos, so a same-name package there decides what a
+# PikaOS user gets. The site exposes a JSON package index (no Packages.gz
+# access: HTTP 403), which is the only machine-readable source.
+PIKA_API = "https://packages.pika-os.com/api/packages"
+PIKA_REPOS = {1: "cockatiel", 2: "nest", 3: "raven", 4: "parrot", 5: "canary", 6: "pigeon"}
 
 ARCH_ALL_OK = {"bibata-cursor-theme", "lazyvim-git", "faugus-launcher",
                "hatter-icon-theme", "whitesur-icon-theme"}
@@ -144,6 +152,80 @@ def deb_name(pkg: str) -> str | None:
     return None
 
 
+def deb_order(char: str) -> int:
+    """Debian policy 5.6.12: '~' sorts before everything, letters before symbols."""
+    if char.isdigit():
+        return 0
+    if char.isalpha():
+        return ord(char)
+    if char == "~":
+        return -1
+    return ord(char) + 256
+
+
+def deb_compare(left: str, right: str) -> int:
+    """-1/0/1 for left<right per Debian version ordering (epoch:upstream-revision)."""
+    def split(v: str) -> tuple[int, str, str]:
+        epoch = 0
+        if ":" in v:
+            head, v = v.split(":", 1)
+            epoch = int(head) if head.isdigit() else 0
+        rev = ""
+        if "-" in v:
+            v, rev = v.rsplit("-", 1)
+        return epoch, v, rev
+
+    for a, b in ((split(left), split(right)),):
+        if a[0] != b[0]:
+            return -1 if a[0] < b[0] else 1
+        for pa, pb in ((a[1], b[1]), (a[2], b[2])):
+            ia = ib = 0
+            while ia < len(pa) or ib < len(pb):
+                # non-digit prefix
+                sa, sb = "", ""
+                while ia < len(pa) and not pa[ia].isdigit():
+                    sa += pa[ia]
+                    ia += 1
+                while ib < len(pb) and not pb[ib].isdigit():
+                    sb += pb[ib]
+                    ib += 1
+                for ca, cb in zip(sa, sb):
+                    if deb_order(ca) != deb_order(cb):
+                        return -1 if deb_order(ca) < deb_order(cb) else 1
+                if len(sa) != len(sb):
+                    # '~' sorts before everything, including end-of-string
+                    if len(sa) > len(sb) and sa[len(sb):].startswith("~"):
+                        return -1
+                    if len(sb) > len(sa) and sb[len(sa):].startswith("~"):
+                        return 1
+                    return -1 if len(sa) < len(sb) else 1
+                na, nb = "", ""
+                while ia < len(pa) and pa[ia].isdigit():
+                    na += pa[ia]
+                    ia += 1
+                while ib < len(pb) and pb[ib].isdigit():
+                    nb += pb[ib]
+                    ib += 1
+                if na or nb:
+                    ia2, ib2 = int(na or "0"), int(nb or "0")
+                    if ia2 != ib2:
+                        return -1 if ia2 < ib2 else 1
+    return 0
+
+
+def pika_versions(term: str, timeout: int = 60) -> dict[str, list[tuple[str, str]]]:
+    """name -> [(repo label, version)] from the PikaOS package index."""
+    url = f"{PIKA_API}?search={urllib.parse.quote(term)}&limit=100"
+    req = urllib.request.Request(url, headers={"User-Agent": "opensuse-nexus-collision-check"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        doc = json.loads(resp.read())
+    out: dict[str, list[tuple[str, str]]] = {}
+    for row in doc.get("packages", []):
+        label = PIKA_REPOS.get(row.get("repoId"), str(row.get("repoId")))
+        out.setdefault(row.get("name", ""), []).append((label, row.get("version", "")))
+    return out
+
+
 def declares_replacement(pkg: str, distro_name: str) -> bool:
     """Both fields are required: Provides alone keeps the file conflict."""
     spec = os.path.join(REPO_ROOT, pkg, pkg + ".spec")
@@ -183,9 +265,25 @@ def self_test() -> int:
                 failures += 1
     finally:
         REPO_ROOT = saved
+    version_cases = [
+        (("2.22.4", "2.22.1-101pika1"), 1, "newer upstream beats a rebuild suffix"),
+        (("2.22.1-101pika1", "2.22.1-101pika1"), 0, "identical NVR"),
+        (("1:0.5.17", "0.5.17"), 1, "epoch outranks everything"),
+        (("0.5.17", "1:0.5.16"), -1, "epoch-0 loses to epoch-1"),
+        (("1.4.0", "1.4.0-1.1"), -1, "revision makes the distro NVR newer"),
+        (("2.0.7", "2.0.6-1"), 1, "point release is newer than an older one"),
+        (("1.0.0~beta1", "1.0.0"), -1, "'~' sorts before the release"),
+        (("1.0.0+git20260101", "1.0.0"), 1, "git snapshot sorts after the release"),
+    ]
+    for (left, right), expected, why in version_cases:
+        got = (deb_compare(left, right) > 0) - (deb_compare(left, right) < 0)
+        if got != expected:
+            print(f"SELFTEST FAIL deb_compare({left}, {right}) = {got}, expected {expected} ({why})")
+            failures += 1
     if failures:
         return 1
-    print(f"distro-collision self-test: {len(cases)} fixtures, all pass")
+    print(f"distro-collision self-test: {len(cases)} provides/obsoletes + "
+          f"{len(version_cases)} version fixtures, all pass")
     return 0
 
 
@@ -279,6 +377,44 @@ def main() -> int:
                 fails.append(f"DEB library shadow: {name} also ships in Debian {label} {deb[name]}")
             else:
                 warns.append(f"same-name upgrade: {name} {deb[name]} (Debian {label}) vs ours {spec_version(pkg)}")
+
+    if "--skip-pika" not in sys.argv:
+        pika_hits: list[str] = []
+        pika_read = False
+        for pkg in packages:
+            name = deb_name(pkg)
+            if not name:
+                continue
+            try:
+                index = pika_versions(name)
+            except Exception as exc:
+                print(f"WARN: PikaOS index unreadable ({type(exc).__name__}); PikaOS check stopped")
+                pika_hits = []
+                break
+            pika_read = True
+            rows = index.get(name)
+            if not rows:
+                continue
+            ours = spec_version(pkg)
+            newest = max((v for _r, v in rows), key=lambda v: (deb_compare(v, ours), v))
+            repos = sorted({r for r, _v in rows})
+            if deb_compare(newest, ours) > 0:
+                warns.append(
+                    f"PikaOS newer rebuild: {name} {newest} ({','.join(repos)}) vs ours {ours} - "
+                    f"on PikaOS the suite pin prefers theirs, so ours is not the installed version")
+            elif deb_compare(newest, ours) == 0:
+                warns.append(
+                    f"PikaOS same version: {name} {newest} ({','.join(repos)}) vs ours {ours} - "
+                    f"identical NVR, the PikaOS suite pin decides which repo wins")
+            else:
+                warns.append(
+                    f"PikaOS older rebuild: {name} {newest} ({','.join(repos)}) vs ours {ours} - "
+                    f"apt needs a pin/preference for our repo to install the newer build")
+            pika_hits.append(f"{name} theirs={newest} ours={ours}")
+        if pika_read:
+            read_indexes.append("PikaOS")
+            print(f"pikaos: {len(pika_hits)} same-name package(s) in the PikaOS index"
+                  + (": " + "; ".join(pika_hits) if pika_hits else ""))
 
     print("\n----- DISTRO COLLISION REPORT -----")
     for warning in warns:
