@@ -1,3 +1,9 @@
+cline-desktop (0.0.50-1) unstable; urgency=medium
+
+  * New upstream release 0.0.50.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 21 Nov 2026 15:01:03 +0000
+
 cline-desktop (0.0.49-1) unstable; urgency=medium
 
   * Recommend xdg-desktop-portal and xdg-desktop-portal-gtk: the

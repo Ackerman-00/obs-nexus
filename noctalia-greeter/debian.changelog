@@ -1,3 +1,9 @@
+noctalia-greeter (1.7.1+git20261121103515.603ba85-1) unstable; urgency=medium
+
+  * New upstream snapshot 603ba85 (base 1.7.1).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 21 Nov 2026 15:04:05 +0000
+
 noctalia-greeter (1.7.1+git20261120212230.c8ed208-1) unstable; urgency=medium
 
   * New upstream snapshot c8ed208 (base 1.7.1).
