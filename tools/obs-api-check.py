@@ -267,15 +267,73 @@ def cna_ceiling(vid):
     return None
 
 
+def published_versions():
+    """pkg -> published version. OSV distro ranges are written in distro NVRs."""
+    out = {}
+    code, body = get(TARGETS["Tumbleweed"])
+    m = re.search(rb'href="([^"]*-primary\.xml\.(?:gz|zst))"', body or b"")
+    if code == 200 and m:
+        base = TARGETS["Tumbleweed"].rsplit("/repodata/", 1)[0]
+        c2, raw = get(base + "/" + m.group(1).decode())
+        if c2 == 200:
+            try:
+                if m.group(1).decode().endswith(".gz"):
+                    text = gzip.decompress(raw).decode("utf-8", "replace")
+                else:
+                    text = subprocess.run(["zstd", "-dc"], input=raw,
+                                          capture_output=True).stdout.decode("utf-8", "replace")
+            except Exception:
+                text = ""
+            for pm in re.finditer(r"<package[^>]*>(.*?)</package>", text, re.S):
+                n = re.search(r"<name>([^<]+)</name>", pm.group(1))
+                v = re.search(r'<version epoch="[^"]*" ver="([^"]+)" rel="([^"]+)"', pm.group(1))
+                if n and v:
+                    out.setdefault(n.group(1), f"{v.group(1)}-{v.group(2)}")
+    for target in ("Debian_Testing", "Debian_Unstable"):
+        code, body = get(TARGETS[target])
+        if code != 200:
+            continue
+        try:
+            text = gzip.decompress(body).decode("utf-8", "replace")
+        except Exception:
+            continue
+        for para in text.split("\n\n"):
+            n = re.search(r"(?m)^Package:\s*(\S+)", para)
+            v = re.search(r"(?m)^Version:\s*(\S+)", para)
+            if n and v:
+                ver = re.sub(r"^\d+:", "", v.group(1))  # epoch is not a CVE range input
+                out.setdefault(n.group(1), ver)
+    return out
+
+
+def cve_version(name, known, published):
+    """Advisory range basis: the distro NVR when published, else the spec version."""
+    if name in published:
+        return published[name], "published"
+    entry = known.get(name)
+    if entry and entry[0]:
+        return entry[0], "spec"
+    return "", "none"
+
+
 def cves():
     """OSV batch; IDs only, interval-filter with GET /v1/vulns/<id>."""
-    queries = []
+    known = specs()
+    published = published_versions()
+    names = {}
     for sp in sorted(glob.glob("*/*.spec")):
-        txt = open(sp, encoding="utf-8", errors="replace").read()
-        v = re.search(r"(?m)^Version:\s*(\S+)", txt)
-        if not v:
+        d = os.path.dirname(sp)
+        n = re.search(r"(?m)^Name:\s*(\S+)", open(sp, encoding="utf-8", errors="replace").read())
+        names[d] = n.group(1) if n else d
+    queries = []
+    basis = {}
+    for sp in sorted(glob.glob("*/*.spec")):
+        d = os.path.dirname(sp)
+        ver, how = cve_version(names[d], known, published)
+        if not ver:
             continue
-        queries.append({"version": v.group(1), "package": {"name": os.path.dirname(sp)}})
+        basis[d] = how
+        queries.append({"version": ver, "package": {"name": d}})
     if not queries:
         return False
     req = urllib.request.Request(
@@ -322,7 +380,9 @@ def cves():
     if affected:
         print("hunt: cves - AFFECTED " + "; ".join(affected))
         return True
-    print(f"hunt: cves - {len(hits)} OSV hits range-filtered, no in-range advisory"
+    how = f"{sum(1 for v in basis.values() if v == 'published')} published NVR, " \
+          f"{sum(1 for v in basis.values() if v == 'spec')} spec version"
+    print(f"hunt: cves - {len(hits)} OSV hits range-filtered, no in-range advisory (basis: {how})"
           + (f"; excused {len(excused)} distro-unfixed with upstream fix: " + "; ".join(excused) if excused else ""))
     return False
 
@@ -425,6 +485,14 @@ def selftest():
         (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
         (rev_seen("2026-10-31.1", "Version: 2026.10.31.1"), True, "dash/dot tag equivalence"),
         (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
+        (cve_version("ghostty", {"ghostty": ("1.4.0", "0")}, {"ghostty": "1.4.0-96.3"}),
+         ("1.4.0-96.3", "published"), "published NVR is the advisory basis"),
+        (cve_version("ghostty", {"ghostty": ("1.4.0", "0")}, {}),
+         ("1.4.0", "spec"), "spec version is the fallback basis"),
+        (in_range("1.4.0-96.3", [{"introduced": "0"}, {"fixed": "1.4.0-1.1"}]), False,
+         "published release above the fixed distro NVR"),
+        (in_range("1.4.0", [{"introduced": "0"}, {"fixed": "1.4.0-1.1"}]), True,
+         "bare upstream version is below the fixed NVR"),
     ]
     import tempfile
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:

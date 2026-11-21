@@ -283,6 +283,9 @@ not ship as a PROBE-BUG rather than a package failure.
   the relay is not done. Reads the current run's section only.
 - `python3 tools/obs-api-check.py` - live OBS build state and published NVRs
   across Tumbleweed/Forky/Sid; 401 is UNVERIFIED, never clean.
+- `python3 tools/artifact-prune.py [--package P] [--apply]` - OBS source
+  hygiene: keep-set from the local recipe, DELETE verdicts for superseded
+  artifacts, dry-run by default; `--self-test` runs the 9 fixtures.
 - `python3 tools/hunt-obs.py [category ...]` - the same hunt categories as one
   command, one relay-ready `hunt:` line each, `UNVERIFIED` with the reason when
   a source is unreachable; `--selftest` runs offline.
