@@ -252,8 +252,24 @@ def check_rpm2tree_sync(root, pkgs):
     return findings
 
 
+def check_asset_guard(root, pkgs):
+    # #asset-guard: a single-shot http_code probe skips a release that is still propagating
+    findings = []
+    for p in pkgs:
+        script = os.path.join(p, "update.sh")
+        if not os.path.exists(script):
+            continue
+        body = open(script, encoding="utf-8", errors="replace").read()
+        if "%{http_code}" not in body:
+            continue
+        if "asset_http_ok" not in body:
+            findings.append(f"{os.path.basename(p)}: update.sh probes an asset http_code without asset_http_ok")
+    return findings
+
+
 CHECKS = [
     ("exclusive-arch", check_exclusive_arch),
+    ("asset-guard", check_asset_guard),
     ("updater-strip", check_updater_strip),
     ("sandbox-attr", check_sandbox_attr),
     ("sandbox-fixperms", check_sandbox_fixperms),
@@ -322,6 +338,7 @@ def self_test():
         "tools/rpm2tree.py": "#!/usr/bin/env python3\n",
         "demo/debian.changelog": "demo (1.0-1) unstable; urgency=medium\n\n -- Ackerman-00 <noreply@example.com>  Mon, 19 Nov 2026 00:00:00 +0000\n",
         "tools/probes.txt": "demo|demo|demo|\n",
+        "demo/update.sh": "asset_http_ok \"$URL\" || exit 0\n",
         "README.md": "demo\n",
     }
     case("clean tree", full_ok, False)
@@ -344,6 +361,8 @@ def self_test():
     case("rpm2tree copy drift", mutate("demo/debian.rpm2tree.py", "#!/usr/bin/env python3\n# old\n"), True)
     case("probes row missing", mutate("tools/probes.txt", "# no rows\n"), True)
     case("readme gap", mutate("README.md", "other\n"), True)
+    case("asset probe without guard", mutate("demo/update.sh", "code=$(curl -s -o /dev/null -w '%{http_code}' \"$URL\")\n"), True)
+    case("asset probe with guard", mutate("demo/update.sh", "asset_http_ok \"$URL\" || exit 0\ncode=%{http_code}\n"), False)
     case("real email", mutate("demo/debian.control", control_ok + "Maintainer: dev@real-domain.example\n"), True)
     case("placeholder email", mutate("demo/debian.control", control_ok + "Maintainer: Ackerman-00 <noreply@example.com>\n"), False)
 

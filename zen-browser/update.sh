@@ -1,5 +1,7 @@
 #!/bin/bash
-cd "$(dirname "$0")" || exit 1
+SELF_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
+. "$SELF_DIR/../tools/upstream-guard.sh"
+cd "$SELF_DIR" || exit 1
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="zen-browser.spec"
@@ -67,20 +69,17 @@ if [ "$NEW_VER" == "$CURRENT_VER" ]; then
 fi
 
 if [ "$(printf '%s\n' "$CURRENT_VER" "$NEW_VER" | sort -V | tail -1)" != "$NEW_VER" ]; then
-    CUR_STATUS=$(curl -o /dev/null -s -w "%{http_code}" -I -L "$(zen_url_for "$CURRENT_VER")")
-    if [ "$CUR_STATUS" = "200" ]; then
-        echo "⏸  HOLD: upstream latest $NEW_VER is OLDER than packaged $CURRENT_VER, but $CURRENT_VER's asset is still live (HTTP $CUR_STATUS) - not downgrading."
+    if asset_http_ok "$(zen_url_for "$CURRENT_VER")"; then
+        echo "⏸  HOLD: upstream latest $NEW_VER is OLDER than packaged $CURRENT_VER, but $CURRENT_VER's asset is still live (HTTP 200) - not downgrading."
         exit 0
     fi
-    echo "⚠ RETRACTED UPSTREAM: packaged $CURRENT_VER asset is dead (HTTP $CUR_STATUS) - reverting to last live release $NEW_VER."
+    echo "⚠ RETRACTED UPSTREAM: packaged $CURRENT_VER asset is dead (HTTP $ASSET_HTTP_CODE) - reverting to last live release $NEW_VER."
 fi
 
 echo "🚀 New version found! Testing download URL..."
 DOWNLOAD_URL="https://github.com/zen-browser/desktop/releases/download/${LATEST_TAG}/zen.linux-x86_64.tar.xz"
-HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" -I "$DOWNLOAD_URL" -L)
-
-if [ "$HTTP_STATUS" -ne 200 ]; then
-    echo "❌ Error: Download URL returned status $HTTP_STATUS. Asset might not be uploaded yet."
+if ! asset_http_ok "$DOWNLOAD_URL"; then
+    echo "❌ Error: Download URL returned status $ASSET_HTTP_CODE. Asset might not be uploaded yet."
     exit 1
 fi
 
