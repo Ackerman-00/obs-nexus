@@ -1,6 +1,6 @@
-%global commit          2726e75375d95d5458d021f76c330ab14f6a5d03
-%global shortcommit     2726e75
-%global gitdate         20261120141153
+%global commit          c8ed20878bc75a9f3b3637c254355dda9c9ab90a
+%global shortcommit     c8ed208
+%global gitdate         20261120212230
 %global base_version    1.7.1
 Name:           noctalia-greeter
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Nov 21 01:51:43 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 1.7.1+git20261120212230.c8ed208-0
+- Port from fedora-nexus; greeter built with Tumbleweed system wlroots and vendored wuffs/stb_image_resize2 headers
+
+-------------------------------------------------------------------
 Fri Nov 20 15:55:54 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.7.1+git20261120141153.2726e75-0
