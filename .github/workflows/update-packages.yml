@@ -442,7 +442,7 @@ jobs:
 
           artifact_referenced() {
             local pkg="$1" name="$2" entry body
-            if grep -rqF -- "$name" "$pkg" 2>/dev/null; then
+            if grep -rqF --exclude='*.changes' --exclude='debian.changelog' -- "$name" "$pkg" 2>/dev/null; then
               return 0
             fi
             for entry in $(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg" \
@@ -452,6 +452,9 @@ jobs:
                 *) continue ;;
               esac
               body=$(curl -s -u "$OBS_USER:$OBS_PASS" "https://api.opensuse.org/source/home:ackerman/$pkg/$entry")
+              case "$entry" in
+                *.spec) body=$(printf '%s\n' "$body" | sed '/^%changelog/,$d') ;;
+              esac
               if printf '%s' "$body" | grep -qF -- "$name"; then
                 return 0
               fi
