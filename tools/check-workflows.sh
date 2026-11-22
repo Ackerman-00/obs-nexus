@@ -55,6 +55,32 @@ if prompt.strip() != standalone.strip():
 print("OK   embedded PROMPT == tools/sweep-prompt.md")
 PY
 
+echo "== history depth =="
+python3 - <<'PY' || FAIL=1
+import sys, yaml
+
+def deep_history(doc):
+    for job in (doc.get("jobs") or {}).values():
+        for step in job.get("steps") or []:
+            if str(step.get("uses", "")).startswith("actions/checkout"):
+                if int((step.get("with") or {}).get("fetch-depth", 1)) == 0:
+                    return True
+    return False
+
+fixture_ok = {"jobs": {"a": {"steps": [{"uses": "actions/checkout@v7.0.1", "with": {"fetch-depth": 0}}]}}}
+fixture_bad = {"jobs": {"a": {"steps": [{"uses": "actions/checkout@v7.0.1"}]}}}
+if not deep_history(fixture_ok) or deep_history(fixture_bad):
+    print("FAIL history-depth detector self-test")
+    sys.exit(1)
+
+bad = [f for f in (".github/workflows/opencode-schedule.yml", ".github/workflows/opencode.yml")
+       if not deep_history(yaml.safe_load(open(f)))]
+if bad:
+    print(f"FAIL {', '.join(bad)}: agent checkout needs fetch-depth: 0 (git log is the no-churn guard)")
+    sys.exit(1)
+print("OK   agent checkouts carry full history (fetch-depth: 0)")
+PY
+
 echo "== permission scopes =="
 python3 tools/workflow-valid.py .github/workflows/*.yml || FAIL=1
 
