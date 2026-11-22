@@ -2,14 +2,14 @@
 %global __requires_exclude_from ^/opt/koharu/.*$
 %global __provides_exclude_from ^/opt/koharu/.*$
 Name:           koharu
-Version:        0.90.3
-# sha256:  339650c711ac13ab9daec3f61b754caa7fd5bb17e7c3956adb333d15a4ae7627
+Version:        0.91.0
+# sha256:  1d6fdaf2d640d0bcc7ab54ac58184e2376933cf8a86f837400c84020356911bf
 Release:        0
 Summary:        Local-first ML-powered manga translator
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Other
 URL:            https://github.com/koharu-rs/koharu
-Source0:        %{url}/releases/download/0.90.3/koharu_0.90.3_amd64.deb
+Source0:        %{url}/releases/download/0.91.0/koharu_0.91.0_amd64.deb
 Source1:        koharu-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  fdupes
