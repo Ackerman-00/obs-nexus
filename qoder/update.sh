@@ -1,5 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
+. ../tools/upstream-guard.sh
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="qoder.spec"
@@ -128,7 +129,7 @@ printf 'qoder (%s-1) unstable; urgency=medium\n\n  * New upstream release %s.\n\
 mv /tmp/_qoder_cl.tmp debian.changelog
 
 C=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
-NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- version $NEW_VER-0\n- Update qoder to $NEW_VER\n\n"
+NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- version $NEW_VER-$(spec_release "$SPEC_FILE")\n- Update qoder to $NEW_VER\n\n"
 [ -f "$CHANGES_FILE" ] && printf "%b%s" "$NEWENTRY" "$(cat "$CHANGES_FILE")" > "$CHANGES_FILE" || printf "%b" "$NEWENTRY" > "$CHANGES_FILE"
 
 echo "Successfully updated to $NEW_VER."

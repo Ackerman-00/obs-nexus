@@ -1,5 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
+. ../tools/upstream-guard.sh
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 SPEC_FILE="hyperframes-desktop.spec"
 CHANGES_FILE="hyperframes-desktop.changes"
@@ -57,7 +58,7 @@ printf 'hyperframes-desktop (%s-1) unstable; urgency=medium\n\n  * New upstream 
 mv /tmp/_debcl.tmp debian.changelog
 
 C=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
-NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- version $NEW_VERSION-0\n- Update hyperframes-desktop to $NEW_VERSION\n\n"
+NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- version $NEW_VERSION-$(spec_release "$SPEC_FILE")\n- Update hyperframes-desktop to $NEW_VERSION\n\n"
 [ -f "$CHANGES_FILE" ] && printf "%b%s" "$NEWENTRY" "$(cat $CHANGES_FILE)" > "$CHANGES_FILE" || printf "%b" "$NEWENTRY" > "$CHANGES_FILE"
 
 echo "Successfully updated to $NEW_VERSION."

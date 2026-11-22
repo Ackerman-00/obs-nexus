@@ -75,7 +75,7 @@ printf 'cline-desktop (%s-1) unstable; urgency=medium\n\n  * New upstream releas
 mv /tmp/_debcl.tmp debian.changelog
 
 C=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
-NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-0\n- Update cline-desktop to v$LATEST_VERSION\n\n"
+NEWENTRY="-------------------------------------------------------------------\n$C - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-$(spec_release "$SPEC_FILE")\n- Update cline-desktop to v$LATEST_VERSION\n\n"
 [ -f "$CHANGES_FILE" ] && printf "%b%s" "$NEWENTRY" "$(cat $CHANGES_FILE)" > "$CHANGES_FILE" || printf "%b" "$NEWENTRY" > "$CHANGES_FILE"
 
 echo "Successfully updated to $LATEST_VERSION."

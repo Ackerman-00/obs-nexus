@@ -1,5 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")" || exit 1
+. ../tools/upstream-guard.sh
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="umbriel-git.spec"
@@ -84,7 +85,7 @@ else
 fi
 
 CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
-NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version ${DSC_VER}-0\n- Port from fedora-nexus; umbriel builds from git snapshot with Tumbleweed system wlroots and vendored umbrielfx\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version ${DSC_VER}-$(spec_release "$SPEC_FILE")\n- Port from fedora-nexus; umbriel builds from git snapshot with Tumbleweed system wlroots and vendored umbrielfx\n\n"
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"
 else

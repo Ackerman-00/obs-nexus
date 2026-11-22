@@ -267,9 +267,56 @@ def check_asset_guard(root, pkgs):
     return findings
 
 
+def spec_version(txt):
+    mac = {}
+    for m in re.finditer(r"^%(?:global|define)\s+(\w+)\s+(\S+)", txt, re.M):
+        mac.setdefault(m.group(1), m.group(2))
+    m = re.search(r"^Version:\s*(\S+)", txt, re.M)
+    if not m:
+        return None
+    v = m.group(1)
+    for _ in range(4):
+        nv = re.sub(r"%\{(\w+)\}", lambda x: mac.get(x.group(1), x.group(0)), v)
+        nv = re.sub(r"%(\w+)", lambda x: mac.get(x.group(1), x.group(0)), nv)
+        if nv == v:
+            break
+        v = nv
+    return v
+
+
+def check_changelog_nvr(root, pkgs):
+    # #nvr-bullet: a `- version X-Y` bullet must name the Release the spec now builds
+    findings = []
+    for p in pkgs:
+        base = os.path.basename(p)
+        spec = os.path.join(p, base + ".spec")
+        changes = os.path.join(p, base + ".changes")
+        if not os.path.exists(changes):
+            continue
+        txt = read(spec)
+        ver = spec_version(txt)
+        rel = re.search(r"^Release:\s*(\S+)", txt, re.M)
+        if not (ver and rel):
+            continue
+        nvr = f"{ver}-{rel.group(1)}"
+        bullets = []
+        for i, line in enumerate(read(changes).splitlines()):
+            s = line.strip()
+            if i > 0 and re.fullmatch(r"-{10,}", s):
+                break
+            if s.startswith("- version"):
+                bullets.append(s)
+        if not bullets:
+            continue
+        if not any(nvr in b for b in bullets):
+            findings.append(f"{base}: .changes names {bullets[0]!r}, spec builds {nvr}")
+    return findings
+
+
 CHECKS = [
     ("exclusive-arch", check_exclusive_arch),
     ("asset-guard", check_asset_guard),
+    ("changelog-nvr", check_changelog_nvr),
     ("updater-strip", check_updater_strip),
     ("sandbox-attr", check_sandbox_attr),
     ("sandbox-fixperms", check_sandbox_fixperms),
@@ -303,6 +350,7 @@ def self_test():
     good_pkg = """
     Name:           demo
     Version:        1.0
+    Release:        0
     ExclusiveArch:  x86_64
     %install
     find %{buildroot} -name resources/app-update.yml -delete
@@ -331,6 +379,7 @@ def self_test():
     """
     full_ok = {
         "demo/demo.spec": good_pkg,
+        "demo/demo.changes": "-------------------------------------------------------------------\nMon Nov 19 00:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>\n\n- version 1.0-0\n- Initial package\n",
         "demo/demo.dsc": dsc_ok,
         "demo/debian.control": control_ok,
         "demo/debian.rules": "override_dh_fixperms:\n",
@@ -363,6 +412,8 @@ def self_test():
     case("readme gap", mutate("README.md", "other\n"), True)
     case("asset probe without guard", mutate("demo/update.sh", "code=$(curl -s -o /dev/null -w '%{http_code}' \"$URL\")\n"), True)
     case("asset probe with guard", mutate("demo/update.sh", "asset_http_ok \"$URL\" || exit 0\ncode=%{http_code}\n"), False)
+    case("changes nvr drift", mutate("demo/demo.changes", "-------------------------------------------------------------------\nMon Nov 19 00:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>\n\n- version 1.0-1\n- Initial package\n"), True)
+    case("changes without nvr bullet", mutate("demo/demo.changes", "-------------------------------------------------------------------\nMon Nov 19 00:00:00 UTC 2026 - Ackerman-00 <noreply@example.com>\n\n- Initial package\n"), False)
     case("real email", mutate("demo/debian.control", control_ok + "Maintainer: dev@real-domain.example\n"), True)
     case("placeholder email", mutate("demo/debian.control", control_ok + "Maintainer: Ackerman-00 <noreply@example.com>\n"), False)
 

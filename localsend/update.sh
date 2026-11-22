@@ -82,7 +82,7 @@ else
 fi
 
 CURRENT_DATE=$(LC_ALL=C date -u +"%a %b %d %T UTC %Y")
-NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-0\n- Update localsend to v$LATEST_VERSION\n\n"
+NEW_CHANGELOG_ENTRY="-------------------------------------------------------------------\n$CURRENT_DATE - $PACKAGER_ADDR\n\n- version $LATEST_VERSION-$(spec_release "$SPEC_FILE")\n- Update localsend to v$LATEST_VERSION\n\n"
 
 if [ -f "$CHANGES_FILE" ]; then
     echo -e "$NEW_CHANGELOG_ENTRY$(cat $CHANGES_FILE)" > "$CHANGES_FILE"
