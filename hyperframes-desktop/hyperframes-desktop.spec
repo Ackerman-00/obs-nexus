@@ -2,8 +2,8 @@
 %global __requires_exclude_from ^/opt/hyperframes/.*$
 %global __provides_exclude_from ^/opt/hyperframes/.*$
 Name:           hyperframes-desktop
-Version:        0.1.0.b1179
-# sha256:  7d5ab46df55771d5937c1dd14f9219db7e0b3167d46a6e378aacf39f9a6fb1c2
+Version:        0.1.0.b1191
+# sha256:  3cc8700d9efe04a6e96b74eac7a669eeb40a515ab21a6999a476830f174acf33
 Release:        2
 Summary:        HyperFrames Studio (Electron)
 License:        Apache-2.0 AND MIT AND BSD-3-Clause

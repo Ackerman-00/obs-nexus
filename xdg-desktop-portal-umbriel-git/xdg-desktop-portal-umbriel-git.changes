@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Nov 22 15:02:11 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261122051915.cb5829e-0
+- Port from fedora-nexus; portal built for Tumbleweed and Debian Forky/Sid
+
+-------------------------------------------------------------------
 Sat Nov 21 15:04:11 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261121103514.e81fb92-0
