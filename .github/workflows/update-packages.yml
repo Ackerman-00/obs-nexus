@@ -19,6 +19,8 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
 
       - name: Install System Dependencies
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils jq curl
