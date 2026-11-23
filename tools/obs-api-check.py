@@ -158,9 +158,27 @@ def rev_seen(tag, text):
     return any(c and c in text for c in cands)
 
 
+def release_asset_missing(tag, spec_text, body):
+    """A release tag with no matching source asset cannot be packaged yet."""
+    src = re.search(r"(?m)^Source0:\s*(\S+)", spec_text)
+    if not src or "/releases/download/" not in src.group(1):
+        return False
+    try:
+        assets = [a.get("name", "") for a in json.loads(body).get("assets", [])]
+    except Exception:
+        return False
+    ver = tag.lstrip("v")
+    src_base = src.group(1).rsplit("/", 1)[-1]
+    exts = (".tar.gz", ".tar.xz", ".tar.zst", ".tar.bz2", ".tgz", ".zip", ".deb", ".rpm",
+            ".AppImage", ".dmg", ".exe")
+    ext = next((e for e in exts if src_base.endswith(e)), "")
+    return not any(ver in a and a.endswith(ext) for a in assets)
+
+
 def upstream_versions():
     """Latest GitHub release/tag vs the spec version, <=1 request/s."""
     bad = []
+    held = []
     checked = 0
     for sp in sorted(glob.glob("*/*.spec")):
         txt = open(sp, encoding="utf-8", errors="replace").read()
@@ -198,8 +216,13 @@ def upstream_versions():
         if tag:
             checked += 1
             if not rev_seen(tag, txt):
-                bad.append(f"{os.path.dirname(sp)} spec lacks newest upstream {tag}")
+                if release_asset_missing(tag, txt, body):
+                    held.append(f"{os.path.dirname(sp)} {tag} release has no matching source asset yet")
+                else:
+                    bad.append(f"{os.path.dirname(sp)} spec lacks newest upstream {tag}")
         time.sleep(1)
+    if held:
+        print("hunt: upstream-versions - UNVERIFIED " + "; ".join(held))
     if bad:
         print("hunt: upstream-versions - DEFECT " + "; ".join(bad))
         return True
@@ -485,6 +508,18 @@ def selftest():
         (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
         (rev_seen("2026-10-31.1", "Version: 2026.10.31.1"), True, "dash/dot tag equivalence"),
         (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
+        (release_asset_missing("v2026.11.7",
+                               "Source0: %{url}/releases/download/v2026.11.7/OpenClaw-2026.11.7-amd64.deb",
+                               json.dumps({"assets": [{"name": "latest.json"},
+                                                     {"name": "openclaw-2026.11.7-dependency-evidence.zip"}]})),
+         True, "evidence asset naming the version does not satisfy a .deb source"),
+        (release_asset_missing("v2026.11.6",
+                               "Source0: %{url}/releases/download/v2026.11.6/OpenClaw-2026.11.6-amd64.deb",
+                               json.dumps({"assets": [{"name": "OpenClaw-2026.11.6-amd64.deb"}]})), False,
+         "release with the sourced asset"),
+        (release_asset_missing("v4.2", "Source0: https://github.com/Mibea/Hatter/archive/refs/tags/V4.2.tar.gz",
+                               json.dumps({"assets": []})), False,
+         "archive tag source is not a release asset"),
         (cve_version("ghostty", {"ghostty": ("1.4.0", "0")}, {"ghostty": "1.4.0-96.3"}),
          ("1.4.0-96.3", "published"), "published NVR is the advisory basis"),
         (cve_version("ghostty", {"ghostty": ("1.4.0", "0")}, {}),
