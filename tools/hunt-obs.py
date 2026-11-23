@@ -290,6 +290,48 @@ def latest_tag(owner, repo):
     return "", "releases HTTP %d, tags HTTP %d" % (code, code_t)
 
 
+def source_github(txt):
+    """Owner/repo/tag prefix from a GitHub release Source0 when URL: is not GitHub."""
+    m = re.search(r"(?m)^Source\d*:\s*\S*github\.com/([^/\s]+)/([^/\s]+)/releases/download/([^/\s]+)/", txt)
+    if not m:
+        return None
+    tag = m.group(3)
+    ver = re.search(r"\d[\w.]*$", tag)
+    if not ver:
+        return None
+    return m.group(1), re.sub(r"\.git$", "", m.group(2)).strip("/"), tag[:ver.start()]
+
+
+def latest_prefixed_tag(owner, repo, prefix):
+    """Newest stable tag sharing the pinned tag's prefix, read from the tag ref list."""
+    try:
+        out = subprocess.run(["git", "ls-remote", "--tags",
+                              "https://github.com/%s/%s.git" % (owner, repo)],
+                             capture_output=True, text=True, timeout=180)
+    except Exception as exc:
+        return "", "git ls-remote failed (%s)" % exc
+    if out.returncode != 0:
+        return "", "git ls-remote exit %d" % out.returncode
+    best = ""
+    for line in out.stdout.splitlines():
+        ref = line.split("\t")[-1].replace("^{}", "")
+        if not ref.startswith("refs/tags/"):
+            continue
+        tag = ref[len("refs/tags/"):]
+        if not tag.startswith(prefix):
+            continue
+        tail = tag[len(prefix):]
+        if not re.match(r"^\d", tail):
+            continue
+        if re.search(r"(?i)alpha|beta|rc|pre|nightly|dev", tail):
+            continue
+        if not best or vcmp(tail, best) > 0:
+            best = tail
+    if best:
+        return best, "tag"
+    return "", "no stable tag with prefix %s" % (prefix or "<none>")
+
+
 def upstream_versions():
     bad, unverified = [], []
     checked = 0
@@ -297,17 +339,33 @@ def upstream_versions():
         d = os.path.dirname(sp)
         txt = open(sp, encoding="utf-8", errors="replace").read()
         m = re.search(r"(?m)^URL:\s*https?://github\.com/([^/\s]+)/([^/\s]+)", txt)
-        if not m:
+        if m:
+            owner = m.group(1)
+            repo = re.sub(r"\.git$", "", m.group(2)).strip("/")
+            tag, why = latest_tag(owner, repo)
+            if not tag:
+                unverified.append("%s %s/%s (%s)" % (d, owner, repo, why))
+            else:
+                checked += 1
+                if not rev_seen(tag, txt):
+                    bad.append("%s lacks newest upstream tag %s" % (d, tag))
+            time.sleep(1)
             continue
-        owner = m.group(1)
-        repo = re.sub(r"\.git$", "", m.group(2)).strip("/")
-        tag, why = latest_tag(owner, repo)
-        if not tag:
+        sg = source_github(txt)
+        if not sg:
+            continue
+        owner, repo, prefix = sg
+        ver, why = latest_prefixed_tag(owner, repo, prefix)
+        if not ver:
             unverified.append("%s %s/%s (%s)" % (d, owner, repo, why))
         else:
             checked += 1
-            if not rev_seen(tag, txt):
-                bad.append("%s lacks newest upstream tag %s" % (d, tag))
+            sv = re.search(r"(?m)^Version:\s*(\S+)", txt)
+            specver = sv.group(1) if sv else ""
+            if not specver or "%" in specver or "$" in specver:
+                unverified.append("%s template version, compare by hand" % d)
+            elif vcmp(ver, specver) > 0:
+                bad.append("%s pins %s, newest %s release is %s" % (d, specver, prefix, ver))
         time.sleep(1)
     if bad:
         print("hunt: upstream-versions - DEFECT %d specs behind upstream, %d checked"
@@ -612,6 +670,9 @@ def selftest():
         (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
         (rev_seen("2026-10-31.1", "Version: 2026.10.31.1"), True, "dash/dot tag equivalence"),
         (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
+        (source_github("Source0: https://github.com/cline/cline/releases/download/desktop-v0.0.50/Cline.deb"),
+         ("cline", "cline", "desktop-v"), "prefixed release asset yields prefix"),
+        (source_github("Source0: fluxer.rpm"), None, "local Source0 has no GitHub ref"),
         (vprefix("1:0.0.49-1+74.3"), "0.0.49", "epoch and release stripped"),
         (vprefix("1.24.2b-21.1"), "1.24.2", "letter suffix dropped"),
         (published_verdict("0.85.7", "0.86.0", {"busy": True, "codes": {"succeeded"}}), "inflight", "repo still publishing"),
