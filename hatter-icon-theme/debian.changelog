@@ -1,3 +1,9 @@
+hatter-icon-theme (4.2-2) unstable; urgency=medium
+
+  * Describe the shipped V4.2 build in the package description.
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 23 Nov 2026 01:59:13 +0000
+
 hatter-icon-theme (4.2-1) unstable; urgency=medium
 
   * New upstream release 4.2.

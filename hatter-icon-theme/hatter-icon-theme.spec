@@ -2,7 +2,7 @@
 
 Name:           hatter-icon-theme
 Version:        4.2
-Release:        0
+Release:        1
 Summary:        Colorful and customizable icon theme for Linux desktops
 License:        GPL-3.0-or-later
 Group:          System/GUI/Other
@@ -24,7 +24,7 @@ Requires(postun): gtk3-tools
 
 %description
 Hatter is a modern, colorful and customizable icon theme for Linux desktops.
-This package ships the full upstream V4.1 build: the base Hatter theme, the
+This package ships the full upstream V4.2 build: the base Hatter theme, the
 nine Hatter color variants and the nine Hatter-Yaru color variants.
 
 %prep

@@ -12,5 +12,5 @@ Architecture: all
 Depends: ${misc:Depends}, hicolor-icon-theme
 Description: Colorful and customizable icon theme for Linux desktops
  Hatter is a modern, colorful and customizable icon theme for Linux desktops.
- This package ships the upstream V4.1 build: the base Hatter theme, the nine
+ This package ships the upstream V4.2 build: the base Hatter theme, the nine
  Hatter colour variants and the nine Hatter-Yaru colour variants.
