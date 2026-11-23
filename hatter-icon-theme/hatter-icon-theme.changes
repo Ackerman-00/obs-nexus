@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 23 01:19:10 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 4.2-0
+- Update hatter-icon-theme to v4.2
+
+-------------------------------------------------------------------
 Wed Nov 18 03:46:38 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Drop the filter rpmlint reports as unused and give the shipped helper

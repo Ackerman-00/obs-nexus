@@ -1,3 +1,9 @@
+umbriel-git (0.1.0+git20261123010037.a3701bb-1) unstable; urgency=medium
+
+  * New upstream snapshot a3701bb (base 0.1.0).
+
+ -- Ackerman-00 <noreply@example.com>  Mon, 23 Nov 2026 01:12:35 +0000
+
 umbriel-git (0.1.0+git20261122143745.14fc6e8-1) unstable; urgency=medium
 
   * New upstream snapshot 14fc6e8 (base 0.1.0).

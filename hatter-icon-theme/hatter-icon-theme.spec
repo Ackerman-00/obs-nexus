@@ -1,14 +1,14 @@
 %global debug_package %{nil}
 
 Name:           hatter-icon-theme
-Version:        4.1
+Version:        4.2
 Release:        0
 Summary:        Colorful and customizable icon theme for Linux desktops
 License:        GPL-3.0-or-later
 Group:          System/GUI/Other
 URL:            https://github.com/Mibea/Hatter
-Source0:        https://github.com/Mibea/Hatter/archive/refs/tags/V4.1.tar.gz
-# sha256:  16eeea40b569a1688b3e15dd461f29c6bbc7e585fe38539f9b2a22040a4f144d
+Source0:        https://github.com/Mibea/Hatter/archive/refs/tags/V4.2.tar.gz
+# sha256:  e82a1a5a8049c0778b454fbb2a746cb344d65ad2f59ad3b715106ea1b7fea095
 Source1:        hatter-icon-theme-rpmlintrc
 BuildArch:      noarch
 BuildRequires:  bash
@@ -28,7 +28,7 @@ This package ships the full upstream V4.1 build: the base Hatter theme, the
 nine Hatter color variants and the nine Hatter-Yaru color variants.
 
 %prep
-%setup -q -n Hatter-4.1
+%setup -q -n Hatter-4.2
 find . -depth -name '* *' -exec bash -c 'for f; do d=$(dirname -- "$f"); b=$(basename -- "$f"); mv -- "$f" "$d/${b// /-}"; done' _ {} +
 
 %build
