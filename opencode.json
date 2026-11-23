@@ -72,10 +72,6 @@
             "output": 131072
           }
         },
-        "longcat-2.5-free": {
-          "name": "LongCat 2.5 Free",
-          "modelID": "longcat-2.5-free"
-        },
         "hy4-flash-free": {
           "name": "Hy4 Flash Free",
           "modelID": "hy4-flash-free",
