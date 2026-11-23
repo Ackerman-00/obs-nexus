@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 23 18:48:35 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.0.205-3
+- Update freebuff-desktop to v0.0.205
+
+-------------------------------------------------------------------
 Wed Nov 18 20:48:38 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - chrome-sandbox ships setuid 4755. %verify(not mode) alone kept the
