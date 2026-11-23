@@ -1,6 +1,6 @@
-%global commit          a3701bb20e10c1794741e0efeadda21fbb84f23d
-%global shortcommit     a3701bb
-%global gitdate         20261123010037
+%global commit          a909081a934a80bb7685080884ffaaa30c857e4c
+%global shortcommit     a909081
+%global gitdate         20261123014939
 %global base_version    0.1.0
 Name:           umbriel-git
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
@@ -39,6 +39,9 @@ BuildRequires:  pkgconfig(xcb-icccm)
 BuildRequires:  pkgconfig(xcb-ewmh)
 BuildRequires:  pkgconfig(xcb-shape)
 BuildRequires:  pkgconfig(xcb-randr)
+BuildRequires:  pkgconfig(xcb-render)
+BuildRequires:  pkgconfig(xcb-xfixes)
+BuildRequires:  pkgconfig(xcb-xtest)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(gbm)

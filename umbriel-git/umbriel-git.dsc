@@ -2,7 +2,7 @@ Format: 3.0 (quilt)
 Source: umbriel-git
 Binary: umbriel-git
 Architecture: amd64
-Version: 0.1.0+git20261123010037.a3701bb
+Version: 0.1.0+git20261123014939.a909081
 Maintainer: Ackerman-00 <noreply@example.com>
 Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libwlroots-0.20-dev (>= 0.20.1), libwayland-dev (>= 1.24),
@@ -12,11 +12,12 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libdisplay-info-dev (>= 0.3.0), libcairo2-dev, libpango1.0-dev,
  libtomlplusplus-dev, nlohmann-json3-dev, libxcb1-dev,
  libxcb-icccm4-dev, libxcb-ewmh-dev, libxcb-shape0-dev,
- libxcb-randr0-dev, libegl-dev, libgles-dev, libgbm-dev,
+ libxcb-randr0-dev, libxcb-render0-dev, libxcb-xfixes0-dev,
+ libxcb-xtest0-dev, libegl-dev, libgles-dev, libgbm-dev,
  liblcms2-dev, libjemalloc-dev, systemd-dev
 DEBTRANSFORM-RELEASE: 1
-Debtransform-Tar: umbriel-a3701bb.tar.gz
+Debtransform-Tar: umbriel-a909081.tar.gz
 Checksums-Sha256:
- ae1644098826035baf2e2cf8c4760545b8689a8a319cac68a1cee0a3cf70fbdf 2363825 umbriel-a3701bb.tar.gz
+ d5624a8371cfbbc64b367a14b399ce0d75f924e32fcc69e3eb957b7f5774f795 2364540 umbriel-a909081.tar.gz
 Files:
- ef94797bd1d455a2d16b82666721322f 2363825 umbriel-a3701bb.tar.gz
+ 755cf1f1236f6652cf37910fecaae059 2364540 umbriel-a909081.tar.gz

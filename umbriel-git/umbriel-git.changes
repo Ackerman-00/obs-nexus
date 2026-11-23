@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Nov 23 02:02:50 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261123014939.a909081-0
+- Port from fedora-nexus; umbriel builds from git snapshot with Tumbleweed system wlroots and vendored umbrielfx
+- BuildRequires/Build-Depends: add xcb-render, xcb-xfixes and xcb-xtest, which
+  the new snapshot declares unconditionally
+
+-------------------------------------------------------------------
 Mon Nov 23 01:12:35 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261123010037.a3701bb-0
