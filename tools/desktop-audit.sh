@@ -30,7 +30,13 @@ set -u
 if [ "$TGT" = tumbleweed ]; then
   zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus >/tmp/r.log 2>&1 || { echo SETUP_REPO_FAIL; tail -3 /tmp/r.log; exit 2; }
   zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/tumbleweed/repo/oss/ oss >/tmp/r.log 2>&1 || { echo SETUP_DISTRO_REPO_FAIL; tail -3 /tmp/r.log; exit 2; }
-  zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 || { echo SETUP_REFRESH_FAIL; tail -3 /tmp/r.log; exit 2; }
+  ok=0
+  for i in 1 2 3; do zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 && ok=1 && break; sleep 3; done
+  if [ "$ok" != 1 ]; then
+    zypper --non-interactive removerepo repo-oss repo-update repo-non-oss oss >/dev/null 2>&1
+    zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://ftp.halifax.rwth-aachen.de/opensuse/tumbleweed/repo/oss/ oss-mirror >/tmp/r.log 2>&1 || { echo SETUP_MIRROR_FAIL; tail -3 /tmp/r.log; exit 2; }
+    zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 || { echo SETUP_REFRESH_FAIL; tail -3 /tmp/r.log; exit 2; }
+  fi
   zypper --non-interactive install -y findutils >/tmp/r.log 2>&1 || { echo SETUP_FINDUTILS_FAIL; tail -3 /tmp/r.log; exit 2; }
   zypper --non-interactive install --no-recommends "$PKG" >/tmp/i.log 2>&1 || { echo SETUP_INSTALL_FAIL; tail -5 /tmp/i.log; exit 2; }
   PKGFILES=$(rpm -ql "$PKG" 2>/dev/null)

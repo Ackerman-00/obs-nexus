@@ -5,7 +5,15 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 2
 IMG="${1:-registry.opensuse.org/opensuse/tumbleweed:latest}"
 docker run --rm -v "$PWD":/work -w /work "$IMG" bash -lc '
   set -uo pipefail
-  zypper --non-interactive --gpg-auto-import-keys install -y rpm-build rpmlint spec-cleaner rpmdevtools zypper vim diffutils >/dev/null 2>&1
+  ok=0
+  for i in 1 2 3; do zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/zr 2>&1 && ok=1 && break; sleep 3; done
+  if [ "$ok" != 1 ]; then
+    zypper --non-interactive removerepo repo-oss repo-update repo-non-oss >/dev/null 2>&1
+    zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://ftp.halifax.rwth-aachen.de/opensuse/tumbleweed/repo/oss/ oss-mirror >/dev/null 2>&1
+    zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/zr 2>&1 || { echo "SETUP_REFRESH_FAIL"; tail -3 /tmp/zr; exit 2; }
+  fi
+  zypper --non-interactive --gpg-auto-import-keys install -y rpm-build rpmlint spec-cleaner rpmdevtools zypper vim diffutils make >/tmp/zi 2>&1 || { echo "SETUP_TOOLS_FAIL"; tail -3 /tmp/zi; exit 2; }
+  command -v rpmspec >/dev/null 2>&1 || { echo "SETUP_NO_RPMSPEC"; exit 2; }
   bad=0
   for spec in */*.spec; do
     rpmspec -P "$spec" >/dev/null 2>&1 || { echo "RPMSPEC_FAIL $spec"; bad=$((bad+1)); continue; }
