@@ -2,13 +2,13 @@
 %global __requires_exclude_from ^/opt/localsend_app/.*$
 %global __provides_exclude_from ^/opt/localsend_app/.*$
 Name:           localsend
-Version:        1.18.2
+Version:        1.19.0
 Release:        0
 Summary:        An open source cross-platform alternative to AirDrop
 License:        GPL-3.0-only
 Group:          Productivity/Networking/Other
 URL:            https://github.com/localsend/localsend
-Source0:        %{url}/releases/download/v1.18.2/LocalSend-1.18.2-linux-x86-64.deb
+Source0:        %{url}/releases/download/v1.19.0/LocalSend-1.19.0-linux-x86-64.deb
 Source1:        localsend-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  tar

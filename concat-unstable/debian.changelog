@@ -1,3 +1,9 @@
+concat-unstable (0.2.12+git20261124175427.3cc4029-1) unstable; urgency=medium
+
+  * New upstream snapshot 3cc4029 (base 0.2.12).
+
+ -- Ackerman-00 <noreply@example.com>  Tue, 24 Nov 2026 18:51:35 +0000
+
 concat-unstable (0.2.12+git20261124013603.281dabf-1) unstable; urgency=medium
 
   * Deb build: keep rustc under the deb worker memory cap (1 job,
