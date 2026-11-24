@@ -100,7 +100,17 @@ jobs:
             set -u
             zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/tumbleweed/repo/oss/ oss >/dev/null 2>&1
             zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://download.opensuse.org/repositories/home:ackerman/openSUSE_Tumbleweed/ nexus >/dev/null 2>&1
-            zypper --non-interactive --gpg-auto-import-keys refresh >/dev/null 2>&1
+            repo_ok=0
+            for attempt in 1 2 3; do
+              zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 && repo_ok=1 && break
+              sleep 3
+            done
+            if [ "$repo_ok" != 1 ]; then
+              zypper --non-interactive removerepo repo-oss repo-update repo-non-oss >/dev/null 2>&1
+              zypper --non-interactive --gpg-auto-import-keys addrepo --refresh https://ftp.halifax.rwth-aachen.de/opensuse/tumbleweed/repo/oss/ oss-mirror >/dev/null 2>&1
+              zypper --non-interactive --gpg-auto-import-keys refresh >/tmp/r.log 2>&1 || { echo "repo refresh failed"; tail -5 /tmp/r.log; exit 1; }
+              echo "distro_repo=halifax-fallback"
+            fi
             zypper --non-interactive install --no-recommends "$PKG" || exit 1
             rpm -q "$PKG"
             n=$(find /opt /usr/share /usr/lib -maxdepth 6 \( -name app-update.yml -o -name package-type \) 2>/dev/null | wc -l)
