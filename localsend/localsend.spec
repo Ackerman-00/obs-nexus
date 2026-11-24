@@ -74,7 +74,7 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 
 %files
 %{_bindir}/localsend_app
-%{_datadir}/applications/localsend_app.desktop
+%{_datadir}/applications/*.desktop
 %dir %{_datadir}/icons/hicolor
 %dir %{_datadir}/icons/hicolor/*
 %dir %{_datadir}/icons/hicolor/*/apps

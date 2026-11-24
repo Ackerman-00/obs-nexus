@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 24 19:05:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- %files: match the desktop entry by glob. Upstream 1.19.0 renamed it
+  from localsend_app.desktop to org.localsend.localsend_app.desktop,
+  which broke the Tumbleweed build with "File not found".
+
+-------------------------------------------------------------------
 Tue Nov 24 18:31:47 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 1.19.0-0
