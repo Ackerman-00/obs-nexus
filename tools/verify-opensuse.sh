@@ -19,7 +19,9 @@ grep -qix "status: complete" <<< "$content" && pass "status: complete" || fail "
 expected=$(ls */*.spec 2>/dev/null | wc -l)
 [[ "$expected" -gt 0 ]] || fail "no */*.spec found (run from repo root)"
 grep -q "| package | upstream deps evidence |" <<< "$content" && pass "dependency audit table header" || fail "dependency audit table header missing"
-dep_rows=$(printf '%s' "$content" | grep -oE "^\| [a-zA-Z0-9._+-]+ \|.*\| (deps-verified|deps-fixed|version-checked|retired-stub)\b" | awk -F'|' '{gsub(/ /,"",$2); print $2}' | sort -u | wc -l || true)
+inventory=$(ls */*.spec 2>/dev/null | sed 's#.*/##; s#\.spec$##' | sort -u)
+dep_names=$(printf '%s' "$content" | grep -oE "^\| [a-zA-Z0-9._+-]+ \|.*\| (deps-verified|deps-fixed|version-checked|retired-stub)\b" | awk -F'|' '{gsub(/ /,"",$2); print $2}' | sort -u || true)
+dep_rows=$(printf '%s\n' "$dep_names" | grep -c . || true)
 unproven_rows=$(printf '%s' "$content" | grep -oE "^\| [a-zA-Z0-9._+-]+ \|.*unproven:" | awk -F'|' '{gsub(/ /,"",$2); print $2}' | sort -u | wc -l || true)
 [[ "$dep_rows" -ge "$expected" ]] && pass "dependency table $dep_rows rows (>= $expected)" || fail "dependency table has $dep_rows rows, need $expected"
 [[ "$unproven_rows" -ge "$expected" ]] && pass "correctness contract on $unproven_rows rows" || fail "unproven: contract on $unproven_rows rows, need $expected"
@@ -74,6 +76,14 @@ it_fail=$(grep -c ' FAIL$' <<< "$it_rows" || true)
 it_pass=$(grep -c ' PASS$' <<< "$it_rows" || true)
 [[ "$it_fail" -eq 0 ]] || fail "$it_fail install-test FAIL verdict(s): $(grep ' FAIL$' <<< "$it_rows" | tr '\n' ' ')"
 [[ $(( it_fail + it_pass )) -ge 10 ]] || fail "only $(( it_fail + it_pass )) install-test rows, need >= 10"
+it_names=$(awk '{print $1}' <<< "$it_rows" | sort -u)
+unknown=""
+for nm in $dep_names $it_names; do
+  grep -qx "$nm" <<< "$inventory" || unknown="$unknown $nm"
+done
+[[ -z "$unknown" ]] && pass "all table rows name inventory packages" || fail "table names packages outside the inventory:$unknown"
+covered=$(printf '%s\n' "$it_names" | grep -c . || true)
+[[ $(( covered * 10 )) -ge $(( expected * 8 )) ]] && pass "install coverage $covered/$expected packages" || fail "install coverage $covered/$expected below 80%"
 changed_line=$(grep -m1 -E "^[[:space:]]*changed:" <<< "$content" || true)
 [[ -n "$changed_line" ]] || fail "changed: token missing"
 changed_pkgs=$(printf '%s' "$changed_line" | sed -E 's/^[[:space:]]*changed:[[:space:]]*//')

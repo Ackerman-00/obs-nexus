@@ -5,6 +5,7 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 GOOD="$TMP/relay.md"
 expected=$(ls */*.spec 2>/dev/null | wc -l)
+demo=$(basename "$(dirname "$(ls */*.spec | head -1)")")
 today=$(date -u +%F)
 
 make_good() {
@@ -30,14 +31,14 @@ install-test table
 | package | version tested | Tumbleweed | Debian_Testing | Debian_Unstable | markers | ldd |
 |---|---|---|---|---|---|---|
 EOF
-  for i in $(seq 1 12); do
-    printf '| probe%s | 1.0 | PASS | PASS | PASS | 0 | 0 |\n' "$i" >> "$GOOD"
+  for spec in */*.spec; do
+    printf '| %s | 1.0 | PASS | PASS | PASS | 0 | 0 |\n' "$(basename "$(dirname "$spec")")" >> "$GOOD"
   done
   cat >> "$GOOD" <<EOF
-changed: probe1
-plan: probe1 - probes run before edit
-deps: probe1 - Cargo.toml compared with spec BuildRequires
-artifact: probe1 - url: https://example.com/src.tar.gz format: tar upstream-deps: none improvements: none
+changed: $demo
+plan: $demo - probes run before edit
+deps: $demo - Cargo.toml compared with spec BuildRequires
+artifact: $demo - url: https://example.com/src.tar.gz format: tar upstream-deps: none improvements: none
 skills: web-research linux-packaging rpm-copr security-audit code-review systematic-debugging verification-before-completion github-ops container-validation python-tooling writing-for-agents fedora-triage repo-improvement why-from-record
 defects-found: 2
 defects-fixed: 2
@@ -70,11 +71,26 @@ FAILED=0
 make_good
 run_case "well-formed relay" pass
 
-make_good; sed -i 's/| probe1 | 1.0 | PASS/| probe1 | 1.0 | FAIL/' "$GOOD"
+first_pkg=$(basename "$(dirname "$(ls */*.spec | head -1)")")
+make_good; sed -i "s/^| $first_pkg | 1.0 | PASS/| $first_pkg | 1.0 | FAIL/" "$GOOD"
 run_case "FAIL verdict cell" fail
 
-make_good; sed -i 's/| probe2 | 1.0 | PASS | PASS | PASS | 0 | 0 |/| probe2 | 1.0 | FAIL | PASS | PASS | 0 | 0 |/' "$GOOD"
+make_good; python3 - "$GOOD" "$first_pkg" <<'PY2'
+import sys
+p, pkg = sys.argv[1], sys.argv[2]
+lines = open(p).read().splitlines()
+for i, ln in enumerate(lines):
+    if ln.startswith(f'| {pkg} | 1.0 | PASS | PASS | PASS |'):
+        lines[i] = f'| {pkg} | 1.0 | FAIL | PASS | PASS | 0 | 0 |'
+open(p, 'w').write('\n'.join(lines) + '\n')
+PY2
 run_case "FAIL in one of three target cells" fail
+
+make_good; echo '| invented-package | 1.0 | PASS | PASS | PASS | 0 | 0 |' >> "$GOOD"
+run_case "invented install-test package" fail
+
+make_good; awk 'BEGIN{n=0} /^\| [a-z0-9.-]+ \| 1\.0 \| PASS \| PASS \| PASS \| 0 \| 0 \|$/ {n++; if(n>10) next} {print}' "$GOOD" > "$TMP/g" && mv "$TMP/g" "$GOOD"
+run_case "install coverage below 80%" fail
 
 make_good; sed -i '/^changed:/d' "$GOOD"
 run_case "missing changed token" fail
@@ -116,5 +132,5 @@ if [ "$FAILED" -ne 0 ]; then
   echo "FAIL: verifier self-test found a hole"
   exit 1
 fi
-echo "PASS: verifier self-test ($expected specs, 15 cases) stopped every forged relay"
+echo "PASS: verifier self-test ($expected specs, 17 cases) stopped every forged relay"
 exit 0

@@ -76,7 +76,9 @@ defects-fixed: <M>
 Install every changed package, write a row into the install-test table with a
 verdict of PASS, FAIL or EXTERNAL. FAIL means the run fails. EXTERNAL needs a
 GAP: external line naming that package. A same-run install PASS next to a FAIL
-row is a contradiction and fails the run. Record at least 8 distinct hunt
+row is a contradiction and fails the run. The table must name only packages
+from the spec inventory and cover at least 80% of it (count via `ls */*.spec`);
+an invented package name or a sample-only table fails the run. Record at least 8 distinct hunt
 categories; a run with no hunt lines is incomplete. Run
 `python3 tools/obs-api-check.py` for the builds, published-nvr and sources
 categories; an OBS API HTTP 401 is UNVERIFIED, never a clean receipt. Use

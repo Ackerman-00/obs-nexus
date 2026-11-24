@@ -161,6 +161,9 @@ only counts strings, so the gate parses instead:
   requires M + external gaps >= N.
 - Every package named on the `changed:` line needs a PASS row in the
   install-test table. A fix you did not install-test is a fix you did not prove.
+- Every install-test row names a package that exists in the spec inventory,
+  and the table covers at least 80% of it (`ls */*.spec`); an invented name or
+  a sample-only table fails the run.
 - Every run carries at least 8 distinct `hunt: <category> - <what you ran>`
   lines. A category you did not run is a category you did not check.
 - A verdict is a transcript of a command, never a summary of a belief.

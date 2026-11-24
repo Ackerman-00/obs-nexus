@@ -124,8 +124,10 @@ jobs:
             [ "$expected" -gt 0 ] || return 1
             today=$(date -u +%F); yest=$(date -u -d yesterday +%F 2>/dev/null || date -u -v-1d +%F)
             grep -q "| package | upstream deps evidence |" <<< "$content" || return 1
-            local dep_rows unproven_rows
-            dep_rows=$(printf '%s' "$content" | grep -oE "^\| [a-zA-Z0-9._+-]+ \|.*\| (deps-verified|deps-fixed|version-checked|retired-stub)\b" | awk -F'|' '{gsub(/ /,"",$2); print $2}' | sort -u | wc -l || true)
+            local dep_rows dep_names unproven_rows inventory
+            inventory=$(ls */*.spec 2>/dev/null | sed 's#.*/##; s#\.spec$##' | sort -u)
+            dep_names=$(printf '%s' "$content" | grep -oE "^\| [a-zA-Z0-9._+-]+ \|.*\| (deps-verified|deps-fixed|version-checked|retired-stub)\b" | awk -F'|' '{gsub(/ /,"",$2); print $2}' | sort -u || true)
+            dep_rows=$(printf '%s\n' "$dep_names" | grep -c . || true)
             [ "$dep_rows" -ge "$expected" ] || return 1
             unproven_rows=$(printf '%s' "$content" | grep -oE "^\| [a-zA-Z0-9._+-]+ \|.*unproven:" | awk -F'|' '{gsub(/ /,"",$2); print $2}' | sort -u | wc -l || true)
             [ "$unproven_rows" -ge "$expected" ] || return 1
@@ -175,6 +177,15 @@ jobs:
             it_pass=$(grep -c ' PASS$' <<< "$it_rows" || true)
             [ "$it_fail" -eq 0 ] || return 1
             [ $(( it_fail + it_pass )) -ge 10 ] || return 1
+            local it_names nm covered unknown
+            it_names=$(awk '{print $1}' <<< "$it_rows" | sort -u)
+            unknown=""
+            for nm in $dep_names $it_names; do
+              grep -qx "$nm" <<< "$inventory" || unknown="$unknown $nm"
+            done
+            [ -z "$unknown" ] || return 1
+            covered=$(printf '%s\n' "$it_names" | grep -c . || true)
+            [ $(( covered * 10 )) -ge $(( expected * 8 )) ] || return 1
             local changed_line changed_pkgs cpkg dpkg
             changed_line=$(grep -m1 -E "^[[:space:]]*changed:" <<< "$content" || true)
             [ -n "$changed_line" ] || return 1
@@ -417,7 +428,9 @@ jobs:
             Install every changed package, write a row into the install-test table with a
             verdict of PASS, FAIL or EXTERNAL. FAIL means the run fails. EXTERNAL needs a
             GAP: external line naming that package. A same-run install PASS next to a FAIL
-            row is a contradiction and fails the run. Record at least 8 distinct hunt
+            row is a contradiction and fails the run. The table must name only packages
+            from the spec inventory and cover at least 80% of it (count via `ls */*.spec`);
+            an invented package name or a sample-only table fails the run. Record at least 8 distinct hunt
             categories; a run with no hunt lines is incomplete. Run
             `python3 tools/obs-api-check.py` for the builds, published-nvr and sources
             categories; an OBS API HTTP 401 is UNVERIFIED, never a clean receipt. Use
