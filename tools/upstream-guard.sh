@@ -9,6 +9,20 @@ spec_release() {
     printf '%s\n' "${rel:-0}"
 }
 
+# #tag-asset: a tag can exist without a GitHub release (no downloadable asset).
+pick_tag_with_asset() {
+    local tags="$1" tpl="$2" t v url
+    for t in $tags; do
+        v="${t#v}"
+        url=$(printf "$tpl" "$t" "$v")
+        if asset_http_ok "$url" 1 0; then
+            printf '%s\n' "$t"
+            return 0
+        fi
+    done
+    return 1
+}
+
 asset_http_ok() {
     local url="$1" attempts="${2:-4}" delay="${3:-5}" code=""
     local i=1

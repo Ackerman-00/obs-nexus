@@ -10,7 +10,8 @@ PACKAGER_ADDR="Ackerman-00 <noreply@example.com>"
 
 echo "🔍 Checking for upstream updates on $GITHUB_REPO..."
 
-LATEST_TAG=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+TAG_LIST=$(git ls-remote --tags https://github.com/$GITHUB_REPO.git 2>/dev/null | awk '{print $2}' | sed 's|refs/tags/||;s/\^{}//' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -Vr)
+LATEST_TAG=$(pick_tag_with_asset "$TAG_LIST" "https://github.com/$GITHUB_REPO/releases/download/%s/Stoat-linux-x64-%s.zip")
 
 if [ -z "$LATEST_TAG" ]; then
     echo "  -> ❌ [ERROR] Failed to fetch latest tag."
