@@ -5,15 +5,16 @@
 override_dh_auto_configure:
 	:
 
+# deb worker memory cap: 1 job, high codegen units, lowered opt level
 override_dh_auto_build:
 	cd src && \
 	CARGO_NET_OFFLINE=true ORT_SKIP_DOWNLOAD=1 \
 	FFMPEG_DIR="$$PWD/../ffmpeg-dev" ORT_LIB_LOCATION="$$PWD/../onnxlib" \
 	ORT_PREFER_DYNAMIC_LINK=1 \
 	SKIA_BINARIES_URL="file://$$PWD/../skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz" \
-	RUSTFLAGS="-C link-arg=-Wl,-rpath,\$$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags" \
+	RUSTFLAGS="-C link-arg=-Wl,-rpath,\$$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags -C codegen-units=256 -C opt-level=2" \
 	CARGO_PROFILE_RELEASE_LTO=false \
-	cargo build --offline --frozen --release --bin concat
+	cargo build --offline --frozen --release --jobs 1 --bin concat
 
 override_dh_auto_test:
 	:
