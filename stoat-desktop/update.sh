@@ -1,5 +1,7 @@
 #!/bin/bash
-cd "$(dirname "$0")" || exit 1
+SELF_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
+. "$SELF_DIR/../tools/upstream-guard.sh"
+cd "$SELF_DIR" || exit 1
 curl() { command curl --connect-timeout 20 --max-time 900 "$@"; }
 
 SPEC_FILE="stoat-desktop.spec"
