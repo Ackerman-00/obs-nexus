@@ -422,6 +422,33 @@ def in_range(version, events):
     return intro is not None and vcmp(version, intro) >= 0
 
 
+def distro_upstream(v):
+    """Upstream part of a distro EVR: drop the epoch and the -release suffix."""
+    v = v.strip()
+    if re.match(r"^\d+:", v):
+        v = v.split(":", 1)[1]
+    m = re.match(r"^(.+?)-\d[\w.+~]*$", v)
+    return m.group(1) if m else v
+
+
+def distro_range_hit(version, events):
+    """in_range over a distro advisory, ignoring the distro's own release counter."""
+    ver = distro_upstream(version)
+    intro = "0"
+    for ev in events:
+        if "introduced" in ev:
+            intro = distro_upstream(ev["introduced"])
+        elif "fixed" in ev:
+            if vcmp(ver, intro) >= 0 and vcmp(ver, distro_upstream(ev["fixed"])) < 0:
+                return True
+            intro = None
+        elif "last_affected" in ev:
+            if vcmp(ver, intro) >= 0 and vcmp(ver, distro_upstream(ev["last_affected"])) <= 0:
+                return True
+            intro = None
+    return intro is not None and vcmp(ver, intro) >= 0
+
+
 def cna_ceiling(vid):
     """Upstream fix ceiling from the CVE record; distro ids are not CVE records."""
     m = re.search(r"(CVE-\d{4}-\d+)", vid)
@@ -482,13 +509,21 @@ def cves():
             except Exception:
                 continue
             hit = unfixed = False
+            distro = any(":" in (aff.get("package", {}).get("ecosystem") or "")
+                         for aff in adv.get("affected", []))
             for aff in adv.get("affected", []):
                 for rng in aff.get("ranges", []):
                     events = rng.get("events", [])
-                    if in_range(q["version"], events):
+                    covered = distro_range_hit(q["version"], events) if distro \
+                        else in_range(q["version"], events)
+                    if covered:
                         hit = True
                         if not any("fixed" in e for e in events):
                             unfixed = True
+                    elif distro and in_range(q["version"], events):
+                        excused.append("%s %s %s (distro fixed evr %s, same upstream release as ours)"
+                                       % (q["package"]["name"], q["version"], item["id"],
+                                          ",".join(e["fixed"] for e in events if "fixed" in e)))
             if hit and unfixed:
                 ceiling = next((c for c in (cna_ceiling(a) for a in adv.get("aliases", []) + [item["id"]]) if c), None)
                 if ceiling and vcmp(q["version"], ceiling) >= 0:
@@ -665,6 +700,12 @@ def selftest():
         (in_range("1.0.1", [{"introduced": "0"}, {"fixed": "1.0.1"}]), False, "exactly at fixed"),
         (in_range("1.4.0", [{"introduced": "0"}]), True, "unfixed range covers all"),
         (in_range("1.2.0", [{"introduced": "1.1.0"}, {"last_affected": "1.3.0"}]), True, "last_affected"),
+        (distro_upstream("1:1.2.3-4.1"), "1.2.3", "epoch and distro release stripped"),
+        (distro_upstream("1.4.0"), "1.4.0", "plain version untouched"),
+        (distro_range_hit("1.4.0", [{"introduced": "0"}, {"fixed": "1.4.0-1.1"}]), False,
+         "same upstream release as the distro fixed build"),
+        (distro_range_hit("1.3.9", [{"introduced": "0"}, {"fixed": "1.4.0-1.1"}]), True,
+         "older upstream than the distro fixed build stays affected"),
         (vcmp("0.85.4", "0.85.10"), -1, "numeric compare, not lexical"),
         (vcmp("2.0.7", "2.0.7"), 0, "equal"),
         (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
