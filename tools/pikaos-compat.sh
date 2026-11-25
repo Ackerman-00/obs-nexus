@@ -18,9 +18,49 @@ mkdir -p "$OUTDIR"
 OUT="$OUTDIR/rows.txt"
 : > "$OUT"
 
+# native image is the real PikaOS stack; debian:sid+repo is the fallback
+PIKA_IMAGE="${PIKA_IMAGE:-ghcr.io/pikaos-linux/pikaos-base:nestv3}"
+USE_IMAGE=0
+if [ "${PIKA_FORCE_SID:-0}" != 1 ] && timeout 120 docker manifest inspect "$PIKA_IMAGE" >/dev/null 2>&1; then
+  USE_IMAGE=1
+fi
+export PIKA_IMAGE USE_IMAGE
+
+probe_image() {
+  PIKA_DEB="$1" PIKA_REPO="$2" timeout "${PIKA_TIMEOUT:-1500}" \
+    docker run --rm -i -e PIKA_DEB -e PIKA_REPO "$PIKA_IMAGE" bash -s <<'EOS' 2>&1
+set -u
+export DEBIAN_FRONTEND=noninteractive
+grep -q '^ID=pika' /etc/os-release || { echo "HARNESS_PIKA_IMAGE_NOT_PIKA"; exit 2; }
+apt-get -o Acquire::http::Timeout=40 update -qq >/tmp/u.log 2>&1 || { echo "HARNESS_BASE_INDEX_FAIL"; tail -2 /tmp/u.log; exit 2; }
+apt-get install -y -qq ca-certificates curl gnupg >/dev/null 2>&1 || { echo "HARNESS_BASE_TOOLS_FAIL"; exit 2; }
+install -d -m 0755 /etc/apt/keyrings
+curl -fsSL "https://download.opensuse.org/repositories/home:ackerman/$PIKA_REPO/Release.key" \
+  | gpg --dearmor -o /etc/apt/keyrings/obs-nexus.gpg >/tmp/k.log 2>&1 || { echo "HARNESS_OBS_KEY_FAIL"; tail -2 /tmp/k.log; exit 2; }
+echo "deb [signed-by=/etc/apt/keyrings/obs-nexus.gpg] https://download.opensuse.org/repositories/home:ackerman/$PIKA_REPO/ /" > /etc/apt/sources.list.d/obs-nexus.list
+apt-get -o Acquire::http::Timeout=60 update -qq >/tmp/u.log 2>&1 || { echo "HARNESS_OBS_INDEX_FAIL"; tail -2 /tmp/u.log; exit 2; }
+want=$(apt-cache madison "$PIKA_DEB" 2>/dev/null | awk '/download.opensuse.org/{print $3; exit}')
+[ -n "$want" ] || { echo "INDEX_MISSING $PIKA_DEB"; exit 3; }
+apt-get install -y -qq --no-install-recommends "$PIKA_DEB=$want" >/tmp/i.log 2>&1 || { echo "INSTALL_FAIL"; grep -m3 -E 'E:|Depends|nothing' /tmp/i.log; exit 1; }
+down=$(grep -ci downgrad /tmp/i.log || true)
+dpkg -V "$PIKA_DEB" >/tmp/v.log 2>&1 || { echo "DPKG_V_FAIL"; head -3 /tmp/v.log; exit 1; }
+miss=0
+for f in $(dpkg -L "$PIKA_DEB" 2>/dev/null | grep -E '^/opt/|^/usr/bin/|^/usr/lib/' | head -40); do
+  [ -f "$f" ] || continue
+  case "$f" in *.so|*.so.[0-9]*) continue ;; esac
+  [ "$(head -c4 "$f" | od -An -c | tr -d ' \n')" = "177ELF" ] || continue
+  m=$(ldd "$f" 2>/dev/null | grep -c 'not found' || true)
+  miss=$((miss + m))
+done
+held=$(dpkg -l | grep -cE '^(hi|hB)' || true)
+sandbox=$(find /opt -maxdepth 4 -name chrome-sandbox -printf '%M' 2>/dev/null | head -1)
+echo "INSTALL_OK downgrades=$down dpkg_v=clean ldd_missing=$miss held_broken=$held sandbox=${sandbox:-none}"
+EOS
+}
+
 # ppa.pika-os.com answers a Bunny Shield JS challenge (HTTP 403) to non-browser
 # clients; repo.pika-os.com serves the same flat suites and needs ca-certificates.
-probe() {
+probe_sid() {
   PIKA_DEB="$1" PIKA_REPO="$2" timeout "${PIKA_TIMEOUT:-1500}" \
     docker run --rm -i -e PIKA_DEB -e PIKA_REPO debian:sid bash -s <<'EOS' 2>&1
 set -u
@@ -37,13 +77,15 @@ curl -fsSL "https://download.opensuse.org/repositories/home:ackerman/$PIKA_REPO/
   | gpg --dearmor -o /etc/apt/keyrings/obs-nexus.gpg >/tmp/k.log 2>&1 || { echo "HARNESS_OBS_KEY_FAIL"; tail -2 /tmp/k.log; exit 2; }
 echo "deb [signed-by=/etc/apt/keyrings/obs-nexus.gpg] https://download.opensuse.org/repositories/home:ackerman/$PIKA_REPO/ /" > /etc/apt/sources.list.d/obs-nexus.list
 apt-get -o Acquire::http::Timeout=60 update -qq >/tmp/u.log 2>&1 || { echo "HARNESS_OBS_INDEX_FAIL"; tail -2 /tmp/u.log; exit 2; }
-apt-cache policy "$PIKA_DEB" 2>/dev/null | grep -qE 'Candidate: [0-9]' || { echo "INDEX_MISSING $PIKA_DEB"; exit 3; }
-apt-get install -y -qq --no-install-recommends "$PIKA_DEB" >/tmp/i.log 2>&1 || { echo "INSTALL_FAIL"; grep -m3 -E 'E:|Depends|nothing' /tmp/i.log; exit 1; }
+want=$(apt-cache madison "$PIKA_DEB" 2>/dev/null | awk '/download.opensuse.org/{print $3; exit}')
+[ -n "$want" ] || { echo "INDEX_MISSING $PIKA_DEB"; exit 3; }
+apt-get install -y -qq --no-install-recommends "$PIKA_DEB=$want" >/tmp/i.log 2>&1 || { echo "INSTALL_FAIL"; grep -m3 -E 'E:|Depends|nothing' /tmp/i.log; exit 1; }
 down=$(grep -ci downgrad /tmp/i.log || true)
 dpkg -V "$PIKA_DEB" >/tmp/v.log 2>&1 || { echo "DPKG_V_FAIL"; head -3 /tmp/v.log; exit 1; }
 miss=0
 for f in $(dpkg -L "$PIKA_DEB" 2>/dev/null | grep -E '^/opt/|^/usr/bin/|^/usr/lib/' | head -40); do
   [ -f "$f" ] || continue
+  case "$f" in *.so|*.so.[0-9]*) continue ;; esac
   [ "$(head -c4 "$f" | od -An -c | tr -d ' \n')" = "177ELF" ] || continue
   m=$(ldd "$f" 2>/dev/null | grep -c 'not found' || true)
   miss=$((miss + m))
@@ -52,6 +94,14 @@ held=$(dpkg -l | grep -cE '^(hi|hB)' || true)
 sandbox=$(find /opt -maxdepth 4 -name chrome-sandbox -printf '%M' 2>/dev/null | head -1)
 echo "INSTALL_OK downgrades=$down dpkg_v=clean ldd_missing=$miss held_broken=$held sandbox=${sandbox:-none}"
 EOS
+}
+
+probe() {
+  if [ "${USE_IMAGE:-0}" = 1 ]; then
+    probe_image "$@"
+  else
+    probe_sid "$@"
+  fi
 }
 
 run_one() {
@@ -68,7 +118,7 @@ run_one() {
   fi
   printf '| %s | pikaos (%s) | %s | %s |\n' "$pkg" "$repo" "$verdict" "$detail" >> "$out"
 }
-export -f probe run_one
+export -f probe probe_image probe_sid run_one
 
 names=$(grep -vE '^[[:space:]]*(#|$)' "$LIST" | cut -d'|' -f1)
 printf '%s\n' "$names" | xargs -P "${PIKA_JOBS:-4}" -I{} bash -c 'run_one "$@"' _ {} "$REPO" "$OUT"
