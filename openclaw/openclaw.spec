@@ -3,14 +3,14 @@
 %global debug_package %{nil}
 
 Name:           openclaw
-Version:        2026.11.9
+Version:        2026.11.10
 Release:        0
 Summary:        Your AI assistant, running on your own devices and chats
 License:        MIT
 Group:          Applications/Utility
 URL:            https://github.com/openclaw/openclaw
-Source0:        %{url}/releases/download/v2026.11.9/OpenClaw-2026.11.9-amd64.deb
-# sha256:  ee50e98956ab65b055c27c67fc390b5d62ca6937454b263b2fff72222af3fdda
+Source0:        %{url}/releases/download/v2026.11.10/OpenClaw-2026.11.10-amd64.deb
+# sha256:  18d3ba2841c6e82acc6ccdb71cf207f1867fa0c50b9f648c6244e18e8f9d6ff3
 Source1:        openclaw-rpmlintrc
 Source2:        openclaw-LICENSE
 ExclusiveArch:  x86_64
