@@ -7,7 +7,7 @@
 %global base_version    0.2.12
 Name:           concat-unstable
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        1
+Release:        2
 Summary:        Free and open source video editor (main-branch snapshot)
 License:        AGPL-3.0-or-later
 Group:          Productivity/Multimedia/Video/Editors and Convertors
@@ -57,6 +57,19 @@ the newest commit show in the package version.
 
 %prep
 %autosetup -n concat-%{commit}
+# ort-sys copy-dylibs symlinks into target/<profile>/{examples,deps}; cargo 1.100 no longer creates them
+ortlink=src/vendor/ort-sys/build/dynamic_link.rs
+grep -q 'create_dir_all(&out_dir)' "$ortlink" || sed -i 's|^\(\s*\)for out_dir in \[out_dir.to_path_buf(), out_dir.join("examples"), out_dir.join("deps")\] {|&\n\t\tlet _ = fs::create_dir_all(\&out_dir);|' "$ortlink"
+grep -q 'create_dir_all(&out_dir)' "$ortlink" || { echo "ort-sys dynamic_link.rs layout changed; refusing to build an unpatched payload"; exit 1; }
+python3 -I - <<'PY'
+import hashlib, json
+p = 'src/vendor/ort-sys/build/dynamic_link.rs'
+j = 'src/vendor/ort-sys/.cargo-checksum.json'
+d = json.load(open(j))
+key = next((k for k in d.get('files', {}) if k.endswith('build/dynamic_link.rs')), None)
+d.setdefault('files', {})[key or 'build/dynamic_link.rs'] = hashlib.sha256(open(p, 'rb').read()).hexdigest()
+json.dump(d, open(j, 'w'))
+PY
 
 %build
 export CARGO_NET_OFFLINE=true
@@ -67,8 +80,6 @@ export ORT_LIB_LOCATION="%{_builddir}/concat-%{commit}/onnxlib"
 export ORT_PREFER_DYNAMIC_LINK=1
 export SKIA_BINARIES_URL="file://%{_builddir}/concat-%{commit}/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
 export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags"
-# ort-sys copy-dylibs symlinks into target/release/deps, absent since cargo 1.100
-mkdir -p src/target/release/deps
 cd src && cargo build --offline --frozen --release --bin concat
 
 %install

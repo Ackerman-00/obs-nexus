@@ -1,3 +1,9 @@
+concat-unstable (0.2.12+git20261125012015.c0a87a2-3) unstable; urgency=medium
+
+  * Patch ort-sys copy-dylibs to create the target dirs cargo 1.100 omits.
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 25 Nov 2026 04:48:24 +0000
+
 concat-unstable (0.2.12+git20261125012015.c0a87a2-2) unstable; urgency=medium
 
   * Create target/release/deps so ort-sys copy-dylibs links.

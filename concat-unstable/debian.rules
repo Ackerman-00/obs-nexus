@@ -3,11 +3,13 @@
 	dh $@
 
 override_dh_auto_configure:
-	:
+	f=src/vendor/ort-sys/build/dynamic_link.rs; \
+	grep -q 'create_dir_all(&out_dir)' $$f || sed -i 's|^\(\s*\)for out_dir in \[out_dir.to_path_buf(), out_dir.join("examples"), out_dir.join("deps")\] {|&\n\t\tlet _ = fs::create_dir_all(\&out_dir);|' $$f; \
+	grep -q 'create_dir_all(&out_dir)' $$f; \
+	python3 -I -c "import hashlib,json;p='src/vendor/ort-sys/build/dynamic_link.rs';j='src/vendor/ort-sys/.cargo-checksum.json';d=json.load(open(j));k=next((x for x in d.get('files',{}) if x.endswith('build/dynamic_link.rs')),None);d.setdefault('files',{})[k or 'build/dynamic_link.rs']=hashlib.sha256(open(p,'rb').read()).hexdigest();json.dump(d,open(j,'w'))"
 
 # deb worker memory cap: 1 job, high codegen units, lowered opt level
 override_dh_auto_build:
-	mkdir -p src/target/release/deps
 	cd src && \
 	CARGO_NET_OFFLINE=true ORT_SKIP_DOWNLOAD=1 \
 	FFMPEG_DIR="$$PWD/../ffmpeg-dev" ORT_LIB_LOCATION="$$PWD/../onnxlib" \

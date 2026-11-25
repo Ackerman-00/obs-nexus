@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 25 04:48:24 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.12+git20261125012015.c0a87a2-2
+- Patch ort-sys copy-dylibs to create the target dirs cargo 1.100 omits
+
+-------------------------------------------------------------------
 Wed Nov 25 04:38:11 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.12+git20261125012015.c0a87a2-1
