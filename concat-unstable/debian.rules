@@ -7,6 +7,7 @@ override_dh_auto_configure:
 
 # deb worker memory cap: 1 job, high codegen units, lowered opt level
 override_dh_auto_build:
+	mkdir -p src/target/release/deps
 	cd src && \
 	CARGO_NET_OFFLINE=true ORT_SKIP_DOWNLOAD=1 \
 	FFMPEG_DIR="$$PWD/../ffmpeg-dev" ORT_LIB_LOCATION="$$PWD/../onnxlib" \

@@ -7,7 +7,7 @@
 %global base_version    0.2.12
 Name:           concat-unstable
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        0
+Release:        1
 Summary:        Free and open source video editor (main-branch snapshot)
 License:        AGPL-3.0-or-later
 Group:          Productivity/Multimedia/Video/Editors and Convertors
@@ -67,6 +67,8 @@ export ORT_LIB_LOCATION="%{_builddir}/concat-%{commit}/onnxlib"
 export ORT_PREFER_DYNAMIC_LINK=1
 export SKIA_BINARIES_URL="file://%{_builddir}/concat-%{commit}/skia-cache/skia-binaries-b7f043e0b1e2a850e702-x86_64-unknown-linux-gnu-ganesh-gl-jpegd-jpege-pdf-vulkan.tar.gz"
 export RUSTFLAGS="-C link-arg=-Wl,-rpath,\$ORIGIN/lib -C link-arg=-Wl,--disable-new-dtags"
+# ort-sys copy-dylibs symlinks into target/release/deps, absent since cargo 1.100
+mkdir -p src/target/release/deps
 cd src && cargo build --offline --frozen --release --bin concat
 
 %install

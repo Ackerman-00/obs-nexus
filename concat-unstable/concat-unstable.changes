@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 25 04:38:11 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.2.12+git20261125012015.c0a87a2-1
+- Fix ort-sys build: create target/release/deps that copy-dylibs symlinks into
+
+-------------------------------------------------------------------
 Wed Nov 25 04:23:22 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.2.12+git20261125012015.c0a87a2-0
