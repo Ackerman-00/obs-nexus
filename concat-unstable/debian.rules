@@ -6,7 +6,9 @@ override_dh_auto_configure:
 	f=src/vendor/ort-sys/build/dynamic_link.rs; \
 	grep -q 'create_dir_all(&out_dir)' $$f || sed -i 's|^\(\s*\)for out_dir in \[out_dir.to_path_buf(), out_dir.join("examples"), out_dir.join("deps")\] {|&\n\t\tlet _ = fs::create_dir_all(\&out_dir);|' $$f; \
 	grep -q 'create_dir_all(&out_dir)' $$f; \
-	python3 -I -c "import hashlib,json;p='src/vendor/ort-sys/build/dynamic_link.rs';j='src/vendor/ort-sys/.cargo-checksum.json';d=json.load(open(j));k=next((x for x in d.get('files',{}) if x.endswith('build/dynamic_link.rs')),None);d.setdefault('files',{})[k or 'build/dynamic_link.rs']=hashlib.sha256(open(p,'rb').read()).hexdigest();json.dump(d,open(j,'w'))"
+	nh=$$(sha256sum src/vendor/ort-sys/build/dynamic_link.rs | awk '{print $$1}'); \
+	sed -i "s/\"build\/dynamic_link.rs\": \"[0-9a-f]*\"/\"build\/dynamic_link.rs\": \"$$nh\"/" src/vendor/ort-sys/.cargo-checksum.json; \
+	grep -q "\"build/dynamic_link.rs\": \"$$nh\"" src/vendor/ort-sys/.cargo-checksum.json
 
 # deb worker memory cap: 1 job, high codegen units, lowered opt level
 override_dh_auto_build:
