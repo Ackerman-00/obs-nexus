@@ -7,7 +7,7 @@
 %global base_version    0.2.12
 Name:           concat-unstable
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        2
+Release:        3
 Summary:        Free and open source video editor (main-branch snapshot)
 License:        AGPL-3.0-or-later
 Group:          Productivity/Multimedia/Video/Editors and Convertors
