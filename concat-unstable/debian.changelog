@@ -1,3 +1,9 @@
+concat-unstable (0.2.12+git20261125012015.c0a87a2-6) unstable; urgency=medium
+
+  * Fix sed regex for cargo-checksum (handle spaces after colon).
+
+ -- Ackerman-00 <noreply@example.com>  Wed, 25 Nov 2026 05:05:00 +0000
+
 concat-unstable (0.2.12+git20261125012015.c0a87a2-5) unstable; urgency=medium
 
   * Use sha256sum+sed instead of python3 to refresh the ort-sys cargo checksum (python3 is not in the OBS Debian buildroot).
