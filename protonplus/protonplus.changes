@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Nov 26 03:47:15 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Fix the 0.6.9 build: 0.6.9 adds sqlite3 and yaml-0.1 meson deps, plus
+  test-only deps declared by upstream's own packaging. Add the runtime
+  services ca-certificates, dconf and glib-networking. Drop libnotify,
+  appstream pc and python3, which upstream no longer uses.
+
+-------------------------------------------------------------------
 Thu Nov 26 03:30:37 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update to upstream release 0.6.9

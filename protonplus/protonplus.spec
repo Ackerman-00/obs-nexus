@@ -1,23 +1,25 @@
 %define         appid com.vysp3r.ProtonPlus
 Name:           protonplus
 Version:        0.6.9
-Release:        0
+Release:        1
 ExclusiveArch:  x86_64
 Summary:        A Wine and Proton-based compatibility tools manager for GNOME
 License:        GPL-3.0-only
 Group:          System/GUI/Other
 URL:            https://github.com/vysp3r/ProtonPlus
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
+BuildRequires:  AppStream
+BuildRequires:  dbus-1
+BuildRequires:  dejavu-fonts
 BuildRequires:  desktop-file-utils
 BuildRequires:  fdupes
 BuildRequires:  gettext-runtime
+BuildRequires:  git
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  ninja
 BuildRequires:  pkgconf
-BuildRequires:  pkgconfig
-BuildRequires:  python3
 BuildRequires:  vala
-BuildRequires:  pkgconfig(appstream)
+BuildRequires:  xvfb-run
 BuildRequires:  pkgconfig(cairo)
 BuildRequires:  pkgconfig(gee-0.8)
 BuildRequires:  pkgconfig(gio-unix-2.0)
@@ -26,9 +28,13 @@ BuildRequires:  pkgconfig(gtk4)
 BuildRequires:  pkgconfig(json-glib-1.0)
 BuildRequires:  pkgconfig(libadwaita-1) >= 1.6.0
 BuildRequires:  pkgconfig(libarchive)
-BuildRequires:  pkgconfig(libnotify)
 BuildRequires:  pkgconfig(libsoup-3.0)
 BuildRequires:  pkgconfig(sdl3) >= 3.2.0
+BuildRequires:  pkgconfig(sqlite3)
+BuildRequires:  pkgconfig(yaml-0.1)
+Requires:       ca-certificates
+Requires:       dconf
+Requires:       glib-networking
 Requires:       hicolor-icon-theme
 Requires:       libGLESv2.so.2()(64bit)
 Requires:       which
@@ -63,7 +69,7 @@ Provides translations for the "%{name}" package.
 
 find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/package-type' \) -delete 2>/dev/null || true
 %check
-%meson_test
+dbus-run-session -- %{__meson} test -C %{_vpath_builddir} --print-errorlogs
 
 %files
 %{_bindir}/protonplus

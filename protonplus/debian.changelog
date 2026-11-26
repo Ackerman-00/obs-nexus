@@ -1,3 +1,11 @@
+protonplus (0.6.9-2) unstable; urgency=medium
+
+  * Add libsqlite3-dev and libyaml-dev plus the test-only deps upstream
+    declares; add ca-certificates, dconf and glib-networking runtime deps;
+    drop libnotify.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 26 Nov 2026 03:47:15 +0000
+
 protonplus (0.6.9-1) unstable; urgency=medium
 
   * New upstream release 0.6.9.
