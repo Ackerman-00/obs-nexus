@@ -2,14 +2,14 @@
 %global __requires_exclude_from ^%{_prefix}/lib/Cline/bin/remote-helpers/
 %global __provides_exclude_from ^%{_prefix}/lib/Cline/bin/remote-helpers/
 Name:           cline-desktop
-Version:        0.0.50
-# sha256:  69a11abba98a8bde64c5a6f01b231e1dd6b1e211bbba0a7458deaaccc0ef3d32
+Version:        0.0.51
+# sha256:  f7d9e7043a6d87db491922475edc88ccdc15ecf19c8a65e990abcd40885629da
 Release:        0
 Summary:        The agentic coding-capable IDE desktop app (Tauri)
 License:        Apache-2.0
 Group:          Development/Tools/IDE
 URL:            https://cline.bot
-Source0:        https://github.com/cline/cline/releases/download/desktop-v0.0.50/Cline_0.0.50_amd64.deb
+Source0:        https://github.com/cline/cline/releases/download/desktop-v0.0.51/Cline_0.0.51_amd64.deb
 Source1:        cline-desktop-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  tar

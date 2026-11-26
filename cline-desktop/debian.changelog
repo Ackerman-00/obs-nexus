@@ -1,3 +1,9 @@
+cline-desktop (0.0.51-1) unstable; urgency=medium
+
+  * New upstream release 0.0.51.
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 26 Nov 2026 17:25:57 +0000
+
 cline-desktop (0.0.50-1) unstable; urgency=medium
 
   * New upstream release 0.0.50.

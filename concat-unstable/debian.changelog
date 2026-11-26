@@ -1,3 +1,9 @@
+concat-unstable (0.2.12+git20261126123453.4d3b0a1-1) unstable; urgency=medium
+
+  * New upstream snapshot 4d3b0a1 (base 0.2.12).
+
+ -- Ackerman-00 <noreply@example.com>  Thu, 26 Nov 2026 17:32:28 +0000
+
 concat-unstable (0.2.12+git20261125012015.c0a87a2-6) unstable; urgency=medium
 
   * Fix sed regex for cargo-checksum (handle spaces after colon).

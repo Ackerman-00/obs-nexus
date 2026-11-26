@@ -1,13 +1,13 @@
 %global debug_package %{nil}
 %global __requires_exclude_from ^/opt/concat-unstable/.*$
 %global __provides_exclude_from ^/opt/concat-unstable/.*$
-%global commit          c0a87a239677deded9bdc2147c3b15c4c8751d0e
-%global shortcommit     c0a87a2
-%global gitdate         20261125012015
+%global commit          4d3b0a14e59452c62b1ad3876593cfb92da1671d
+%global shortcommit     4d3b0a1
+%global gitdate         20261126123453
 %global base_version    0.2.12
 Name:           concat-unstable
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        3
+Release:        0
 Summary:        Free and open source video editor (main-branch snapshot)
 License:        AGPL-3.0-or-later
 Group:          Productivity/Multimedia/Video/Editors and Convertors
