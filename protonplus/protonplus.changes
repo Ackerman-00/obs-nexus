@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Nov 26 03:30:37 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- Update to upstream release 0.6.9
+
+-------------------------------------------------------------------
 Thu Nov 19 03:07:05 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Replace the hard Conflicts: ProtonPlus with Provides/Obsoletes so a

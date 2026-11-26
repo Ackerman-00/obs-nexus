@@ -1,6 +1,6 @@
 %define         appid com.vysp3r.ProtonPlus
 Name:           protonplus
-Version:        0.6.8
+Version:        0.6.9
 Release:        0
 ExclusiveArch:  x86_64
 Summary:        A Wine and Proton-based compatibility tools manager for GNOME
