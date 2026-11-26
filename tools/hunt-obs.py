@@ -265,6 +265,19 @@ def rev_seen(tag, text):
     return any(c and c in text for c in cands)
 
 
+def spec_version(text):
+    m = re.search(r"(?m)^Version:\s*([0-9][0-9A-Za-z._+~-]*)", text)
+    return m.group(1) if m else ""
+
+
+def spec_behind(tag, text):
+    """A spec ahead of the latest release is not stale (tag vs Version)."""
+    sv = spec_version(text)
+    if sv:
+        return vcmp(sv, tag) < 0
+    return not rev_seen(tag, text)
+
+
 def latest_tag(owner, repo):
     code, body = get("https://api.github.com/repos/%s/%s/releases/latest" % (owner, repo))
     if code == 200:
@@ -347,7 +360,7 @@ def upstream_versions():
                 unverified.append("%s %s/%s (%s)" % (d, owner, repo, why))
             else:
                 checked += 1
-                if not rev_seen(tag, txt):
+                if spec_behind(tag, txt):
                     bad.append("%s lacks newest upstream tag %s" % (d, tag))
             time.sleep(1)
             continue
@@ -711,6 +724,8 @@ def selftest():
         (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
         (rev_seen("2026-10-31.1", "Version: 2026.10.31.1"), True, "dash/dot tag equivalence"),
         (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
+        (spec_behind("0.19.0", "Version:        0.19.1"), False, "spec ahead of latest release is not stale"),
+        (spec_behind("0.19.1", "Version:        0.19.0"), True, "spec behind latest release is stale"),
         (source_github("Source0: https://github.com/cline/cline/releases/download/desktop-v0.0.50/Cline.deb"),
          ("cline", "cline", "desktop-v"), "prefixed release asset yields prefix"),
         (source_github("Source0: fluxer.rpm"), None, "local Source0 has no GitHub ref"),
