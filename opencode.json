@@ -81,9 +81,9 @@
             "output": 65536
           }
         },
-        "tidepool-alpha-free": {
-          "name": "Tidepool Alpha Free",
-          "modelID": "tidepool-alpha-free",
+        "seaglass-alpha-free": {
+          "name": "Seaglass Alpha Free",
+          "modelID": "seaglass-alpha-free",
           "limit": {
             "context": 200000,
             "output": 32000

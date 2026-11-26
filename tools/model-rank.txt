@@ -25,8 +25,8 @@ hy4-flash-free
 iceman-free
 # no independent score; anonymous stealth id - source: OpenCode Zen catalog
 big-pickle
-# no independent score; new stealth id, absent from the console table and the free-model list - sources: opencode.ai/docs/console/models/ and the live catalog, both fetched 2026-11-19
-tidepool-alpha-free
+# no independent score; new stealth id, absent from the console table and the free-model list - sources: opencode.ai/docs/console/models/ and the live catalog, both fetched 2026-11-26
+seaglass-alpha-free
 
 # vetoed by owner (2026-10-22): glm-5.3-flash-free, jev-1.13-free (probabilistic classifier, not a coding model)
 # retired from the live catalog: crouton-alpha-free (2026-11-10), Pulse Alpha Free (2026-11-06), minimax-m3.1-flash-free (2026-11-17), glm-5.3-flash-free (deprecated 2026-11-18)
