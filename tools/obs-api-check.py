@@ -158,6 +158,19 @@ def rev_seen(tag, text):
     return any(c and c in text for c in cands)
 
 
+def spec_version(text):
+    m = re.search(r"(?m)^Version:\s*([0-9][0-9A-Za-z._+~-]*)", text)
+    return m.group(1) if m else ""
+
+
+def spec_behind(tag, text):
+    """A spec ahead of the latest release is not stale (tag vs Version)."""
+    sv = spec_version(text)
+    if sv:
+        return vcmp(sv, tag) < 0
+    return not rev_seen(tag, text)
+
+
 def release_asset_missing(tag, spec_text, body):
     """A release tag with no matching source asset cannot be packaged yet."""
     src = re.search(r"(?m)^Source0:\s*(\S+)", spec_text)
@@ -201,7 +214,7 @@ def upstream_versions():
             if code_t == 200:
                 if tag:
                     checked += 1
-                    if not rev_seen(tag, txt):
+                    if spec_behind(tag, txt):
                         bad.append(f"{os.path.dirname(sp)} spec lacks newest upstream tag {tag}")
                     time.sleep(1)
                     continue
@@ -215,7 +228,7 @@ def upstream_versions():
             tag = ""
         if tag:
             checked += 1
-            if not rev_seen(tag, txt):
+            if spec_behind(tag, txt):
                 if release_asset_missing(tag, txt, body):
                     held.append(f"{os.path.dirname(sp)} {tag} release has no matching source asset yet")
                 else:
@@ -508,6 +521,9 @@ def selftest():
         (vcmp("26.11.5", "26.9.1"), 1, "major compare"),
         (rev_seen("2026-10-31.1", "Version: 2026.10.31.1"), True, "dash/dot tag equivalence"),
         (rev_seen("0.85.4", "Version: 0.85.2"), False, "different version is not equivalent"),
+        (spec_behind("0.19.0", "Version:        0.19.1"), False, "spec ahead of latest release is not stale"),
+        (spec_behind("0.19.1", "Version:        0.19.0"), True, "spec behind latest release is stale"),
+        (spec_behind("0.19.0", "%global ver 0.19.0"), False, "macro-only spec falls back to tag match"),
         (release_asset_missing("v2026.11.7",
                                "Source0: %{url}/releases/download/v2026.11.7/OpenClaw-2026.11.7-amd64.deb",
                                json.dumps({"assets": [{"name": "latest.json"},
