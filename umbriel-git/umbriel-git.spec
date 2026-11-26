@@ -4,7 +4,7 @@
 %global base_version    0.1.0
 Name:           umbriel-git
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        0
+Release:        1
 Summary:        Wayland compositor with scrolling and dwindle layouts
 License:        MIT
 Group:          System/GUI/Other
@@ -101,5 +101,9 @@ find %{buildroot} \( -path '*/resources/app-update.yml' -o -path '*/resources/pa
 %{_userunitdir}/umbriel.service
 %{_userunitdir}/umbriel-session.target
 %{_userunitdir}/umbriel-shutdown.target
+%dir %{_prefix}/lib/dinit.d
+%dir %{_prefix}/lib/dinit.d/user
+%{_prefix}/lib/dinit.d/user/umbriel
+%{_prefix}/lib/dinit.d/user/umbriel-session
 
 %changelog

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 26 17:52:45 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.1.0+git20261126161805.edd40d5-1
+- Package the dinit user service units the snapshot installs under
+  /usr/lib/dinit.d/user (unpackaged files broke the build)
+
+-------------------------------------------------------------------
 Thu Nov 26 17:23:53 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.1.0+git20261126161805.edd40d5-0
