@@ -2,14 +2,14 @@
 %global __requires_exclude_from ^/opt/omnirush/.*$
 %global __provides_exclude_from ^/opt/omnirush/.*$
 Name:           omnirush-desktop
-Version:        3.9.8
-# sha256:  33726db1c1f204960b5c5887fcd0bb9d5766ec41e7aea1823a15dd234579ce6c
+Version:        4.0.1
+# sha256:  7ea09f3b8dbcc365428d9542889e609c119cdd14645246335b778840559d310b
 Release:        2
 Summary:        OmniRush.ai desktop shell (Electron)
 License:        LicenseRef-SUSE-Freeware
 Group:          Productivity/Networking/Talk/Clients
 URL:            https://omnirush.ai
-Source0:        https://github.com/omnirush-ai/omnirush-gui/releases/download/v3.9.8/omnirush-linux-amd64-3.9.8.deb
+Source0:        https://github.com/omnirush-ai/omnirush-gui/releases/download/v4.0.1/omnirush-linux-amd64-4.0.1.deb
 Source1:        omnirush-desktop-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  desktop-file-utils
