@@ -1,8 +1,10 @@
 -------------------------------------------------------------------
 Fri Nov 27 17:06:43 UTC 2026 - Ackerman-00 <noreply@example.com>
 
-- version 0.102.0-0
-- Update koharu to 0.102.0
+- version 0.102.2-0
+- Update koharu to 0.102.2
+- Bump version to match upstream GitHub v0.102.2; updated .spec and .dsc Source0
+- Changelog head synchronized with .dsc Version 0.102.2
 
 -------------------------------------------------------------------
 Fri Nov 27 03:23:38 UTC 2026 - Ackerman-00 <noreply@example.com>
