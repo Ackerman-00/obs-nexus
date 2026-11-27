@@ -294,6 +294,10 @@ not ship as a PROBE-BUG rather than a package failure.
   a source is unreachable; `--selftest` runs offline.
 - `bash tools/install-sweep.sh tools/probes.txt` - install + rpm -V/dpkg -V +
   ldd on all three targets; writes relay-ready PASS/FAIL rows.
+- `python3 tools/install-table.py` - merges the sweep rows into the relay
+  install-test table with the per-target cells and the probe facts; a FAIL or
+  HARNESS verdict can never be dropped by hand-transcription; `--selftest`
+  proves the FAIL/HARNESS propagation.
 - `bash tools/desktop-audit.sh <pkg> [tumbleweed|testing|sid]` - Icon/Exec
   resolution for shipped .desktop files.
 - `bash tools/obs-drift.sh` - spec in git vs spec OBS built (needs OBS creds).
