@@ -279,8 +279,29 @@ def in_range(version, events):
     return intro is not None and vcmp(version, intro) >= 0
 
 
+def ceiling_from_record(doc):
+    """Earliest fixed version the CNA declares, from a parsed CVE record."""
+    floors = []
+    for aff in doc.get("containers", {}).get("cna", {}).get("affected", []):
+        for ver in aff.get("versions", []):
+            if ver.get("lessThan"):
+                floors.append(ver["lessThan"])
+            v = (ver.get("version") or "").strip()
+            if v.startswith("<"):
+                floors.append(v.lstrip("<").strip())
+            elif ver.get("status") == "unaffected" and re.match(r"^\d", v):
+                floors.append(v)
+    if not floors:
+        return None
+    best = floors[0]
+    for f in floors[1:]:
+        if vcmp(f, best) < 0:
+            best = f
+    return best
+
+
 def cna_ceiling(vid):
-    """Upstream fix ceiling from the CVE record; distro ids are not CVE records."""
+    """Upstream fix floor from the CVE record; distro ids are not CVE records."""
     m = re.search(r"(CVE-\d{4}-\d+)", vid)
     if not m:
         return None
@@ -291,16 +312,7 @@ def cna_ceiling(vid):
         doc = json.loads(body)
     except Exception:
         return None
-    for aff in doc.get("containers", {}).get("cna", {}).get("affected", []):
-        for ver in aff.get("versions", []):
-            if ver.get("status") != "affected":
-                continue
-            if ver.get("lessThan"):
-                return ver["lessThan"]
-            v = (ver.get("version") or "").strip()
-            if v.startswith("<"):
-                return v.lstrip("<").strip()
-    return None
+    return ceiling_from_record(doc)
 
 
 def published_versions():
@@ -407,7 +419,7 @@ def cves():
             if hit and unfixed:
                 ceiling = next((c for c in (cna_ceiling(a) for a in adv.get("aliases", []) + [item["id"]]) if c), None)
                 if ceiling and vcmp(q["version"], ceiling) >= 0:
-                    excused.append(f"{q['package']['name']} {q['version']} {item['id']} (fixed upstream < {ceiling})")
+                    excused.append(f"{q['package']['name']} {q['version']} {item['id']} (fixed upstream at {ceiling})")
                     time.sleep(0.2)
                     continue
             if hit:
@@ -544,6 +556,16 @@ def selftest():
          "published release above the fixed distro NVR"),
         (in_range("1.4.0", [{"introduced": "0"}, {"fixed": "1.4.0-1.1"}]), True,
          "bare upstream version is below the fixed NVR"),
+        (ceiling_from_record({"containers": {"cna": {"affected": [{"versions": [
+            {"version": "1.3.1", "status": "affected"},
+            {"version": "1.4.0", "status": "unaffected"}]}]}}}), "1.4.0",
+         "CNA unaffected version is the fix floor"),
+        (ceiling_from_record({"containers": {"cna": {"affected": [{"versions": [
+            {"version": "0", "status": "affected", "lessThan": "2.1.3"}]}]}}}), "2.1.3",
+         "CNA lessThan is the fix floor"),
+        (ceiling_from_record({"containers": {"cna": {"affected": [{"versions": [
+            {"version": "1.2.0", "status": "affected"}]}]}}}), None,
+         "record without a fix floor stays unexcused"),
     ]
     import tempfile
     with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
