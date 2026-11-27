@@ -1,10 +1,10 @@
-%global commit          edd40d573452251c1bc1bf1d299107c08acf3887
-%global shortcommit     edd40d5
-%global gitdate         20261126161805
+%global commit          0760394b3a97702a95833d2fb6985f36464a9417
+%global shortcommit     0760394
+%global gitdate         20261127000323
 %global base_version    0.1.0
 Name:           umbriel-git
 Version:        %{base_version}+git%{gitdate}.%{shortcommit}
-Release:        1
+Release:        0
 Summary:        Wayland compositor with scrolling and dwindle layouts
 License:        MIT
 Group:          System/GUI/Other

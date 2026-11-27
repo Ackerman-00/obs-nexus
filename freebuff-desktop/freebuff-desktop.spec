@@ -2,14 +2,14 @@
 %global __requires_exclude_from ^/opt/Freebuff/.*$
 %global __provides_exclude_from ^/opt/Freebuff/.*$
 Name:           freebuff-desktop
-Version:        0.0.205
-# sha256:  7bbbeadbcbc8fa3925cb0812585803f4d5c7b5b34e3a1153640af819ddff7756
+Version:        0.0.206
+# sha256:  21826a2b3890b42e66e241b90ddd3eb4b55fae0beb4825a3689b1a379d7836cc
 Release:        3
 Summary:        Freebuff Desktop (Electron)
 License:        LicenseRef-SUSE-Freeware
 Group:          Development/Tools/IDE
 URL:            https://freebuff.com
-Source0:        https://github.com/CodebuffAI/codebuff-community/releases/download/freebuff-desktop-v0.0.205/Freebuff-0.0.205-linux-amd64.deb
+Source0:        https://github.com/CodebuffAI/codebuff-community/releases/download/freebuff-desktop-v0.0.206/Freebuff-0.0.206-linux-amd64.deb
 Source1:        freebuff-desktop-rpmlintrc
 BuildRequires:  binutils
 BuildRequires:  tar
