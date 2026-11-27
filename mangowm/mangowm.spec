@@ -3,7 +3,7 @@
 %global scenefx_ver    0.5
 Name:           mangowm
 Version:        0.19.3
-Release:        0
+Release:        1
 Summary:        Practical and powerful Wayland compositor (dwm-like, wlroots-based)
 License:        GPL-3.0-or-later
 Group:          System/GUI/Other
@@ -17,6 +17,7 @@ BuildRequires:  pkgconfig
 BuildRequires:  desktop-file-utils
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  wayland-protocols-devel
+BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(libcjson)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libinput) >= 1.27.1

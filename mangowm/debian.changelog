@@ -1,3 +1,9 @@
+mangowm (0.19.3-2) unstable; urgency=medium
+
+  * Declare the direct pkgconfig(glesv2) build dependency.
+
+ -- Ackerman-00 <noreply@example.com>  Fri, 27 Nov 2026 17:52:00 +0000
+
 mangowm (0.19.3-1) unstable; urgency=medium
 
   * New upstream release 0.19.3.

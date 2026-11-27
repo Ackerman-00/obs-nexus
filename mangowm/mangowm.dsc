@@ -10,5 +10,5 @@ Build-Depends: debhelper-compat (= 13), meson, ninja-build, pkg-config,
  libcjson-dev, libpango1.0-dev, libcairo2-dev, libxcb1-dev,
  libxcb-icccm4-dev, libxcb-randr0-dev,
  libwlroots-0.20-dev (>= 0.20), libscenefx-0.5-dev (>= 0.5)
-DEBTRANSFORM-RELEASE: 1
+DEBTRANSFORM-RELEASE: 2
 Debtransform-Tar: mangowm-0.19.3.tar.gz

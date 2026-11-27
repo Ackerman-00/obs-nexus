@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 27 17:52:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.19.3-1
+- Declare pkgconfig(glesv2) directly: upstream meson.build requires it and it was only satisfied transitively via scenefx-devel
+
+-------------------------------------------------------------------
 Fri Nov 27 03:23:39 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - Update mangowm to 0.19.3
