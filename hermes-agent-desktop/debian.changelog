@@ -1,3 +1,9 @@
+hermes-agent-desktop (0.23.5+git20261128014848.a428f53-1) unstable; urgency=medium
+
+  * New upstream snapshot a428f53 (base 0.23.5).
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 28 Nov 2026 03:31:47 +0000
+
 hermes-agent-desktop (0.23.4+git20261124070414.8fc0374-1) unstable; urgency=medium
 
   * New upstream snapshot 8fc0374 (base 0.23.4).
