@@ -1,3 +1,10 @@
+koharu (0.102.2-1) unstable; urgency=medium
+
+  * Ship the orig tarball so debtransform can build the source package.
+  * Re-pin the upstream DEB sha256 after the 0.102.2 asset re-release.
+
+ -- Ackerman-00 <noreply@example.com>  Sat, 28 Nov 2026 03:30:00 +0000
+
 koharu (0.102.2-0) unstable; urgency=medium
 
   * New upstream release 0.102.2.

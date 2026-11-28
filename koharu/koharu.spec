@@ -3,8 +3,8 @@
 %global __provides_exclude_from ^/opt/koharu/.*$
 Name:           koharu
 Version:        0.102.2
-# sha256:  d9547ea5cffcba32be39cebd00737daaad4fe14c2c77d55712357f8c56dd0b01
-Release:        0
+# sha256:  48a2900c208ff0eb66c9c1bfcc6717eef3339eb14761cbe5c032627efe753bff
+Release:        1
 Summary:        Local-first ML-powered manga translator
 License:        MIT OR Apache-2.0
 Group:          Productivity/Graphics/Other

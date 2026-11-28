@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Nov 28 03:30:00 UTC 2026 - Ackerman-00 <noreply@example.com>
+
+- version 0.102.2-1
+- Re-pin the upstream DEB sha256 after the 0.102.2 asset re-release
+- Restore the Debian orig tarball so both DEB targets build
+
+-------------------------------------------------------------------
 Fri Nov 27 17:06:43 UTC 2026 - Ackerman-00 <noreply@example.com>
 
 - version 0.102.2-0
