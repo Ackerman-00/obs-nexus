@@ -462,8 +462,8 @@ def distro_range_hit(version, events):
     return intro is not None and vcmp(ver, intro) >= 0
 
 
-def cna_ceiling(vid):
-    """Upstream fix ceiling from the CVE record; distro ids are not CVE records."""
+def cna_doc(vid):
+    """Parsed CVE record for a CVE or distro-prefixed advisory id, else None."""
     m = re.search(r"(CVE-\d{4}-\d+)", vid)
     if not m:
         return None
@@ -471,8 +471,33 @@ def cna_ceiling(vid):
     if code != 200:
         return None
     try:
-        doc = json.loads(body)
+        return json.loads(body)
     except Exception:
+        return None
+
+
+def cna_unaffected(doc, version):
+    """Highest CNA version at or below ours marked unaffected, else None."""
+    best = None
+    for aff in doc.get("containers", {}).get("cna", {}).get("affected", []):
+        for ver in aff.get("versions", []):
+            if ver.get("status") != "unaffected":
+                continue
+            v = (ver.get("version") or "").strip()
+            if v and vcmp(version, v) >= 0 and (best is None or vcmp(v, best) > 0):
+                best = v
+    return best
+
+
+def cna_unaffected_at(vid, version):
+    doc = cna_doc(vid)
+    return cna_unaffected(doc, version) if doc else None
+
+
+def cna_ceiling(vid):
+    """Upstream fix ceiling from the CVE record; distro ids are not CVE records."""
+    doc = cna_doc(vid)
+    if not doc:
         return None
     for aff in doc.get("containers", {}).get("cna", {}).get("affected", []):
         for ver in aff.get("versions", []):
@@ -542,6 +567,14 @@ def cves():
                 if ceiling and vcmp(q["version"], ceiling) >= 0:
                     excused.append("%s %s %s (fixed upstream < %s)"
                                    % (q["package"]["name"], q["version"], item["id"], ceiling))
+                    time.sleep(0.2)
+                    continue
+                unaff = next((u for u in (cna_unaffected_at(a, q["version"])
+                                          for a in adv.get("aliases", []) + [item["id"]]) if u), None)
+                if unaff:
+                    excused.append("%s %s %s (CNA marks %s unaffected at %s)"
+                                   % (q["package"]["name"], q["version"], item["id"],
+                                      q["version"], unaff))
                     time.sleep(0.2)
                     continue
             if hit:
@@ -734,6 +767,14 @@ def selftest():
         (published_verdict("0.85.7", "0.86.0", {"busy": True, "codes": {"succeeded"}}), "inflight", "repo still publishing"),
         (published_verdict("0.85.7", "0.86.0", {"busy": False, "codes": {"succeeded"}}), "behind", "trailing index, repo finished"),
         (published_verdict("0.86.0", "0.86.0", {"busy": False, "codes": {"succeeded"}}), "ok", "index at the spec"),
+        (cna_unaffected({"containers": {"cna": {"affected": [{"versions": [
+            {"version": "1.3.0", "status": "affected"},
+            {"version": "1.3.1", "status": "affected"},
+            {"version": "1.4.0", "status": "unaffected"}]}]}}}, "1.4.0"),
+         "1.4.0", "CNA marks our version unaffected"),
+        (cna_unaffected({"containers": {"cna": {"affected": [{"versions": [
+            {"version": "1.3.1", "status": "affected"}]}]}}}, "1.4.0"),
+         None, "CNA without an unaffected entry stays unresolved"),
     ]
     for got, want, label in cases:
         if got != want:

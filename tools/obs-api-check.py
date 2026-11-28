@@ -142,12 +142,49 @@ def published():
     return False
 
 
+def dsc_tar(text):
+    m = re.search(r"(?m)^Debtransform-Tar:\s*(\S+)", text)
+    return m.group(1) if m else ""
+
+
+def tar_missing(entries, tar):
+    """OBS debtransform hardlinks this file; absent means both DEB targets fail."""
+    return bool(tar) and tar not in entries
+
+
+def obs_source_entries(pkg):
+    code, body = get(f"{API}/source/{PROJECT}/{pkg}", auth=True)
+    if code != 200:
+        return None
+    return set(re.findall(r'<entry name="([^"]+)"', body.decode("utf-8", "replace")))
+
+
 def drift():
     code, body = get(f"{API}/source/{PROJECT}/_project?view=info", auth=True)
     if code != 200:
         print(f"hunt: sources - UNVERIFIED OBS source API HTTP {code} (no authenticated drift check)")
         return False
     print("hunt: sources - OBS source API HTTP 200")
+    gaps, unverified, checked = [], [], 0
+    for dsc in sorted(glob.glob("*/*.dsc")):
+        pkg = os.path.dirname(dsc)
+        tar = dsc_tar(open(dsc, encoding="utf-8", errors="replace").read())
+        if not tar:
+            continue
+        entries = obs_source_entries(pkg)
+        if entries is None:
+            unverified.append(pkg)
+            continue
+        checked += 1
+        if tar_missing(entries, tar):
+            gaps.append(f"{pkg}: Debtransform-Tar {tar} absent from the OBS source package")
+    if gaps:
+        print("hunt: sources - DEFECT " + "; ".join(gaps))
+        return True
+    if unverified:
+        print(f"hunt: sources - UNVERIFIED source listing for {', '.join(unverified)}")
+        return False
+    print(f"hunt: sources - every Debtransform-Tar present on OBS ({checked} recipes checked)")
     return False
 
 
@@ -576,6 +613,13 @@ def selftest():
     cases += [
         (rows, {"pkg-a", "pkg-b"}, "comment lines are not probe rows"),
         (len(rows), 2, "probe row count ignores notes"),
+        (dsc_tar("Version: 1.0\nDebtransform-Tar: demo-1.0.tar.gz\n"), "demo-1.0.tar.gz",
+         "dsc Debtransform-Tar read"),
+        (dsc_tar("Version: 1.0\n"), "", "dsc without a tarball reads empty"),
+        (tar_missing({"demo-1.0.tar.gz", "demo.spec"}, "demo-1.0.tar.gz"), False,
+         "tarball present on OBS"),
+        (tar_missing({"demo.spec"}, "demo-1.0.tar.gz"), True,
+         "tarball absent on OBS is a gap"),
     ]
     for got, want, label in cases:
         if got != want:
